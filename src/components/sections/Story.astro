@@ -77,7 +77,7 @@ const satellites = [
           <div class="stage-head flex items-center justify-between gap-4 border-b border-rule px-4 py-2.5">
             <span class="hidden font-mono text-[0.7rem] text-ink-muted sm:inline">{t("story-stage-label")}</span>
             <span
-              class="font-mono text-[0.7rem] text-ink-faint tabular"
+              class="font-mono text-[0.7rem] text-ink-muted tabular"
               data-stage-step
               data-template={t("story-step", { n: "{n}", total: TOTAL })}>{t("story-step", { n: TOTAL, total: TOTAL })}</span
             >
@@ -137,7 +137,7 @@ const satellites = [
                     ["story-watch-end", "story-watch-end-value", null],
                   ].map(([k, v, raw]) => (
                     <div class="grid grid-cols-[7.5rem_1fr] gap-3 px-4 py-2">
-                      <dt class="text-ink-faint">{t(k as string)}</dt>
+                      <dt class="text-ink-muted">{t(k as string)}</dt>
                       <dd class="text-ink">{v ? t(v as string) : raw}</dd>
                     </div>
                   ))
@@ -151,7 +151,7 @@ const satellites = [
                 <div class="flex items-center gap-2 border-b border-rule px-4 py-2.5 font-mono text-[0.7rem] text-ink-muted">
                   <Mail className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
                   <span>{t("story-mail-via")}</span>
-                  <span class="text-ink-faint">·</span>
+                  <span class="text-ink-faint" aria-hidden="true">·</span>
                   <span class="truncate">{t("story-mail-from")}</span>
                 </div>
                 <div class="px-4 py-4">
@@ -230,7 +230,7 @@ const satellites = [
                 </svg>
                 <div class="house-notes mt-3 grid gap-2 font-mono text-[0.7rem] sm:grid-cols-2">
                   <p class="note flex gap-2" style="--from:5;--until:5">
-                    <span class="text-ink-faint">{t("story-why")}</span>
+                    <span class="text-ink-muted">{t("story-why")}</span>
                     <span class="text-ember">{t("story-5-reason")}</span>
                   </p>
                   <p class="note text-ink-muted" style="--from:5;--until:5">
@@ -240,7 +240,7 @@ const satellites = [
                     <q class="font-serif text-[1.05rem] text-ink">{t("story-6-quote")}</q>
                   </p>
                   <p class="note flex gap-2 sm:col-span-2" style="--from:7;--until:7">
-                    <span class="text-ink-faint">{t("story-why")}</span>
+                    <span class="text-ink-muted">{t("story-why")}</span>
                     <span class="text-ember">{t("story-7-reason")}</span>
                   </p>
                 </div>
@@ -255,7 +255,7 @@ const satellites = [
               {
                 journal.map((line) => (
                   <li class="jline" style={`--from:${line.from}`} data-kind={line.kind}>
-                    <time class="text-ink-faint tabular">
+                    <time class="text-ink-muted tabular">
                       {line.yesterday ? `${t("story-yesterday")} ` : ""}
                       {line.at}
                     </time>
@@ -284,7 +284,7 @@ const satellites = [
                     {t(s.day)} · {s.at}
                   </span>
                 </p>
-                <h3 class="display-3 mt-3 text-ink">{t(`story-${s.n}-title`)}</h3>
+                <h3 class="display-3 mt-3">{t(`story-${s.n}-title`)}</h3>
                 <p class="prose-copy mt-3" set:html={t.html(`story-${s.n}-text`)} />
                 {s.quote && (
                   <blockquote class="quote mt-5 flex gap-3">
@@ -379,7 +379,12 @@ const satellites = [
     right: 0.6rem;
     bottom: 0.25rem;
     font-size: 0.62rem;
-    opacity: 0.6;
+  }
+  .bubble-in .bubble-time {
+    color: var(--ink-muted);
+  }
+  .bubble-out .bubble-time {
+    opacity: 0.8;
   }
   .pop {
     transition: transform 500ms var(--ease-out);
@@ -443,7 +448,7 @@ const satellites = [
   .sat-label {
     font-family: var(--font-data);
     font-size: 10px;
-    fill: var(--ink-faint);
+    fill: var(--ink-muted);
   }
   .wave {
     fill: none;
@@ -582,12 +587,15 @@ const satellites = [
   .step-inner {
     max-width: 30rem;
     padding: 1.25rem 0;
-    opacity: 0.38;
-    transition: opacity 400ms var(--ease-out);
   }
-  .step[data-current] .step-inner,
-  :global(.no-js) .step-inner {
-    opacity: 1;
+  /* the step being read: its title in ink and its dot lit; the others stay legible */
+  .step h3 {
+    color: var(--ink-muted);
+    transition: color 400ms var(--ease-out);
+  }
+  .step[data-current] h3,
+  :global(.no-js) .step h3 {
+    color: var(--ink);
   }
   .step-dot {
     width: 0.5rem;

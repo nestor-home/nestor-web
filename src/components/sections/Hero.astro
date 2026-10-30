@@ -50,7 +50,7 @@ const tail: { at: string; kind: string; text: string }[] = [
           {
             tail.map((line) => (
               <li class="tail-line" data-kind={line.kind}>
-                <time class="text-ink-faint tabular">{line.at}</time>
+                <time class="text-ink-muted tabular">{line.at}</time>
                 <span class="tail-kind">{t(line.kind)}</span>
                 <span class="min-w-0 truncate text-ink">{t(line.text)}</span>
               </li>

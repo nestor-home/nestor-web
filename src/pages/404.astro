@@ -1,7 +1,7 @@
 ---
 import Dither from "@/components/Dither.astro";
-import Base from "@/layouts/Base.astro";
 import { LOCALES, localePath, translator } from "@/i18n";
+import Base from "@/layouts/Base.astro";
 
 const pages = LOCALES.map((locale) => ({ locale, t: translator(locale) }));
 ---

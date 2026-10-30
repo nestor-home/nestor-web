@@ -6,7 +6,7 @@ import { createHighlighter, type ThemeRegistrationRaw } from "shiki";
 
 const SLOTS = {
   "#000001": "var(--ink)",
-  "#000002": "var(--ink-faint)",
+  "#000002": "var(--ink-muted)",
   "#000003": "var(--ember)",
   "#000004": "var(--sage)",
   "#000005": "var(--kind-watch)",

@@ -64,8 +64,9 @@ export async function svgOf(node: Node, width: number, height: number): Promise<
   return satori(node as any, { width, height, fonts: await loadFonts() });
 }
 
-export function pngOf(svg: string, width: number): Uint8Array {
-  return new Resvg(svg, { fitTo: { mode: "width", value: width } }).render().asPng();
+export function pngOf(svg: string, width: number): ArrayBuffer {
+  const png = new Resvg(svg, { fitTo: { mode: "width", value: width } }).render().asPng();
+  return png.buffer.slice(png.byteOffset, png.byteOffset + png.byteLength) as ArrayBuffer;
 }
 
 export function ditherImage(width: number, height: number, from: number, to: number, colour: string): string {

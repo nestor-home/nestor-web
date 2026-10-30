@@ -47,12 +47,12 @@ const tools = [
               <li
                 class:list={[
                   "flex min-h-11 items-center gap-2 border border-rule bg-paper-raised px-2.5 py-2 text-[0.8rem]",
-                  c.later ? "text-ink-faint" : "text-ink",
+                  c.later ? "text-ink-muted" : "text-ink",
                 ]}
               >
                 {c.brand ? <Brand brand={c.brand} class="size-4" decorative /> : <Mail className="size-4" strokeWidth={1.6} aria-hidden="true" />}
                 <span class="min-w-0 truncate">{c.label ? t(c.label) : c.brand ? BRANDS[c.brand].name : ""}</span>
-                {c.note && <span class="ml-auto font-mono text-[0.62rem] whitespace-nowrap text-ink-faint">{t(c.note)}</span>}
+                {c.note && <span class="ml-auto font-mono text-[0.62rem] whitespace-nowrap text-ink-muted">{t(c.note)}</span>}
                 {c.later && <span class="ml-auto font-mono text-[0.62rem] whitespace-nowrap">{t("con-catalogue-soon")}</span>}
               </li>
             ))
@@ -91,7 +91,7 @@ const tools = [
               <li class="flex items-start justify-between gap-3 border-b border-rule py-3">
                 <span class="min-w-0">
                   <span class="block text-[0.85rem] leading-snug text-ink">{t(tool.text)}</span>
-                  <span class:list={["font-mono text-[0.66rem]", tool.on ? "text-ink-faint" : "text-amber"]}>{t(tool.risk)}</span>
+                  <span class:list={["font-mono text-[0.66rem]", tool.on ? "text-ink-muted" : "text-amber"]}>{t(tool.risk)}</span>
                 </span>
                 <span class="switch" data-on={tool.on ? "" : undefined} role="img" aria-label={t(tool.on ? "con-tool-on" : "con-tool-off")} />
               </li>

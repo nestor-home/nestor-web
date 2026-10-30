@@ -16,7 +16,13 @@ export default defineConfig({
     { name: "light", use: { ...devices["Desktop Chrome"], colorScheme: "light" } },
     { name: "dark", use: { ...devices["Desktop Chrome"], colorScheme: "dark" } },
   ],
-  webServer: process.env.E2E_BASE
-    ? undefined
-    : { command: "pnpm astro preview --port 4380 --ignore-lock", url: base, reuseExistingServer: !process.env.CI },
+  ...(process.env.E2E_BASE
+    ? {}
+    : {
+        webServer: {
+          command: "pnpm astro preview --port 4380 --ignore-lock",
+          url: base,
+          reuseExistingServer: !process.env.CI,
+        },
+      }),
 });

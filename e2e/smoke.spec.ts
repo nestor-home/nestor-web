@@ -1,4 +1,7 @@
+import { createRequire } from "node:module";
 import { expect, type Page, test } from "@playwright/test";
+
+const require = createRequire(import.meta.url);
 
 const PAGES = [
   { path: "/", lang: "en", title: /lives/ },
@@ -143,3 +146,26 @@ test("the page stays within its budget", async ({ page }) => {
   const alts = await page.locator("img").evaluateAll((imgs) => imgs.filter((i) => !(i as HTMLImageElement).alt).length);
   expect(alts).toBe(0);
 });
+
+for (const { path } of PAGES) {
+  test(`${path} has no WCAG 2 A/AA violation (axe)`, async ({ page }) => {
+    await page.goto(path);
+    await page.addStyleTag({ content: ".section{content-visibility:visible!important}" });
+    await scrollThrough(page);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(1500); // let the last reveals and the pairing demonstration finish
+    await page.addScriptTag({ path: require.resolve("axe-core") });
+    const violations = await page.evaluate(async () => {
+      // @ts-expect-error axe is injected above
+      const result = await window.axe.run(document, { runOnly: ["wcag2a", "wcag2aa"] });
+      return result.violations.map(
+        (v: { id: string; nodes: { target: string[] }[] }) =>
+          `${v.id}: ${v.nodes
+            .map((n) => n.target.join(" "))
+            .slice(0, 4)
+            .join(", ")}`,
+      );
+    });
+    expect(violations).toEqual([]);
+  });
+}

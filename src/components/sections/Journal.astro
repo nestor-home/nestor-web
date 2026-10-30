@@ -38,16 +38,16 @@ const mobile = clip("mobile", t.locale).length > 0;
       </div>
       <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("jr-clip")}</figcaption>
     </figure>
-    <ol class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-3">
+    <ul class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-3">
       {
         notes.map((id, i) => (
           <li data-reveal style={`--i:${i}`} class="flex gap-3 text-[0.95rem] leading-relaxed text-ink-muted">
-            <span class="font-mono text-[0.75rem] text-ember tabular">{i + 1}</span>
+            <span class="mt-[0.55rem] inline-block size-1.5 shrink-0 bg-ember" aria-hidden="true" />
             <span>{t(id)}</span>
           </li>
         ))
       }
-    </ol>
+    </ul>
 
     {
       (more.length > 0 || mobile) && (
