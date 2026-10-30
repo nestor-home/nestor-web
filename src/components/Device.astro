@@ -1,0 +1,232 @@
+---
+/**
+ * One of Nestor's bodies, drawn in hairlines around the character: a speaker it sits on, a robot it
+ * is the head of, or a screen (tablet, laptop, phone, browser tab) it lives in. Screens take extra
+ * content through the slot (messages, lists). Size everything with `size`, in pixels of character.
+ */
+import Dither from "@/components/Dither.astro";
+import Nestor, { type Look, type NestorState } from "@/components/Nestor.astro";
+
+export type DeviceKind = "speaker" | "robot" | "tablet" | "laptop" | "phone" | "browser";
+
+interface Props {
+  kind: DeviceKind;
+  state?: NestorState;
+  look?: Look;
+  size?: number;
+  script?: string;
+  class?: string;
+  label?: string;
+}
+const { kind, state = "idle", look = "center", size = 96, script, class: className = "", label } = Astro.props;
+const screen = kind === "tablet" || kind === "laptop" || kind === "phone" || kind === "browser";
+const face = screen ? Math.round(size * (kind === "phone" ? 0.42 : 0.62)) : size;
+---
+
+<figure class:list={["device", `device-${kind}`, className]} style={`--s:${size}px`} aria-label={label}>
+  {
+    kind === "speaker" && (
+      <>
+        <Nestor state={state} look={look} size={face} script={script} />
+        <div class="speaker-box">
+          <Dither shape="field" from={0.38} to={0.38} dot={2} class="absolute inset-[18%] text-ink/70" />
+        </div>
+      </>
+    )
+  }
+  {
+    kind === "robot" && (
+      <>
+        <div class="robot-head">
+          <span class="antenna antenna-left" />
+          <span class="antenna antenna-right" />
+          <Nestor state={state} look={look} size={face} script={script} />
+        </div>
+        <div class="robot-neck" />
+        <div class="robot-base">
+          <Dither shape="ramp-down" from={0.05} to={0.5} dot={2} class="absolute inset-0 text-ink/45" />
+        </div>
+      </>
+    )
+  }
+  {
+    screen && (
+      <div class="screen">
+        {kind === "browser" && (
+          <div class="browser-bar">
+            <span />
+            <span />
+            <span />
+          </div>
+        )}
+        {kind === "phone" ? (
+          <div class="phone-head">
+            <Nestor state={state} look={look} size={face} script={script} />
+          </div>
+        ) : (
+          <div class="screen-face">
+            <Nestor state={state} look={look} size={face} script={script} />
+          </div>
+        )}
+        <slot />
+      </div>
+    )
+  }
+  {kind === "laptop" && <div class="laptop-base" />}
+</figure>
+
+<style is:global>
+  .device {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+  }
+  .speaker-box {
+    position: relative;
+    width: calc(var(--s) * 1.05);
+    height: calc(var(--s) * 0.62);
+    margin-top: calc(var(--s) * -0.04);
+    border: 1.5px solid var(--ink);
+    border-radius: calc(var(--s) * 0.12) calc(var(--s) * 0.12) calc(var(--s) * 0.06) calc(var(--s) * 0.06);
+    background: var(--paper-raised);
+  }
+  .robot-head {
+    position: relative;
+  }
+  .antenna {
+    position: absolute;
+    top: calc(var(--s) * -0.3);
+    width: 1.5px;
+    height: calc(var(--s) * 0.42);
+    background: var(--ink);
+    transform-origin: bottom center;
+  }
+  .antenna::after {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: -2.5px;
+    width: 6.5px;
+    height: 6.5px;
+    border-radius: 999px;
+    background: var(--ink);
+  }
+  .antenna-left {
+    left: 34%;
+    transform: rotate(-18deg);
+  }
+  .antenna-right {
+    right: 34%;
+    transform: rotate(18deg);
+  }
+  .robot-neck {
+    width: calc(var(--s) * 0.22);
+    height: calc(var(--s) * 0.1);
+    margin-top: calc(var(--s) * -0.06);
+    background: var(--ink);
+  }
+  .robot-base {
+    position: relative;
+    overflow: hidden;
+    width: calc(var(--s) * 0.9);
+    height: calc(var(--s) * 0.62);
+    border: 1.5px solid var(--ink);
+    border-radius: calc(var(--s) * 0.45) calc(var(--s) * 0.45) calc(var(--s) * 0.1) calc(var(--s) * 0.1);
+    background: var(--paper-raised);
+  }
+  .device:has(.nestor[data-state="laughing"]) .antenna-left,
+  .device:has(.nestor[data-state="speaking"]) .antenna-left {
+    animation: antenna-l 0.9s ease-in-out infinite;
+  }
+  .device:has(.nestor[data-state="laughing"]) .antenna-right,
+  .device:has(.nestor[data-state="speaking"]) .antenna-right {
+    animation: antenna-r 0.9s ease-in-out infinite;
+  }
+  @keyframes antenna-l {
+    50% {
+      transform: rotate(-30deg);
+    }
+  }
+  @keyframes antenna-r {
+    50% {
+      transform: rotate(30deg);
+    }
+  }
+  .screen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    padding: calc(var(--s) * 0.1);
+  }
+  .device-tablet .screen {
+    width: calc(var(--s) * 1.8);
+    min-height: calc(var(--s) * 1.2);
+    border-radius: 10px;
+    border-width: 5px;
+    border-color: var(--ink);
+    align-items: center;
+    justify-content: center;
+  }
+  .device-laptop .screen {
+    width: calc(var(--s) * 3.2);
+    min-height: calc(var(--s) * 1.9);
+    border-radius: 8px 8px 0 0;
+    border-width: 4px;
+  }
+  .laptop-base {
+    width: calc(var(--s) * 3.6);
+    height: 7px;
+    background: var(--ink);
+    border-radius: 0 0 6px 6px;
+  }
+  .device-phone .screen {
+    width: calc(var(--s) * 1.9);
+    min-height: calc(var(--s) * 3.2);
+    border-radius: 18px;
+    border-width: 4px;
+    padding: 0.5rem;
+  }
+  .phone-head {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .device-browser .screen {
+    width: calc(var(--s) * 2);
+    min-height: calc(var(--s) * 1.3);
+    border-radius: 6px;
+    padding: 0;
+    align-items: center;
+  }
+  .browser-bar {
+    display: flex;
+    align-self: stretch;
+    gap: 4px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .browser-bar span {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    border: 1px solid var(--rule-strong);
+  }
+  .screen-face {
+    display: flex;
+    justify-content: center;
+  }
+  .device-browser .screen-face {
+    padding: 0.5rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .antenna {
+      animation: none !important;
+    }
+  }
+</style>
