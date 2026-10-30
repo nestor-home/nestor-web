@@ -1,11 +1,11 @@
 con-title = Accounts, plugged in from the admin.
 con-lede = A catalogue, consent at the provider, a switch per tool. Mail natively; any MCP server without code.
 con-1 = Choose
-con-1-text = Gmail and any IMAP mailbox natively. Any MCP server — Linear, Notion, GitHub, your own scripts — without code.
+con-1-text = Gmail and any IMAP mailbox natively. Any MCP server (Linear, Notion, GitHub, your own scripts) without code.
 con-2 = Consent
 con-2-text = OAuth 2.1 with PKCE, at the provider. For Google, your own OAuth client, set up step by step as in Home Assistant.
 con-3 = Allow
-con-3-text = Tools one by one. Writing tools — send a mail, create a ticket — ask for confirmation by default.
+con-3-text = Tools one by one. Writing tools, like sending a mail or creating a ticket, ask for confirmation by default.
 con-catalogue-mcp = Any MCP server
 con-catalogue-imap = Any IMAP mailbox
 con-catalogue-soon = later

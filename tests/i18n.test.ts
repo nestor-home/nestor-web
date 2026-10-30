@@ -77,3 +77,17 @@ describe("addresses", () => {
     expect(href("fr", "home")).toBe("/fr/");
   });
 });
+
+describe("the copy", () => {
+  it("does without em-dashes: a period, a colon or parentheses read better", () => {
+    const lines = LOCALES.flatMap((locale) =>
+      Object.entries(sourcesOf(locale)).flatMap(([file, text]) =>
+        text
+          .split("\n")
+          .filter((line) => line.includes("—"))
+          .map((line) => `${locale}/${file}: ${line}`),
+      ),
+    );
+    expect(lines).toEqual([]);
+  });
+});

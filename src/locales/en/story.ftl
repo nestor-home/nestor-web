@@ -26,7 +26,7 @@ story-4-agent = Central agent
 story-4-agent-out = words the message
 
 story-5-title = Presence decides where.
-story-5-text = Home Assistant says Léa is in the living room. No quiet hours, no conversation under way: the decision is to say it aloud, on the satellite in that room — and its reason is written down.
+story-5-text = Home Assistant says Léa is in the living room. No quiet hours, no conversation under way: it decides to say it aloud on that room’s satellite, and writes down why.
 story-5-reason = Léa is in the “salon” room
 
 story-6-title = Nestor says it in the living room.
@@ -39,7 +39,7 @@ story-7-reason = no reply for 30 min, and Léa is not home
 story-7-quote = Your parcel is at Tabac de la Place until 6 November.
 
 story-8-title = She answers. The thread holds.
-story-8-text = Her reply lands with the watch’s context: Nestor knows what “it” is. And every step — trigger, triage, decision, delivery — is in the journal with its reason.
+story-8-text = Her reply lands with the watch’s context: Nestor knows what “it” is. Trigger, triage, decision, delivery: every step is in the journal with its reason.
 story-8-quote = Thanks! I’ll pick it up on my way home.
 story-8-reply = Perfect. I’ll keep the watch open until it’s collected.
 story-8-link = Why did it speak to me?
@@ -70,10 +70,10 @@ story-j-1 = Léa said “Let me know when my Vinted parcel…”
 story-j-2 = Watch created: Léa’s Vinted parcel
 story-j-3 = Watch 9d41 triggered by “Your parcel is available”
 story-j-4 = Triage: relevant to Léa, not urgent
-story-j-5 = Decision to speak to Léa — aloud, salon
+story-j-5 = Decision to speak to Léa: aloud, salon
 story-j-6 = Said aloud on reachy-salon
 story-j-7 = Léa is no longer home
-story-j-8 = Decision to follow up — in writing, Telegram
+story-j-8 = Decision to follow up: in writing, Telegram
 story-j-9 = Sent in writing on Telegram
 story-j-10 = Léa replied; the watch stays open
 story-presence = Home Assistant · person in a room

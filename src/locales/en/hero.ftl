@@ -1,7 +1,7 @@
 hero-line-1 = The agent
 hero-line-2 = that lives
 hero-line-3 = at home.
-hero-lede = An assistant for the whole household. It knows who’s home, remembers each person, handles the long tasks — and speaks up at the right moment, wherever you are.
+hero-lede = An assistant for the whole household. It knows who’s home, remembers each person, handles the long tasks, and speaks up at the right moment, wherever you are.
 hero-day = See a day with Nestor
 hero-install = Install it
 hero-note = Open source · runs on your own machine

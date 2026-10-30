@@ -1,7 +1,7 @@
 fast-title = Quick in the room, patient in the background.
 fast-lede = The central agent holds the conversation with a fast model and a handful of direct tools. Anything long goes to an executor, and the conversation carries on.
 fast-first-sound = from the end of your sentence to its voice
-fast-first-sound-note = Measured on the real chain — end-of-turn detection, streaming speech-to-text, the central model, streaming speech — in the proof of concept, 28–29 October 2026.
+fast-first-sound-note = Measured on the real chain (end-of-turn detection, streaming speech-to-text, the central model, streaming speech) in the proof of concept, 28–29 October 2026.
 fast-axis = seconds
 fast-why = Why the execution harness stays out of the conversation
 fast-direct = Central model, called directly
@@ -10,7 +10,7 @@ fast-why-note = Median time to the first sentence, same model, same requests.
 fast-delegate-title = What delegation looks like
 fast-delegate-1 = It acknowledges first. “I’m on it” is spoken before the tool call, not after.
 fast-delegate-2 = The conversation goes on while Hermes, Codex or another executor works.
-fast-delegate-3 = The result is announced without being asked for, to the right person, where they are — once, even across a restart.
+fast-delegate-3 = The result is announced without being asked for, to the right person, where they are. Once, even across a restart.
 fast-delegate-4 = Cancelling is confirmed. Asking to cancel is never mistaken for having cancelled.
 fast-manners-title = What a voice owes you
 fast-manners-1 = A “mm-hm” doesn’t cut it off; “wait” does. On the bench: 0 of 8 acknowledgements interrupted it, real interruptions caught in 0.30 s median.

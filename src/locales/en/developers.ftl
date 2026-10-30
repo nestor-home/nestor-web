@@ -1,5 +1,5 @@
 dev-title = Build with Nestor.
-dev-lede = A Python runtime that keeps one agent alive for a household. Everything around the core — channels, satellites, connectors, executors, AI providers — plugs in through public contracts.
+dev-lede = A Python runtime that keeps one agent alive for a household. Channels, satellites, connectors, executors and AI providers plug into the core through public contracts.
 dev-facts-1 = Python 3.12+ · SQLite · MIT
 dev-facts-2 = Satellites over WebRTC · SDKs in Python, TypeScript, Rust
 dev-facts-3 = Home Assistant · MCP · OAuth 2.1 with PKCE

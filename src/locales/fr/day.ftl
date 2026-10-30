@@ -3,8 +3,8 @@ day-lede = Un foyer, une journée ordinaire.
 
 day-1-time = 07:10
 day-1-title = Bonjour.
-day-1-text = Qui est parti, ce qui tombe aujourd’hui — en une phrase.
-day-1-say = Bonjour Léa. Jules est parti à l’école — le papier de la sortie est à rendre jeudi.
+day-1-text = Qui est parti, ce qui tombe aujourd’hui. En une phrase.
+day-1-say = Bonjour Léa. Jules est parti à l’école. Le papier de la sortie est à rendre jeudi.
 day-1-lea = Léa · cuisine
 day-1-jules = Jules · parti à l’école
 day-1-mathis = Mathis · bureau
@@ -34,7 +34,7 @@ day-3-school-to = dit à Mathis et à Léa
 
 day-4-time = 17:48
 day-4-title = Il prend la parole quand ça compte.
-day-4-text = Demandé une fois. Dit dans la pièce où elle est — ou par message une fois sortie.
+day-4-text = Demandé une fois. Dit dans la pièce où elle est, ou par message une fois sortie.
 day-4-say = Léa, ton colis t’attend au Tabac de la Place.
 day-4-room = salon
 day-4-later = 30 min plus tard, Léa est sortie

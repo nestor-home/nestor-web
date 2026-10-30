@@ -26,7 +26,7 @@ story-4-agent = Agent central
 story-4-agent-out = formule le message
 
 story-5-title = La présence décide où.
-story-5-text = Home Assistant indique que Léa est au salon. Pas d’heures calmes, pas de conversation en cours : la décision est de le dire à voix haute, sur le satellite de cette pièce — et sa raison est écrite.
+story-5-text = Home Assistant indique que Léa est au salon. Pas d’heures calmes, pas de conversation en cours : il décide de le dire à voix haute sur le satellite de la pièce, et écrit pourquoi.
 story-5-reason = Léa est dans la pièce « salon »
 
 story-6-title = Nestor le dit au salon.
@@ -39,7 +39,7 @@ story-7-reason = pas de réponse depuis 30 min, et Léa n’est pas à la maison
 story-7-quote = Ton colis est au Tabac de la Place jusqu’au 6 novembre.
 
 story-8-title = Elle répond. Le fil tient.
-story-8-text = Sa réponse arrive avec le contexte de la veille : Nestor sait de quoi on parle. Et chaque étape — déclenchement, tri, décision, livraison — est au journal avec sa raison.
+story-8-text = Sa réponse arrive avec le contexte de la veille : Nestor sait de quoi on parle. Déclenchement, tri, décision, livraison : chaque étape est au journal avec sa raison.
 story-8-quote = Merci ! J’irai le chercher en rentrant.
 story-8-reply = Parfait. Je garde la veille ouverte jusqu’à ce qu’il soit retiré.
 story-8-link = Pourquoi m’a-t-il parlé ?
@@ -70,10 +70,10 @@ story-j-1 = Léa a dit « Préviens-moi quand mon colis Vinted… »
 story-j-2 = Veille créée : le colis Vinted de Léa
 story-j-3 = Veille 9d41 déclenchée par « Votre colis est disponible »
 story-j-4 = Tri : pertinent pour Léa, pas urgent
-story-j-5 = Décision de parler à Léa — à voix haute, salon
+story-j-5 = Décision de parler à Léa : à voix haute, salon
 story-j-6 = Dit à voix haute sur reachy-salon
 story-j-7 = Léa n’est plus à la maison
-story-j-8 = Décision de relancer — par écrit, Telegram
+story-j-8 = Décision de relancer : par écrit, Telegram
 story-j-9 = Transmis par écrit sur Telegram
 story-j-10 = Léa a répondu ; la veille reste ouverte
 story-presence = Home Assistant · personne dans une pièce

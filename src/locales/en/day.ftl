@@ -3,8 +3,8 @@ day-lede = One household, one ordinary day.
 
 day-1-time = 07:10
 day-1-title = Good morning.
-day-1-text = Who’s left, what’s due — in one sentence.
-day-1-say = Morning, Léa. Jules has left for school — the trip form is due Thursday.
+day-1-text = Who’s left, what’s due. In one sentence.
+day-1-say = Morning, Léa. Jules has left for school. The trip form is due Thursday.
 day-1-lea = Léa · kitchen
 day-1-jules = Jules · left for school
 day-1-mathis = Mathis · office
@@ -34,7 +34,7 @@ day-3-school-to = told to Mathis and Léa
 
 day-4-time = 17:48
 day-4-title = It speaks up when it matters.
-day-4-text = Asked once. Told in the room she’s in — or by message once she’s out.
+day-4-text = Asked once. Told in the room she’s in, or by message once she’s out.
 day-4-say = Léa, your parcel is waiting at Tabac de la Place.
 day-4-room = living room
 day-4-later = 30 min later, Léa is out

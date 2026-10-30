@@ -1,5 +1,5 @@
 ctl-title = À vous, sur votre machine.
-ctl-lede = Ce qu’il sait, ce qu’il peut faire, quand il peut parler — à vous de le voir et de le changer.
+ctl-lede = Ce qu’il sait, ce qu’il peut faire, quand il peut parler : à vous de le voir et de le changer.
 ctl-1 = Local d’abord
 ctl-1-text = Un fichier SQLite sur votre serveur contient le journal, la mémoire, les tâches et les réglages. Répliquez-le vers un NAS ou S3 avec Litestream si vous le souhaitez.
 ctl-2 = Une mémoire lisible
@@ -11,7 +11,7 @@ ctl-4-text = L’identification par la voix ou le visage est facultative, person
 ctl-5 = Une initiative bien élevée
 ctl-5-text = Heures calmes, « pas maintenant », jamais au milieu d’une conversation. Urgent seulement si vous l’avez dit.
 ctl-6 = Un mail est une donnée, pas un ordre
-ctl-6-text = Ce qui arrive — mails, pages, résultats d’outils — n’est jamais traité comme une instruction.
+ctl-6-text = Ce qui arrive (mails, pages, résultats d’outils) n’est jamais traité comme une instruction.
 ctl-7 = Le foyer a un propriétaire
 ctl-7-text = Comptes, rôles et permissions par personne, canal et outil. Les satellites sont refusés tant qu’ils ne sont pas approuvés.
 ctl-8 = Les fournisseurs, vous les choisissez
