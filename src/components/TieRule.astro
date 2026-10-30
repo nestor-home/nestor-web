@@ -1,0 +1,29 @@
+---
+/** A hairline with the bow tie at its centre: a pause between two movements of the page. */
+import Tie from "@/components/Tie.astro";
+---
+
+<div class="wrap" aria-hidden="true">
+  <div class="tie-rule">
+    <span></span>
+    <Tie size={22} class="tie-rule-mark" />
+    <span></span>
+  </div>
+</div>
+
+<style>
+  .tie-rule {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .tie-rule > span {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+  .tie-rule :global(.tie-rule-mark) {
+    --nestor-tie-wing: var(--rule-strong);
+    --nestor-tie-knot: var(--ember);
+  }
+</style>

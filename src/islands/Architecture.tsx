@@ -4,6 +4,19 @@
  * React island of the site; every word arrives resolved from the page's Fluent catalogue.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { BOW_KNOT, BOW_VIEWBOX, BOW_WINGS } from "@/character/geometry";
+
+/** The bow tie as a list marker, as everywhere on the site. */
+function Tie() {
+  return (
+    <svg viewBox={BOW_VIEWBOX} width="13" height="7" className="mt-[0.55rem] shrink-0 fill-ember" aria-hidden="true">
+      {BOW_WINGS.map((d) => (
+        <path key={d} d={d} />
+      ))}
+      <rect x={BOW_KNOT.x} y={BOW_KNOT.y} width={BOW_KNOT.width} height={BOW_KNOT.height} rx={BOW_KNOT.r} />
+    </svg>
+  );
+}
 
 export type PartId =
   | "agent"
@@ -184,7 +197,7 @@ export default function Architecture({ parts, coreLabel, portsLabel }: Props) {
                   key={point}
                   className="flex gap-3 border-b border-rule py-3 text-[0.92rem] leading-relaxed text-ink-muted"
                 >
-                  <span aria-hidden="true" className="mt-[0.55rem] inline-block size-1.5 shrink-0 bg-ember" />
+                  <Tie />
                   <span>{point}</span>
                 </li>
               ))}

@@ -5,6 +5,7 @@ import Day from "@/components/sections/Day.astro";
 import Hero from "@/components/sections/Hero.astro";
 import Principles from "@/components/sections/Principles.astro";
 import Why from "@/components/sections/Why.astro";
+import TieRule from "@/components/TieRule.astro";
 import { href, type Locale, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
@@ -22,6 +23,7 @@ const nav = [
 <Base locale={t.locale} page="home" nav={nav}>
   <Hero t={t} />
   <Day t={t} />
+  <TieRule />
   <Why t={t} />
   <Principles t={t} />
   <Bodies t={t} />

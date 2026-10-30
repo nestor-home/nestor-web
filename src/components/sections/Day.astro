@@ -39,7 +39,7 @@ const scenes = SKY.map((sky, i) => ({ n: i + 1, sky }));
             data-mood={MOODS[n - 1]}
             data-say={n === 7 ? t("char-night") : undefined}
           >
-            <div class="scene-art corner-marks">
+            <div class="scene-art corner-marks" data-reveal>
               <Dither shape="ramp-up" from={0} to={sky + 0.12} dot={3} class="absolute inset-x-0 top-0 h-[30%] text-ink/20" />
               <span class="scene-clock">
                 {n === 7 && <Moon className="size-3.5" strokeWidth={1.6} aria-hidden="true" />}
@@ -209,7 +209,7 @@ const scenes = SKY.map((sky, i) => ({ n: i + 1, sky }));
                 </div>
               )}
             </div>
-            <div class="scene-text">
+            <div class="scene-text" data-reveal style="--i:2">
               <p class="font-mono text-[0.8rem] text-ember tabular">{t(`day-${n}-time`)}</p>
               <h3 class="display-3 mt-3 text-ink">{t(`day-${n}-title`)}</h3>
               <p class="prose-copy mt-3 max-w-md">{t(`day-${n}-text`)}</p>

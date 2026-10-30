@@ -1,6 +1,7 @@
 ---
 /** "You always know why it spoke": the journal, from the use side, with the recording of the admin. */
 import Clip from "@/components/Clip.astro";
+import Dither from "@/components/Dither.astro";
 import Nestor from "@/components/Nestor.astro";
 import Shot from "@/components/Shot.astro";
 import type { Translator } from "@/i18n";
@@ -13,7 +14,7 @@ const { t } = Astro.props;
 const hasLive = clip("journal-live", t.locale).length > 0;
 ---
 
-<section id="why" class="section border-t border-rule" aria-labelledby="jr-title" data-mood="thinking">
+<section id="why" class="section" aria-labelledby="jr-title" data-mood="thinking">
   <div class="wrap">
     <div class="flex items-end justify-between gap-8">
       <div class="max-w-3xl">
@@ -22,8 +23,9 @@ const hasLive = clip("journal-live", t.locale).length > 0;
       </div>
       <Nestor size={88} state="thinking" class="hidden md:block" />
     </div>
-    <figure data-reveal class="mt-12">
-      <div class="plate corner-marks">
+    <figure data-reveal class="relative mt-12">
+      <Dither shape="horizon" from={0} to={0.5} dot={3} class="absolute inset-x-[-4%] -bottom-10 h-2/3 text-ink/[0.12]" />
+      <div class="plate corner-marks relative">
         <div class="plate-inner">
           {
             hasLive ? (
@@ -34,7 +36,7 @@ const hasLive = clip("journal-live", t.locale).length > 0;
           }
         </div>
       </div>
-      <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("jr-clip")}</figcaption>
+      <figcaption class="relative mt-3 font-mono text-[0.72rem] text-ink-muted">{t("jr-clip")}</figcaption>
     </figure>
   </div>
 </section>

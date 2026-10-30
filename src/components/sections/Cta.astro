@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import Dither from "@/components/Dither.astro";
 import Nestor from "@/components/Nestor.astro";
+import Tie from "@/components/Tie.astro";
 import { href, type Translator } from "@/i18n";
 import { REPOS } from "@/lib/site";
 
@@ -30,7 +31,7 @@ const { t } = Astro.props;
         </a>
       </div>
       <p data-reveal class="mt-6 flex items-center gap-2 font-mono text-[0.75rem] text-ink-muted">
-        <span class="inline-block size-1.5 rounded-full bg-amber" aria-hidden="true"></span>
+        <Tie size={13} />
         {t("cta-early")}
       </p>
     </div>

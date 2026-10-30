@@ -38,15 +38,23 @@ const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
 
     <!-- the character, in a short exchange that loops -->
     <div class="hero-stage relative lg:col-span-5" data-hero-stage>
-      <Dither shape="vignette" from={0.32} to={0} dot={3} class="absolute inset-x-[-10%] top-[30%] bottom-[-6%] text-ink/[0.14]" />
+      
       <div class="relative mx-auto flex max-w-[26rem] flex-col gap-3 pt-2">
         <p class="hero-ask bubble-ask self-end" data-beat="ask">
           <span class="bubble-who">{t("hero-ask-who")}</span>
           {t("hero-ask")}
         </p>
         <p class="hero-say bubble-say self-start" data-beat="say">{t("hero-say")}</p>
-        <div class="mt-2 flex justify-center">
-          <Nestor state="idle" look="right" size={280} class="hero-nestor" id="hero-nestor" label={t("nestor-label")} />
+        <div class="relative mt-2 flex justify-center">
+          <!-- a soft dithered disc behind it: atmosphere, never on its body -->
+          <Dither
+            shape="vignette"
+            from={0.16}
+            to={0}
+            dot={3}
+            class="hero-disc absolute top-1/2 left-1/2 size-[22rem] -translate-x-1/2 -translate-y-[46%] overflow-hidden rounded-full text-ink/[0.16]"
+          />
+          <Nestor state="idle" look="right" size={280} class="hero-nestor relative" id="hero-nestor" label={t("nestor-label")} />
         </div>
       </div>
     </div>

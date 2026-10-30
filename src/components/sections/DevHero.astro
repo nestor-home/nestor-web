@@ -1,6 +1,7 @@
 ---
 import { ArrowUpRight } from "lucide-react";
 import Device from "@/components/Device.astro";
+import Tie from "@/components/Tie.astro";
 import type { Translator } from "@/i18n";
 import { REPOS } from "@/lib/site";
 
@@ -27,7 +28,7 @@ const repos = [
         {
           facts.map((id) => (
             <li class="flex items-center gap-3">
-              <span class="inline-block size-1.5 bg-ember" aria-hidden="true" />
+              <Tie size={13} />
               {t(id)}
             </li>
           ))
