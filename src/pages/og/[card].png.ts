@@ -1,6 +1,19 @@
 import type { APIRoute, GetStaticPaths } from "astro";
 import { LOCALES, type Locale, type Page, ROUTES, translator } from "@/i18n";
-import { ditherImage, EMBER, h, INK, INK_MUTED, type Node, PAPER, pngOf, RULE, svgOf, wordmark } from "@/lib/og";
+import {
+  characterImage,
+  ditherImage,
+  EMBER,
+  h,
+  INK,
+  INK_MUTED,
+  type Node,
+  PAPER,
+  pngOf,
+  RULE,
+  svgOf,
+  wordmark,
+} from "@/lib/og";
 
 export const getStaticPaths: GetStaticPaths = () =>
   (Object.keys(ROUTES) as Page[]).flatMap((page) =>
@@ -24,14 +37,24 @@ export const GET: APIRoute = async ({ props }) => {
       style: { position: "absolute", left: 0, bottom: 0 },
     },
   };
+  const character: Node = {
+    type: "img",
+    props: {
+      src: characterImage(340),
+      width: 340,
+      height: 340,
+      style: { position: "absolute", left: W - 340 - 80, top: 100, width: 340, height: 340 },
+    },
+  };
   const card = h(
     "div",
     { width: W, height: H, background: PAPER, flexDirection: "column", position: "relative", padding: "64px 72px" },
     horizon,
+    character,
     wordmark(44),
     h(
       "div",
-      { marginTop: 64, maxWidth: 820, alignItems: "flex-end", flexWrap: "wrap" },
+      { marginTop: 64, maxWidth: 700, alignItems: "flex-end", flexWrap: "wrap" },
       h("div", { fontFamily: "Fraunces", fontSize: 100, lineHeight: 1, letterSpacing: -3.5, color: INK }, title),
     ),
     h(

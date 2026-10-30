@@ -6,6 +6,7 @@ import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { Resvg } from "@resvg/resvg-js";
 import satori from "satori";
+import { PALETTES, renderNestorStill } from "@/character/render";
 import { ditherSvg } from "./dither";
 
 const require = createRequire(import.meta.url);
@@ -95,21 +96,12 @@ export function wordmark(size: number): Node {
   );
 }
 
-/** The icon: an ink square, the initial in paper, the ember cursor. */
-export function icon(size: number): Node {
-  return h(
-    "div",
-    {
-      width: size,
-      height: size,
-      background: INK,
-      borderRadius: size * 0.2,
-      alignItems: "center",
-      justifyContent: "center",
-      gap: size * 0.04,
-      paddingBottom: size * 0.1,
-    },
-    h("div", { fontFamily: "Fraunces", fontWeight: 500, fontSize: size * 0.78, color: PAPER, lineHeight: 1 }, "n"),
-    h("div", { width: size * 0.17, height: size * 0.32, background: "#e8835c", marginTop: size * 0.2 }),
-  );
+/** The icon: Nestor in paper on an ink tile (it reads on light and dark tabs alike). */
+export function iconSvg(size: number): string {
+  return renderNestorStill(size, { ink: PAPER, paper: INK, ember: "#e8835c" }, INK);
+}
+
+/** Nestor as a picture, for the sharing cards. */
+export function characterImage(size: number): string {
+  return `data:image/svg+xml;base64,${Buffer.from(renderNestorStill(size, PALETTES.light)).toString("base64")}`;
 }

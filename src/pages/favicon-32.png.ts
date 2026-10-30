@@ -1,5 +1,4 @@
 import type { APIRoute } from "astro";
-import { icon, pngOf, svgOf } from "@/lib/og";
+import { iconSvg, pngOf } from "@/lib/og";
 
-export const GET: APIRoute = async () =>
-  new Response(pngOf(await svgOf(icon(64), 64, 64), 32), { headers: { "Content-Type": "image/png" } });
+export const GET: APIRoute = () => new Response(pngOf(iconSvg(32), 32), { headers: { "Content-Type": "image/png" } });
