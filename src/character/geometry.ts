@@ -51,12 +51,3 @@ export const THOUGHTS = [
 export const SPINNER = "M104 20A10 10 0 0 1 114 30";
 /** Listening: one thin arc of sound at its side (with the quiff raised). */
 export const SOUND = "M109 50Q115 61 109 72";
-
-/**
- * @deprecated The first, straight-edged bow tie, in the character's 120-unit box (around 50…69,
- * 96…105). Kept so existing callers still compile; draw the bow tie with `renderBowTie()` or
- * BOW_WINGS / BOW_KNOT instead.
- */
-export const BOW = "M50.5 96L59.5 100.5L50.5 105ZM68.5 96L59.5 100.5L68.5 105Z";
-/** @deprecated See BOW. */
-export const KNOT = { cx: 59.5, cy: 100.5, r: 2.3 };
