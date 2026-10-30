@@ -18,13 +18,20 @@ publishes to GitHub Pages, manually for now (see the comment at its top for the 
 
 ```text
 src/
-├── pages/            index (en), fr/index, 404, og/[locale].png, favicon*, robots.txt — that's all
+├── pages/            home (/ and /fr/), developers (/developers/, /fr/developpeurs/), 404,
+│                     og/[page]-[locale].png, favicon*, robots.txt
 ├── components/
-│   ├── Home.astro    the page, section by section, in reading order
-│   ├── sections/     one file per section of the story
-│   └── *.astro       shared pieces: Shot, Clip, Dither, Brand, CopyCommand, Wordmark…
+│   ├── Home.astro        the home page: hero, a day at home, why it spoke, six ideas, bodies, start
+│   ├── Developers.astro  the developers' page: architecture, a watch through the system,
+│   │                     satellites and SDKs, connectors, Home Assistant, speed, journal,
+│   │                     security, i18n, self-hosting
+│   ├── Nestor.astro      the character (one drawing, six states, a gaze)
+│   ├── Device.astro      its bodies: speaker, robot, tablet, laptop, phone, browser tab
+│   ├── sections/         one file per section
+│   └── *.astro           shared pieces: Shot, Clip, Dither, Brand, CopyCommand, Wordmark…
 ├── islands/          React, only where interaction needs state (the architecture explorer)
-├── scripts/site.ts   the one global script: reveals, story stepper, pairing, tabs, copy, theme
+├── scripts/site.ts   the one global script: reveals, scene beats, the character's sequences and
+│                     gaze, story stepper, pairing, tabs, copy, theme
 ├── locales/<lang>/   the words, in Fluent (.ftl), one file per section
 ├── i18n/             the Fluent loader (`translator(locale)`)
 ├── lib/              data and logic: links, brands, dither, Shiki, media index, OG pictures
@@ -34,6 +41,24 @@ src/
 public/media/         admin recordings (mp4 + webm + poster) and the Reachy twin clip
 public/schemas/       the satellite protocol's JSON Schemas, served where their `$id` points
 ```
+
+## Two audiences, two pages
+
+The home page is about **use**: a household's day, what Nestor does for the people in it, the
+character, six ideas drawn simply. No contract names, no benchmarks, no internal status, no vendor
+comparisons; honesty lives in one place (the "early project" line near Install). Everything
+technical — architecture, protocol, SDK code, measured latencies, self-hosting — goes to the
+developers' page. Keep it that way when adding content.
+
+## The character
+
+`Nestor.astro` is the only drawing of Nestor: an ink pebble with paper eyes, shaded with the
+Bayer dither, whose voice is the wordmark's ember cursor. Its states mirror the product's
+(`idle`, `listening` — the ember light is the open microphone —, `thinking`, `speaking`,
+`laughing` for an expression on the voice, `sleeping` for quiet hours); `look` turns its eyes.
+`script="listening@0,speaking@900"` plays a sequence once in view. Put it in a body with
+`Device.astro`; never redraw it elsewhere, never as an emoji-like sticker. Under reduced motion it
+holds its pose.
 
 ## Conventions
 
@@ -47,9 +72,9 @@ public/schemas/       the satellite protocol's JSON Schemas, served where their 
   `aria-label`, `title`; `tests/i18n.test.ts` checks both languages hold the same messages and every
   id a component names. A missing message fails the build. Islands get their words as props.
 - **French typography**: narrow no-break spaces before `: ; ? ! »` and after `«`, `’` for apostrophes.
-- **Honesty.** Only measured numbers, with their source and date (the proof of concept's benches);
-  anything not in the repository is marked as planned. The roadmap section is written from
-  `nestor/ROADMAP.md` and the repository's history — update both together.
+- **Honesty.** Only measured numbers, with their source and date, and only on the developers'
+  page; anything not built is marked as planned there. The scenes show what Nestor is designed to
+  do for a household; keep them to capabilities the core has.
 - **Motion** is transform and opacity only, triggered by IntersectionObserver, never scroll
   handlers that write layout. Everything reads in full without JavaScript, and under
   `prefers-reduced-motion` nothing moves or plays by itself (`e2e` checks it).
@@ -68,8 +93,9 @@ node scripts/encode-media.mjs      # → src/assets/captures/*.webp, public/medi
 ../playground/reachy-twin/.venv/bin/python scripts/render-twin.py   # the Reachy twin clip (MuJoCo, offscreen)
 ```
 
-Shots: `home`, `journal`, `connection`, `satellites`, `system`; clips: `journal-live`,
-`journal-filters`, `command`, `mobile` — each in `light`/`dark` and `en`/`fr`. Sections render
+Shots: `home`, `journal`, `connection`, `satellites`, `system`; clips shown: `journal-live` (home)
+and `journal-filters` (developers) — each in `light`/`dark` and `en`/`fr`. `command` and `mobile`
+are captured too; encode them with `ONLY=command,mobile` if a section needs them. Sections render
 only what `media.json` lists, so the site builds without them. Content people wrote in the mock
 household stays French in the English captures; that is expected.
 
