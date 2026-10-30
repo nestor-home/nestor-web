@@ -1,0 +1,41 @@
+---
+import Architecture from "@/components/sections/Architecture.astro";
+import Connectors from "@/components/sections/Connectors.astro";
+import Control from "@/components/sections/Control.astro";
+import DevHero from "@/components/sections/DevHero.astro";
+import DevI18n from "@/components/sections/DevI18n.astro";
+import DevJournal from "@/components/sections/DevJournal.astro";
+import Fast from "@/components/sections/Fast.astro";
+import HomeAssistant from "@/components/sections/HomeAssistant.astro";
+import Quickstart from "@/components/sections/Quickstart.astro";
+import Satellites from "@/components/sections/Satellites.astro";
+import Story from "@/components/sections/Story.astro";
+import { href, type Locale, translator } from "@/i18n";
+import Base from "@/layouts/Base.astro";
+
+interface Props {
+  locale: Locale;
+}
+const t = translator(Astro.props.locale);
+const nav = [
+  { href: "#system", label: t("nav-system"), section: "system" },
+  { href: "#satellites", label: t("nav-satellites"), section: "satellites" },
+  { href: "#connectors", label: t("nav-connectors"), section: "connectors" },
+  { href: "#start", label: t("nav-start"), section: "start" },
+  { href: href(t.locale, "home"), label: t("footer-home") },
+];
+---
+
+<Base locale={t.locale} page="developers" nav={nav}>
+  <DevHero t={t} />
+  <Architecture t={t} />
+  <Story t={t} />
+  <Satellites t={t} />
+  <Connectors t={t} />
+  <HomeAssistant t={t} />
+  <Fast t={t} />
+  <DevJournal t={t} />
+  <Control t={t} />
+  <DevI18n t={t} />
+  <Quickstart t={t} />
+</Base>

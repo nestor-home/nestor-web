@@ -1,16 +1,20 @@
 import type { APIRoute, GetStaticPaths } from "astro";
-import { LOCALES, type Locale, translator } from "@/i18n";
+import { LOCALES, type Locale, type Page, ROUTES, translator } from "@/i18n";
 import { ditherImage, EMBER, h, INK, INK_MUTED, type Node, PAPER, pngOf, RULE, svgOf, wordmark } from "@/lib/og";
 
-export const getStaticPaths: GetStaticPaths = () => LOCALES.map((locale) => ({ params: { locale } }));
+export const getStaticPaths: GetStaticPaths = () =>
+  (Object.keys(ROUTES) as Page[]).flatMap((page) =>
+    LOCALES.map((locale) => ({ params: { card: `${page}-${locale}` }, props: { page, locale } })),
+  );
 
 const W = 1200;
 const H = 630;
 
 /** The sharing card of a locale: the wordmark, the hero's promise, the dither horizon. */
-export const GET: APIRoute = async ({ params }) => {
-  const t = translator(params.locale as Locale);
-  const title = [t("hero-line-1"), t("hero-line-2"), t("hero-line-3")].join(" ");
+export const GET: APIRoute = async ({ props }) => {
+  const { page, locale } = props as { page: Page; locale: Locale };
+  const t = translator(locale);
+  const title = page === "home" ? [t("hero-line-1"), t("hero-line-2"), t("hero-line-3")].join(" ") : t("dev-title");
   const horizon: Node = {
     type: "img",
     props: {
@@ -46,7 +50,7 @@ export const GET: APIRoute = async ({ params }) => {
         background: PAPER,
       },
       h("div", {}, "github.com/nestor-home/nestor"),
-      h("div", { color: EMBER }, t("status-licence")),
+      h("div", { color: EMBER }, "MIT"),
     ),
   );
   const png = pngOf(await svgOf(card, W, H), W);

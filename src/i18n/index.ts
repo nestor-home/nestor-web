@@ -82,7 +82,18 @@ export function translator(locale: Locale): Translator {
   return t;
 }
 
-/** The path of the same page in another locale: English at the root, French under `/fr/`. */
+/** The site's pages and their address in each language (English at the root, French under `/fr/`). */
+export const ROUTES = {
+  home: { en: "/", fr: "/fr/" },
+  developers: { en: "/developers/", fr: "/fr/developpeurs/" },
+} as const satisfies Record<string, Record<Locale, string>>;
+export type Page = keyof typeof ROUTES;
+
+export function href(locale: Locale, page: Page, hash = ""): string {
+  return `${ROUTES[page][locale]}${hash ? `#${hash}` : ""}`;
+}
+
+/** A path in a locale for pages outside ROUTES (the 404). */
 export function localePath(locale: Locale, path = "/"): string {
   const clean = path.startsWith("/") ? path : `/${path}`;
   return locale === DEFAULT_LOCALE ? clean : `/${locale}${clean}`;

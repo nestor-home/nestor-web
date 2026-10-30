@@ -2,70 +2,68 @@
 import { Moon, Sun } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import Wordmark from "@/components/Wordmark.astro";
-import { localePath, type Translator } from "@/i18n";
-import { REPOS, SECTIONS } from "@/lib/site";
+import { href, type Page, type Translator } from "@/i18n";
+import { REPOS } from "@/lib/site";
+
+export interface NavItem {
+  href: string;
+  label: string;
+  /** the id of the section on this page, for the "being read" highlight */
+  section?: string;
+}
 
 interface Props {
   t: Translator;
-  path: string;
+  page: Page;
+  nav: NavItem[];
 }
-const { t, path } = Astro.props;
+const { t, page, nav } = Astro.props;
 const other = t.locale === "en" ? "fr" : "en";
 ---
 
-<div id="top" class="border-b border-rule">
-  <div class="wrap flex h-8 items-center justify-between gap-4 font-mono text-[0.7rem] text-ink-muted">
-    <p class="flex min-w-0 items-center gap-2 truncate">
-      <span class="inline-block size-1.5 shrink-0 rounded-full bg-amber" aria-hidden="true"></span>
-      <span>{t("status-version")}</span>
-      <span aria-hidden="true" class="text-ink-faint">·</span>
-      <span class="truncate">{t("status-state")}</span>
-      <span aria-hidden="true" class="hidden text-ink-faint sm:inline">·</span>
-      <span class="hidden sm:inline">{t("status-licence")}</span>
-    </p>
-    <div class="flex shrink-0 items-center gap-1">
-      <a
-        href={localePath(other, path)}
-        hreflang={other}
-        lang={other}
-        class="rounded-sm px-1.5 py-0.5 hover:text-ink"
-        aria-label={t("lang-other-label")}>{t("lang-other")}</a
-      >
-      <button
-        type="button"
-        data-theme-toggle
-        class="grid size-6 place-items-center rounded-sm hover:text-ink"
-        aria-label={t("theme-toggle")}
-      >
-        <Sun className="theme-icon-light size-3.5" strokeWidth={1.6} aria-hidden="true" />
-        <Moon className="theme-icon-dark size-3.5" strokeWidth={1.6} aria-hidden="true" />
-      </button>
-    </div>
-  </div>
-</div>
-<header class="site-header sticky top-0 z-40 border-b border-transparent" data-header>
-  <div class="wrap flex h-14 items-center justify-between gap-6">
-    <a href={localePath(t.locale, "/")} class="text-[1.45rem]" aria-label={t("nav-home")}>
+<header id="top" class="site-header sticky top-0 z-40 border-b border-transparent" data-header>
+  <div class="wrap flex h-14 items-center justify-between gap-4">
+    <a href={href(t.locale, "home")} class="text-[1.45rem]" aria-label={t("nav-home")}>
       <Wordmark />
     </a>
     <nav aria-label={t("nav-label")} class="hidden lg:block">
       <ul class="flex items-center gap-1 text-[0.9rem] text-ink-muted">
         {
-          SECTIONS.map((s) => (
+          nav.map((item) => (
             <li>
-              <a href={`#${s.id}`} data-nav={s.id} class="nav-link rounded-sm px-2.5 py-1.5 transition-colors hover:text-ink">
-                {t(s.label)}
+              <a
+                href={item.href}
+                data-nav={item.section}
+                class="nav-link rounded-sm px-2.5 py-1.5 transition-colors hover:text-ink"
+              >
+                {item.label}
               </a>
             </li>
           ))
         }
       </ul>
     </nav>
-    <div class="flex items-center gap-2">
-      <a href="#start" class="btn btn-line hidden h-9 px-3 text-[0.85rem] sm:inline-flex">{t("nav-start")}</a>
-      <a href={REPOS.nestor} class="btn btn-ink h-9 px-3 text-[0.85rem]">
+    <div class="flex items-center gap-1.5">
+      <a
+        href={href(other, page)}
+        hreflang={other}
+        lang={other}
+        class="grid h-9 place-items-center rounded-sm px-2 font-mono text-[0.75rem] text-ink-muted hover:text-ink"
+        aria-label={t("lang-other-label")}>{t("lang-other")}</a
+      >
+      <button
+        type="button"
+        data-theme-toggle
+        class="grid size-9 place-items-center rounded-sm text-ink-muted hover:text-ink"
+        aria-label={t("theme-toggle")}
+      >
+        <Sun className="theme-icon-light size-4" strokeWidth={1.6} aria-hidden="true" />
+        <Moon className="theme-icon-dark size-4" strokeWidth={1.6} aria-hidden="true" />
+      </button>
+      <a href={REPOS.nestor} class="btn btn-ink ml-1 h-9 px-3 text-[0.85rem]">
         <Brand brand="github" class="size-4" decorative />
-        <span>{t("nav-github")}</span>
+        <span class="hidden sm:inline">{t("nav-github")}</span>
+        <span class="sr-only sm:hidden">{t("nav-github")}</span>
       </a>
     </div>
   </div>

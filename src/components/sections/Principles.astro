@@ -1,0 +1,427 @@
+---
+/**
+ * The few ideas of Nestor, each as a small living diagram with the character, a title and a
+ * sentence or two. The diagrams loop gently while on screen and hold still under reduced motion.
+ */
+import { AppWindow, ArrowRight, Bot, Check, House, Mail, Moon, Smartphone, Speaker, Tablet } from "lucide-react";
+import Brand from "@/components/Brand.astro";
+import Nestor from "@/components/Nestor.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const devices = [Speaker, Tablet, Bot, Smartphone, AppWindow];
+---
+
+<section id="principles" class="section border-t border-rule" aria-labelledby="pr-title">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="pr-title" data-reveal class="display-2 text-ink">{t("pr-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("pr-lede")}</p>
+    </div>
+
+    <ul class="principles mt-14 grid gap-px border border-rule bg-rule md:grid-cols-2 lg:grid-cols-3">
+      <!-- 1. one agent -->
+      <li data-reveal style="--i:0" class="principle">
+        <div class="diagram">
+          <svg viewBox="0 0 240 200" class="ring" aria-hidden="true">
+            <circle cx="120" cy="100" r="78" class="ring-line"></circle>
+            <circle cx="120" cy="100" r="78" class="ring-run"></circle>
+          </svg>
+          <Nestor size={84} state="idle" class="relative" />
+          <span class="tag orbit orbit-1 bg-paper-raised">{t("pr-1-identity")}</span>
+          <span class="tag orbit orbit-2 bg-paper-raised">{t("pr-1-memory")}</span>
+          <span class="tag orbit orbit-3 bg-paper-raised">{t("pr-1-promises")}</span>
+        </div>
+        <h3 class="display-3 text-ink">{t("pr-1")}</h3>
+        <p class="prose-copy mt-2">{t("pr-1-text")}</p>
+      </li>
+
+      <!-- 2. satellites -->
+      <li data-reveal style="--i:1" class="principle">
+        <div class="diagram flex-col gap-0">
+          <Nestor size={56} state="speaking" />
+          <svg viewBox="0 0 240 56" class="h-14 w-full max-w-[15rem]" aria-hidden="true">
+            {
+              [24, 72, 120, 168, 216].map((x, i) => (
+                <g>
+                  <line x1="120" y1="2" x2={x} y2="54" class="wire" />
+                  <circle r="2.6" class="pulse" style={`--x:${x - 120}px;--d:${i * 0.45}s`} cx="120" cy="2" />
+                </g>
+              ))
+            }
+          </svg>
+          <div class="flex w-full max-w-[15rem] justify-between text-ink">
+            {devices.map((Icon) => <Icon className="size-6" strokeWidth={1.4} aria-hidden="true" />)}
+          </div>
+          <span class="tag mt-4 bg-paper-raised font-mono tabular text-ink">{t("pr-2-code")}</span>
+        </div>
+        <h3 class="display-3 text-ink">{t("pr-2")}</h3>
+        <p class="prose-copy mt-2">{t("pr-2-text")}</p>
+      </li>
+
+      <!-- 3. connectors -->
+      <li data-reveal style="--i:2" class="principle">
+        <div class="diagram justify-between px-6">
+          <Nestor size={64} state="idle" look="right" />
+          <ul class="flex flex-col gap-2">
+            {
+              [
+                { brand: "gmail", label: "pr-3-mail" },
+                { brand: "google-calendar", label: "pr-3-calendar" },
+                { brand: "home-assistant", label: "pr-3-home" },
+                { brand: "mcp", label: "pr-3-tools" },
+              ].map((c, i) => (
+                <li class="plug" style={`--d:${i * 0.6}s`}>
+                  <span class="plug-wire" aria-hidden="true" />
+                  <Brand brand={c.brand as "gmail"} class="size-4" decorative />
+                  <span class="text-[0.82rem] text-ink">{t(c.label)}</span>
+                  <Check className="plug-ok size-3.5 text-sage" strokeWidth={2} aria-hidden="true" />
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <h3 class="display-3 text-ink">{t("pr-3")}</h3>
+        <p class="prose-copy mt-2">{t("pr-3-text")}</p>
+      </li>
+
+      <!-- 4. initiative -->
+      <li data-reveal style="--i:0" class="principle">
+        <div class="diagram justify-between px-4">
+          <Mail className="size-7 text-ink" strokeWidth={1.4} aria-hidden="true" />
+          <ArrowRight className="size-4 text-ink-muted" strokeWidth={1.4} aria-hidden="true" />
+          <Nestor size={60} state="thinking" />
+          <ArrowRight className="size-4 text-ink-muted" strokeWidth={1.4} aria-hidden="true" />
+          <ul class="flex flex-col gap-2 font-mono text-[0.7rem]">
+            <li class="where" style="--d:0s">
+              <House className="size-4" strokeWidth={1.4} aria-hidden="true" />
+              {t("pr-4-room")}
+            </li>
+            <li class="where" style="--d:1.6s">
+              <Smartphone className="size-4" strokeWidth={1.4} aria-hidden="true" />
+              {t("pr-4-phone")}
+            </li>
+            <li class="where" style="--d:3.2s">
+              <Moon className="size-4" strokeWidth={1.4} aria-hidden="true" />
+              {t("pr-4-morning")}
+            </li>
+          </ul>
+        </div>
+        <h3 class="display-3 text-ink">{t("pr-4")}</h3>
+        <p class="prose-copy mt-2">{t("pr-4-text")}</p>
+      </li>
+
+      <!-- 5. memory -->
+      <li data-reveal style="--i:1" class="principle">
+        <div class="diagram">
+          <ul class="memories">
+            <li>{t("pr-5-a")}</li>
+            <li class="edited">
+              <span class="old">{t("pr-5-b-old")}</span>
+              <span class="new">{t("pr-5-b-new")}</span>
+            </li>
+            <li>{t("pr-5-c")}</li>
+          </ul>
+          <Nestor size={44} state="idle" look="left" class="absolute right-5 bottom-4" />
+        </div>
+        <h3 class="display-3 text-ink">{t("pr-5")}</h3>
+        <p class="prose-copy mt-2">{t("pr-5-text")}</p>
+      </li>
+
+      <!-- 6. the home -->
+      <li data-reveal style="--i:2" class="principle">
+        <div class="diagram">
+          <div class="plan">
+            <div class="plan-room plan-kitchen">
+              <span>{t("pr-6-kitchen")}</span>
+              <i class="dot dot-1"></i>
+            </div>
+            <div class="plan-room plan-living">
+              <span>{t("pr-6-living")}</span>
+              <Nestor size={40} state="speaking" class="absolute right-3 bottom-2" />
+              <i class="dot dot-2"></i>
+            </div>
+            <div class="plan-room plan-office">
+              <span>{t("pr-6-office")}</span>
+              <i class="dot dot-3"></i>
+            </div>
+          </div>
+        </div>
+        <h3 class="display-3 text-ink">{t("pr-6")}</h3>
+        <p class="prose-copy mt-2">{t("pr-6-text")}</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .principle {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1.5rem 2rem;
+    background: var(--paper);
+  }
+  .diagram {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 13.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--rule);
+    background: var(--paper-raised);
+    overflow: hidden;
+  }
+
+  /* 1 */
+  .ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .ring-line {
+    fill: none;
+    stroke: var(--rule-strong);
+    stroke-width: 1;
+  }
+  .ring-run {
+    fill: none;
+    stroke: var(--ember);
+    stroke-width: 1.5;
+    stroke-dasharray: 26 464;
+    transform-origin: 120px 100px;
+    animation: orbit 7s linear infinite;
+  }
+  @keyframes orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .orbit {
+    position: absolute;
+  }
+  .orbit-1 {
+    top: 1rem;
+  }
+  .orbit-2 {
+    bottom: 1.5rem;
+    left: 12%;
+  }
+  .orbit-3 {
+    bottom: 1.5rem;
+    right: 12%;
+  }
+
+  /* 2 */
+  .wire {
+    stroke: var(--rule-strong);
+    stroke-width: 1;
+  }
+  .pulse {
+    fill: var(--ember);
+    animation: travel 2.25s var(--ease-out) infinite;
+    animation-delay: var(--d);
+    opacity: 0;
+  }
+  @keyframes travel {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    70% {
+      opacity: 1;
+      transform: translate(var(--x), 52px);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--x), 52px);
+    }
+  }
+
+  /* 3 */
+  .plug {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .plug-wire {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--rule-strong);
+  }
+  .plug :global(.plug-ok) {
+    margin-left: auto;
+    animation: consent 2.4s infinite;
+    animation-delay: var(--d);
+  }
+  @keyframes consent {
+    0%,
+    20% {
+      opacity: 0;
+    }
+    35%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* 4 */
+  .where {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--rule);
+    color: var(--ink-muted);
+    animation: where 4.8s infinite;
+    animation-delay: var(--d);
+  }
+  @keyframes where {
+    0%,
+    30% {
+      color: var(--ember);
+      border-color: var(--ember);
+    }
+    34%,
+    100% {
+      color: var(--ink-muted);
+      border-color: var(--rule);
+    }
+  }
+
+  /* 5 */
+  .memories {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: min(80%, 15rem);
+    font-size: 0.82rem;
+  }
+  .memories > li {
+    position: relative;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .edited {
+    display: grid;
+  }
+  .edited .old,
+  .edited .new {
+    grid-area: 1 / 1;
+  }
+  .edited .old {
+    text-decoration: line-through;
+    text-decoration-color: var(--ember);
+    color: var(--ink-muted);
+    animation: out 5s steps(1, end) infinite;
+  }
+  .edited .new {
+    animation: in 5s steps(1, end) infinite;
+  }
+  /* the correction is instant, like an edit: never half-visible */
+  @keyframes out {
+    0% {
+      visibility: visible;
+    }
+    50% {
+      visibility: hidden;
+    }
+  }
+  @keyframes in {
+    0% {
+      visibility: hidden;
+    }
+    50% {
+      visibility: visible;
+    }
+  }
+
+  /* 6 */
+  .plan {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    grid-template-rows: 1fr 1fr;
+    width: min(86%, 17rem);
+    height: 10rem;
+    border: 1.5px solid var(--ink);
+  }
+  .plan-room {
+    position: relative;
+    padding: 0.4rem 0.5rem;
+    font-family: var(--font-data);
+    font-size: 0.66rem;
+    color: var(--ink-muted);
+  }
+  .plan-kitchen {
+    border-right: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .plan-living {
+    grid-row: 1 / 3;
+    grid-column: 2;
+  }
+  .plan-office {
+    border-right: 1.5px solid var(--ink);
+  }
+  .dot {
+    position: absolute;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--ember);
+  }
+  .dot-1 {
+    left: 45%;
+    top: 55%;
+  }
+  .dot-2 {
+    left: 30%;
+    top: 45%;
+    animation: wander 6s ease-in-out infinite;
+  }
+  .dot-3 {
+    left: 55%;
+    top: 50%;
+    background: var(--ink);
+  }
+  @keyframes wander {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(1.2rem, 2.2rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ring-run,
+    .pulse,
+    .plug :global(.plug-ok),
+    .where,
+    .edited .old,
+    .edited .new,
+    .dot-2 {
+      animation: none !important;
+    }
+    .pulse {
+      opacity: 0;
+    }
+    .edited .old {
+      visibility: hidden;
+    }
+  }
+</style>

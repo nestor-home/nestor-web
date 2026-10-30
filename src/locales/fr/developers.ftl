@@ -1,0 +1,9 @@
+dev-title = Construire avec Nestor.
+dev-lede = Un runtime open source en Python qui garde un agent en vie pour un foyer, avec des contrats publics pour tout ce qui l’entoure : canaux, satellites, connecteurs, exécutants et fournisseurs d’IA. Rien de propre à un fournisseur dans le cœur.
+dev-facts-1 = Python 3.12+ · SQLite · MIT
+dev-facts-2 = Satellites en WebRTC · SDK Python, TypeScript, Rust
+dev-facts-3 = Home Assistant · MCP · OAuth 2.1 avec PKCE
+dev-story-title = Une veille, à travers le système.
+dev-story-lede = La scène du colis de la page d’accueil, telle que le cœur la vit : une veille, un déclencheur, un tri en trois étages, une décision de livraison avec sa raison, une relance — tout est au journal.
+dev-i18n-title = Bilingue par conception, ouvert par licence.
+dev-i18n-text = Le cœur, l’administration et ce site parlent anglais et français grâce à des catalogues Project Fluent ; ajouter une langue, c’est ajouter des fichiers. Tout est sous licence MIT.

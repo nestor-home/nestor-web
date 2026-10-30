@@ -1,0 +1,381 @@
+---
+/**
+ * A household's day, scene by scene: what Nestor is for, shown rather than explained. Each scene
+ * is a small composition (the character in one of its bodies, the lines said, what happened) that
+ * plays once when it comes into view; the dithered sky darkens from morning to night.
+ */
+import { Check, Lightbulb, Moon, Paperclip } from "lucide-react";
+import Brand from "@/components/Brand.astro";
+import Device from "@/components/Device.astro";
+import Dither from "@/components/Dither.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+/** how dark the sky is at each scene's hour, as dither density */
+const SKY = [0.05, 0.02, 0.02, 0.16, 0.3, 0.5, 0.72];
+const scenes = SKY.map((sky, i) => ({ n: i + 1, sky }));
+---
+
+<section id="day" class="section day" aria-labelledby="day-title">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="day-title" data-reveal class="display-2 text-ink">{t("day-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("day-lede")}</p>
+    </div>
+
+    <ol class="mt-16 flex flex-col gap-20 lg:mt-24 lg:gap-32">
+      {
+        scenes.map(({ n, sky }) => (
+          <li class="scene" data-inview-once data-flip={n % 2 === 0 ? "" : undefined}>
+            <div class="scene-art corner-marks">
+              <Dither shape="ramp-up" from={0} to={sky + 0.12} dot={3} class="absolute inset-x-0 top-0 h-[30%] text-ink/20" />
+              <span class="scene-clock">
+                {n === 7 && <Moon className="size-3.5" strokeWidth={1.6} aria-hidden="true" />}
+                {t(`day-${n}-time`)}
+              </span>
+
+              {n === 1 && (
+                <div class="art art-1">
+                  <ul class="flex flex-wrap justify-center gap-2">
+                    {["day-1-lea", "day-1-jules", "day-1-mathis"].map((id, i) => (
+                      <li class="tag beat bg-paper" style={`--at:${150 + i * 120}ms`}>
+                        {t(id)}
+                      </li>
+                    ))}
+                  </ul>
+                  <div class="flex items-end gap-5">
+                    <Device kind="speaker" size={118} look="right" script="idle@0,speaking@700,idle@4400" />
+                    <p class="bubble-say beat mb-28" style="--at:700ms">
+                      {t("day-1-say")}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {n === 2 && (
+                <div class="art art-2">
+                  <Device kind="laptop" size={86} look="up" script="listening@150,thinking@1000,speaking@1400,idle@2900">
+                    <div class="flex flex-col gap-2 px-1 pb-1">
+                      <p class="bubble-ask beat self-end text-[0.8rem]" style="--at:150ms">
+                        <span class="bubble-who">{t("day-2-who")}</span>
+                        {t("day-2-ask")}
+                      </p>
+                      <p class="bubble-say beat self-start text-[0.8rem]" style="--at:1400ms">
+                        {t("day-2-say")}
+                      </p>
+                    </div>
+                  </Device>
+                  <div class="flex flex-col items-center gap-3">
+                    <p class="task beat" style="--at:1900ms">
+                      <span class="text-ink">{t("day-2-task")}</span>
+                      <span class="task-steps">
+                        {[1, 2, 3].map((k) => (
+                          <span class="task-step beat" style={`--at:${2100 + k * 700}ms`}>
+                            {k === 3 && <Check className="size-3" strokeWidth={2} aria-hidden="true" />}
+                            {t(`day-2-step-${k}`)}
+                          </span>
+                        ))}
+                      </span>
+                    </p>
+                    <Device kind="phone" size={84} script="idle@0,speaking@4400,idle@6400">
+                      <p class="bubble-say beat text-[0.8rem]" style="--at:4400ms">
+                        {t("day-2-result")}
+                        <span class="mt-1 flex items-center gap-1 font-mono text-[0.62rem] text-ink-muted">
+                          <Paperclip className="size-3" strokeWidth={1.6} aria-hidden="true" />
+                          {t("day-2-file")}
+                        </span>
+                      </p>
+                    </Device>
+                  </div>
+                </div>
+              )}
+
+              {n === 3 && (
+                <div class="art art-3">
+                  <Device kind="phone" size={86} script="speaking@300,idle@2600">
+                    <p class="font-mono text-[0.66rem] text-ink-muted">{t("day-3-list")}</p>
+                    <ul class="flex flex-col gap-1.5">
+                      {[1, 2, 3, 4].map((k) => (
+                        <li class="beat flex items-center gap-2 text-[0.8rem] text-ink" style={`--at:${400 + k * 220}ms`}>
+                          <span class="inline-block size-3 border border-rule-strong" aria-hidden="true" />
+                          {t(`day-3-item-${k}`)}
+                        </li>
+                      ))}
+                    </ul>
+                  </Device>
+                  <div class="school beat corner-marks" style="--at:1800ms">
+                    <p class="text-[0.9rem] text-ink">{t("day-3-school")}</p>
+                    <p class="mt-1 font-mono text-[0.68rem] text-ink-muted">{t("day-3-school-to")}</p>
+                  </div>
+                </div>
+              )}
+
+              {n === 4 && (
+                <div class="art art-4">
+                  <div class="room">
+                    <span class="room-label">{t("day-4-room")}</span>
+                    <span class="person beat" style="--at:0ms">
+                      <span class="person-dot" />
+                      {t("hero-ask-who")}
+                    </span>
+                    <div class="flex items-end gap-4">
+                      <Device kind="robot" size={96} look="right" script="idle@0,speaking@500,laughing@3000,idle@3800" />
+                      <p class="bubble-say beat mb-28 max-w-[12rem]" style="--at:500ms">
+                        {t("day-4-say")}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-center gap-2">
+                    <p class="beat font-mono text-[0.66rem] text-ink-muted" style="--at:2600ms">
+                      {t("day-4-later")}
+                    </p>
+                    <Device kind="phone" size={84} script="idle@0,speaking@3000,idle@5200">
+                      <p class="flex items-center gap-1 font-mono text-[0.62rem] text-ink-muted">
+                        <Brand brand="telegram" class="size-3" decorative />
+                        {t("day-4-app")}
+                      </p>
+                      <p class="bubble-say beat text-[0.8rem]" style="--at:3000ms">
+                        {t("day-4-message")}
+                      </p>
+                    </Device>
+                  </div>
+                </div>
+              )}
+
+              {n === 5 && (
+                <div class="art art-5">
+                  <p class="bubble-ask beat self-start" style="--at:150ms">
+                    <span class="bubble-who">{t("day-5-who")}</span>
+                    {t("day-5-ask")}
+                  </p>
+                  <div class="flex items-center gap-10">
+                    <Device kind="tablet" size={92} look="left" script="listening@150,speaking@1400,idle@3200" />
+                    <div class="lamp">
+                      <Lightbulb className="lamp-off size-14" strokeWidth={1.2} aria-hidden="true" />
+                      <span class="lamp-on beat" style="--at:1400ms">
+                        <Lightbulb className="size-14" strokeWidth={1.2} aria-hidden="true" />
+                      </span>
+                    </div>
+                  </div>
+                  <p class="tag beat bg-paper text-sage" style="--at:1700ms">
+                    <Check className="size-3" strokeWidth={2} aria-hidden="true" />
+                    {t("day-5-done")}
+                  </p>
+                </div>
+              )}
+
+              {n === 6 && (
+                <div class="art art-6">
+                  <div class="flex items-end gap-5">
+                    <Device kind="speaker" size={104} look="up" script="listening@150,thinking@1100,speaking@1600,idle@3800" />
+                    <p class="bubble-ask beat mb-28" style="--at:150ms">
+                      <span class="bubble-who">{t("day-6-who")}</span>
+                      {t("day-6-ask")}
+                    </p>
+                  </div>
+                  <div class="memory beat corner-marks" style="--at:1600ms">
+                    <p class="font-serif text-[1.05rem] text-ink">{t("day-6-memory")}</p>
+                    <p class="mt-1 font-mono text-[0.66rem] text-ink-muted">{t("day-6-source")}</p>
+                  </div>
+                  <p class="beat text-[0.85rem] text-ink-muted" style="--at:2600ms">
+                    {t("day-6-later")}
+                  </p>
+                </div>
+              )}
+
+              {n === 7 && (
+                <div class="art art-7">
+                  <Device kind="speaker" size={124} state="sleeping" />
+                  <div class="flex flex-wrap justify-center gap-2">
+                    <span class="tag beat bg-paper" style="--at:300ms">
+                      {t("day-7-quiet")}
+                    </span>
+                    <span class="tag beat bg-paper" style="--at:600ms">
+                      {t("day-7-waiting")}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div class="scene-text">
+              <p class="font-mono text-[0.8rem] text-ember tabular">{t(`day-${n}-time`)}</p>
+              <h3 class="display-3 mt-3 text-ink">{t(`day-${n}-title`)}</h3>
+              <p class="prose-copy mt-3 max-w-md">{t(`day-${n}-text`)}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .scene {
+    display: grid;
+    gap: 1.75rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .scene {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 4rem;
+    }
+    .scene[data-flip] {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+    .scene[data-flip] .scene-art {
+      order: 2;
+    }
+  }
+  .scene-art {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    min-height: 28rem;
+    padding: 3.25rem 1.25rem 2.25rem;
+    border: 1px solid var(--rule);
+    background: var(--paper-raised);
+  }
+  .scene-clock {
+    position: absolute;
+    top: 0.8rem;
+    left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-data);
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+  }
+  .art {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .art-2,
+  .art-3,
+  .art-4 {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
+  .task {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    font-size: 0.82rem;
+  }
+  .task-steps {
+    display: flex;
+    gap: 0.6rem;
+    font-family: var(--font-data);
+    font-size: 0.66rem;
+    color: var(--ink-muted);
+  }
+  .task-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+  .task-step:last-child {
+    color: var(--sage);
+  }
+  .school,
+  .memory {
+    max-width: 16rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .room {
+    position: relative;
+    padding: 3.25rem 1.25rem 0.75rem;
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+  }
+  .room-label {
+    position: absolute;
+    top: 0.45rem;
+    left: 0.7rem;
+    font-family: var(--font-data);
+    font-size: 0.66rem;
+    color: var(--ink-muted);
+  }
+  .person {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-data);
+    font-size: 0.66rem;
+    color: var(--ink);
+  }
+  .person-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--ember);
+  }
+  .lamp {
+    position: relative;
+    color: var(--ink-muted);
+  }
+  .lamp .lamp-on {
+    position: absolute;
+    inset: 0;
+    color: var(--ember);
+  }
+  .lamp .lamp-on :global(svg) {
+    fill: var(--ember-soft);
+  }
+
+  /* beats: hidden until the scene is in view, then each at its moment (static without script) */
+  :global(.js) .scene .beat {
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 450ms var(--ease-out),
+      transform 450ms var(--ease-out);
+    transition-delay: var(--at, 0ms);
+  }
+  :global(.js) .scene[data-inview] .beat {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .scene .beat {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (max-width: 639px) {
+    .scene-art {
+      min-height: 0;
+      padding-inline: 0.75rem;
+    }
+    .art :global(.bubble-say),
+    .art :global(.bubble-ask) {
+      margin-bottom: 0;
+    }
+    .art-1 > div,
+    .art-6 > div:first-child,
+    .art-4 .room > div {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>

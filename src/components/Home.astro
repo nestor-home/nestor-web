@@ -1,38 +1,29 @@
 ---
-import Architecture from "@/components/sections/Architecture.astro";
-import Connectors from "@/components/sections/Connectors.astro";
-import Control from "@/components/sections/Control.astro";
-import Fast from "@/components/sections/Fast.astro";
+import Bodies from "@/components/sections/Bodies.astro";
+import Cta from "@/components/sections/Cta.astro";
+import Day from "@/components/sections/Day.astro";
 import Hero from "@/components/sections/Hero.astro";
-import HomeAssistant from "@/components/sections/HomeAssistant.astro";
-import Journal from "@/components/sections/Journal.astro";
-import Quickstart from "@/components/sections/Quickstart.astro";
-import Richie from "@/components/sections/Richie.astro";
-import Roadmap from "@/components/sections/Roadmap.astro";
-import Satellites from "@/components/sections/Satellites.astro";
-import Story from "@/components/sections/Story.astro";
-import Thesis from "@/components/sections/Thesis.astro";
-import { type Locale, translator } from "@/i18n";
+import Principles from "@/components/sections/Principles.astro";
+import Why from "@/components/sections/Why.astro";
+import { href, type Locale, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
 interface Props {
   locale: Locale;
 }
 const t = translator(Astro.props.locale);
+const nav = [
+  { href: "#day", label: t("nav-day"), section: "day" },
+  { href: "#principles", label: t("nav-principles"), section: "principles" },
+  { href: href(t.locale, "developers"), label: t("nav-developers") },
+];
 ---
 
-<Base locale={t.locale}>
+<Base locale={t.locale} page="home" nav={nav}>
   <Hero t={t} />
-  <Thesis t={t} />
-  <Story t={t} />
-  <Architecture t={t} />
-  <Fast t={t} />
-  <HomeAssistant t={t} />
-  <Connectors t={t} />
-  <Satellites t={t} />
-  <Journal t={t} />
-  <Control t={t} />
-  <Richie t={t} />
-  <Quickstart t={t} />
-  <Roadmap t={t} />
+  <Day t={t} />
+  <Why t={t} />
+  <Principles t={t} />
+  <Bodies t={t} />
+  <Cta t={t} />
 </Base>

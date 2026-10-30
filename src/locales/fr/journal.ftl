@@ -1,10 +1,6 @@
-jr-title = « Pourquoi m’a-t-il parlé ? » a une réponse.
-jr-lede = Chaque tour, appel d’outil, tâche, souvenir, prise de parole et décision de politique est écrit dans un journal en ajout seul. L’administration le relit en histoires : une cause, ses effets, et la raison de chaque décision.
-jr-note-1 = En direct : les événements arrivent au moment où ils se produisent.
-jr-note-2 = Chaque décision porte sa raison, en toutes lettres.
-jr-note-3 = Ouvrez une histoire pour la suivre du mail jusqu’au message.
-jr-clip = Le journal dans l’administration : le direct, puis une histoire qui s’ouvre.
-jr-more-title = Le reste de l’administration
-jr-more-command = Tout est à une touche.
-jr-more-filters = Filtrer par personne, canal, pièce ou type.
-jr-more-mobile = La même administration sur un téléphone.
+jr-title = Et vous savez toujours pourquoi il a parlé.
+jr-lede = Tout ce qu’il fait est écrit : ce qu’il a entendu, ce qu’il a fait, et la raison de chaque mot qu’il a dit de lui-même. Ouvrez le journal et suivez le fil.
+jr-clip = Le journal dans l’administration de Nestor : un nouvel événement arrive, puis une histoire s’ouvre avec ses raisons.
+jr-dev-title = Le journal fait foi.
+jr-dev-text = Chaque tour, appel d’outil, tâche, changement de mémoire, prise de parole et décision de politique est un événement d’un journal en ajout seul, dans un seul fichier SQLite. L’administration, les tâches durables et le rejeu en découlent — « pourquoi m’a-t-il parlé ? » a toujours une réponse.
+jr-dev-clip = Filtrer le journal par personne et par canal dans l’administration.

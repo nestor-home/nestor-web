@@ -1,0 +1,85 @@
+---
+import Device from "@/components/Device.astro";
+import type { Translator } from "@/i18n";
+import { twin } from "@/lib/media";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+---
+
+<section class="section border-t border-rule" aria-labelledby="bodies-title">
+  <div class="wrap grid items-center gap-14 lg:grid-cols-12">
+    <div class="lg:col-span-6">
+      <h2 id="bodies-title" data-reveal class="display-2 text-ink">{t("bodies-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("bodies-text")}</p>
+      <ul data-reveal class="bodies mt-12">
+        <li>
+          <Device kind="speaker" size={74} state="idle" look="right" />
+          <span>{t("bodies-speaker")}</span>
+        </li>
+        <li>
+          <Device kind="tablet" size={56} state="listening" />
+          <span>{t("bodies-tablet")}</span>
+        </li>
+        <li>
+          <Device kind="phone" size={44} state="speaking" />
+          <span>{t("bodies-phone")}</span>
+        </li>
+        <li>
+          <Device kind="browser" size={56} state="thinking" />
+          <span>{t("bodies-browser")}</span>
+        </li>
+        <li>
+          <Device kind="robot" size={64} state="laughing" look="left" />
+          <span>{t("bodies-robot")}</span>
+        </li>
+      </ul>
+    </div>
+    {
+      twin && (
+        <figure data-reveal class="lg:col-span-5 lg:col-start-8">
+          <div class="plate corner-marks">
+            <div class="plate-inner aspect-square">
+              <video
+                data-autoplay
+                muted
+                loop
+                playsinline
+                preload="none"
+                poster="/media/reachy-twin.poster.webp"
+                width={twin.width}
+                height={twin.height}
+                aria-label={t("bodies-twin")}
+                class="block h-full w-full object-cover"
+              >
+                <source src="/media/reachy-twin.webm" type="video/webm" />
+                <source src="/media/reachy-twin.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </div>
+          <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("bodies-twin")}</figcaption>
+        </figure>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .bodies {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1.75rem 2rem;
+  }
+  .bodies li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-data);
+    font-size: 0.7rem;
+    color: var(--ink-muted);
+  }
+</style>

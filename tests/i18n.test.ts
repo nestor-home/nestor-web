@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "@fluent/syntax";
 import { describe, expect, it } from "vitest";
-import { LOCALES, localePath, markup, sourcesOf, translator } from "@/i18n";
+import { href, LOCALES, localePath, markup, sourcesOf, translator } from "@/i18n";
 
 const ids = (locale: (typeof LOCALES)[number]) =>
   new Set(
@@ -69,5 +69,11 @@ describe("addresses", () => {
   it("serve English at the root and French under /fr/", () => {
     expect(localePath("en", "/")).toBe("/");
     expect(localePath("fr", "/")).toBe("/fr/");
+  });
+
+  it("give each page its own address in each language", () => {
+    expect(href("en", "developers", "start")).toBe("/developers/#start");
+    expect(href("fr", "developers")).toBe("/fr/developpeurs/");
+    expect(href("fr", "home")).toBe("/fr/");
   });
 });

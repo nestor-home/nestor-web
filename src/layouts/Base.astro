@@ -7,18 +7,23 @@ import "@/styles/global.css";
 import frauncesLatin from "@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url";
 import instrumentLatin from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
 import Footer from "@/components/Footer.astro";
-import Header from "@/components/Header.astro";
-import { LOCALES, type Locale, localePath, translator } from "@/i18n";
+import Header, { type NavItem } from "@/components/Header.astro";
+import { href, LOCALES, type Locale, type Page, ROUTES, translator } from "@/i18n";
 
 interface Props {
   locale: Locale;
-  path?: string;
+  page: Page;
+  nav: NavItem[];
+  /** pages outside ROUTES (the 404) are not canonical and have no alternates */
+  indexable?: boolean;
 }
-const { locale, path = "/" } = Astro.props;
+const { locale, page, nav, indexable = true } = Astro.props;
 const t = translator(locale);
 const site = Astro.site ?? new URL("https://nestor.mathislambert.fr");
-const canonical = new URL(localePath(locale, path), site).href;
-const og = new URL(`/og/${locale}.png`, site).href;
+const canonical = new URL(href(locale, page), site).href;
+const og = new URL(`/og/${page}-${locale}.png`, site).href;
+const title = page === "home" ? t("meta-title") : t(`meta-title-${page}`);
+const description = page === "home" ? t("meta-description") : t(`meta-description-${page}`);
 ---
 
 <!doctype html>
@@ -26,11 +31,12 @@ const og = new URL(`/og/${locale}.png`, site).href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>{t("meta-title")}</title>
-    <meta name="description" content={t("meta-description")} />
-    <link rel="canonical" href={canonical} />
-    {LOCALES.map((l) => <link rel="alternate" hreflang={l} href={new URL(localePath(l, path), site).href} />)}
-    <link rel="alternate" hreflang="x-default" href={new URL(localePath("en", path), site).href} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {indexable && <link rel="canonical" href={canonical} />}
+    {indexable && LOCALES.map((l) => <link rel="alternate" hreflang={l} href={new URL(ROUTES[page][l], site).href} />)}
+    {indexable && <link rel="alternate" hreflang="x-default" href={new URL(ROUTES[page].en, site).href} />}
+    {!indexable && <meta name="robots" content="noindex" />}
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f0e6" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#16130f" />
@@ -40,8 +46,8 @@ const og = new URL(`/og/${locale}.png`, site).href;
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Nestor" />
-    <meta property="og:title" content={t("meta-title")} />
-    <meta property="og:description" content={t("meta-description")} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={og} />
     <meta property="og:image:width" content="1200" />
@@ -68,11 +74,11 @@ const og = new URL(`/og/${locale}.png`, site).href;
       class="sr-only z-50 rounded-sm bg-ink px-3 py-2 text-paper focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
       >{t("skip")}</a
     >
-    <Header t={t} path={path} />
+    <Header t={t} page={page} nav={nav} />
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <Footer t={t} path={path} />
+    <Footer t={t} page={page} />
     <script>
       import "@/scripts/site";
     </script>

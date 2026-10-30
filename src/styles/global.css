@@ -512,3 +512,35 @@
     display: none;
   }
 }
+
+/* speech: a person's line (ink) and Nestor's (paper), used in the hero and the day's scenes */
+.bubble-ask,
+.bubble-say {
+  position: relative;
+  max-width: 19rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.bubble-ask {
+  background: var(--ink);
+  color: var(--paper);
+  border-bottom-right-radius: 3px;
+}
+
+.bubble-say {
+  background: var(--paper-raised);
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  border-bottom-left-radius: 3px;
+}
+
+.bubble-who {
+  display: block;
+  margin-bottom: 0.1rem;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  opacity: 0.75;
+}

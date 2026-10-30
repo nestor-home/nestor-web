@@ -1,0 +1,53 @@
+---
+import { ArrowUpRight } from "lucide-react";
+import Device from "@/components/Device.astro";
+import type { Translator } from "@/i18n";
+import { REPOS } from "@/lib/site";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const facts = ["dev-facts-1", "dev-facts-2", "dev-facts-3"];
+const repos = [
+  { href: REPOS.nestor, name: "nestor" },
+  { href: REPOS.python, name: "nestor-satellite-python" },
+  { href: REPOS.typescript, name: "nestor-satellite-typescript" },
+  { href: REPOS.rust, name: "nestor-satellite-rust" },
+  { href: REPOS.reachy, name: "nestor-reachy" },
+];
+---
+
+<section class="relative" aria-labelledby="dev-title">
+  <div class="wrap grid items-end gap-12 pt-14 pb-16 lg:grid-cols-12 lg:pt-20 lg:pb-24">
+    <div class="lg:col-span-8">
+      <h1 id="dev-title" class="display-1 text-ink">{t("dev-title")}</h1>
+      <p class="lede mt-8">{t("dev-lede")}</p>
+      <ul class="mt-8 flex flex-col gap-2 font-mono text-[0.78rem] text-ink-muted">
+        {
+          facts.map((id) => (
+            <li class="flex items-center gap-3">
+              <span class="inline-block size-1.5 bg-ember" aria-hidden="true" />
+              {t(id)}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="flex flex-col items-start gap-6 lg:col-span-4 lg:items-end">
+      <Device kind="browser" size={64} state="thinking" />
+      <ul class="w-full divide-y divide-rule border-y border-rule">
+        {
+          repos.map((r) => (
+            <li>
+              <a href={r.href} class="group flex items-center justify-between py-2 font-mono text-[0.8rem] text-ink">
+                <span class="group-hover:text-ember">{r.name}</span>
+                <ArrowUpRight className="size-3.5 text-ink-muted" strokeWidth={1.6} aria-hidden="true" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

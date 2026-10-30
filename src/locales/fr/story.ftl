@@ -1,12 +1,10 @@
-story-title = Une demande, suivie jusqu’au bout.
-story-lede = Léa demande à Richie — le Nestor de ce foyer — de surveiller un colis. Faites défiler pour suivre ce qui se passe, tel que le journal l’enregistre.
 story-stage-label = La maison, le téléphone et le journal, au fil de l’histoire
 story-yesterday = hier
 story-today = aujourd’hui
 story-step = Étape { $n } sur { $total }
 
 story-1-title = Elle le demande une fois.
-story-1-text = Sur Telegram, la veille au soir. Richie répond dans la foulée et crée une **veille** : une propriétaire, une source (sa boîte mail), des mots-clés et une fin.
+story-1-text = Sur Telegram, la veille au soir. Nestor répond dans la foulée et crée une **veille** : une propriétaire, une source (sa boîte mail), des mots-clés et une fin.
 story-1-quote = Préviens-moi quand mon colis Vinted arrive au point relais.
 story-1-reply = Je surveille ta boîte : je te préviens dès qu’il est disponible.
 
@@ -31,17 +29,17 @@ story-5-title = La présence décide où.
 story-5-text = Home Assistant indique que Léa est au salon. Pas d’heures calmes, pas de conversation en cours : la décision est de le dire à voix haute, sur le satellite de cette pièce — et sa raison est écrite.
 story-5-reason = Léa est dans la pièce « salon »
 
-story-6-title = Richie le dit au salon.
+story-6-title = Nestor le dit au salon.
 story-6-text = Le Reachy Mini du salon parle ; ses antennes suivent la voix. Le message est court, parce qu’il est dit à voix haute dans une pièce partagée.
 story-6-quote = Léa, ton colis Vinted t’attend au Tabac de la Place.
 
 story-7-title = Pas de réaction ? Un message écrit.
-story-7-text = Léa est partie avant de répondre. Trente minutes sans réponse, et elle n’est plus à la maison : Richie lui écrit sur Telegram au lieu de se répéter dans une pièce vide.
+story-7-text = Léa est partie avant de répondre. Trente minutes sans réponse, et elle n’est plus à la maison : Nestor lui écrit sur Telegram au lieu de se répéter dans une pièce vide.
 story-7-reason = pas de réponse depuis 30 min, et Léa n’est pas à la maison
 story-7-quote = Ton colis est au Tabac de la Place jusqu’au 6 novembre.
 
 story-8-title = Elle répond. Le fil tient.
-story-8-text = Sa réponse arrive avec le contexte de la veille : Richie sait de quoi on parle. Et chaque étape — déclenchement, tri, décision, livraison — est au journal avec sa raison.
+story-8-text = Sa réponse arrive avec le contexte de la veille : Nestor sait de quoi on parle. Et chaque étape — déclenchement, tri, décision, livraison — est au journal avec sa raison.
 story-8-quote = Merci ! J’irai le chercher en rentrant.
 story-8-reply = Parfait. Je garde la veille ouverte jusqu’à ce qu’il soit retiré.
 story-8-link = Pourquoi m’a-t-il parlé ?

@@ -1,12 +1,12 @@
 ---
 import Dither from "@/components/Dither.astro";
-import { LOCALES, localePath, translator } from "@/i18n";
+import { href, LOCALES, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
 const pages = LOCALES.map((locale) => ({ locale, t: translator(locale) }));
 ---
 
-<Base locale="en" path="/404/">
+<Base locale="en" page="home" nav={[]} indexable={false}>
   <section class="relative overflow-hidden">
     <div class="wrap grid min-h-[70vh] content-center gap-16 py-24 md:grid-cols-2">
       {
@@ -16,7 +16,7 @@ const pages = LOCALES.map((locale) => ({ locale, t: translator(locale) }));
           <div lang={locale}>
             <Heading class="display-2 text-ink">{t("nf-title")}</Heading>
             <p class="lede mt-6">{t("nf-text")}</p>
-            <a class="btn btn-ink mt-8" href={localePath(locale, "/")}>
+            <a class="btn btn-ink mt-8" href={href(locale, "home")}>
               {t("nf-home")}
             </a>
           </div>

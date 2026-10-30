@@ -21,13 +21,3 @@ export const QUICKSTART = [
 ] as const;
 
 export const ADMIN_URL = "http://localhost:8080";
-
-/** The page's sections, in reading order; the navigation shows the ones with a label. */
-export const SECTIONS = [
-  { id: "story", label: "nav-story" },
-  { id: "system", label: "nav-system" },
-  { id: "connectors", label: "nav-connectors" },
-  { id: "satellites", label: "nav-satellites" },
-  { id: "journal", label: "nav-journal" },
-  { id: "start", label: "nav-start" },
-] as const;

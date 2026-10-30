@@ -26,7 +26,8 @@ const ONLY = process.env.ONLY?.split(",");
 const FPS = 30;
 
 const SHOTS = ["home", "journal", "connection", "satellites", "system"];
-const CLIPS = ["journal-live", "journal-filters", "command", "mobile"];
+// the clips the site shows; `command` and `mobile` are captured too, and encoded with ONLY=command,mobile
+const CLIPS = ONLY ?? ["journal-live", "journal-filters"];
 const THEMES = ["light", "dark"];
 const LOCALES = ["en", "fr"];
 
@@ -89,6 +90,7 @@ async function encodeClips(timings) {
   const inventory = {};
   for (const clip of CLIPS) {
     if (ONLY && !ONLY.includes(clip)) continue;
+    if (!["journal-live", "journal-filters", "command", "mobile"].includes(clip)) continue;
     for (const theme of THEMES) {
       for (const locale of LOCALES) {
         const id = `${clip}-${theme}-${locale}`;

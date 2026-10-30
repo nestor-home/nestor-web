@@ -32,32 +32,6 @@
       "width": 1440,
       "height": 900,
       "duration": 9.3
-    },
-    "command": {
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "locales": [
-        "en",
-        "fr"
-      ],
-      "width": 1440,
-      "height": 900,
-      "duration": 8.8
-    },
-    "mobile": {
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "locales": [
-        "en",
-        "fr"
-      ],
-      "width": 780,
-      "height": 1688,
-      "duration": 11.7
     }
   },
   "twin": {

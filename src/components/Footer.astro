@@ -2,14 +2,14 @@
 import { ArrowUpRight } from "lucide-react";
 import Dither from "@/components/Dither.astro";
 import Wordmark from "@/components/Wordmark.astro";
-import { LOCALES, localePath, type Translator } from "@/i18n";
+import { href, LOCALES, type Page, type Translator } from "@/i18n";
 import { REPOS } from "@/lib/site";
 
 interface Props {
   t: Translator;
-  path: string;
+  page: Page;
 }
-const { t, path } = Astro.props;
+const { t, page } = Astro.props;
 const repos = [
   { href: REPOS.nestor, name: "nestor", text: "footer-repo-nestor" },
   { href: REPOS.python, name: "nestor-satellite-python", text: "footer-repo-python" },
@@ -26,6 +26,10 @@ const names = { en: "English", fr: "Français" } as const;
     <div class="flex flex-col gap-6">
       <a href="#top" class="w-fit text-[3.2rem] md:text-[4.2rem]" aria-label={t("footer-top")}><Wordmark /></a>
       <p class="max-w-sm text-[0.95rem] leading-relaxed text-ink-muted">{t("footer-line")}</p>
+      <p class="flex gap-4 text-[0.9rem]">
+        <a class="link" href={href(t.locale, "home")}>{t("footer-home")}</a>
+        <a class="link" href={href(t.locale, "developers")}>{t("nav-developers")}</a>
+      </p>
       <div class="flex items-center gap-3 font-mono text-xs text-ink-muted">
         <span>{t("footer-language")}</span>
         {
@@ -35,7 +39,7 @@ const names = { en: "English", fr: "Français" } as const;
                 {names[l]}
               </span>
             ) : (
-              <a href={localePath(l, path)} hreflang={l} lang={l} class="link text-ink-muted">
+              <a href={href(l, page)} hreflang={l} lang={l} class="link text-ink-muted">
                 {names[l]}
               </a>
             ),

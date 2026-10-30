@@ -1,0 +1,15 @@
+---
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+---
+
+<section class="border-t border-rule py-16" aria-labelledby="dev-i18n-title">
+  <div class="wrap grid gap-6 md:grid-cols-12">
+    <h2 id="dev-i18n-title" data-reveal class="display-3 text-ink md:col-span-5">{t("dev-i18n-title")}</h2>
+    <p data-reveal class="prose-copy md:col-span-6 md:col-start-7">{t("dev-i18n-text")}</p>
+  </div>
+</section>

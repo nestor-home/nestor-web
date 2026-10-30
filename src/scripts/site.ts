@@ -184,24 +184,6 @@ for (const demo of document.querySelectorAll<HTMLElement>("[data-pairing]")) {
   demo.querySelector("[data-replay]")?.addEventListener("click", play);
 }
 
-/* the word that changes in the thesis */
-for (const rotator of document.querySelectorAll<HTMLElement>("[data-rotator]")) {
-  const words = [...rotator.querySelectorAll<HTMLElement>("[data-word]")];
-  if (words.length < 2 || reduced.matches) continue;
-  let index = 0;
-  let timer = 0;
-  const tick = () => {
-    words[index]?.removeAttribute("data-on");
-    index = (index + 1) % words.length;
-    words[index]?.setAttribute("data-on", "");
-  };
-  const visible = new IntersectionObserver(([entry]) => {
-    clearInterval(timer);
-    if (entry?.isIntersecting) timer = window.setInterval(tick, 2200);
-  });
-  visible.observe(rotator);
-}
-
 /* recordings play only while seen, and never by themselves under reduced motion */
 const videos = [...document.querySelectorAll<HTMLVideoElement>("video[data-autoplay]")];
 const playing = new IntersectionObserver(
@@ -232,31 +214,58 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-video-t
   });
 }
 
-/* the hero's live tail: the oldest line leaves at the top, a new one arrives at the bottom */
-for (const list of document.querySelectorAll<HTMLOListElement>("[data-tail-list]")) {
-  if (reduced.matches) continue;
-  let minutes = 19 * 60 + 17;
+/* Nestor, the character: a sequence of states when it comes into view ("listening@0,speaking@900") */
+for (const character of document.querySelectorAll<SVGElement>("svg.nestor[data-script]")) {
+  const steps = (character.dataset.script ?? "")
+    .split(",")
+    .map((part) => part.split("@"))
+    .map(([state, at]) => ({ state: state ?? "idle", at: Number(at ?? 0) }));
+  character.addEventListener("inview", () => {
+    if (reduced.matches) {
+      const last = steps.at(-1);
+      if (last) character.dataset.state = last.state;
+      return;
+    }
+    for (const step of steps) setTimeout(() => (character.dataset.state = step.state), step.at);
+  });
+}
+
+/* the hero's exchange: Léa asks, Nestor listens, thinks, answers; then again */
+const stage = document.querySelector<HTMLElement>("[data-hero-stage]");
+const hero = document.getElementById("hero-nestor");
+if (stage && hero && !reduced.matches) {
+  const beats: [string, string, number][] = [
+    ["idle", "idle", 700],
+    ["ask", "listening", 2200],
+    ["think", "thinking", 1300],
+    ["say", "speaking", 2600],
+    ["say", "laughing", 900],
+    ["say", "idle", 2600],
+  ];
+  let i = 0;
   let timer = 0;
-  const step = () => {
-    const first = list.firstElementChild as HTMLElement | null;
-    if (!first) return;
-    const row = first.getBoundingClientRect().height;
-    minutes += 1 + Math.floor(Math.random() * 2);
-    const time = first.querySelector("time");
-    if (time)
-      time.textContent = `${String(Math.floor(minutes / 60) % 24).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
-    for (const line of list.children) line.removeAttribute("data-fresh");
-    list.append(first);
-    list.children[5]?.setAttribute("data-fresh", "");
-    list.style.transition = "none";
-    list.style.transform = `translateY(${row}px)`;
-    requestAnimationFrame(() => {
-      list.style.transition = "transform 600ms cubic-bezier(0.16, 1, 0.3, 1)";
-      list.style.transform = "translateY(0)";
-    });
+  const next = () => {
+    const [phase, state, wait] = beats[i % beats.length] as [string, string, number];
+    stage.dataset.phase = phase;
+    hero.dataset.state = state;
+    i++;
+    timer = window.setTimeout(next, wait);
   };
   new IntersectionObserver(([entry]) => {
-    clearInterval(timer);
-    if (entry?.isIntersecting && !document.hidden) timer = window.setInterval(step, 2600);
-  }).observe(list);
+    clearTimeout(timer);
+    if (entry?.isIntersecting) next();
+  }).observe(stage);
+
+  /* it looks toward the pointer, a little */
+  addEventListener(
+    "pointermove",
+    (event) => {
+      const box = hero.getBoundingClientRect();
+      const dx = (event.clientX - (box.left + box.width / 2)) / innerWidth;
+      const dy = (event.clientY - (box.top + box.height / 2)) / innerHeight;
+      hero.style.setProperty("--gx", (Math.max(-1, Math.min(1, dx * 2.4)) * 5).toFixed(2));
+      hero.style.setProperty("--gy", (Math.max(-1, Math.min(1, dy * 2.4)) * 4).toFixed(2));
+    },
+    { passive: true },
+  );
 }

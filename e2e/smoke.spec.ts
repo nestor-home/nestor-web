@@ -6,6 +6,8 @@ const require = createRequire(import.meta.url);
 const PAGES = [
   { path: "/", lang: "en", title: /lives/ },
   { path: "/fr/", lang: "fr", title: /habite/ },
+  { path: "/developers/", lang: "en", title: /Build with Nestor/ },
+  { path: "/fr/developpeurs/", lang: "fr", title: /Construire avec Nestor/ },
 ];
 const WIDTHS = [390, 768, 1440];
 
@@ -47,10 +49,13 @@ test("each language links to the other, with canonical and hreflang", async ({ p
   await page.goto("/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/$/);
   await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute("href", /\/fr\/$/);
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /\/og\/en\.png$/);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /\/og\/home-en\.png$/);
   await page.getByRole("link", { name: "Lire cette page en français" }).click();
   await expect(page).toHaveURL(/\/fr\/$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await page.goto("/developers/");
+  await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute("href", /\/fr\/developpeurs\/$/);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /\/og\/developers-en\.png$/);
 });
 
 test("the skip link reaches the content from the keyboard", async ({ page }) => {
@@ -74,7 +79,7 @@ test("the theme toggle switches the page and remembers it", async ({ page }) => 
 
 test("the story's stage follows the step being read", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
+  await page.goto("/developers/");
   const stage = page.locator("[data-stage]");
   await page.evaluate(() => document.querySelector('li[data-step="5"]')?.scrollIntoView({ block: "center" }));
   await expect(stage).toHaveAttribute("data-step", "5");
@@ -83,7 +88,7 @@ test("the story's stage follows the step being read", async ({ page }) => {
 });
 
 test("choosing a part of the architecture explains it", async ({ page }) => {
-  await page.goto("/#system");
+  await page.goto("/developers/#system");
   const connectors = page.getByRole("button", { name: "Connectors", exact: true });
   await connectors.click();
   await expect(connectors).toHaveAttribute("aria-pressed", "true");
@@ -92,7 +97,7 @@ test("choosing a part of the architecture explains it", async ({ page }) => {
 });
 
 test("the SDK tabs work with the arrow keys", async ({ page }) => {
-  await page.goto("/#satellites");
+  await page.goto("/developers/#satellites");
   const python = page.getByRole("tab", { name: "Python" });
   await python.click();
   await page.keyboard.press("ArrowRight");
@@ -105,7 +110,7 @@ test("the SDK tabs work with the arrow keys", async ({ page }) => {
 test("a quickstart command is copied", async ({ page, context, browserName }) => {
   test.skip(browserName !== "chromium");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.goto("/#start");
+  await page.goto("/developers/#start");
   await page.locator("#start").getByRole("button", { name: "Copy" }).nth(1).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("docker compose run --rm nestor init");
   await expect(page.locator("#start").getByRole("button", { name: "Copied" })).toBeVisible();
@@ -127,10 +132,10 @@ test("under reduced motion everything is shown, nothing moves by itself", async 
   await context.close();
 });
 
-test("the page stays within its budget", async ({ page }) => {
+test("the home page loads no framework, and every picture has a text", async ({ page }) => {
   await page.goto("/");
   await scrollThrough(page);
-  const { js, images } = await page.evaluate(() => {
+  const { js } = await page.evaluate(() => {
     const entries = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
     const sum = (filter: (e: PerformanceResourceTiming) => boolean) =>
       entries.filter(filter).reduce((total, e) => total + e.decodedBodySize, 0);
@@ -139,10 +144,9 @@ test("the page stays within its budget", async ({ page }) => {
       images: entries.filter((e) => e.initiatorType === "img").length,
     };
   });
-  // uncompressed: the site script, plus React for the architecture island once it is in view
-  expect(js).toBeLessThan(260_000);
-  expect(js).toBeGreaterThan(5_000);
-  expect(images).toBeGreaterThan(0);
+  // uncompressed: only the site script (React is for the developers' architecture diagram)
+  expect(js).toBeLessThan(30_000);
+  expect(js).toBeGreaterThan(3_000);
   const alts = await page.locator("img").evaluateAll((imgs) => imgs.filter((i) => !(i as HTMLImageElement).alt).length);
   expect(alts).toBe(0);
 });
@@ -169,3 +173,19 @@ for (const { path } of PAGES) {
     expect(violations).toEqual([]);
   });
 }
+
+test("Nestor answers in the hero: it listens, then speaks", async ({ page }) => {
+  await page.goto("/");
+  const nestor = page.locator("#hero-nestor");
+  await expect(nestor).toHaveAttribute("data-state", "listening", { timeout: 4000 });
+  await expect(nestor).toHaveAttribute("data-state", "speaking", { timeout: 6000 });
+  await expect(page.locator("[data-hero-stage]")).toHaveAttribute("data-phase", "say");
+});
+
+test("a scene of the day plays when it comes into view", async ({ page }) => {
+  await page.goto("/");
+  const scene = page.locator("#day .scene").nth(4);
+  await scene.scrollIntoViewIfNeeded();
+  await expect(scene).toHaveAttribute("data-inview", "");
+  await expect(scene.locator(".nestor")).toHaveAttribute("data-state", "speaking", { timeout: 3000 });
+});

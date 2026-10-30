@@ -16,6 +16,10 @@ const { t } = Astro.props;
     <div class="lg:col-span-5">
       <h2 id="qs-title" data-reveal class="display-2 text-ink">{t("qs-title")}</h2>
       <p data-reveal class="lede mt-6">{t("qs-lede")}</p>
+      <p data-reveal class="mt-6 flex items-center gap-2 font-mono text-[0.75rem] text-ink-muted">
+        <span class="inline-block size-1.5 rounded-full bg-amber" aria-hidden="true"></span>
+        {t("cta-early")}
+      </p>
       <p data-reveal class="mt-8">
         <a class="link font-mono text-[0.8rem]" href={`${REPOS.nestor}#readme`}>{t("qs-docs")} →</a>
       </p>
