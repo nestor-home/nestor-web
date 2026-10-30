@@ -6,8 +6,8 @@ import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { Resvg } from "@resvg/resvg-js";
 import satori from "satori";
+import { ditherSvg } from "@/character/dither";
 import { PALETTES, renderBowTie, renderMarkStill, renderNestorStill } from "@/character/render";
-import { ditherSvg } from "./dither";
 
 const require = createRequire(import.meta.url);
 const font = (path: string) => readFile(require.resolve(path));

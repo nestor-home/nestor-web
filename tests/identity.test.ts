@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { density, lit } from "@/lib/dither";
+import { density, lit } from "@/character/dither";
 
 const ADMIN_TOKENS = "../nestor/web/src/styles/tokens.css";
 
@@ -27,7 +27,15 @@ describe("the dither", () => {
 });
 
 const ADMIN_CHARACTER = "../nestor/web/src/character";
-const CHARACTER_FILES = ["geometry.ts", "render.ts", "controller.ts", "nestor.css", "react.tsx", "index.ts"];
+const CHARACTER_FILES = [
+  "geometry.ts",
+  "render.ts",
+  "controller.ts",
+  "dither.ts",
+  "nestor.css",
+  "react.tsx",
+  "index.ts",
+];
 
 describe("the character", () => {
   it.skipIf(!existsSync(ADMIN_CHARACTER))("is the admin's module, unchanged", () => {
