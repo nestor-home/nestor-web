@@ -25,3 +25,16 @@ describe("the dither", () => {
     expect(density("horizon", 0.5, 0, 0, 1)).toBeLessThan(density("horizon", 0.5, 1, 0, 1));
   });
 });
+
+const ADMIN_CHARACTER = "../nestor/web/src/character";
+const CHARACTER_FILES = ["geometry.ts", "render.ts", "controller.ts", "nestor.css", "react.tsx", "index.ts"];
+
+describe("the character", () => {
+  it.skipIf(!existsSync(ADMIN_CHARACTER))("is the admin's module, unchanged", () => {
+    for (const file of CHARACTER_FILES) {
+      expect(readFileSync(`src/character/${file}`, "utf8"), file).toBe(
+        readFileSync(`${ADMIN_CHARACTER}/${file}`, "utf8"),
+      );
+    }
+  });
+});
