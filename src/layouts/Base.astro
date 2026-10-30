@@ -6,6 +6,7 @@ import "@fontsource/ibm-plex-mono/500.css";
 import "@/styles/global.css";
 import frauncesLatin from "@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url";
 import instrumentLatin from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
+import Dock from "@/components/Dock.astro";
 import Footer from "@/components/Footer.astro";
 import Header, { type NavItem } from "@/components/Header.astro";
 import { href, LOCALES, type Locale, type Page, ROUTES, translator } from "@/i18n";
@@ -79,6 +80,7 @@ const description = page === "home" ? t("meta-description") : t(`meta-descriptio
       <slot />
     </main>
     <Footer t={t} page={page} />
+    {indexable && <Dock t={t} />}
     <script>
       import "@/scripts/site";
     </script>

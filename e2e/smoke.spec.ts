@@ -174,6 +174,101 @@ for (const { path } of PAGES) {
   });
 }
 
+test.describe("Nestor in the page", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test("looks toward the pointer", async ({ page }) => {
+    await page.goto("/");
+    const nestor = page.locator("#hero-nestor");
+    await expect(nestor).toHaveAttribute("data-running", "true");
+    const gx = () => nestor.evaluate((el) => Number((el as SVGElement).style.getPropertyValue("--nestor-gx")));
+    await page.mouse.move(20, 450);
+    await expect.poll(gx).toBeLessThan(-1);
+    await page.mouse.move(1420, 450);
+    await expect.poll(gx).toBeGreaterThan(1);
+  });
+
+  test("pauses while the tab is hidden, and wakes up when it comes back", async ({ page }) => {
+    await page.goto("/");
+    const nestor = page.locator("#hero-nestor");
+    await expect(nestor).toHaveAttribute("data-running", "true");
+    const setHidden = (hidden: boolean) =>
+      page.evaluate((value) => {
+        Object.defineProperty(document, "hidden", { value, configurable: true });
+        document.dispatchEvent(new Event("visibilitychange"));
+      }, hidden);
+    await setHidden(true);
+    await expect(nestor).toHaveAttribute("data-running", "false");
+    await setHidden(false);
+    await expect(nestor).toHaveAttribute("data-running", "true");
+  });
+
+  test("docks in the margin after the hero, takes the mood of the scene, and can be hidden", async ({ page }) => {
+    await page.goto("/");
+    const dock = page.locator("[data-dock]");
+    await expect(dock).not.toHaveAttribute("data-shown", "");
+    await page.locator("#day .scene").nth(6).scrollIntoViewIfNeeded();
+    await page.evaluate(() => document.querySelectorAll("#day .scene")[6]?.scrollIntoView({ block: "center" }));
+    await expect(dock).toHaveAttribute("data-shown", "");
+    await expect(dock.locator("svg.nestor")).toHaveAttribute("data-state", /sleeping|speaking/);
+    const box = await dock.boundingBox();
+    // the text column ends where the wrap's padding begins; the dock stays to its right
+    const textRight = await page.locator("main .wrap").first().evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return rect.right - Number.parseFloat(getComputedStyle(el).paddingRight);
+    });
+    expect(box?.x ?? 0).toBeGreaterThanOrEqual(textRight);
+    await dock.hover();
+    await page.getByRole("button", { name: "Hide Nestor" }).click();
+    await expect(dock).toBeHidden();
+  });
+
+  test("moves nothing by itself under reduced motion", async ({ browser }) => {
+    const context = await browser.newContext({ reducedMotion: "reduce", viewport: { width: 1440, height: 900 } });
+    const page = await context.newPage();
+    await page.goto("/");
+    const nestor = page.locator("#hero-nestor");
+    await page.mouse.move(20, 450);
+    const before = await nestor.evaluate((el) => el.outerHTML);
+    await page.mouse.move(1420, 800);
+    await page.waitForTimeout(1500);
+    expect(await nestor.evaluate((el) => el.outerHTML)).toBe(before);
+    await expect(nestor).not.toHaveAttribute("data-live", "");
+    await page.evaluate(() => window.scrollTo(0, 3000));
+    await expect(page.locator("[data-dock]")).toBeHidden();
+    await context.close();
+  });
+
+  test("never shifts the layout", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => {
+      (window as unknown as { cls: number }).cls = 0;
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries() as unknown as { value: number; hadRecentInput: boolean }[]) {
+          if (!entry.hadRecentInput) (window as unknown as { cls: number }).cls += entry.value;
+        }
+      }).observe({ type: "layout-shift", buffered: true });
+    });
+    await page.mouse.move(300, 300);
+    await page.mouse.move(1200, 700, { steps: 8 });
+    await scrollThrough(page);
+    await page.waitForTimeout(500);
+    expect(await page.evaluate(() => (window as unknown as { cls: number }).cls)).toBeLessThan(0.02);
+  });
+});
+
+test("the menu opens on a phone and closes on a link", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const button = page.getByRole("button", { name: "Menu" });
+  await button.click();
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+  const menu = page.locator("#mobile-menu");
+  await menu.getByRole("link", { name: "How it works" }).click();
+  await expect(menu).toBeHidden();
+  await expect(page).toHaveURL(/#principles$/);
+});
+
 test("Nestor answers in the hero: it listens, then speaks", async ({ page }) => {
   await page.goto("/");
   const nestor = page.locator("#hero-nestor");

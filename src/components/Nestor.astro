@@ -1,330 +1,57 @@
 ---
 /**
- * Nestor, as a character: a small pebble of ink with two paper eyes, shaded with the identity's
- * dither, whose voice is the wordmark's ember cursor. One drawing, a few states that mirror the
- * product's own (idle, listening, thinking, speaking, an expression on the voice, quiet hours):
- *
- *   idle       breathes, blinks
- *   listening  a little taller, eyes wide, the ember light on its head (the microphone is open)
- *   thinking   looks up, three dots
- *   speaking   the ember cursor moves with the voice
- *   laughing   eyes closed upward, a bounce
- *   sleeping   eyes shut, slow breath (quiet hours)
- *
- * `look` (or the --gx/--gy custom properties, in drawing units) turns its eyes toward someone.
- * Under reduced motion it holds its pose without moving.
+ * The character on a page of the site: the shared drawing (src/character, a copy of the admin's
+ * canonical module) with a starting state, a gaze, and an optional sequence played once in view
+ * (`script="listening@0,speaking@900"`, run by the site script).
  */
-export type NestorState = "idle" | "listening" | "thinking" | "speaking" | "laughing" | "sleeping";
+import "@/character/nestor.css";
+import { type NestorState, renderNestor } from "@/character/render";
+
+export type { NestorState };
 export type Look = "center" | "left" | "right" | "up" | "down";
 
 interface Props {
   state?: NestorState;
   look?: Look;
-  size?: number | string;
+  size?: number;
   label?: string | undefined;
   class?: string | undefined;
-  /** a sequence played when it comes into view: "listening@0,thinking@900,speaking@1800" */
   script?: string | undefined;
   id?: string | undefined;
+  ground?: boolean;
 }
-
-const { state = "idle", look = "center", size = 120, label, class: className = "", script, id } = Astro.props;
-const LOOK: Record<Look, [number, number]> = {
-  center: [0, 0],
-  left: [-5, 1],
-  right: [5, 1],
-  up: [3, -5],
-  down: [0, 4],
+const {
+  state = "idle",
+  look = "center",
+  size = 120,
+  label,
+  class: className,
+  script,
+  id,
+  ground = false,
+} = Astro.props;
+const LOOK: Record<Look, [number, number, number]> = {
+  center: [0, 0, 0],
+  left: [-4, 0.5, -0.5],
+  right: [4, 0.5, 0.5],
+  up: [2, -4, 0.2],
+  down: [0, 3.5, 0],
 };
-const [gx, gy] = LOOK[look];
-// ids unique within the page (several characters share it)
-const uid = `n${Math.random().toString(36).slice(2, 8)}`;
-const body = "M60 20C86 20 102 40 102 68C102 94 86 108 60 108C34 108 18 94 18 68C18 40 34 20 60 20Z";
+const [gx, gy, turn] = LOOK[look];
+const attributes: Record<string, string> = { style: `--nestor-gx:${gx};--nestor-gy:${gy};--nestor-turn:${turn}` };
+if (script) {
+  attributes["data-script"] = script;
+  attributes["data-inview-once"] = "";
+}
+const markup = renderNestor({
+  state,
+  size,
+  ground,
+  attributes,
+  ...(label ? { label } : {}),
+  ...(className ? { className } : {}),
+  ...(id ? { id } : {}),
+});
 ---
 
-<svg
-  viewBox="0 0 120 120"
-  width={size}
-  height={size}
-  class:list={["nestor", className]}
-  data-state={state}
-  data-script={script}
-  data-inview-once={script ? "" : undefined}
-  id={id}
-  style={`--gx:${gx};--gy:${gy}`}
-  role={label ? "img" : undefined}
-  aria-label={label}
-  aria-hidden={label ? undefined : "true"}
->
-  <defs>
-    <pattern id={`${uid}-dots`} width="3" height="3" patternUnits="userSpaceOnUse">
-      <rect width="1.2" height="1.2" class="n-dot"></rect>
-    </pattern>
-    <!-- three densities of the ordered dither, from the edge of the shade to its core -->
-    <pattern id={`${uid}-s1`} width="4" height="4" patternUnits="userSpaceOnUse">
-      <rect width="1.3" height="1.3" class="n-shade-dot"></rect>
-    </pattern>
-    <pattern id={`${uid}-s2`} width="4" height="4" patternUnits="userSpaceOnUse">
-      <rect width="1.3" height="1.3" class="n-shade-dot"></rect>
-      <rect x="2" y="2" width="1.3" height="1.3" class="n-shade-dot"></rect>
-    </pattern>
-    <pattern id={`${uid}-s3`} width="4" height="4" patternUnits="userSpaceOnUse">
-      <rect width="1.3" height="1.3" class="n-shade-dot"></rect>
-      <rect x="2" y="2" width="1.3" height="1.3" class="n-shade-dot"></rect>
-      <rect x="2" width="1.3" height="1.3" class="n-shade-dot"></rect>
-      <rect y="2" width="1.3" height="1.3" class="n-shade-dot"></rect>
-    </pattern>
-    <clipPath id={`${uid}-clip`}><path d={body}></path></clipPath>
-  </defs>
-
-  <ellipse cx="60" cy="112" rx="30" ry="4" fill={`url(#${uid}-dots)`} class="n-ground"></ellipse>
-
-  <g class="n-body">
-    <path d={body} class="n-skin"></path>
-    <g clip-path={`url(#${uid}-clip)`}>
-      <!-- dither shading: the side away from the light -->
-      <circle cx="104" cy="104" r="60" fill={`url(#${uid}-s1)`}></circle>
-      <circle cx="104" cy="104" r="46" fill={`url(#${uid}-s2)`}></circle>
-      <circle cx="104" cy="104" r="32" fill={`url(#${uid}-s3)`}></circle>
-    </g>
-    <circle cx="60" cy="13" r="4" class="n-light"></circle>
-
-    <g class="n-eyes">
-      <g class="n-open">
-        <ellipse cx="47" cy="62" rx="6" ry="8.5" class="n-eye"></ellipse>
-        <ellipse cx="73" cy="62" rx="6" ry="8.5" class="n-eye"></ellipse>
-      </g>
-      <g class="n-happy">
-        <path d="M41 65Q47 55 53 65" class="n-line"></path>
-        <path d="M67 65Q73 55 79 65" class="n-line"></path>
-      </g>
-      <g class="n-shut">
-        <path d="M41 63Q47 67 53 63" class="n-line"></path>
-        <path d="M67 63Q73 67 79 63" class="n-line"></path>
-      </g>
-    </g>
-
-    <rect x="56" y="79" width="8" height="12" class="n-voice"></rect>
-  </g>
-
-  <g class="n-think">
-    <rect x="97" y="24" width="4" height="4"></rect>
-    <rect x="104" y="17" width="5" height="5"></rect>
-    <rect x="111" y="8" width="6" height="6"></rect>
-  </g>
-</svg>
-
-<style is:global>
-  .nestor {
-    overflow: visible;
-    display: block;
-    flex-shrink: 0;
-  }
-  .nestor .n-skin {
-    fill: var(--ink);
-  }
-  .nestor .n-shade-dot {
-    fill: var(--paper);
-    opacity: 0.22;
-  }
-  .nestor .n-dot {
-    fill: var(--ink);
-    opacity: 0.45;
-  }
-  .nestor .n-eye {
-    fill: var(--paper);
-  }
-  .nestor .n-line {
-    fill: none;
-    stroke: var(--paper);
-    stroke-width: 3.6;
-    stroke-linecap: round;
-  }
-  .nestor .n-voice {
-    fill: var(--ember);
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    transform: scaleY(0);
-    transition: transform 200ms var(--ease-out);
-  }
-  .nestor .n-light {
-    fill: var(--ember);
-    opacity: 0;
-    transition: opacity 200ms var(--ease-out);
-  }
-  .nestor .n-think rect {
-    fill: var(--ink-muted);
-    opacity: 0;
-  }
-  .nestor .n-body {
-    transform-box: view-box;
-    transform-origin: 60px 108px;
-    transition: transform 400ms var(--ease-out);
-  }
-  .nestor .n-eyes {
-    transform: translate(calc(var(--gx) * 1px), calc(var(--gy) * 1px));
-    transition: transform 380ms var(--ease-out);
-  }
-  .nestor .n-open {
-    transform-box: view-box;
-    transform-origin: 60px 62px;
-  }
-  .nestor .n-happy,
-  .nestor .n-shut {
-    opacity: 0;
-  }
-
-  /* idle: breathing and blinking */
-  .nestor[data-state="idle"] .n-body,
-  .nestor[data-state="listening"] .n-body,
-  .nestor[data-state="thinking"] .n-body {
-    animation: n-breathe 3.6s ease-in-out infinite;
-  }
-  .nestor[data-state="idle"] .n-open,
-  .nestor[data-state="thinking"] .n-open,
-  .nestor[data-state="speaking"] .n-open {
-    animation: n-blink 4.8s infinite;
-  }
-
-  /* listening */
-  .nestor[data-state="listening"] .n-light {
-    opacity: 1;
-  }
-  .nestor[data-state="listening"] .n-open {
-    transform: scale(1.12);
-  }
-
-  /* thinking */
-  .nestor[data-state="thinking"] {
-    --gx: 4 !important;
-    --gy: -5 !important;
-  }
-  .nestor[data-state="thinking"] .n-think rect {
-    animation: n-think 1.4s infinite;
-  }
-  .nestor[data-state="thinking"] .n-think rect:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  .nestor[data-state="thinking"] .n-think rect:nth-child(3) {
-    animation-delay: 0.4s;
-  }
-
-  /* speaking: the cursor is the voice */
-  .nestor[data-state="speaking"] .n-voice {
-    transform: scaleY(0.7);
-    animation: n-speak 1.1s infinite;
-  }
-  .nestor[data-state="speaking"] .n-body {
-    animation: n-nod 1.1s ease-in-out infinite;
-  }
-
-  /* laughing */
-  .nestor[data-state="laughing"] .n-open {
-    opacity: 0;
-  }
-  .nestor[data-state="laughing"] .n-happy {
-    opacity: 1;
-  }
-  .nestor[data-state="laughing"] .n-voice {
-    transform: scaleY(0.55);
-  }
-  .nestor[data-state="laughing"] .n-body {
-    animation: n-laugh 0.42s ease-in-out infinite;
-  }
-
-  /* sleeping: quiet hours */
-  .nestor[data-state="sleeping"] .n-open {
-    opacity: 0;
-  }
-  .nestor[data-state="sleeping"] .n-shut {
-    opacity: 1;
-  }
-  .nestor[data-state="sleeping"] .n-body {
-    animation: n-breathe 6s ease-in-out infinite;
-  }
-
-  @keyframes n-breathe {
-    0%,
-    100% {
-      transform: scale(1, 1);
-    }
-    50% {
-      transform: scale(1.012, 1.03);
-    }
-  }
-  @keyframes n-blink {
-    0%,
-    92%,
-    100% {
-      transform: scaleY(1);
-    }
-    95% {
-      transform: scaleY(0.1);
-    }
-  }
-  @keyframes n-think {
-    0%,
-    100% {
-      opacity: 0.15;
-    }
-    40% {
-      opacity: 1;
-    }
-  }
-  @keyframes n-speak {
-    0% {
-      transform: scaleY(0.35);
-    }
-    18% {
-      transform: scaleY(1);
-    }
-    32% {
-      transform: scaleY(0.5);
-    }
-    50% {
-      transform: scaleY(0.85);
-    }
-    68% {
-      transform: scaleY(0.3);
-    }
-    84% {
-      transform: scaleY(0.95);
-    }
-    100% {
-      transform: scaleY(0.35);
-    }
-  }
-  @keyframes n-nod {
-    0%,
-    100% {
-      transform: rotate(0deg) translateY(0);
-    }
-    30% {
-      transform: rotate(-1.5deg) translateY(-1px);
-    }
-    65% {
-      transform: rotate(1deg) translateY(0.5px);
-    }
-  }
-  @keyframes n-laugh {
-    0%,
-    100% {
-      transform: translateY(0) scale(1, 1);
-    }
-    50% {
-      transform: translateY(-3px) scale(1.02, 0.97);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .nestor *,
-    .nestor .n-body,
-    .nestor .n-open,
-    .nestor .n-voice {
-      animation: none !important;
-    }
-    .nestor[data-state="thinking"] .n-think rect {
-      opacity: 0.7;
-    }
-  }
-</style>
+<Fragment set:html={markup} />

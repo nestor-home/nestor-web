@@ -15,11 +15,10 @@ const { t } = Astro.props;
 const devices = [Speaker, Tablet, Bot, Smartphone, AppWindow];
 ---
 
-<section id="principles" class="section border-t border-rule" aria-labelledby="pr-title">
+<section id="principles" class="section border-t border-rule" aria-labelledby="pr-title" data-mood="idle">
   <div class="wrap">
     <div class="max-w-3xl">
       <h2 id="pr-title" data-reveal class="display-2 text-ink">{t("pr-title")}</h2>
-      <p data-reveal class="lede mt-6">{t("pr-lede")}</p>
     </div>
 
     <ul class="principles mt-14 grid gap-px border border-rule bg-rule md:grid-cols-2 lg:grid-cols-3">

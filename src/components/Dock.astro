@@ -1,0 +1,87 @@
+---
+/**
+ * A small Nestor in the page's right margin, after the hero: it takes the mood of the section being
+ * read and says a line at a few moments (src/scripts/live.ts). Wide screens only, never over the
+ * text, absent under reduced motion, and it can be hidden.
+ */
+import { X } from "lucide-react";
+import Nestor from "@/components/Nestor.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+---
+
+<aside class="dock" data-dock aria-label={t("dock-label")}>
+  <p class="dock-bubble bubble-say" data-dock-bubble aria-live="polite"></p>
+  <Nestor size={72} ground />
+  <button type="button" class="dock-close" data-dock-close aria-label={t("dock-hide")}>
+    <X className="size-3" strokeWidth={1.8} aria-hidden="true" />
+  </button>
+</aside>
+
+<style>
+  .dock {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.25rem;
+    z-index: 30;
+    display: none;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 400ms var(--ease-out),
+      transform 400ms var(--ease-out);
+  }
+  @media (min-width: 85rem) and (prefers-reduced-motion: no-preference) {
+    .dock {
+      display: flex;
+    }
+  }
+  .dock[data-shown] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .dock-bubble {
+    max-width: 13rem;
+    font-size: 0.82rem;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 300ms var(--ease-out),
+      transform 300ms var(--ease-out);
+  }
+  .dock-bubble[data-open] {
+    opacity: 1;
+    transform: none;
+  }
+  .dock-bubble:empty {
+    visibility: hidden;
+  }
+  .dock-close {
+    position: absolute;
+    right: -0.4rem;
+    bottom: 3.6rem;
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    background: var(--paper-raised);
+    color: var(--ink-muted);
+    opacity: 0;
+    transition: opacity var(--duration) var(--ease);
+  }
+  .dock:hover .dock-close,
+  .dock-close:focus-visible {
+    opacity: 1;
+  }
+</style>

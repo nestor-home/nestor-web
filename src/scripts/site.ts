@@ -30,6 +30,25 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-theme-t
   });
 }
 
+/* the menu on small screens: a disclosure; closes on a link, Escape, or going wide */
+const menuButton = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+const menu = document.getElementById("mobile-menu");
+if (menuButton && menu) {
+  const setOpen = (open: boolean) => {
+    menuButton.setAttribute("aria-expanded", String(open));
+    menu.hidden = !open;
+  };
+  menuButton.addEventListener("click", () => setOpen(menu.hidden));
+  for (const link of menu.querySelectorAll("[data-menu-link]")) link.addEventListener("click", () => setOpen(false));
+  addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !menu.hidden) {
+      setOpen(false);
+      menuButton.focus();
+    }
+  });
+  matchMedia("(min-width: 64rem)").addEventListener("change", () => setOpen(false));
+}
+
 /* dither textures */
 const canvases = [...document.querySelectorAll<HTMLCanvasElement>("canvas[data-dither]")];
 function redrawAll() {
@@ -230,42 +249,4 @@ for (const character of document.querySelectorAll<SVGElement>("svg.nestor[data-s
   });
 }
 
-/* the hero's exchange: Léa asks, Nestor listens, thinks, answers; then again */
-const stage = document.querySelector<HTMLElement>("[data-hero-stage]");
-const hero = document.getElementById("hero-nestor");
-if (stage && hero && !reduced.matches) {
-  const beats: [string, string, number][] = [
-    ["idle", "idle", 700],
-    ["ask", "listening", 2200],
-    ["think", "thinking", 1300],
-    ["say", "speaking", 2600],
-    ["say", "laughing", 900],
-    ["say", "idle", 2600],
-  ];
-  let i = 0;
-  let timer = 0;
-  const next = () => {
-    const [phase, state, wait] = beats[i % beats.length] as [string, string, number];
-    stage.dataset.phase = phase;
-    hero.dataset.state = state;
-    i++;
-    timer = window.setTimeout(next, wait);
-  };
-  new IntersectionObserver(([entry]) => {
-    clearTimeout(timer);
-    if (entry?.isIntersecting) next();
-  }).observe(stage);
-
-  /* it looks toward the pointer, a little */
-  addEventListener(
-    "pointermove",
-    (event) => {
-      const box = hero.getBoundingClientRect();
-      const dx = (event.clientX - (box.left + box.width / 2)) / innerWidth;
-      const dy = (event.clientY - (box.top + box.height / 2)) / innerHeight;
-      hero.style.setProperty("--gx", (Math.max(-1, Math.min(1, dx * 2.4)) * 5).toFixed(2));
-      hero.style.setProperty("--gy", (Math.max(-1, Math.min(1, dy * 2.4)) * 4).toFixed(2));
-    },
-    { passive: true },
-  );
-}
+import "./live";

@@ -11,7 +11,7 @@ const { t } = Astro.props;
 const filters = clip("journal-filters", t.locale).length > 0;
 ---
 
-<section id="journal" class="section border-t border-rule" aria-labelledby="jr-dev-title">
+<section id="journal" class="section border-t border-rule" aria-labelledby="jr-dev-title" data-mood="thinking">
   <div class="wrap grid gap-12 lg:grid-cols-12">
     <div class="lg:col-span-4">
       <h2 id="jr-dev-title" data-reveal class="display-2 text-ink">{t("jr-dev-title")}</h2>

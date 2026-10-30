@@ -10,7 +10,7 @@ interface Props {
 const { t } = Astro.props;
 ---
 
-<section id="start" class="section relative overflow-hidden border-t border-rule" aria-labelledby="qs-title">
+<section id="start" class="section relative overflow-hidden border-t border-rule" aria-labelledby="qs-title" data-mood="idle" data-say={t("char-ready")}>
   <Dither shape="ramp-left" from={0} to={0.4} dot={3} class="absolute top-0 right-0 h-40 w-1/2 text-ink/15" />
   <div class="wrap relative grid gap-12 lg:grid-cols-12">
     <div class="lg:col-span-5">

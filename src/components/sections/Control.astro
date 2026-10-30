@@ -9,7 +9,7 @@ const { t } = Astro.props;
 const items = Array.from({ length: 8 }, (_, i) => `ctl-${i + 1}`);
 ---
 
-<section class="section border-t border-rule" aria-labelledby="ctl-title">
+<section class="section border-t border-rule" aria-labelledby="ctl-title" data-mood="concerned">
   <div class="wrap">
     <div class="max-w-3xl">
       <h2 id="ctl-title" data-reveal class="display-2 text-ink">{t("ctl-title")}</h2>

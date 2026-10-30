@@ -11,7 +11,7 @@ const { t } = Astro.props;
 const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
 ---
 
-<section class="hero relative overflow-hidden" aria-labelledby="hero-title">
+<section class="hero relative overflow-hidden" aria-labelledby="hero-title" data-dock-after>
   <div class="wrap grid items-center gap-10 pt-12 pb-20 sm:pt-16 lg:grid-cols-12 lg:gap-8 lg:pt-20 lg:pb-28">
     <div class="lg:col-span-7">
       <h1 id="hero-title" class="display-1 text-ink">
@@ -26,7 +26,7 @@ const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
       <div class="hero-after mt-8 md:mt-10">
         <p class="lede">{t("hero-lede")}</p>
         <div class="mt-8 flex flex-wrap items-center gap-3">
-          <a href="#day" class="btn btn-ink">
+          <a href="#day" class="btn btn-ink" data-dock-follow={t("char-follow")}>
             {t("hero-day")}
             <ArrowDown className="size-4" strokeWidth={1.6} aria-hidden="true" />
           </a>
