@@ -75,7 +75,7 @@ const satellites = [
       <div class="stage-wrap" aria-hidden="true">
         <div class="stage" data-stage data-step={TOTAL} style={`--step:${TOTAL}`}>
           <div class="stage-head flex items-center justify-between gap-4 border-b border-rule px-4 py-2.5">
-            <span class="font-mono text-[0.7rem] text-ink-muted">{t("story-stage-label")}</span>
+            <span class="hidden font-mono text-[0.7rem] text-ink-muted sm:inline">{t("story-stage-label")}</span>
             <span
               class="font-mono text-[0.7rem] text-ink-faint tabular"
               data-stage-step
@@ -152,7 +152,7 @@ const satellites = [
                   <Mail className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
                   <span>{t("story-mail-via")}</span>
                   <span class="text-ink-faint">·</span>
-                  <span class="truncate">noreply@mondialrelay.fr</span>
+                  <span class="truncate">{t("story-mail-from")}</span>
                 </div>
                 <div class="px-4 py-4">
                   <p class="font-serif text-[1.25rem] text-ink">{t("story-3-mail-subject")}</p>

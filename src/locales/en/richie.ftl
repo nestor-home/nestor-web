@@ -1,10 +1,10 @@
 richie-title = Richie, the reference distribution.
-richie-lede = Richie is a Nestor install embodied by a Reachy Mini Wireless: the assistant of one real home, which sets the framework's priorities and tests its choices.
+richie-lede = Richie is a Nestor install embodied by a Reachy Mini Wireless: the assistant of one real home, which sets the framework’s priorities and tests its choices.
 richie-status = Today Richie lives as a MuJoCo twin driven by its satellite. The physical robot is refused until its motor safety policy is validated on hardware.
 richie-sync = Its body follows the audio actually played: a laugh in the voice moves the antennas 0.1–0.2 s later.
 richie-twin = The simulated Reachy Mini: listening, thinking, speaking, laughing.
 richie-twin-missing = A recording of the twin will appear here.
-richie-stack = Richie's choices, measured — not Nestor's dependencies
+richie-stack = Richie’s choices, measured — not Nestor’s dependencies
 richie-stack-stage = Stage
 richie-stack-choice = Adapter
 richie-stack-measure = Measured

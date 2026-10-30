@@ -1,5 +1,9 @@
 ---
-/** The dither texture as a canvas, drawn by the site script (static, redrawn on resize and theme). */
+/**
+ * The dither texture as a canvas, drawn by the site script (static, redrawn on resize and theme).
+ * The canvas fills a box sized by the classes given, so its own pixel size never feeds back into
+ * the layout.
+ */
 import type { DitherShape } from "@/lib/dither";
 
 interface Props {
@@ -10,13 +14,15 @@ interface Props {
   class?: string;
 }
 const { shape = "ramp-right", from = 0, to = 0.6, dot = 2, class: className = "" } = Astro.props;
+const positioned = /\b(absolute|fixed)\b/.test(className);
 ---
 
-<canvas
-  aria-hidden="true"
-  data-dither
-  data-shape={shape}
-  data-from={from}
-  data-to={to}
-  data-dot={dot}
-  class:list={["pointer-events-none block text-ink", className]}></canvas>
+<div aria-hidden="true" class:list={["pointer-events-none", !positioned && "relative", className]}>
+  <canvas
+    data-dither
+    data-shape={shape}
+    data-from={from}
+    data-to={to}
+    data-dot={dot}
+    class="absolute inset-0 block h-full w-full"></canvas>
+</div>

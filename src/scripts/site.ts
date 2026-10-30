@@ -143,7 +143,7 @@ for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
 for (const story of document.querySelectorAll<HTMLElement>("[data-story]")) {
   const stage = story.querySelector<HTMLElement>("[data-stage]");
   const counter = story.querySelector<HTMLElement>("[data-stage-step]");
-  const steps = [...story.querySelectorAll<HTMLElement>("[data-step]")];
+  const steps = [...story.querySelectorAll<HTMLElement>("li[data-step]")];
   const show = (n: number) => {
     if (!stage || stage.dataset.step === String(n)) return;
     stage.dataset.step = String(n);

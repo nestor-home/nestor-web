@@ -22,3 +22,6 @@ copied = Copied
 video-pause = Pause the recording
 shot-caption-light = Light theme
 external = (opens GitHub)
+nf-title = Nobody is in this room.
+nf-text = The page you asked for isn’t here. The house is this way.
+nf-home = Back to the home page
