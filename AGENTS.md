@@ -52,13 +52,22 @@ developers' page. Keep it that way when adding content.
 
 ## The character
 
-`Nestor.astro` is the only drawing of Nestor: an ink pebble with paper eyes, shaded with the
-Bayer dither, whose voice is the wordmark's ember cursor. Its states mirror the product's
-(`idle`, `listening` — the ember light is the open microphone —, `thinking`, `speaking`,
-`laughing` for an expression on the voice, `sleeping` for quiet hours); `look` turns its eyes.
-`script="listening@0,speaking@900"` plays a sequence once in view. Put it in a body with
-`Device.astro`; never redraw it elsewhere, never as an emoji-like sticker. Under reduced motion it
-holds its pose.
+Nestor's one digital identity — on the website, in the admin, in icons — is the module in
+`src/character/`: shapes (`geometry.ts`), a framework-agnostic SVG renderer (`render.ts`), the
+states in CSS (`nestor.css`), a small controller (`controller.ts`: `state`, `lookAt`, `say`,
+`blink`, `gesture`, paused off screen and when the tab is hidden, static under reduced motion) and a
+React wrapper for the admin (`react.tsx`). **The canonical source is
+`nestor/web/src/character/`**; this folder is a verbatim copy and `tests/identity.test.ts` fails
+when they drift. Change it there, then copy the six files here.
+
+The design: an ink pebble leaning slightly right, a quiff swept to the right, paper eyes, the
+wordmark's ember cursor as its mouth, a small paper bow tie (the butler, without the costume), a
+clean rim of light — no texture on its skin (the dither is for its surroundings). Eight states
+mirror the product's: `idle`, `listening`, `thinking`, `speaking`, `laughing`, `sleeping`,
+`working`, `concerned`. On the site, `Nestor.astro` renders it and `Device.astro` puts it in a
+body; `scripts/live.ts` makes the hero and the docked one react to the visitor. Sections give the
+docked one its mood with `data-mood` (and a line with `data-say`). Its stills are published at
+`/character/*` (avatars, tiles, PNG sizes) and drawn into the favicon and sharing images.
 
 ## Conventions
 

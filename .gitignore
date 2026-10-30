@@ -9,3 +9,6 @@ playwright-report/
 .shoot.mjs
 .full.mjs
 .overflow.mjs
+.live.mjs
+.rec.mjs
+.sheet.mjs
