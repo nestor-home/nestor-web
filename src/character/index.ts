@@ -8,6 +8,9 @@
  *   const nestor = new NestorController(el.querySelector("svg")!, { bubble, saccades: true });
  *   nestor.lookAt(event.clientX, event.clientY); nestor.say("On it."); nestor.state = "thinking";
  *
+ * The logo: `renderLogo()` ("nestor" and the ember bow tie, sized by font-size), the bow tie alone:
+ * `renderBowTie()`, the monogram for icons: `renderMarkStill()`.
+ *
  * React: `import { Nestor } from "./react"`. Stills with written colours (favicons, avatars,
  * sharing images): `renderNestorStill(size, PALETTES.light)`.
  *
@@ -17,10 +20,16 @@
 export { type ControllerOptions, ease, type Gaze, gazeToward, NestorController, speakingTime } from "./controller";
 export * as geometry from "./geometry";
 export {
+  type BowTieOptions,
+  type LogoOptions,
+  type LogoVariant,
   type NestorState,
   PALETTES,
   type Palette,
   type RenderOptions,
+  renderBowTie,
+  renderLogo,
+  renderMarkStill,
   renderNestor,
   renderNestorStill,
   STATES,
