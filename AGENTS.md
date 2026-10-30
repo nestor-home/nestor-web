@@ -61,8 +61,15 @@ React wrapper for the admin (`react.tsx`). **The canonical source is
 when they drift. Change it there, then copy the six files here.
 
 The design: an ink pebble leaning slightly right, a quiff swept to the right, paper eyes, the
-wordmark's ember cursor as its mouth, a small paper bow tie (the butler, without the costume), a
-clean rim of light — no texture on its skin (the dither is for its surroundings). Eight states
+wordmark's ember cursor as its mouth, and the logo's bow tie (paper wings, ember knot). Flat colours
+only: no highlight, no blush, no texture on its skin; the dither belongs to its surroundings (a
+soft disc behind it, a ground, a sky), lightly. One cue per state at most.
+
+The logo is "nestor" in Fraunces followed by the ember bow tie (`renderLogo()`, variant `bow`, the
+approved one); `cursor` is the original wordmark. The monogram (`renderMarkStill()`, the bow tie on
+an ink tile) is the favicon and app icon. The bow tie is a motif used sparingly: list markers
+(`Tie.astro`), one pause on the home page (`TieRule.astro`). The copy uses no em-dashes (a test
+checks the catalogues). Eight states
 mirror the product's: `idle`, `listening`, `thinking`, `speaking`, `laughing`, `sleeping`,
 `working`, `concerned`. On the site, `Nestor.astro` renders it and `Device.astro` puts it in a
 body; `scripts/live.ts` makes the hero and the docked one react to the visitor. Sections give the
