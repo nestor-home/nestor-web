@@ -1,0 +1,69 @@
+{
+  "shots": [
+    "home",
+    "journal",
+    "connection",
+    "satellites",
+    "system"
+  ],
+  "clips": {
+    "journal-live": {
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "width": 1440,
+      "height": 900,
+      "duration": 11.2
+    },
+    "journal-filters": {
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "width": 1440,
+      "height": 900,
+      "duration": 9.3
+    },
+    "command": {
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "width": 1440,
+      "height": 900,
+      "duration": 8.8
+    },
+    "mobile": {
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "width": 780,
+      "height": 1688,
+      "duration": 11.7
+    }
+  },
+  "twin": {
+    "width": 720,
+    "height": 720,
+    "duration": 11.6,
+    "theme": "light"
+  }
+}
