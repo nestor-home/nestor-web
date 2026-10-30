@@ -1,13 +1,13 @@
 ---
-/** The logo slot, as in the admin: "nestor" in the display serif, then the ember block cursor. */
+/** The logo: "nestor" in the display serif, then the ember bow tie (src/character, shared with the admin). */
+import "@/character/nestor.css";
+import { type LogoVariant, renderLogo } from "@/character/render";
+
 interface Props {
   class?: string;
-  blink?: boolean;
+  variant?: LogoVariant;
 }
-const { class: className = "", blink = false } = Astro.props;
+const { class: className, variant = "bow" } = Astro.props;
 ---
 
-<span class:list={["wordmark inline-flex items-baseline font-serif leading-none text-ink", className]}>
-  <span class="font-medium tracking-[-0.02em] [font-variation-settings:'SOFT'_100,'opsz'_72]">nestor</span>
-  <span aria-hidden="true" class:list={["cursor", blink && "cursor-blink"]}></span>
-</span>
+<Fragment set:html={renderLogo({ variant, ...(className ? { className } : {}) })} />

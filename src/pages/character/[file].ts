@@ -3,7 +3,7 @@
  * the favicon tile, and PNG sizes for places that need bitmaps.
  */
 import type { APIRoute, GetStaticPaths } from "astro";
-import { PALETTES, renderNestorStill } from "@/character/render";
+import { PALETTES, renderMarkStill, renderNestorStill } from "@/character/render";
 import { INK, PAPER, pngOf } from "@/lib/og";
 
 const TILE = { ink: PAPER, paper: INK, ember: "#e8835c" };
@@ -17,6 +17,11 @@ const FILES: Record<string, () => { body: string | ArrayBuffer; type: string }> 
   "tile-180.png": () => ({ body: pngOf(renderNestorStill(180, TILE, INK), 180), type: "image/png" }),
   "tile-32.png": () => ({ body: pngOf(renderNestorStill(32, TILE, INK), 32), type: "image/png" }),
   "tile-16.png": () => ({ body: pngOf(renderNestorStill(16, TILE, INK), 16), type: "image/png" }),
+  "mark.svg": () => ({ body: renderMarkStill(64), type: "image/svg+xml" }),
+  "mark-512.png": () => ({ body: pngOf(renderMarkStill(512), 512), type: "image/png" }),
+  "mark-180.png": () => ({ body: pngOf(renderMarkStill(180), 180), type: "image/png" }),
+  "mark-32.png": () => ({ body: pngOf(renderMarkStill(32), 32), type: "image/png" }),
+  "mark-16.png": () => ({ body: pngOf(renderMarkStill(16), 16), type: "image/png" }),
 };
 
 export const getStaticPaths: GetStaticPaths = () => Object.keys(FILES).map((file) => ({ params: { file } }));

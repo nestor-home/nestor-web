@@ -6,7 +6,7 @@ import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { Resvg } from "@resvg/resvg-js";
 import satori from "satori";
-import { PALETTES, renderNestorStill } from "@/character/render";
+import { PALETTES, renderBowTie, renderMarkStill, renderNestorStill } from "@/character/render";
 import { ditherSvg } from "./dither";
 
 const require = createRequire(import.meta.url);
@@ -75,11 +75,12 @@ export function ditherImage(width: number, height: number, from: number, to: num
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
 }
 
-/** The wordmark: "nestor" in the display serif, then the ember block cursor. */
+/** The logo: "nestor" in the display serif, then the ember bow tie. */
 export function wordmark(size: number): Node {
+  const tie = renderBowTie({ size: Math.round(size * 0.62), wing: EMBER, knot: EMBER });
   return h(
     "div",
-    { alignItems: "flex-end", gap: size * 0.1 },
+    { alignItems: "center", gap: size * 0.08 },
     h(
       "div",
       {
@@ -92,13 +93,21 @@ export function wordmark(size: number): Node {
       },
       "nestor",
     ),
-    h("div", { width: size * 0.36, height: size * 0.62, background: EMBER, marginBottom: size * 0.12 }),
+    {
+      type: "img",
+      props: {
+        src: `data:image/svg+xml;base64,${Buffer.from(tie).toString("base64")}`,
+        width: Math.round(size * 0.62),
+        height: Math.round(size * 0.34),
+        style: { marginTop: size * 0.12 },
+      },
+    },
   );
 }
 
-/** The icon: Nestor in paper on an ink tile (it reads on light and dark tabs alike). */
+/** The icon: the monogram, the bow tie on an ink tile (it reads on light and dark tabs alike). */
 export function iconSvg(size: number): string {
-  return renderNestorStill(size, { ink: PAPER, paper: INK, ember: "#e8835c" }, INK);
+  return renderMarkStill(size, PALETTES.light);
 }
 
 /** Nestor as a picture, for the sharing cards. */
