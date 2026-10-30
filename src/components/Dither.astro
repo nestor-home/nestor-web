@@ -1,0 +1,22 @@
+---
+/** The dither texture as a canvas, drawn by the site script (static, redrawn on resize and theme). */
+import type { DitherShape } from "@/lib/dither";
+
+interface Props {
+  shape?: DitherShape;
+  from?: number;
+  to?: number;
+  dot?: number;
+  class?: string;
+}
+const { shape = "ramp-right", from = 0, to = 0.6, dot = 2, class: className = "" } = Astro.props;
+---
+
+<canvas
+  aria-hidden="true"
+  data-dither
+  data-shape={shape}
+  data-from={from}
+  data-to={to}
+  data-dot={dot}
+  class:list={["pointer-events-none block text-ink", className]}></canvas>

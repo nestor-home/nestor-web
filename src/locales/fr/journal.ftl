@@ -1,0 +1,10 @@
+jr-title = « Pourquoi m'a-t-il parlé ? » a une réponse.
+jr-lede = Chaque tour, appel d'outil, tâche, souvenir, prise de parole et décision de politique est écrit dans un journal en ajout seul. L'administration le relit en histoires : une cause, ses effets, et la raison de chaque décision.
+jr-note-1 = En direct : les événements arrivent au moment où ils se produisent.
+jr-note-2 = Chaque décision porte sa raison, en toutes lettres.
+jr-note-3 = Ouvrez une histoire pour la suivre du mail jusqu'au message.
+jr-clip = Le journal dans l'administration : le direct, puis une histoire qui s'ouvre.
+jr-more-title = Le reste de l'administration
+jr-more-command = Tout est à une touche.
+jr-more-filters = Filtrer par personne, canal, pièce ou type.
+jr-more-mobile = La même administration sur un téléphone.

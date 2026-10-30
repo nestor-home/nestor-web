@@ -1,0 +1,80 @@
+---
+import "@fontsource-variable/fraunces/full.css";
+import "@fontsource-variable/instrument-sans/index.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@/styles/global.css";
+import frauncesLatin from "@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url";
+import instrumentLatin from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import { LOCALES, type Locale, localePath, translator } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  path?: string;
+}
+const { locale, path = "/" } = Astro.props;
+const t = translator(locale);
+const site = Astro.site ?? new URL("https://nestor.mathislambert.fr");
+const canonical = new URL(localePath(locale, path), site).href;
+const og = new URL(`/og/${locale}.png`, site).href;
+---
+
+<!doctype html>
+<html lang={locale} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{t("meta-title")}</title>
+    <meta name="description" content={t("meta-description")} />
+    <link rel="canonical" href={canonical} />
+    {LOCALES.map((l) => <link rel="alternate" hreflang={l} href={new URL(localePath(l, path), site).href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(localePath("en", path), site).href} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f0e6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#16130f" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nestor" />
+    <meta property="og:title" content={t("meta-title")} />
+    <meta property="og:description" content={t("meta-description")} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t("meta-og-alt")} />
+    <meta property="og:locale" content={locale === "fr" ? "fr_FR" : "en_GB"} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" href={frauncesLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={instrumentLatin} as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.classList.replace("no-js", "js");
+        try {
+          const theme = localStorage.getItem("nestor.theme");
+          if (theme === "light" || theme === "dark") root.dataset.theme = theme;
+        } catch {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only z-50 rounded-sm bg-ink px-3 py-2 text-paper focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >{t("skip")}</a
+    >
+    <Header t={t} path={path} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer t={t} path={path} />
+    <script>
+      import "@/scripts/site";
+    </script>
+  </body>
+</html>

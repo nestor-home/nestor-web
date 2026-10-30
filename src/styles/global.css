@@ -1,0 +1,514 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Tailwind reads Nestor's identity through these names only (the same mapping as the admin). */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-paper-sunken: var(--paper-sunken);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-ember: var(--ember);
+  --color-ember-soft: var(--ember-soft);
+  --color-on-ember: var(--on-ember);
+  --color-sage: var(--sage);
+  --color-sage-soft: var(--sage-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-brick: var(--brick);
+  --color-kind-task: var(--kind-task);
+  --color-kind-watch: var(--kind-watch);
+
+  --font-sans: var(--font-ui);
+  --font-serif: var(--font-display);
+  --font-mono: var(--font-data);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+}
+
+:root {
+  /* the site's own rhythm, on top of the shared identity */
+  --gutter: 1rem;
+  --section-space: clamp(5.5rem, 12vw, 10rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --reveal: 700ms;
+  scroll-padding-top: 4.5rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --gutter: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 2.5rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--rule);
+  }
+
+  html {
+    font-family: var(--font-ui);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    background: var(--paper);
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--paper);
+    color: var(--ink);
+    font-feature-settings: "ss01", "cv11";
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--ember-soft);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-variation);
+    font-optical-sizing: auto;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  code,
+  kbd,
+  samp,
+  time {
+    font-family: var(--font-data);
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  em {
+    font-style: normal;
+    color: var(--ember);
+  }
+
+  /* grid children never grow past their track because of long code or words */
+  .grid > * {
+    min-width: 0;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* small-caps mono labels for data: captions, legends, columns — never above a title */
+  .label-mono {
+    font-family: var(--font-data);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .display-1 {
+    font-size: clamp(3.1rem, 9.4vw, 8.4rem);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+    font-variation-settings:
+      "SOFT" 60,
+      "WONK" 0,
+      "opsz" 144;
+  }
+
+  .display-2 {
+    font-size: clamp(2.3rem, 5.2vw, 4.3rem);
+    line-height: 1;
+    letter-spacing: -0.028em;
+    font-variation-settings:
+      "SOFT" 60,
+      "WONK" 0,
+      "opsz" 120;
+  }
+
+  .display-3 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-variation);
+    font-weight: 400;
+    font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+  }
+
+  .lede {
+    font-size: clamp(1.06rem, 1.5vw, 1.24rem);
+    line-height: 1.55;
+    color: var(--ink-muted);
+    max-width: 38rem;
+  }
+
+  .lede strong,
+  .prose-copy strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .prose-copy {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--ink-muted);
+  }
+
+  .prose-copy code,
+  .lede code {
+    font-size: 0.86em;
+    color: var(--ink);
+    background: var(--paper-sunken);
+    padding: 0.05em 0.35em;
+    border-radius: 3px;
+  }
+
+  /* the ember block cursor of the wordmark, reused as "the agent is here" */
+  .cursor {
+    display: inline-block;
+    width: 0.36em;
+    height: 0.62em;
+    background: var(--ember);
+    transform: translateY(0.02em);
+    margin-left: 0.08em;
+  }
+
+  .cursor-blink {
+    animation: blink 1.1s steps(1, end) infinite;
+  }
+
+  /* the signature corner ticks: four short ink strokes at the corners of a key surface */
+  .corner-marks {
+    --tick: 8px;
+    --tick-colour: var(--ink-faint);
+    background-image:
+      linear-gradient(var(--tick-colour), var(--tick-colour)), linear-gradient(var(--tick-colour), var(--tick-colour)),
+      linear-gradient(var(--tick-colour), var(--tick-colour)), linear-gradient(var(--tick-colour), var(--tick-colour)),
+      linear-gradient(var(--tick-colour), var(--tick-colour)), linear-gradient(var(--tick-colour), var(--tick-colour)),
+      linear-gradient(var(--tick-colour), var(--tick-colour)), linear-gradient(var(--tick-colour), var(--tick-colour));
+    background-size:
+      var(--tick) 1px,
+      1px var(--tick),
+      var(--tick) 1px,
+      1px var(--tick),
+      var(--tick) 1px,
+      1px var(--tick),
+      var(--tick) 1px,
+      1px var(--tick);
+    background-position:
+      -1px -1px,
+      -1px -1px,
+      calc(100% + 1px) -1px,
+      calc(100% + 1px) -1px,
+      -1px calc(100% + 1px),
+      -1px calc(100% + 1px),
+      calc(100% + 1px) calc(100% + 1px),
+      calc(100% + 1px) calc(100% + 1px);
+    background-repeat: no-repeat;
+    background-origin: border-box;
+  }
+
+  /* a hairline-bordered surface that holds a product picture */
+  .plate {
+    position: relative;
+    border: 1px solid var(--rule);
+    background: var(--paper-raised);
+    padding: 0.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .plate {
+      padding: 0.75rem;
+    }
+  }
+
+  .plate > .plate-inner {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+
+  /* buttons: ink for the one main action, hairline for the rest */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding-inline: 1.1rem;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      transform var(--duration) var(--ease);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn-ink {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn-ink:hover {
+    background: color-mix(in oklab, var(--ink) 86%, var(--ember));
+  }
+
+  .btn-line {
+    border: 1px solid var(--rule-strong);
+    color: var(--ink);
+  }
+
+  .btn-line:hover {
+    border-color: var(--ink-muted);
+    background: var(--paper-raised);
+  }
+
+  .link {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--rule-strong);
+    transition: text-decoration-color var(--duration) var(--ease);
+  }
+
+  .link:hover {
+    text-decoration-color: var(--ember);
+  }
+
+  /* status of a feature: the word always says it, the colour only helps */
+  .state {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-data);
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  .state::before {
+    content: "";
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .state[data-state="shipped"] {
+    color: var(--sage);
+  }
+
+  .state[data-state="next"] {
+    color: var(--amber);
+  }
+
+  .state[data-state="later"] {
+    color: var(--ink-muted);
+  }
+
+  .state[data-state="later"]::before {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px currentColor;
+  }
+
+  /* a mono chip for data: rooms, channels, capabilities, tool names */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 0 0.4rem;
+    font-family: var(--font-data);
+    font-size: 0.72rem;
+    line-height: 1.35rem;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  .kbd {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.3rem;
+    height: 1.3rem;
+    padding-inline: 0.3rem;
+    border: 1px solid var(--rule-strong);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    font-family: var(--font-data);
+    font-size: 0.7rem;
+    color: var(--ink-muted);
+  }
+
+  /* a section's opening: serif title, one sentence, the dithered rule under them */
+  .section {
+    padding-block: var(--section-space);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1200px;
+  }
+
+  /* reveals: on by default without JavaScript; the script opts in, reduced motion opts out */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity var(--reveal) var(--ease-out),
+      transform var(--reveal) var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+
+  .js [data-reveal][data-shown] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Shiki, through CSS variables: the code takes the identity's colours in both themes */
+  .code {
+    --shiki-foreground: var(--ink);
+    --shiki-background: transparent;
+    --shiki-token-constant: var(--kind-task);
+    --shiki-token-string: var(--sage);
+    --shiki-token-string-expression: var(--sage);
+    --shiki-token-comment: var(--ink-faint);
+    --shiki-token-keyword: var(--ember);
+    --shiki-token-parameter: var(--ink);
+    --shiki-token-function: var(--kind-watch);
+    --shiki-token-punctuation: var(--ink-muted);
+    --shiki-token-link: var(--ember);
+    font-family: var(--font-data);
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+
+  .code pre {
+    overflow-x: auto;
+    padding: 1.25rem 1.25rem 1.5rem;
+    tab-size: 2;
+  }
+
+  .code pre code {
+    font-family: inherit;
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* a picture per theme: only the one matching the page's theme is shown (and, lazy, downloaded) */
+.only-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .only-dark {
+  display: block;
+}
+
+:root[data-theme="dark"] .only-light {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .only-dark {
+    display: block;
+  }
+
+  :root:not([data-theme="light"]) .only-light {
+    display: none;
+  }
+}

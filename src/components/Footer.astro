@@ -1,0 +1,66 @@
+---
+import { ArrowUpRight } from "lucide-react";
+import Dither from "@/components/Dither.astro";
+import Wordmark from "@/components/Wordmark.astro";
+import { LOCALES, localePath, type Translator } from "@/i18n";
+import { REPOS } from "@/lib/site";
+
+interface Props {
+  t: Translator;
+  path: string;
+}
+const { t, path } = Astro.props;
+const repos = [
+  { href: REPOS.nestor, name: "nestor", text: "footer-repo-nestor" },
+  { href: REPOS.python, name: "nestor-satellite-python", text: "footer-repo-python" },
+  { href: REPOS.typescript, name: "nestor-satellite-typescript", text: "footer-repo-typescript" },
+  { href: REPOS.rust, name: "nestor-satellite-rust", text: "footer-repo-rust" },
+  { href: REPOS.reachy, name: "nestor-reachy", text: "footer-repo-reachy" },
+  { href: REPOS.web, name: "nestor-web", text: "footer-repo-web" },
+];
+const names = { en: "English", fr: "Français" } as const;
+---
+
+<footer class="relative overflow-hidden border-t border-rule">
+  <div class="wrap grid gap-12 pt-16 pb-10 md:grid-cols-[1fr_1.4fr]">
+    <div class="flex flex-col gap-6">
+      <a href="#top" class="w-fit text-[3.2rem] md:text-[4.2rem]" aria-label={t("footer-top")}><Wordmark /></a>
+      <p class="max-w-sm text-[0.95rem] leading-relaxed text-ink-muted">{t("footer-line")}</p>
+      <div class="flex items-center gap-3 font-mono text-xs text-ink-muted">
+        <span>{t("footer-language")}</span>
+        {
+          LOCALES.map((l) =>
+            l === t.locale ? (
+              <span aria-current="page" class="text-ink">
+                {names[l]}
+              </span>
+            ) : (
+              <a href={localePath(l, path)} hreflang={l} lang={l} class="link text-ink-muted">
+                {names[l]}
+              </a>
+            ),
+          )
+        }
+      </div>
+    </div>
+    <nav aria-label={t("footer-repos")}>
+      <h2 class="label-mono mb-4 font-mono">{t("footer-repos")}</h2>
+      <ul class="divide-y divide-rule border-y border-rule">
+        {
+          repos.map((r) => (
+            <li>
+              <a href={r.href} class="group flex items-baseline justify-between gap-4 py-3">
+                <span class="font-mono text-[0.85rem] text-ink group-hover:text-ember">{r.name}</span>
+                <span class="flex items-baseline gap-2 text-right text-[0.85rem] text-ink-muted">
+                  <span class="hidden sm:inline">{t(r.text)}</span>
+                  <ArrowUpRight className="size-3.5 self-center" strokeWidth={1.6} aria-hidden="true" />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+  <Dither shape="ramp-down" from={0} to={0.5} dot={3} class="h-16 w-full text-ink/25" />
+</footer>

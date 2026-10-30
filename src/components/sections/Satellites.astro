@@ -1,0 +1,296 @@
+---
+import { Check } from "lucide-react";
+import Brand from "@/components/Brand.astro";
+import CopyCommand from "@/components/CopyCommand.astro";
+import Shot from "@/components/Shot.astro";
+import python from "@/data/snippets/python.snippet?raw";
+import rust from "@/data/snippets/rust.snippet?raw";
+import typescript from "@/data/snippets/typescript.snippet?raw";
+import type { Translator } from "@/i18n";
+import type { BrandKey } from "@/lib/brands";
+import { highlight } from "@/lib/highlight";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+const CODE = "318604";
+const manifest = JSON.stringify(
+  {
+    protocol: "nestor.satellite/1",
+    device: { id: "enceinte-salon", model: "raspberry-pi-4", room: "salon" },
+    capabilities: [{ name: "audio.capture" }, { name: "audio.playback" }, { name: "expression.emotion" }],
+  },
+  null,
+  2,
+);
+const intent = JSON.stringify({ type: "intent.expression", payload: { expression: "joy", intensity: 0.7 } });
+
+const sdks: { id: "python" | "typescript" | "rust"; brand: BrandKey; html: string; cli: string }[] = [
+  {
+    id: "python",
+    brand: "python",
+    html: await highlight(python, "python"),
+    cli: 'pip install "nestor-satellite[sounddevice]" && nestor-satellite run --core http://nestor.local:7860 --room salon',
+  },
+  {
+    id: "typescript",
+    brand: "typescript",
+    html: await highlight(typescript, "typescript"),
+    cli: "npx @nestor-home/satellite run --core http://nestor.local:7860 --room salon",
+  },
+  {
+    id: "rust",
+    brand: "rust",
+    html: await highlight(rust, "rust"),
+    cli: "nestor-satellite run --core http://nestor.local:7860 --room salon",
+  },
+];
+const manifestHtml = await highlight(manifest, "json");
+const intentHtml = await highlight(intent, "json");
+
+const devices = [
+  { id: "sat-dev-reachy", state: "next", label: "sat-state-twin" },
+  { id: "sat-dev-pi", state: "shipped", label: "sat-state-shipped" },
+  { id: "sat-dev-tab", state: "shipped", label: "sat-state-shipped" },
+  { id: "sat-dev-esp", state: "later", label: "sat-state-later" },
+  { id: "sat-dev-wyoming", state: "later", label: "sat-state-later" },
+];
+---
+
+<section id="satellites" class="section border-t border-rule" aria-labelledby="sat-title">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="sat-title" data-reveal class="display-2 text-ink">{t("sat-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("sat-lede")}</p>
+    </div>
+
+    <!-- pairing -->
+    <div class="mt-16 grid gap-10 lg:grid-cols-12">
+      <div data-reveal class="lg:col-span-4">
+        <h3 class="display-3 text-ink">{t("sat-pair-title")}</h3>
+        <p class="prose-copy mt-4">{t("sat-pair-text")}</p>
+      </div>
+      <div class="pairing lg:col-span-8" data-pairing data-inview-once data-phase="manifest">
+        <div class="grid gap-4 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <!-- the device -->
+          <div class="device flex flex-col justify-between gap-6 p-5">
+            <div class="flex items-center justify-between font-mono text-[0.68rem]">
+              <span>{t("sat-device")}</span>
+              <Brand brand="raspberry-pi" class="size-4" decorative />
+            </div>
+            <div>
+              <p class="font-mono text-[0.68rem] opacity-70">{t("sat-device-code")}</p>
+              <p class="code-digits mt-2 flex gap-1 font-mono tabular" aria-label={CODE}>
+                {
+                  [...CODE].map((d, i) => (
+                    <span class="digit" style={`--d:${i}`}>
+                      {d}
+                    </span>
+                  ))
+                }
+              </p>
+            </div>
+            <p class="font-mono text-[0.68rem] opacity-70">{t("sat-device-model")}</p>
+          </div>
+          <!-- the admin -->
+          <div class="admin border border-rule bg-paper-raised p-5">
+            <p class="text-[0.95rem] text-ink">{t("sat-admin-request")}</p>
+            <p class="mt-1 text-[0.85rem] text-ink-muted">{t("sat-admin-hint")}</p>
+            <div class="mt-4 flex items-center gap-3">
+              <span class="typed flex gap-1" aria-hidden="true">
+                {
+                  [...CODE].map((d, i) => (
+                    <span class="typed-box grid place-items-center border border-rule-strong font-mono text-[0.95rem] tabular" style={`--d:${i}`}>
+                      <span class="typed-digit">{d}</span>
+                    </span>
+                  ))
+                }
+              </span>
+              <span class="approve inline-flex h-9 items-center rounded-sm bg-ink px-3 text-[0.85rem] text-paper">
+                {t("sat-admin-approve")}
+              </span>
+              <span class="paired inline-flex items-center gap-1 font-mono text-[0.75rem] text-sage">
+                <Check className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
+                {t("sat-admin-paired")}
+              </span>
+            </div>
+            <div class="manifest mt-5 border-t border-rule pt-4">
+              <p class="label-mono">{t("sat-manifest")}</p>
+              <div class="code mt-1 -mx-5 [&_pre]:py-2 [&_pre]:text-[0.72rem]" set:html={manifestHtml} />
+            </div>
+          </div>
+        </div>
+        <button type="button" data-replay class="link mt-4 font-mono text-[0.75rem] text-ink-muted">↻ {t("sat-replay")}</button>
+      </div>
+    </div>
+
+    <!-- intents -->
+    <div class="mt-24 grid gap-10 lg:grid-cols-12">
+      <div data-reveal class="lg:col-span-5">
+        <h3 class="display-3 text-ink">{t("sat-intent-title")}</h3>
+        <p class="prose-copy mt-4" set:html={t.html("sat-intent-text")} />
+      </div>
+      <div data-reveal class="code corner-marks self-center border border-rule bg-paper-raised lg:col-span-7" set:html={intentHtml} />
+    </div>
+
+    <!-- SDKs -->
+    <div class="mt-24">
+      <div data-reveal class="max-w-2xl">
+        <h3 class="display-3 text-ink">{t("sat-sdk-title")}</h3>
+        <p class="prose-copy mt-4">{t("sat-sdk-text")}</p>
+      </div>
+      <div data-reveal class="mt-8 border border-rule bg-paper-raised">
+        <div role="tablist" aria-label={t("sat-sdk-tabs")} class="flex border-b border-rule">
+          {
+            sdks.map((s, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`tab-${s.id}`}
+                aria-controls={`panel-${s.id}`}
+                aria-selected={i === 0 ? "true" : "false"}
+                tabindex={i === 0 ? 0 : -1}
+                class="sdk-tab flex items-center gap-2 border-r border-rule px-4 py-3 text-[0.9rem] text-ink-muted"
+              >
+                <Brand brand={s.brand} class="size-4" decorative />
+                {t(`sat-cli-${s.id}`)}
+              </button>
+            ))
+          }
+        </div>
+        {
+          sdks.map((s, i) => (
+            <div role="tabpanel" id={`panel-${s.id}`} aria-labelledby={`tab-${s.id}`} hidden={i !== 0} tabindex="0">
+              <div class="code max-h-[30rem] overflow-auto" set:html={s.html} />
+              <div class="border-t border-rule p-3">
+                <CopyCommand t={t} command={s.cli} />
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <p class="mt-3 font-mono text-[0.72rem] text-ink-muted">
+        <a class="link text-ink-muted" href="/schemas/satellite/1/manifest.json">{t("sat-schemas")}</a>
+      </p>
+    </div>
+
+    <!-- devices and the admin -->
+    <div class="mt-24 grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <h3 data-reveal class="display-3 text-ink">{t("sat-devices-title")}</h3>
+        <ul class="mt-6 border-t border-rule">
+          {
+            devices.map((d, i) => (
+              <li data-reveal style={`--i:${i}`} class="border-b border-rule py-4">
+                <p class="flex items-baseline justify-between gap-4">
+                  <span class="text-[1rem] text-ink">{t(d.id)}</span>
+                  <span class="state" data-state={d.state}>
+                    {t(d.label)}
+                  </span>
+                </p>
+                <p class="mt-1 text-[0.9rem] leading-relaxed text-ink-muted">{t(`${d.id}-text`)}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <figure data-reveal class="lg:col-span-7">
+        <div class="plate corner-marks">
+          <div class="plate-inner">
+            <Shot name="satellites" locale={t.locale} alt={t("sat-shot")} sizes="(min-width: 1024px) 700px, 100vw" />
+          </div>
+        </div>
+        <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("sat-shot")}</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .device {
+    background: var(--ink);
+    color: var(--paper);
+    min-height: 15rem;
+  }
+  .code-digits {
+    font-size: clamp(2rem, 4.2vw, 2.9rem);
+    letter-spacing: 0.02em;
+  }
+  .digit:nth-child(3) {
+    margin-right: 0.35em;
+  }
+  .typed-box {
+    width: 1.9rem;
+    height: 2.3rem;
+    background: var(--paper);
+  }
+  .typed-box:nth-child(3) {
+    margin-right: 0.4rem;
+  }
+  /* phases, set by the site script: idle → code → typing → approve → paired → manifest */
+  .digit,
+  .typed-digit,
+  .approve,
+  .paired,
+  .manifest {
+    transition:
+      opacity 380ms var(--ease-out),
+      transform 380ms var(--ease-out);
+  }
+  [data-phase="idle"] .digit {
+    opacity: 0;
+    transform: translateY(0.3em);
+  }
+  .digit {
+    transition-delay: calc(var(--d) * 70ms);
+  }
+  [data-phase="idle"] .typed-digit,
+  [data-phase="code"] .typed-digit {
+    opacity: 0;
+    transform: translateY(-0.3em);
+  }
+  .typed-digit {
+    display: inline-block;
+    transition-delay: calc(var(--d) * 180ms);
+  }
+  [data-phase="typing"] .typed-box {
+    border-color: var(--ember);
+  }
+  [data-phase="idle"] .approve,
+  [data-phase="code"] .approve {
+    opacity: 0.35;
+  }
+  [data-phase="approve"] .approve {
+    transform: scale(0.96);
+    background: color-mix(in oklab, var(--ink) 80%, var(--ember));
+  }
+  [data-phase="paired"] .approve,
+  [data-phase="manifest"] .approve {
+    display: none;
+  }
+  .paired {
+    display: none;
+  }
+  [data-phase="paired"] .paired,
+  [data-phase="manifest"] .paired {
+    display: inline-flex;
+  }
+  [data-phase="idle"] .manifest,
+  [data-phase="code"] .manifest,
+  [data-phase="typing"] .manifest,
+  [data-phase="approve"] .manifest,
+  [data-phase="paired"] .manifest {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .sdk-tab[aria-selected="true"] {
+    color: var(--ink);
+    background: var(--paper);
+    box-shadow: inset 0 -2px 0 var(--ember);
+  }
+  .sdk-tab:hover {
+    color: var(--ink);
+  }
+</style>

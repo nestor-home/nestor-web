@@ -1,0 +1,10 @@
+footer-line = Nestor is open source under the MIT licence. Richie is its reference distribution.
+footer-repos = Repositories
+footer-repo-nestor = The core, the admin and the satellite protocol
+footer-repo-python = Satellite SDK for Python
+footer-repo-typescript = Satellite SDK for TypeScript
+footer-repo-rust = Satellite SDK for Rust
+footer-repo-reachy = Reachy Mini as a satellite
+footer-repo-web = This website
+footer-top = Back to the top
+footer-language = Language

@@ -1,0 +1,48 @@
+---
+import CopyCommand from "@/components/CopyCommand.astro";
+import Dither from "@/components/Dither.astro";
+import type { Translator } from "@/i18n";
+import { ADMIN_URL, QUICKSTART, REPOS } from "@/lib/site";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+---
+
+<section id="start" class="section relative overflow-hidden border-t border-rule" aria-labelledby="qs-title">
+  <Dither shape="ramp-left" from={0} to={0.4} dot={3} class="absolute top-0 right-0 h-40 w-1/2 text-ink/15" />
+  <div class="wrap relative grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-5">
+      <h2 id="qs-title" data-reveal class="display-2 text-ink">{t("qs-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("qs-lede")}</p>
+      <p data-reveal class="mt-8">
+        <a class="link font-mono text-[0.8rem]" href={`${REPOS.nestor}#readme`}>{t("qs-docs")} →</a>
+      </p>
+    </div>
+    <div data-reveal class="terminal corner-marks border border-rule-strong bg-paper-raised lg:col-span-7">
+      <p class="flex items-center gap-2 border-b border-rule px-4 py-2.5 font-mono text-[0.7rem] text-ink-muted">
+        <span class="inline-block size-2 rounded-full border border-rule-strong" aria-hidden="true"></span>
+        <span class="inline-block size-2 rounded-full border border-rule-strong" aria-hidden="true"></span>
+        <span class="inline-block size-2 rounded-full border border-rule-strong" aria-hidden="true"></span>
+        <span class="ml-2">{t("qs-terminal")}</span>
+      </p>
+      <ol class="flex flex-col gap-5 p-4 md:p-5">
+        {
+          QUICKSTART.map((step, i) => (
+            <li>
+              <p class="mb-2 flex gap-3 text-[0.9rem] text-ink-muted">
+                <span class="font-mono text-[0.75rem] text-ember tabular">{i + 1}</span>
+                <span>{t(step.id)}</span>
+              </p>
+              <CopyCommand t={t} command={step.command} />
+            </li>
+          ))
+        }
+      </ol>
+      <p class="border-t border-rule px-4 py-3 font-mono text-[0.75rem] text-ink-muted md:px-5">
+        {t("qs-admin")} <span class="text-ink">{ADMIN_URL}</span>
+      </p>
+    </div>
+  </div>
+</section>

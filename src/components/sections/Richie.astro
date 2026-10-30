@@ -1,0 +1,83 @@
+---
+import Dither from "@/components/Dither.astro";
+import type { Translator } from "@/i18n";
+import { twin } from "@/lib/media";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const stack = ["turn", "stt", "llm", "tts", "exec"];
+---
+
+<section class="section border-t border-rule" aria-labelledby="richie-title">
+  <div class="wrap grid gap-14 lg:grid-cols-12">
+    <div class="lg:col-span-6">
+      <h2 id="richie-title" data-reveal class="display-2 text-ink">{t("richie-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("richie-lede")}</p>
+      <p data-reveal class="prose-copy mt-6 flex gap-3">
+        <span class="state mt-1" data-state="next" aria-hidden="true"></span>
+        <span>{t("richie-status")}</span>
+      </p>
+      <p data-reveal class="prose-copy mt-4">{t("richie-sync")}</p>
+    </div>
+    <figure data-reveal class="lg:col-span-6">
+      <div class="plate corner-marks">
+        <div class="plate-inner relative aspect-square">
+          {
+            twin ? (
+              <video
+                data-autoplay
+                muted
+                loop
+                playsinline
+                preload="none"
+                poster="/media/reachy-twin.poster.webp"
+                width={twin.width}
+                height={twin.height}
+                aria-label={t("richie-twin")}
+                class="block h-full w-full object-cover"
+              >
+                <source src="/media/reachy-twin.webm" type="video/webm" />
+                <source src="/media/reachy-twin.mp4" type="video/mp4" />
+              </video>
+            ) : (
+              <div class="absolute inset-0 grid place-items-center">
+                <Dither shape="vignette" from={0.6} to={0.05} dot={3} class="absolute inset-0 h-full w-full text-ink/20" />
+                <p class="relative bg-paper px-3 py-1 font-mono text-[0.72rem] text-ink-muted">{t("richie-twin-missing")}</p>
+              </div>
+            )
+          }
+        </div>
+      </div>
+      <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("richie-twin")}</figcaption>
+    </figure>
+
+    <div class="lg:col-span-12">
+      <table class="stack mt-4 w-full border-collapse text-left">
+        <caption class="mb-4 text-left text-[1rem] text-ink">{t("richie-stack")}</caption>
+        <thead class="label-mono">
+          <tr class="border-b border-rule-strong">
+            <th scope="col" class="py-3 pr-4 font-medium">{t("richie-stack-stage")}</th>
+            <th scope="col" class="py-3 pr-4 font-medium">{t("richie-stack-choice")}</th>
+            <th scope="col" class="py-3 text-right font-medium">{t("richie-stack-measure")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            stack.map((id) => (
+              <tr class="border-b border-rule">
+                <th scope="row" class="py-3 pr-4 text-[0.95rem] font-normal text-ink">
+                  {t(`richie-${id}`)}
+                </th>
+                <td class="py-3 pr-4 text-[0.9rem] text-ink-muted">{t(`richie-${id}-choice`)}</td>
+                <td class="py-3 text-right font-mono text-[0.78rem] text-ink tabular">{t(`richie-${id}-measure`)}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("richie-note")}</p>
+    </div>
+  </div>
+</section>

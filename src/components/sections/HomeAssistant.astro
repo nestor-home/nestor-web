@@ -1,0 +1,85 @@
+---
+import Brand from "@/components/Brand.astro";
+import Dither from "@/components/Dither.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const levels = [
+  { id: "home-1", density: 0.22 },
+  { id: "home-2", density: 0.48 },
+  { id: "home-3", density: 0.8 },
+];
+---
+
+<section class="section border-t border-rule" aria-labelledby="home-title">
+  <div class="wrap">
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <h2 id="home-title" data-reveal class="display-2 text-ink">{t("home-title")}</h2>
+        <p data-reveal class="lede mt-6" set:html={t.html("home-lede")} />
+      </div>
+      <div data-reveal class="self-end lg:col-span-4 lg:col-start-9">
+        <div class="corner-marks border border-rule bg-paper-raised p-4">
+          <q class="block font-serif text-[1.3rem] text-ink">{t("home-command")}</q>
+          <p class="mt-3 flex items-center gap-2 font-mono text-[0.72rem] text-sage">
+            <Brand brand="home-assistant" class="size-3.5" decorative />
+            <span>{t("home-command-result")}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <table class="levels mt-16 w-full border-collapse text-left">
+      <thead class="label-mono">
+        <tr class="border-b border-rule-strong">
+          <th scope="col" class="py-3 pr-6 font-medium">{t("home-level")}</th>
+          <th scope="col" class="py-3 pr-6 font-medium">{t("home-source")}</th>
+          <th scope="col" class="py-3 font-medium">{t("home-knows")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          levels.map((l, i) => (
+            <tr data-reveal style={`--i:${i}`} class="border-b border-rule align-top">
+              <th scope="row" class="py-6 pr-6 font-normal">
+                <span class="flex items-center gap-4">
+                  <Dither shape="field" from={l.density} to={l.density} dot={2} class="size-10 shrink-0 text-ember" />
+                  <span class="display-3 font-serif text-ink">{t(l.id)}</span>
+                </span>
+              </th>
+              <td class="py-6 pr-6 font-mono text-[0.8rem] leading-relaxed text-ink-muted" set:html={t.html(`${l.id}-source`)} />
+              <td class="py-6 text-[0.98rem] leading-relaxed text-ink-muted">{t(`${l.id}-knows`)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <p data-reveal class="mt-6 font-mono text-[0.75rem] text-ink-muted">{t("home-note")}</p>
+  </div>
+</section>
+
+<style>
+  @media (max-width: 767px) {
+    .levels thead {
+      display: none;
+    }
+    .levels tr,
+    .levels th,
+    .levels td {
+      display: block;
+    }
+    .levels th {
+      padding-bottom: 0.5rem;
+    }
+    .levels td {
+      padding-top: 0.25rem;
+      padding-bottom: 0.5rem;
+    }
+    .levels tr {
+      padding-bottom: 1rem;
+    }
+  }
+</style>

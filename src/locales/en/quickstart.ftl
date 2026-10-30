@@ -1,0 +1,9 @@
+qs-title = Running in four commands.
+qs-lede = Nestor isn't released yet: today you build it from the repository. You need Docker and a machine that stays on.
+qs-1 = Get the code.
+qs-2 = Write a first configuration, its secrets and the owner account. It never overwrites anything.
+qs-3 = Add your model provider's key to the secrets it just wrote.
+qs-4 = Start it, then open the admin.
+qs-admin = The admin is at
+qs-terminal = Terminal
+qs-docs = Read the README

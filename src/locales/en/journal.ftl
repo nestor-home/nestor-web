@@ -1,0 +1,10 @@
+jr-title = “Why did it speak to me?” has an answer.
+jr-lede = Every turn, tool call, task, memory, unprompted message and policy decision is written to an append-only journal. The admin reads it back as stories: a cause, its effects, and the reason behind every decision.
+jr-note-1 = Live: events arrive as they happen.
+jr-note-2 = Every decision carries its reason, in words.
+jr-note-3 = Open a story to follow it from the mail to the message.
+jr-clip = The journal in the admin: the live tail, then a story opening.
+jr-more-title = The rest of the admin
+jr-more-command = Everything is a keystroke away.
+jr-more-filters = Filter by person, channel, room or kind.
+jr-more-mobile = The same admin on a phone.

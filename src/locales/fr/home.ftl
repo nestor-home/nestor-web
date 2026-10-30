@@ -1,0 +1,17 @@
+home-title = Home Assistant connaît la maison. Nestor lui demande.
+home-lede = Nestor n'invente aucun signal de présence. Il lit ce que la maison sait déjà, au niveau le plus fin disponible, et décide d'où parler. Les appareils se pilotent par le serveur MCP de Home Assistant lui-même.
+home-level = Niveau
+home-source = Ce que fournit Home Assistant
+home-knows = Ce que Nestor en fait
+home-1 = À la maison
+home-1-source = entités `person` : géolocalisation, routeur
+home-1-knows = Sait qui est là. Parle sur le satellite principal du foyer, et écrit si personne ne réagit.
+home-2 = Pièce occupée
+home-2-source = capteurs de présence ou de mouvement rattachés à une pièce
+home-2-knows = Sait qu'une pièce est occupée, pas par qui. Parle dans cette pièce.
+home-3 = Personne dans une pièce
+home-3-source = suivi par pièce rattaché à une personne, des balises BLE par exemple
+home-3-knows = Sait qui est où. Parle à la bonne personne, dans la bonne pièce.
+home-note = Une source de présence déclare le niveau qu'elle fournit ; la décision de livraison s'y adapte, sans code.
+home-command = Allume le salon.
+home-command-result = light.salon → allumé · confirmé par Home Assistant

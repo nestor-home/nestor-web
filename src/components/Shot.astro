@@ -1,0 +1,45 @@
+---
+/** An admin capture, in the page's theme, optimised to AVIF and WebP at build time. */
+import { Picture } from "astro:assets";
+import type { Locale } from "@/i18n";
+import { shot, THEMES } from "@/lib/media";
+
+interface Props {
+  name: string;
+  locale: Locale;
+  alt: string;
+  sizes?: string;
+  class?: string;
+  eager?: boolean;
+}
+const {
+  name,
+  locale,
+  alt,
+  sizes = "(min-width: 1280px) 1200px, 100vw",
+  class: className = "",
+  eager = false,
+} = Astro.props;
+const pictures = THEMES.map((theme) => ({ theme, src: shot(name, theme, locale) })).filter((p) => p.src);
+const widths = [640, 960, 1280, 1600, 2400];
+---
+
+{
+  pictures.map(({ theme, src }) =>
+    src ? (
+      <Picture
+        src={src}
+        alt={alt}
+        formats={["avif", "webp"]}
+        fallbackFormat="webp"
+        quality={78}
+        widths={widths.filter((w) => w <= src.width)}
+        sizes={sizes}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        pictureAttributes={{ class: `only-${theme}` }}
+        class:list={["block h-auto w-full", className]}
+      />
+    ) : null,
+  )
+}

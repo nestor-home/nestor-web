@@ -1,0 +1,40 @@
+---
+/** A shell command on one line, with a copy button; the prompt is decoration, not copied. */
+import { Check, Copy } from "lucide-react";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+  command: string;
+  class?: string;
+}
+const { t, command, class: className = "" } = Astro.props;
+---
+
+<div class:list={["copy-command flex items-center gap-3 border border-rule bg-paper-raised py-1 pr-1 pl-3", className]}>
+  <code class="min-w-0 flex-1 overflow-x-auto py-1.5 font-mono text-[0.8rem] whitespace-nowrap text-ink">
+    <span class="text-ink-faint select-none" aria-hidden="true">$ </span>{command}
+  </code>
+  <button
+    type="button"
+    data-copy={command}
+    data-copied={t("copied")}
+    class="copy-btn inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm px-2.5 font-mono text-[0.7rem] text-ink-muted hover:bg-paper-sunken hover:text-ink"
+  >
+    <Copy className="copy-idle size-3.5" strokeWidth={1.6} aria-hidden="true" />
+    <Check className="copy-done size-3.5 text-sage" strokeWidth={1.6} aria-hidden="true" />
+    <span data-copy-label aria-live="polite">{t("copy")}</span>
+  </button>
+</div>
+
+<style>
+  .copy-done {
+    display: none;
+  }
+  .copy-btn[data-done] .copy-done {
+    display: block;
+  }
+  .copy-btn[data-done] .copy-idle {
+    display: none;
+  }
+</style>

@@ -1,0 +1,13 @@
+---
+/** The logo slot, as in the admin: "nestor" in the display serif, then the ember block cursor. */
+interface Props {
+  class?: string;
+  blink?: boolean;
+}
+const { class: className = "", blink = false } = Astro.props;
+---
+
+<span class:list={["wordmark inline-flex items-baseline font-serif leading-none text-ink", className]}>
+  <span class="font-medium tracking-[-0.02em] [font-variation-settings:'SOFT'_100,'opsz'_72]">nestor</span>
+  <span aria-hidden="true" class:list={["cursor", blink && "cursor-blink"]}></span>
+</span>

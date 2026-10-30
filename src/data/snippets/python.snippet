@@ -1,0 +1,23 @@
+import asyncio
+from nestor_satellite import AUDIO_CAPTURE, AUDIO_PLAYBACK, EXPRESSION, Body, Device, Manifest, Satellite, TokenStore
+from nestor_satellite.devices import Microphone, Speaker
+
+
+class Led(Body):
+    def behavior(self, behavior):
+        print("attitude:", behavior)
+
+    def expression(self, expression, intensity):
+        print("expression:", expression, intensity)
+
+
+manifest = Manifest.of(Device("enceinte-salon", "raspberry-pi-4", "salon"), AUDIO_CAPTURE, AUDIO_PLAYBACK, EXPRESSION)
+satellite = Satellite(
+    "http://nestor.local:7860",
+    manifest,
+    tokens=TokenStore("~/.config/salon.json"),
+    body=Led(),
+    source=Microphone(),
+    sink=Speaker(),
+)
+asyncio.run(satellite.run())  # shows a pairing code the first time, then reconnects forever

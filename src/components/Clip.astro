@@ -1,0 +1,63 @@
+---
+/**
+ * A short screen recording of the admin: muted, inline, played only while on screen (and never by
+ * itself under reduced motion), one per theme, with its poster as the still fallback.
+ */
+import { Pause, Play } from "lucide-react";
+import type { Translator } from "@/i18n";
+import { clip } from "@/lib/media";
+
+interface Props {
+  name: string;
+  t: Translator;
+  label: string;
+  class?: string;
+}
+const { name, t, label, class: className = "" } = Astro.props;
+const sources = clip(name, t.locale);
+---
+
+{
+  sources.length > 0 && (
+    <figure class:list={["clip relative", className]}>
+      {sources.map((s) => (
+        <div class={`only-${s.theme} relative`}>
+          <video
+            id={`clip-${name}-${s.theme}`}
+            data-autoplay
+            muted
+            loop
+            playsinline
+            preload="none"
+            poster={`${s.base}.poster.webp`}
+            width={s.width}
+            height={s.height}
+            aria-label={label}
+            class="block h-auto w-full bg-paper"
+          >
+            <source src={`${s.base}.webm`} type="video/webm" />
+            <source src={`${s.base}.mp4`} type="video/mp4" />
+          </video>
+          <button
+            type="button"
+            data-video-toggle
+            aria-controls={`clip-${name}-${s.theme}`}
+            aria-pressed="true"
+            class="clip-toggle absolute right-2 bottom-2 grid size-8 place-items-center rounded-sm border border-rule bg-paper-raised/90 text-ink-muted hover:text-ink"
+          >
+            <Play className="clip-play size-3.5" strokeWidth={1.6} aria-hidden="true" />
+            <Pause className="clip-pause size-3.5" strokeWidth={1.6} aria-hidden="true" />
+            <span class="sr-only">{t("video-pause")}</span>
+          </button>
+        </div>
+      ))}
+    </figure>
+  )
+}
+
+<style>
+  .clip-toggle[aria-pressed="false"] :global(.clip-play),
+  .clip-toggle[aria-pressed="true"] :global(.clip-pause) {
+    display: none;
+  }
+</style>

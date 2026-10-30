@@ -1,0 +1,14 @@
+thesis-title = Nestor is not the model, the robot or the conversation. It is the agent that persists behind them.
+thesis-swap-before = Change the
+thesis-swap-after = — it is still the same agent.
+thesis-word-1 = model
+thesis-word-2 = voice
+thesis-word-3 = speaker
+thesis-word-4 = channel
+thesis-word-5 = server
+thesis-identity = Identity
+thesis-identity-text = A name, a persona and a voice the household recognises. The persona is built from what is actually plugged in, so it never promises what it can't do.
+thesis-memory = Memory
+thesis-memory-text = Per person, dated and sourced. “Remember that Mathilde is vegetarian” said in the kitchen is still known on Telegram two days later.
+thesis-promises = Promises
+thesis-promises-text = Tasks and watches it agreed to are durable: they survive a restart and deliver their result once, to the right person, where they are.

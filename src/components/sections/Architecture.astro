@@ -1,0 +1,179 @@
+---
+import type { Translator } from "@/i18n";
+import Architecture, { type Part, type PartId } from "@/islands/Architecture";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+/** The contracts each part implements or uses, as named in nestor/src/nestor/modules. */
+const PORTS: Record<PartId, string[]> = {
+  agent: ["ConversationModel", "ToolProvider"],
+  memory: ["MemoryStore"],
+  initiative: ["InboundEventSource", "Channel.send"],
+  journal: ["EventLog", "BlobStore"],
+  channels: ["Channel"],
+  satellites: ["SatelliteHost", "Body"],
+  home: ["PresenceSource", "ToolProvider"],
+  connectors: ["Connector", "CredentialVault"],
+  executors: ["Executor"],
+  providers: ["ConversationModel"],
+};
+const ids = Object.keys(PORTS) as PartId[];
+const parts: Part[] = ids.map((id) => ({
+  id,
+  title: t(`arch-${id}`),
+  text: t(`arch-${id}-text`),
+  points: [t(`arch-${id}-point-1`), t(`arch-${id}-point-2`)],
+  ports: PORTS[id],
+}));
+---
+
+<section id="system" class="section border-t border-rule" aria-labelledby="arch-title">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="arch-title" data-reveal class="display-2 text-ink">{t("arch-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("arch-lede")}</p>
+    </div>
+    <div data-reveal class="mt-14">
+      <Architecture
+        client:visible
+        parts={parts}
+        coreLabel={t("arch-core")}
+        portsLabel={t("arch-ports")}
+      />
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .arch {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 1024px) {
+    .arch {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+  .arch-diagram {
+    position: relative;
+    display: grid;
+    gap: 2.25rem 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "channels satellites"
+      "core core"
+      "home connectors"
+      "providers executors";
+  }
+  @media (min-width: 640px) {
+    .arch-diagram {
+      gap: 3rem 1.5rem;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) minmax(0, 1fr);
+      grid-template-areas:
+        "channels satellites home"
+        "providers core connectors"
+        ". executors .";
+    }
+  }
+  .arch-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .arch-line {
+    fill: none;
+    stroke: var(--rule-strong);
+    stroke-width: 1;
+    transition: stroke var(--duration) var(--ease);
+  }
+  .arch-line[data-lit] {
+    stroke: var(--ember);
+    stroke-dasharray: 4 4;
+    animation: flow 1.2s linear infinite;
+  }
+  @keyframes flow {
+    to {
+      stroke-dashoffset: -16;
+    }
+  }
+  .arch-node {
+    position: relative;
+    z-index: 1;
+    min-height: 3.25rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--rule);
+    background: var(--paper-raised);
+    text-align: left;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-variation);
+    font-size: 1.02rem;
+    color: var(--ink-muted);
+    cursor: pointer;
+    opacity: 0.6;
+    transition:
+      opacity var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      color var(--duration) var(--ease),
+      background-color var(--duration) var(--ease);
+  }
+  .arch-node[data-lit] {
+    opacity: 1;
+    color: var(--ink);
+    border-color: var(--rule-strong);
+  }
+  .arch-node[data-shown] {
+    border-color: var(--ember);
+    color: var(--ember);
+  }
+  .arch-node[aria-pressed="true"]::after {
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--ember);
+  }
+  .arch-diagram > .arch-node {
+    align-self: center;
+  }
+  .arch-node[data-inner] {
+    background: var(--paper);
+  }
+  .arch-core {
+    position: relative;
+    z-index: 1;
+    border: 1px solid var(--rule-strong);
+    background: var(--paper-raised);
+    padding: 0.75rem;
+  }
+  .arch-core-label {
+    font-family: var(--font-data);
+    font-size: 0.7rem;
+    color: var(--ink-muted);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+  .arch-core-grid {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "agent memory"
+      "initiative journal";
+  }
+  .arch-detail {
+    min-height: 22rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .arch-line[data-lit] {
+      animation: none;
+    }
+  }
+</style>
