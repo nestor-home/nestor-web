@@ -1,5 +1,5 @@
 ---
-import { Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import Wordmark from "@/components/Wordmark.astro";
 import { href, type Page, type Translator } from "@/i18n";
@@ -60,6 +60,21 @@ const other = t.locale === "en" ? "fr" : "en";
         <Sun className="theme-icon-light size-4" strokeWidth={1.6} aria-hidden="true" />
         <Moon className="theme-icon-dark size-4" strokeWidth={1.6} aria-hidden="true" />
       </button>
+      {
+        nav.length > 0 && (
+          <button
+            type="button"
+            class="menu-button grid size-9 place-items-center rounded-sm text-ink-muted hover:text-ink lg:hidden"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+            data-menu-toggle
+          >
+            <Menu className="menu-open size-4" strokeWidth={1.6} aria-hidden="true" />
+            <X className="menu-close size-4" strokeWidth={1.6} aria-hidden="true" />
+            <span class="sr-only">{t("nav-menu")}</span>
+          </button>
+        )
+      }
       <a href={REPOS.nestor} class="btn btn-ink ml-1 h-9 px-3 text-[0.85rem]">
         <Brand brand="github" class="size-4" decorative />
         <span class="hidden sm:inline">{t("nav-github")}</span>
@@ -67,6 +82,21 @@ const other = t.locale === "en" ? "fr" : "en";
       </a>
     </div>
   </div>
+  {
+    nav.length > 0 && (
+      <nav id="mobile-menu" class="mobile-menu border-t border-rule lg:hidden" aria-label={t("nav-label")} hidden>
+        <ul class="wrap flex flex-col py-2">
+          {nav.map((item) => (
+            <li>
+              <a href={item.href} class="block border-b border-rule py-3 text-[1.05rem] text-ink" data-menu-link>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
 </header>
 
 <style>
@@ -77,6 +107,18 @@ const other = t.locale === "en" ? "fr" : "en";
   }
   .site-header[data-scrolled] {
     border-bottom-color: var(--rule);
+  }
+  .menu-close {
+    display: none;
+  }
+  .menu-button[aria-expanded="true"] .menu-open {
+    display: none;
+  }
+  .menu-button[aria-expanded="true"] .menu-close {
+    display: block;
+  }
+  .mobile-menu {
+    background: var(--paper);
   }
   .nav-link[data-active] {
     color: var(--ink);
