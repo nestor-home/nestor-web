@@ -25,7 +25,8 @@ describe("components", () => {
 
   it("islands contain no hard-coded sentences", () => {
     const offenders = files("src/islands", /\.tsx$/).flatMap((file) => {
-      const jsx = readFileSync(file, "utf8").split("return (").slice(1).join("\n");
+      // the markup each component returns, nothing around it
+      const jsx = [...readFileSync(file, "utf8").matchAll(/return \(([\s\S]*?)\n\s*\);/g)].map((m) => m[1]).join("\n");
       return literals(jsx).map((text) => `${file}: ${text}`);
     });
     expect(offenders).toEqual([]);

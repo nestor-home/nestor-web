@@ -213,10 +213,13 @@ test.describe("Nestor in the page", () => {
     await expect(dock.locator("svg.nestor")).toHaveAttribute("data-state", /sleeping|speaking/);
     const box = await dock.boundingBox();
     // the text column ends where the wrap's padding begins; the dock stays to its right
-    const textRight = await page.locator("main .wrap").first().evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return rect.right - Number.parseFloat(getComputedStyle(el).paddingRight);
-    });
+    const textRight = await page
+      .locator("main .wrap")
+      .first()
+      .evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        return rect.right - Number.parseFloat(getComputedStyle(el).paddingRight);
+      });
     expect(box?.x ?? 0).toBeGreaterThanOrEqual(textRight);
     await dock.hover();
     await page.getByRole("button", { name: "Hide Nestor" }).click();
