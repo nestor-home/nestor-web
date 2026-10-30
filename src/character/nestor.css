@@ -33,13 +33,6 @@
 .nestor .nestor-tuft {
   fill: var(--nestor-ink);
 }
-.nestor .nestor-rim {
-  fill: none;
-  stroke: var(--nestor-paper);
-  stroke-opacity: 0.3;
-  stroke-width: 2.6;
-  stroke-linecap: round;
-}
 .nestor .nestor-bow {
   fill: var(--nestor-paper);
 }
@@ -79,9 +72,9 @@
   transform-origin: 50% 0;
   transition: transform 200ms var(--nestor-ease);
 }
-.nestor .nestor-ground-dot {
+.nestor .nestor-ground {
   fill: var(--nestor-ink);
-  opacity: 0.45;
+  opacity: 0.08;
 }
 .nestor .nestor-thoughts rect {
   fill: var(--nestor-ink);
@@ -95,7 +88,7 @@
   opacity: 0;
   transform-origin: 104px 30px;
 }
-.nestor .nestor-sound path {
+.nestor .nestor-sound {
   fill: none;
   stroke: var(--nestor-ember);
   stroke-width: 2.4;
@@ -160,27 +153,16 @@
   animation: nestor-breathe 3s ease-in-out infinite;
 }
 .nestor[data-state="listening"] .nestor-tuft {
-  transform: rotate(-12deg);
+  transform: rotate(-20deg) translateY(-1px);
 }
-.nestor[data-state="listening"] .nestor-iris {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(1.12);
-}
-.nestor[data-state="listening"] .nestor-sound path {
-  animation: nestor-sound 1.4s infinite;
-}
-.nestor[data-state="listening"] .nestor-sound path:nth-child(2) {
-  animation-delay: 0.2s;
+.nestor[data-state="listening"] .nestor-sound {
+  opacity: 0.85;
+  animation: nestor-sound 2.4s ease-in-out infinite;
 }
 
 .nestor[data-state="thinking"] {
   --nestor-sgx: 3;
   --nestor-sgy: -4;
-}
-.nestor[data-state="thinking"] .nestor-brow-r {
-  opacity: 1;
-  transform: translateY(-2px) rotate(-6deg);
 }
 .nestor[data-state="thinking"] .nestor-thoughts rect {
   animation: nestor-think 1.4s infinite;
@@ -233,15 +215,12 @@
   animation: nestor-breathe 6s ease-in-out infinite;
 }
 
-/* working: eyes down on the task, half-lidded; the cursor blinks like a terminal's */
+/* working: eyes down on the task, half-lidded, a spinner at its side */
 .nestor[data-state="working"] {
   --nestor-sgy: 3;
 }
 .nestor[data-state="working"] .nestor-lid {
   transform: scaleY(0.4);
-}
-.nestor[data-state="working"] .nestor-mouth {
-  animation: nestor-cursor 1s steps(1, end) infinite;
 }
 .nestor[data-state="working"] .nestor-spinner {
   opacity: 1;
@@ -305,10 +284,10 @@
 @keyframes nestor-sound {
   0%,
   100% {
-    opacity: 0;
+    opacity: 0.45;
   }
-  40% {
-    opacity: 1;
+  50% {
+    opacity: 0.95;
   }
 }
 @keyframes nestor-speak {
@@ -360,14 +339,6 @@
     transform: rotate(-10deg);
   }
 }
-@keyframes nestor-cursor {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.15;
-  }
-}
 @keyframes nestor-spin {
   to {
     transform: rotate(360deg);
@@ -408,10 +379,70 @@
     transition: none !important;
   }
   .nestor[data-state="thinking"] .nestor-thoughts rect,
-  .nestor[data-state="listening"] .nestor-sound path {
+  .nestor[data-state="listening"] .nestor-sound {
     opacity: 0.8;
   }
   .nestor[data-state="speaking"] .nestor-mouth {
     transform: scaleY(2);
   }
+}
+
+/* ── the bow tie on the character: paper wings, ember knot ─────────────────────────────── */
+.nestor .nestor-bow .nestor-bow-wing {
+  fill: var(--nestor-paper);
+}
+.nestor .nestor-bow .nestor-bow-knot {
+  fill: var(--nestor-ember);
+}
+
+/* ── the bow tie alone, and the logo ───────────────────────────────────────────────────── */
+.nestor-tie {
+  display: inline-block;
+  overflow: visible;
+}
+.nestor-tie .nestor-tie-wing {
+  fill: var(--nestor-tie-wing, var(--ember, #ad401d));
+}
+.nestor-tie .nestor-tie-knot {
+  fill: var(--nestor-tie-knot, var(--ember, #ad401d));
+}
+
+.nestor-logo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.1em;
+  color: var(--ink, #1d1913);
+  font-family: var(--font-display, "Fraunces Variable", Georgia, serif);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variation-settings:
+    "SOFT" 100,
+    "opsz" 72;
+  white-space: nowrap;
+}
+.nestor-logo-cursor {
+  display: inline-block;
+  width: 0.36em;
+  height: 0.62em;
+  background: var(--ember, #ad401d);
+  transform: translateY(0.02em);
+}
+.nestor-logo-tie {
+  display: inline-flex;
+  line-height: 0;
+  margin-left: -0.03em;
+  transform: translateY(-0.05em);
+}
+.nestor-logo-tie .nestor-tie {
+  width: 0.62em;
+  height: auto;
+}
+.nestor-logo--lockup {
+  align-items: center;
+  gap: 0.25em;
+}
+.nestor-logo-character {
+  display: inline-flex;
+  margin-right: 0.08em;
 }

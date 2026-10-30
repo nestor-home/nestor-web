@@ -3,8 +3,8 @@
  * website, icons). Units are those of a 120 × 120 box; the character stands on y = 108.
  *
  * Its marks: a pebble that leans slightly right, a quiff swept to the right, two paper eyes,
- * the ember cursor of the wordmark as its mouth (its voice), and a small paper bow tie — the
- * butler at your service, without the costume.
+ * the ember cursor of the wordmark as its mouth (its voice), and a small bow tie: the butler at
+ * your service, without the costume. Flat colours only: nothing else on its skin.
  */
 export const VIEWBOX = "0 0 120 120";
 export const SIZE = 120;
@@ -13,11 +13,18 @@ export const BODY = "M57 21C80 19 100 37 102 63C104 90 87 107 61 107C35 107 17 9
 /** The quiff: perks up when it listens, droops when it sleeps. Rotates around its root. */
 export const TUFT = "M50 23C49 16 53 10 60 6C59 11 61 15 66 20C61 21 55 22 50 23Z";
 export const TUFT_ROOT = { x: 56, y: 22 };
-/** A clean rim of light along the upper-left edge: form without texture. */
-export const RIM = "M26 50C30 36 41 27 54 25";
-/** The bow tie, at the foot of the body. */
-export const BOW = "M50.5 96L59.5 100.5L50.5 105ZM68.5 96L59.5 100.5L68.5 105Z";
-export const KNOT = { cx: 59.5, cy: 100.5, r: 2.3 };
+/**
+ * The bow tie, drawn around its knot at (0, 0) in a 44 × 24 box: the same one in the logo, the
+ * monogram and on the character (placed with BOW_AT).
+ */
+export const BOW_WINGS = [
+  "M-2.4 -2.4C-6 -4.6 -11 -8.6 -16.5 -10.2C-19.6 -11 -21 -6 -21 0C-21 6 -19.6 11 -16.5 10.2C-11 8.6 -6 4.6 -2.4 2.4Z",
+  "M2.4 -2.4C6 -4.6 11 -8.6 16.5 -10.2C19.6 -11 21 -6 21 0C21 6 19.6 11 16.5 10.2C11 8.6 6 4.6 2.4 2.4Z",
+] as const;
+export const BOW_KNOT = { x: -3.4, y: -4.4, width: 6.8, height: 8.8, r: 2 };
+export const BOW_VIEWBOX = "-22 -12 44 24";
+/** Where the bow tie sits on the character: centred at the foot of its body. */
+export const BOW_AT = { x: 59.5, y: 100.5, scale: 0.44 };
 
 export const EYES = [
   { cx: 46.5, cy: 61 },
@@ -42,5 +49,14 @@ export const THOUGHTS = [
   { x: 111, y: 9, size: 6 },
 ] as const;
 export const SPINNER = "M104 20A10 10 0 0 1 114 30";
-/** Listening: two arcs of sound arriving at its side. */
-export const SOUND = ["M108 52Q113 61 108 70", "M114 47Q121 61 114 75"] as const;
+/** Listening: one thin arc of sound at its side (with the quiff raised). */
+export const SOUND = "M109 50Q115 61 109 72";
+
+/**
+ * @deprecated The first, straight-edged bow tie, in the character's 120-unit box (around 50…69,
+ * 96…105). Kept so existing callers still compile; draw the bow tie with `renderBowTie()` or
+ * BOW_WINGS / BOW_KNOT instead.
+ */
+export const BOW = "M50.5 96L59.5 100.5L50.5 105ZM68.5 96L59.5 100.5L68.5 105Z";
+/** @deprecated See BOW. */
+export const KNOT = { cx: 59.5, cy: 100.5, r: 2.3 };
