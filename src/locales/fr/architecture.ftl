@@ -1,5 +1,5 @@
 arch-title = Un cœur, et tout le reste branché.
-arch-lede = Le cœur tourne sur votre serveur et ne connaît aucun fournisseur. Canaux, satellites, maison, comptes, exécutants et fournisseurs d’IA s’y branchent par des contrats publics. Choisissez une partie pour voir son rôle.
+arch-lede = Le cœur ne connaît aucun fournisseur ; tout le reste se branche. Choisissez une partie.
 arch-core = Le cœur
 arch-ports = Contrats
 

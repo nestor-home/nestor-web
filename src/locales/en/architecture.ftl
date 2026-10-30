@@ -1,5 +1,5 @@
 arch-title = One core, everything else plugged in.
-arch-lede = The core runs on your server and knows no vendor. Channels, satellites, the home, accounts, executors and AI providers connect through public contracts. Pick a part to see what it does.
+arch-lede = The core knows no vendor; everything else plugs in. Pick a part.
 arch-core = The core
 arch-ports = Contracts
 

@@ -24,3 +24,4 @@ nestor-label = Nestor
 nf-title = Personne dans cette pièce.
 nf-text = La page demandée n’est pas ici. La maison, c’est par là.
 nf-home = Retour à l’accueil
+nav-menu = Menu

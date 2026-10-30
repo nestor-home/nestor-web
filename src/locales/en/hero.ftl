@@ -1,10 +1,10 @@
 hero-line-1 = The agent
 hero-line-2 = that lives
 hero-line-3 = at home.
-hero-lede = Nestor is an assistant for the whole household. It knows who’s home, remembers what each person told it, takes care of the long things while you get on with your day — and speaks up at the right moment, in the room you’re in or on your phone.
+hero-lede = An assistant for the whole household. It knows who’s home, remembers each person, handles the long tasks — and speaks up at the right moment, wherever you are.
 hero-day = See a day with Nestor
 hero-install = Install it
 hero-note = Open source · runs on your own machine
 hero-ask-who = Léa
 hero-ask = Tell me when my parcel arrives.
-hero-say = I’ll keep an eye on your mail and tell you as soon as it’s there.
+hero-say = I’ll watch your mail and tell you.

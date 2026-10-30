@@ -1,5 +1,5 @@
 sat-title = Any device can be a satellite.
-sat-lede = A Reachy Mini, a Raspberry Pi speaker, a tablet on the kitchen wall, a browser tab. A satellite pairs with a code, declares what it can do, streams audio over WebRTC and carries out what the core asks.
+sat-lede = A satellite pairs with a code, declares what it can do, streams audio over WebRTC and carries out what the core asks.
 sat-pair-title = Pairing takes a code.
 sat-pair-text = The device shows six digits; you type them in the admin. It gets its own token and only the capabilities you allowed. Refused by default, revocable at any time.
 sat-device = enceinte-salon

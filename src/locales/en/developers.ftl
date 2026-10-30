@@ -1,9 +1,9 @@
 dev-title = Build with Nestor.
-dev-lede = An open-source runtime in Python that keeps one agent alive for a household, with public contracts for everything around it: channels, satellites, connectors, executors and AI providers. Nothing vendor-specific in the core.
+dev-lede = A Python runtime that keeps one agent alive for a household. Everything around the core — channels, satellites, connectors, executors, AI providers — plugs in through public contracts.
 dev-facts-1 = Python 3.12+ · SQLite · MIT
 dev-facts-2 = Satellites over WebRTC · SDKs in Python, TypeScript, Rust
 dev-facts-3 = Home Assistant · MCP · OAuth 2.1 with PKCE
 dev-story-title = One watch, through the system.
-dev-story-lede = The parcel scene from the home page, as the core lives it: a watch, a trigger, three-stage triage, a delivery decision with its reason, a follow-up — all in the journal.
+dev-story-lede = The parcel, as the core lives it.
 dev-i18n-title = Bilingual by design, open by licence.
 dev-i18n-text = The core, the admin and this site speak English and French through Project Fluent catalogues; adding a language is adding files. Everything is MIT-licensed.

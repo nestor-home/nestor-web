@@ -1,5 +1,5 @@
 con-title = Des comptes, branchés depuis l’administration.
-con-lede = Un catalogue, un bouton « Connecter », le consentement chez le fournisseur, puis un interrupteur par outil. Aucun fichier à éditer, aucun jeton collé dans une variable d’environnement. En natif pour le mail ; tout serveur MCP sans code.
+con-lede = Un catalogue, le consentement chez le fournisseur, un interrupteur par outil. Le mail en natif ; tout serveur MCP sans code.
 con-1 = Choisir
 con-1-text = Gmail et n’importe quelle boîte IMAP en natif. N’importe quel serveur MCP — Linear, Notion, GitHub, vos propres scripts — sans code.
 con-2 = Consentir

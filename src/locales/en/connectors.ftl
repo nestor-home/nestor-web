@@ -1,5 +1,5 @@
 con-title = Accounts, plugged in from the admin.
-con-lede = A catalogue, a Connect button, consent at the provider, then a switch per tool. No file to edit, no token pasted into an environment variable. Natively for mail; any MCP server without code.
+con-lede = A catalogue, consent at the provider, a switch per tool. Mail natively; any MCP server without code.
 con-1 = Choose
 con-1-text = Gmail and any IMAP mailbox natively. Any MCP server — Linear, Notion, GitHub, your own scripts — without code.
 con-2 = Consent

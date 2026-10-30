@@ -1,5 +1,5 @@
 ctl-title = Yours, on your own machine.
-ctl-lede = Nestor runs where you put it. What it knows, what it may do and when it may speak are yours to see and to change.
+ctl-lede = What it knows, may do, and when it may speak — yours to see and change.
 ctl-1 = Local-first
 ctl-1-text = One SQLite file on your server holds the journal, memory, tasks and settings. Replicate it to a NAS or S3 with Litestream if you like.
 ctl-2 = Memory you can read

@@ -1,5 +1,5 @@
 qs-title = En route en quatre commandes.
-qs-lede = Nestor n’est pas encore publié : aujourd’hui, on le construit depuis le dépôt. Il faut Docker et une machine qui reste allumée.
+qs-lede = Pas encore publié : construisez-le depuis le dépôt. Il faut Docker et une machine qui reste allumée.
 qs-1 = Récupérer le code.
 qs-2 = Écrire une première configuration, ses secrets et le compte propriétaire. Rien n’est jamais écrasé.
 qs-3 = Ajouter la clé de votre fournisseur de modèle aux secrets qui viennent d’être écrits.
