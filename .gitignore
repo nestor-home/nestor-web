@@ -12,3 +12,6 @@ playwright-report/
 .live.mjs
 .rec.mjs
 .sheet.mjs
+.env
+.env.*
+!.env.example

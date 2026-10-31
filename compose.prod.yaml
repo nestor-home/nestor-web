@@ -1,0 +1,39 @@
+name: nestor-web
+services:
+  site:
+    image: ${NESTOR_WEB_IMAGE:-nestor-web:local}
+    container_name: nestor-web
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 64m
+    cpus: "0.25"
+    pids_limit: 64
+    networks: [proxy]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8080/healthz]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: proxy
+      traefik.http.routers.nestor-web.rule: Host(`nestor.mathislambert.fr`)
+      traefik.http.routers.nestor-web.entrypoints: websecure
+      traefik.http.routers.nestor-web.tls.certresolver: letsencrypt
+      traefik.http.services.nestor-web.loadbalancer.server.port: "8080"
+      traefik.http.routers.nestor-web-http.rule: Host(`nestor.mathislambert.fr`)
+      traefik.http.routers.nestor-web-http.entrypoints: web
+      traefik.http.routers.nestor-web-http.middlewares: nestor-web-https
+      traefik.http.middlewares.nestor-web-https.redirectscheme.scheme: https
+      traefik.http.middlewares.nestor-web-https.redirectscheme.permanent: "true"
+    logging:
+      driver: json-file
+      options: { max-size: 5m, max-file: "3" }
+
+networks:
+  proxy:
+    external: true
