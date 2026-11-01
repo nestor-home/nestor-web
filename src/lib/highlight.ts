@@ -50,12 +50,15 @@ const theme: ThemeRegistrationRaw = {
   ],
 };
 
-export type Lang = "python" | "typescript" | "rust" | "bash" | "json";
+export type Lang = "python" | "typescript" | "rust" | "bash" | "json" | "toml" | "yaml";
 
 let highlighter: ReturnType<typeof createHighlighter> | undefined;
 
 export async function highlight(code: string, lang: Lang): Promise<string> {
-  highlighter ??= createHighlighter({ themes: [theme], langs: ["python", "typescript", "rust", "bash", "json"] });
+  highlighter ??= createHighlighter({
+    themes: [theme],
+    langs: ["python", "typescript", "rust", "bash", "json", "toml", "yaml"],
+  });
   const html = (await highlighter).codeToHtml(code.trim(), { lang, theme: "nestor" });
   return html
     .replace(/#00000([1-7])/gi, (hex) => SLOTS[hex.toLowerCase() as keyof typeof SLOTS])

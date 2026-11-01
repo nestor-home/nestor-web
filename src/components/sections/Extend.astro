@@ -1,0 +1,140 @@
+---
+/**
+ * Extension points, with real code: an MCP server by configuration, an adapter as a Python plugin
+ * declared under the `nestor.adapters` entry points (as nestor's own pyproject declares its eight),
+ * and a satellite, checked by the conformance suite.
+ */
+import CopyCommand from "@/components/CopyCommand.astro";
+import type { Translator } from "@/i18n";
+import { highlight } from "@/lib/highlight";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+const MCP = `tools:
+  - kind: mcp
+    name: tickets
+    url: https://mcp.example.com/mcp
+    token: \${TICKETS_TOKEN}
+    exclude: [delete_issue]
+    risks:
+      create_issue: sensitive`;
+
+const ENTRY = `[project.entry-points."nestor.adapters"]
+my-executor = "my_package.executor:plugin"`;
+
+const PLUGIN = `from nestor.modules.cognition import Outcome, Progress, RemoteExecutor
+from nestor.runtime import AdapterSettings, Family, Plugin, Services
+
+
+class MySettings(AdapterSettings):
+    base_url: str
+    description: str
+
+
+class MyExecutor(RemoteExecutor):
+    def __init__(self, settings: MySettings) -> None:
+        self.base_url = settings.base_url
+        self.description = settings.description
+
+    async def submit(self, objective: str) -> str: ...
+    async def follow(self, ref: str, progress: Progress) -> Outcome: ...
+    async def stop(self, ref: str) -> bool: ...
+
+
+def build(settings: MySettings, name: str, services: Services) -> MyExecutor:
+    return MyExecutor(settings)
+
+
+plugin = Plugin(Family.EXECUTOR, "my-executor", MySettings, build)`;
+
+const CONFIG = `executors:
+  - kind: my-executor
+    base_url: https://agent.example.com/v1
+    description: ${t("ext-description")}`;
+
+const CONFORMANCE =
+  "uvx --from 'nestor-home[voice]' nestor satellites conformance -- nestor-satellite run --core {url} --room salon --null-audio --token-file {state}/token.json";
+
+/** the adapters nestor-home declares itself (its pyproject's `nestor.adapters`) */
+const BUILTINS = ["openai-compatible", "hermes", "telegram", "voice", "home-assistant", "mcp", "google", "imap"];
+
+const [mcp, entry, plugin, config] = await Promise.all([
+  highlight(MCP, "yaml"),
+  highlight(ENTRY, "toml"),
+  highlight(PLUGIN, "python"),
+  highlight(CONFIG, "yaml"),
+]);
+---
+
+<section id="extend" class="section border-t border-rule" aria-labelledby="ext-title" data-mood="working">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="ext-title" data-reveal class="display-2 text-ink">{t("ext-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("ext-lede")}</p>
+    </div>
+
+    <ol class="mt-14 flex flex-col">
+      <li class="ext-row">
+        <div data-reveal>
+          <p class="font-mono text-[0.75rem] text-ember tabular">1</p>
+          <h3 class="display-3 mt-2 text-ink">{t("ext-mcp")}</h3>
+          <p class="prose-copy mt-3">{t("ext-mcp-text")}</p>
+        </div>
+        <div data-reveal class="code border border-rule bg-paper-raised" set:html={mcp} />
+      </li>
+
+      <li class="ext-row">
+        <div data-reveal>
+          <p class="font-mono text-[0.75rem] text-ember tabular">2</p>
+          <h3 class="display-3 mt-2 text-ink">{t("ext-plugin")}</h3>
+          <p class="prose-copy mt-3" set:html={t.html("ext-plugin-text")} />
+          <p class="label-mono mt-6">{t("ext-builtins")}</p>
+          <ul class="mt-2 flex flex-wrap gap-1.5">
+            {BUILTINS.map((kind) => <li class="tag text-ink">{kind}</li>)}
+          </ul>
+        </div>
+        <div data-reveal class="flex min-w-0 flex-col gap-3">
+          <div class="code border border-rule bg-paper-raised" set:html={entry} />
+          <div class="code border border-rule bg-paper-raised" set:html={plugin} />
+          <p class="text-[0.9rem] text-ink-muted">{t("ext-plugin-config")}</p>
+          <div class="code border border-rule bg-paper-raised" set:html={config} />
+        </div>
+      </li>
+
+      <li class="ext-row">
+        <div data-reveal>
+          <p class="font-mono text-[0.75rem] text-ember tabular">3</p>
+          <h3 class="display-3 mt-2 text-ink">{t("ext-satellite")}</h3>
+          <p class="prose-copy mt-3">{t("ext-satellite-text")}</p>
+          <a href="#satellites" class="link mt-4 inline-block font-mono text-[0.8rem]">{t("ext-satellite-link")}</a>
+        </div>
+        <div data-reveal class="min-w-0 self-center">
+          <CopyCommand t={t} command={CONFORMANCE} />
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<style>
+  .ext-row {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--rule);
+  }
+  @media (min-width: 1024px) {
+    .ext-row {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 4rem;
+    }
+    .ext-row > :first-child {
+      position: sticky;
+      top: 6rem;
+      align-self: start;
+    }
+  }
+</style>

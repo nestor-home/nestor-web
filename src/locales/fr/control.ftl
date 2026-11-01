@@ -1,13 +1,13 @@
 ctl-title = À vous, sur votre machine.
 ctl-lede = Ce qu’il sait, ce qu’il peut faire, quand il peut parler : à vous de le voir et de le changer.
 ctl-1 = Local d’abord
-ctl-1-text = Un fichier SQLite sur votre serveur contient le journal, la mémoire, les tâches et les réglages. Répliquez-le vers un NAS ou S3 avec Litestream si vous le souhaitez.
+ctl-1-text = Un fichier SQLite sur votre serveur contient le journal, la mémoire, les tâches et les réglages. Il se sauvegarde comme n’importe quel fichier.
 ctl-2 = Une mémoire lisible
 ctl-2-text = Chaque souvenir est daté et sourcé, consultable, corrigeable et supprimable depuis l’administration.
 ctl-3 = Des comptes au coffre
 ctl-3-text = Chiffrés, jamais montrés au modèle, révoqués chez le fournisseur à la déconnexion.
 ctl-4 = Reconnaître n’est pas autoriser
-ctl-4-text = L’identification par la voix ou le visage est facultative, personne par personne. Une voix reconnue ne débloque jamais seule une action sensible.
+ctl-4-text = L’identification par la voix ou le visage sera facultative, personne par personne (prévu). Une voix reconnue ne débloquera jamais seule une action sensible.
 ctl-5 = Une initiative bien élevée
 ctl-5-text = Heures calmes, « pas maintenant », jamais au milieu d’une conversation. Urgent seulement si vous l’avez dit.
 ctl-6 = Un mail est une donnée, pas un ordre

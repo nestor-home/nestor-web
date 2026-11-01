@@ -4,12 +4,12 @@ import Connectors from "@/components/sections/Connectors.astro";
 import Control from "@/components/sections/Control.astro";
 import DevHero from "@/components/sections/DevHero.astro";
 import DevI18n from "@/components/sections/DevI18n.astro";
-import DevJournal from "@/components/sections/DevJournal.astro";
-import Fast from "@/components/sections/Fast.astro";
+import Events from "@/components/sections/Events.astro";
+import Extend from "@/components/sections/Extend.astro";
 import HomeAssistant from "@/components/sections/HomeAssistant.astro";
 import Quickstart from "@/components/sections/Quickstart.astro";
+import Runtime from "@/components/sections/Runtime.astro";
 import Satellites from "@/components/sections/Satellites.astro";
-import Story from "@/components/sections/Story.astro";
 import { href, type Locale, pageMeta, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
@@ -18,25 +18,26 @@ interface Props {
 }
 const t = translator(Astro.props.locale);
 const nav = [
+  { href: "#runtime", label: t("nav-runtime"), section: "runtime" },
   { href: "#system", label: t("nav-system"), section: "system" },
+  { href: "#journal", label: t("nav-journal"), section: "journal" },
+  { href: "#extend", label: t("nav-extend"), section: "extend" },
   { href: "#satellites", label: t("nav-satellites"), section: "satellites" },
-  { href: "#connectors", label: t("nav-connectors"), section: "connectors" },
   { href: "#start", label: t("nav-start"), section: "start" },
   { href: href(t.locale, "docs"), label: t("nav-docs") },
-  { href: href(t.locale, "home"), label: t("footer-home") },
 ];
 ---
 
 <Base locale={t.locale} {...pageMeta(t, "developers")} nav={nav}>
   <DevHero t={t} />
+  <Runtime t={t} />
   <Architecture t={t} />
-  <Story t={t} />
+  <Events t={t} />
+  <Extend t={t} />
   <Satellites t={t} />
   <Connectors t={t} />
   <HomeAssistant t={t} />
-  <Fast t={t} />
-  <DevJournal t={t} />
   <Control t={t} />
-  <DevI18n t={t} />
   <Quickstart t={t} />
+  <DevI18n t={t} />
 </Base>

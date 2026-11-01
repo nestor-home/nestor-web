@@ -1,0 +1,230 @@
+---
+/**
+ * How the runtime behaves in a conversation, without a single figure: one exchange drawn on three
+ * lanes (you, the agent, an executor), then the principles it shows. The bars grow once in view.
+ */
+import Tie from "@/components/Tie.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+type Bar = { at: number; len: number; text: string; kind: "you" | "say" | "tool" | "task" | "ack" | "cut" };
+const lanes: { id: string; bars: Bar[] }[] = [
+  {
+    id: "you",
+    bars: [
+      { at: 0, len: 27, text: "rt-you-1", kind: "you" },
+      { at: 44, len: 7, text: "rt-you-2", kind: "ack" },
+      { at: 84, len: 14, text: "rt-you-3", kind: "you" },
+    ],
+  },
+  {
+    id: "agent",
+    bars: [
+      { at: 28, len: 9, text: "rt-tool", kind: "tool" },
+      { at: 30, len: 30, text: "rt-agent-1", kind: "say" },
+      { at: 66, len: 20, text: "rt-agent-2", kind: "cut" },
+    ],
+  },
+  { id: "executor", bars: [{ at: 36, len: 29, text: "rt-task", kind: "task" }] },
+];
+const principles = [1, 2, 3, 4, 5, 6];
+---
+
+<section id="runtime" class="section border-t border-rule" aria-labelledby="rt-title" data-mood="listening">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="rt-title" data-reveal class="display-2 text-ink">{t("rt-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("rt-lede")}</p>
+    </div>
+
+    <div data-reveal class="lanes-scroll mt-14">
+      <div class="lanes corner-marks" data-inview-once>
+        {
+          lanes.map((lane) => (
+            <div class="lane">
+              <p class="lane-name label-mono">{t(`rt-lane-${lane.id}`)}</p>
+              <div class="lane-track">
+                {lane.bars.map((b) => (
+                  <span class="bar" data-kind={b.kind} data-end={b.at > 60 ? "" : undefined} style={`--at:${b.at};--len:${b.len}`}>
+                    <span class="bar-text">{t(b.text)}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+        <ul class="lane-notes font-mono text-[0.68rem] text-ink-muted">
+          <li><span class="swatch" data-kind="ack"></span>{t("rt-ack")}</li>
+          <li><span class="swatch" data-kind="cut"></span>{t("rt-cut")}</li>
+        </ul>
+      </div>
+    </div>
+
+    <dl class="mt-16 grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
+      {
+        principles.map((n, i) => (
+          <div data-reveal style={`--i:${i % 3}`} class="border-t border-rule py-6">
+            <dt class="flex items-center gap-2 font-serif text-[1.2rem] leading-snug text-ink">
+              <Tie size={13} />
+              {t(`rt-${n}`)}
+            </dt>
+            <dd class="mt-2 text-[0.92rem] leading-relaxed text-ink-muted">{t(`rt-${n}-text`)}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .lanes-scroll {
+    overflow-x: auto;
+  }
+  .lanes {
+    min-width: 46rem;
+    padding: 1.5rem 1.25rem 1.25rem;
+    border: 1px solid var(--rule);
+    background: var(--paper-raised);
+  }
+  .lane {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    align-items: start;
+    gap: 1rem;
+    padding-block: 0.5rem;
+  }
+  .lane + .lane {
+    border-top: 1px dashed var(--rule);
+  }
+  .lane-name {
+    padding-top: 0.35rem;
+  }
+  .lane-track {
+    position: relative;
+    height: 4.6rem;
+  }
+  .bar {
+    position: absolute;
+    top: 0;
+    left: calc(var(--at) * 1%);
+    width: calc(var(--len) * 1%);
+    height: 1.6rem;
+    border-radius: 3px;
+    background: var(--paper-sunken);
+    border: 1px solid var(--rule-strong);
+    transform-origin: left;
+  }
+  .bar-text {
+    position: absolute;
+    top: 2rem;
+    left: 0;
+    width: max(100%, 12rem);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    color: var(--ink-muted);
+  }
+  .bar[data-end] .bar-text {
+    left: auto;
+    right: 0;
+    text-align: right;
+  }
+  .bar[data-kind="you"] {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .bar[data-kind="you"] .bar-text {
+    color: var(--ink);
+  }
+  .bar[data-kind="say"],
+  .bar[data-kind="cut"] {
+    background: var(--ember-soft);
+    border-color: var(--ember);
+  }
+  .bar[data-kind="say"] .bar-text,
+  .bar[data-kind="cut"] .bar-text {
+    color: var(--ink);
+  }
+  .bar[data-kind="tool"] {
+    top: -0.1rem;
+    height: 0.4rem;
+    z-index: 1;
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+  .bar[data-kind="tool"] .bar-text {
+    top: auto;
+    bottom: 0.6rem;
+    color: var(--sage);
+    font-family: var(--font-data);
+    font-size: 0.64rem;
+    width: 18rem;
+  }
+  .bar[data-kind="task"] {
+    background: transparent;
+    border-color: var(--kind-task);
+    border-style: dashed;
+  }
+  .bar[data-kind="task"] .bar-text {
+    font-family: var(--font-data);
+    font-size: 0.68rem;
+    color: var(--kind-task);
+  }
+  .bar[data-kind="ack"],
+  .swatch[data-kind="ack"] {
+    background: transparent;
+    border: 1px dashed var(--ink-muted);
+  }
+  /* the reply that "wait" cut: its end, hatched */
+  .bar[data-kind="cut"]::after,
+  .swatch[data-kind="cut"] {
+    background: repeating-linear-gradient(135deg, var(--ember) 0 2px, transparent 2px 5px);
+  }
+  .bar[data-kind="cut"]::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 22%;
+  }
+  .lane-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-top: 0.75rem;
+    padding-left: 7rem;
+  }
+  .lane-notes li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .swatch {
+    display: inline-block;
+    width: 1.4rem;
+    height: 0.7rem;
+    border-radius: 2px;
+    border: 1px solid var(--ember);
+  }
+  /* growing once in view, left to right, in the order things happen */
+  :global(.js) .lanes .bar {
+    transform: scaleX(0);
+    opacity: 0;
+    transition:
+      transform 700ms var(--ease-out),
+      opacity 300ms var(--ease-out);
+    transition-delay: calc(var(--at) * 28ms);
+  }
+  :global(.js) .lanes[data-inview] .bar {
+    transform: none;
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .lanes .bar {
+      transform: none;
+      opacity: 1;
+    }
+  }
+</style>

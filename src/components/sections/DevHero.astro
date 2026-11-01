@@ -2,7 +2,7 @@
 import { ArrowUpRight } from "lucide-react";
 import Device from "@/components/Device.astro";
 import Tie from "@/components/Tie.astro";
-import type { Translator } from "@/i18n";
+import { href, type Translator } from "@/i18n";
 import { REPOS } from "@/lib/site";
 
 interface Props {
@@ -34,6 +34,9 @@ const repos = [
           ))
         }
       </ul>
+      <p class="mt-10">
+        <a href={href(t.locale, "docs")} class="btn btn-ink">{t("dev-docs")}</a>
+      </p>
     </div>
     <div class="flex flex-col items-start gap-6 lg:col-span-4 lg:items-end">
       <Device kind="browser" size={64} state="thinking" />

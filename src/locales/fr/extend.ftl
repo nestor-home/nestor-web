@@ -1,0 +1,12 @@
+ext-title = L’étendre sans toucher au cœur.
+ext-lede = Trois portes d’entrée, de zéro ligne de code à votre propre appareil.
+ext-mcp = N’importe quel serveur MCP, sans code
+ext-mcp-text = Quelques lignes de configuration donnent à l’agent tous les outils d’un serveur MCP distant. Chaque outil a un niveau de risque ; ceux qui écrivent demandent d’abord.
+ext-plugin = Un adaptateur est un plugin Python
+ext-plugin-text = Exécutants, canaux, modèles, sources de présence, outils et connecteurs sont des plugins. Un paquet en déclare un dans ses métadonnées, sous les points d’entrée `nestor.adapters`, comme ceux livrés avec Nestor.
+ext-plugin-config = Puis il se choisit dans la configuration, validée avant tout démarrage :
+ext-satellite = Un appareil est un satellite
+ext-satellite-text = Appairez n’importe quel appareil et donnez un corps à l’agent. Écrivez-le en Python, TypeScript ou Rust, puis vérifiez-le face au protocole en ligne de commande.
+ext-satellite-link = Les satellites, plus bas
+ext-builtins = Livrés aujourd’hui
+ext-description = chercher sur le web et écrire de courts rapports

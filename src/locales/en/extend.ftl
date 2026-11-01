@@ -1,0 +1,12 @@
+ext-title = Extend it without touching the core.
+ext-lede = Three ways in, from no code at all to your own device.
+ext-mcp = Any MCP server, no code
+ext-mcp-text = A few lines of configuration give the agent every tool of a remote MCP server. Each tool gets a risk level; writing ones ask first.
+ext-plugin = An adapter is a Python plugin
+ext-plugin-text = Executors, channels, models, presence sources, tools and connectors are plugins. A package declares one in its metadata, under the `nestor.adapters` entry points, the same way the built-in ones are declared.
+ext-plugin-config = Then pick it in the configuration, validated before anything starts:
+ext-satellite = A device is a satellite
+ext-satellite-text = Pair any device and give the agent a body. Write it in Python, TypeScript or Rust, then check it against the protocol from the command line.
+ext-satellite-link = Satellites, below
+ext-builtins = Built in today
+ext-description = research on the web and write short reports
