@@ -50,5 +50,5 @@ rafraîchir la copie, écrivez les schémas d’une version du serveur dans le d
 uvx --from nestor-home==<version> nestor satellites schemas --out schemas/
 ```
 
-`<version>` est la version du serveur que vise le SDK (0.0.2 ou plus récente). Adaptez ensuite le code jusqu’à ce que ses tests passent. Le SDK
+`<version>` est la version du serveur que vise le SDK. Adaptez ensuite le code jusqu’à ce que ses tests passent. Le SDK
 Python les garde dans `src/nestor_satellite/schemas/`, les SDK TypeScript et Rust dans `schemas/`.

@@ -18,7 +18,7 @@ The suite needs the server’s `voice` extra; uvx runs it without installing any
 uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance [--deadline SECONDS] -- <command>
 ```
 
-`<version>` is a server release from 0.1.0 on. Everything after `--` is your satellite’s command
+`<version>` is a server release. Everything after `--` is your satellite’s command
 line, in which:
 
 - `{url}` becomes the fake core’s address;
