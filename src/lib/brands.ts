@@ -1,11 +1,12 @@
 /**
  * Third-party marks the site shows, in one place (the admin's registry, trimmed). Marks identify an
- * integration (nominative use) and are never Nestor's branding. Two sources: Simple Icons (CC0) for
+ * integration (nominative use) and are never Nestor's branding. Sources: Simple Icons (CC0) for
  * services, Lobe Icons (`@lobehub/icons-static-svg`, MIT, by LobeHub) for AI providers, which Simple
- * Icons partly dropped at the brands' request. The admin's neutral lucide glyph stands for what is
- * not a brand (Hermes, Codex, any mailbox); a brand in neither set gets a text monogram, never a
- * drawn imitation. They are drawn in ink; `hex` is the brand's own colour, shown on hover where it
- * reads on both themes.
+ * Icons partly dropped at the brands' request, and for a brand in neither set its official mark,
+ * kept in src/assets/brands/ with its source and drawn in one colour. The admin's neutral lucide
+ * glyph stands for what is not a brand (Hermes, Codex, any mailbox); a brand without any published
+ * mark gets a text monogram, never a drawn imitation. They are drawn in ink; `hex` is the brand's
+ * own colour, shown on hover where it reads on both themes.
  */
 import anthropicSvg from "@lobehub/icons-static-svg/icons/anthropic.svg?raw";
 import elevenlabsSvg from "@lobehub/icons-static-svg/icons/elevenlabs.svg?raw";
@@ -56,6 +57,10 @@ import {
   siWebrtc,
   siWhatsapp,
 } from "simple-icons";
+import cartesiaSvg from "@/assets/brands/cartesia.svg?raw";
+import gradiumSvg from "@/assets/brands/gradium.svg?raw";
+import llamaCppSvg from "@/assets/brands/llama-cpp.svg?raw";
+import piperSvg from "@/assets/brands/piper.svg?raw";
 
 export interface Brand {
   name: string;
@@ -63,6 +68,8 @@ export interface Brand {
   paths?: readonly string[];
   glyph?: LucideIcon;
   monogram?: string;
+  /** an official mark in its own box: its viewBox and its shapes, filled with the current colour */
+  official?: { viewBox: string; shapes: string };
   /** paths drawn with the even-odd rule (Lobe Icons) */
   evenodd?: boolean;
   /** the brand's colour, only when it stays legible on paper and on ink */
@@ -92,6 +99,13 @@ const lobe = (name: string, svg: string, colour?: SimpleIcon): Brand => {
   return hex ? { name, paths, evenodd: true, hex } : { name, paths, evenodd: true };
 };
 const monogram = (name: string, letters: string): Brand => ({ name, monogram: letters });
+/** An official mark from src/assets/brands/: its viewBox and the shapes inside its root. */
+const official = (name: string, svg: string): Brand => {
+  const viewBox = svg.match(/<svg[^>]*\sviewBox="([^"]+)"/)?.[1];
+  const shapes = svg.match(/<svg[^>]*>([\s\S]*)<\/svg>/)?.[1];
+  if (!viewBox || !shapes) throw new Error(`[brands] the ${name} mark has no viewBox or shapes`);
+  return { name, official: { viewBox, shapes } };
+};
 
 export const BRANDS = {
   gmail: mark("Gmail", siGmail),
@@ -135,14 +149,14 @@ export const BRANDS = {
   ollama: lobe("Ollama", ollamaSvg),
   "lm-studio": lobe("LM Studio", lmstudioSvg, siLmstudio),
   vllm: lobe("vLLM", vllmSvg, siVllm),
-  "llama-cpp": monogram("llama.cpp", "L"),
+  "llama-cpp": official("llama.cpp", llamaCppSvg),
   elevenlabs: lobe("ElevenLabs", elevenlabsSvg),
-  gradium: monogram("Gradium", "G"),
+  gradium: official("Gradium", gradiumSvg),
   deepgram: mark("Deepgram", siDeepgram),
-  cartesia: monogram("Cartesia", "C"),
+  cartesia: official("Cartesia", cartesiaSvg),
   whisper: lobe("Whisper", openaiSvg), // OpenAI's model: its maker's mark
   kokoro: monogram("Kokoro", "K"),
-  piper: monogram("Piper", "P"),
+  piper: official("Piper", piperSvg),
 } as const satisfies Record<string, Brand>;
 
 export type BrandKey = keyof typeof BRANDS;

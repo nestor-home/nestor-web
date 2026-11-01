@@ -1,7 +1,8 @@
 ---
 /**
  * A third-party mark in the current ink; named for screen readers unless the text beside it already
- * is. A brand without a mark in either icon set shows its monogram, in a hairline tile.
+ * is. An official mark keeps its own box; a brand without any published mark shows its monogram,
+ * in a hairline tile.
  */
 import { BRANDS, type Brand, type BrandKey } from "@/lib/brands";
 
@@ -11,7 +12,7 @@ interface Props {
   decorative?: boolean;
 }
 const { brand, class: className = "size-4", decorative = false } = Astro.props;
-const { name, paths = [], glyph: Glyph, monogram, evenodd } = BRANDS[brand] as Brand;
+const { name, paths = [], glyph: Glyph, monogram, official, evenodd } = BRANDS[brand] as Brand;
 const label = {
   role: decorative ? undefined : ("img" as const),
   "aria-label": decorative ? undefined : name,
@@ -22,6 +23,8 @@ const label = {
 {
   Glyph ? (
     <Glyph className={`shrink-0 ${className}`} strokeWidth={1.6} {...label} />
+  ) : official ? (
+    <svg viewBox={official.viewBox} class:list={["shrink-0 fill-current", className]} {...label} set:html={official.shapes} />
   ) : monogram ? (
     <svg viewBox="0 0 24 24" class:list={["shrink-0", className]} {...label}>
       <rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="none" stroke="currentColor" stroke-width="1.4" />
