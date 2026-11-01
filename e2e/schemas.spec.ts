@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 const SITE = "https://nestorhome.dev";
 
 test("the protocol's schemas are served where their $id points", async ({ request }) => {
-  const path = "/schemas/satellite/2/hello.json";
+  const path = "/schemas/satellite/1/hello.json";
   const response = await request.get(path);
   expect(response.status()).toBe(200);
   expect(response.headers()["content-type"]).toMatch(/^application\/json/);

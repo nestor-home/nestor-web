@@ -1,21 +1,21 @@
 ---
 
-title: "Protocol: nestor.satellite/2"
+title: "Protocol: nestor.satellite/1"
 description: The standard every satellite implements, whatever its language. Current version, the only one servers accept.
 ---
 
 A **satellite** is a device that pairs with a Nestor server (the **core**), declares what it can
 do, streams audio, reports observations and carries out the core’s intents. This page is the
 standard: SDKs and drivers in any language implement it, and the core’s black-box
-[conformance suite](/docs/satellites/conformance/) checks them against it. It replaces
-`nestor.satellite/1`, which cores no longer accept (see the [changelog](#10-changelog)).
+[conformance suite](/docs/satellites/conformance/) checks them against it. This is version 1, the
+first one (see the [changelog](#10-changelog)).
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
 
 The core’s message classes (`nestor.modules.satellites.wire`) are the source of truth for shapes.
 The JSON Schemas they generate are served at
-`https://nestorhome.dev/schemas/satellite/2/<message>.json` (see [Schemas](/docs/satellites/schemas/));
+`https://nestorhome.dev/schemas/satellite/1/<message>.json` (see [Schemas](/docs/satellites/schemas/));
 SDKs keep a copy and test what they send against it.
 
 ## 1. Overview
@@ -79,7 +79,7 @@ All bodies are JSON (`Content-Type: application/json`).
 
 ```json
 POST /satellites/pairings
-{"manifest": {"protocol": "nestor.satellite/2",
+{"manifest": {"protocol": "nestor.satellite/1",
               "device": {"id": "capteur-entree", "model": "esp32", "room": "entree"},
               "capabilities": [{"name": "device.identify"}],
               "pairing_methods": ["enrollment.provisioning", "enrollment.qr"]},
@@ -90,7 +90,7 @@ POST /satellites/pairings
 
 GET /satellites/pairings/{pairing_id}
 200 {"status": "pending", "identify": true}
-200 {"status": "approved", "token": "nst2_…", "device_id": "capteur-entree", "room": "entree",
+200 {"status": "approved", "token": "nst1_…", "device_id": "capteur-entree", "room": "entree",
      "capabilities": ["device.identify"]}
 ```
 
@@ -158,7 +158,7 @@ request ──▶ pending                         ├──▶ approved ──(f
 
 ### 3.4 Core rules
 
-- **C1.** The core accepts only `nestor.satellite/2`. A manifest naming another
+- **C1.** The core accepts only `nestor.satellite/1`. A manifest naming another
   `nestor.satellite/<n>` is refused with `protocol_unsupported`.
 - **C2.** An enrollment code pairs one device: it is spent as soon as it is accepted, before anything
   else can observe it, so two devices racing with it get one approval and one `enrollment_refused`
@@ -166,7 +166,7 @@ request ──▶ pending                         ├──▶ approved ──(f
 - **C3.** A proof is accepted only while its pairing is `pending`; the first one accepted moves it to
   `approved` at once. An enrollment code refused because the pairing is no longer pending is not
   spent.
-- **C4.** The token is 256 random bits, prefixed `nst2_`; only its SHA-256 is kept.
+- **C4.** The token is 256 random bits, prefixed `nst1_`; only its SHA-256 is kept.
 - **C5.** Asking again with the same device id replaces the earlier pending request.
 - **C6.** The journal records every step: `satellite.pairing.requested` (with the declared methods),
   `satellite.addition.started|completed|cancelled|expired`, `satellite.enrollment.refused` (with its
@@ -225,7 +225,7 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 
 ```json
 {
-  "protocol": "nestor.satellite/2",
+  "protocol": "nestor.satellite/1",
   "device": { "id": "salon", "model": "reachy-mini", "room": "salon", "brand": "pollen-robotics" },
   "sdk": { "name": "nestor-satellite-python", "version": "0.1.0" },
   "capabilities": [{ "name": "audio.capture" }, { "name": "audio.playback" }, { "name": "device.identify" }],
@@ -317,11 +317,8 @@ The core’s own rules (C1 to C6, the race of P4, I3, the limits) are proven by 
 
 ## 10. Changelog
 
-- **2 (30/10/2026).** Pairing in both directions: device codes (shown, spoken or logged) and
+- **1.** First version. Pairing in both directions: device codes (shown, spoken or logged) and
   enrollment codes (typed, provisioned, scanned) made by a person adding a satellite from the admin,
-  with the pairing URI. `pairing_methods` in the manifest. Identify (`device.identify`,
-  `intent.identify`, `identify` in poll answers). New pairing endpoints (`/satellites/pairings`), JSON
-  Schemas for every pairing body, errors with codes. Tokens prefixed `nst2_`.
-  No compatibility with version 1: cores refuse its manifests, and satellites paired under version 1
-  no longer authenticate. Update each device, then pair it again.
-- **1.** Device code pairing, realtime link over WebRTC.
+  with the pairing URI. Identify, JSON Schemas for every message, errors with codes, a realtime link
+  over WebRTC. Devices paired under the unreleased draft `nestor.satellite/0` no longer
+  authenticate: update them, then pair them again.

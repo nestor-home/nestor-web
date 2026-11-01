@@ -110,7 +110,7 @@ test("the reader moves to the next page, and to the same page in French", async 
   await page.goto("/docs/satellites/");
   await page.locator('a[rel="next"]').click();
   await expect(page).toHaveURL(/\/docs\/satellites\/protocol\/$/);
-  await expect(page.locator('aside.docs-side a[aria-current="page"]')).toHaveText(/nestor\.satellite\/2/);
+  await expect(page.locator('aside.docs-side a[aria-current="page"]')).toHaveText(/nestor\.satellite\/1/);
   await page.getByRole("link", { name: "Lire cette page en français" }).click();
   await expect(page).toHaveURL(/\/fr\/docs\/satellites\/protocol\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Protocole/);
