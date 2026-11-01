@@ -57,8 +57,8 @@ Nestor's one digital identity — on the website, in the admin, in icons — is 
 states in CSS (`nestor.css`), a small controller (`controller.ts`: `state`, `lookAt`, `say`,
 `blink`, `gesture`, paused off screen and when the tab is hidden, static under reduced motion) and a
 React wrapper for the admin (`react.tsx`). **The canonical source is
-`nestor/web/src/character/`**; this folder is a verbatim copy and `tests/identity.test.ts` fails
-when they drift. Change it there, then copy the six files here.
+`nestor/web/src/character/`**; this folder is a verbatim copy. Change it there, then copy the
+files here.
 
 The design: an ink pebble leaning slightly right, a quiff swept to the right, paper eyes, the
 wordmark's ember cursor as its mouth, and the logo's bow tie (paper wings, ember knot). Flat colours
@@ -78,8 +78,8 @@ docked one its mood with `data-mood` (and a line with `data-say`). Its stills ar
 
 ## Conventions
 
-- **One identity.** `src/styles/tokens.css` is a copy of `nestor/web/src/styles/tokens.css`; a
-  test fails if they drift (when the sibling checkout exists). Change the admin's file, then copy it.
+- **One identity.** `src/styles/tokens.css` is a copy of `nestor/web/src/styles/tokens.css`.
+  Change the admin's file, then copy it.
   Paper and ink, one ember accent, Fraunces for display, Instrument Sans for text, IBM Plex Mono
   for data, hairlines, corner marks and the Bayer dither (`lib/dither.ts`, same as the admin's).
 - **No sentence in a component.** Every visible word is a Fluent message in
