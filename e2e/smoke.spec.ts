@@ -197,6 +197,15 @@ for (const { path } of PAGES) {
     await scrollThrough(page);
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(1500); // let the last reveals and the pairing demonstration finish
+    // reveals staggered by their place (the runtime's lanes run for up to 3.5 s): wait for every finite one
+    await page.evaluate(() =>
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((a) => a.effect?.getComputedTiming().iterations !== Number.POSITIVE_INFINITY)
+          .map((a) => a.finished.catch(() => undefined)),
+      ),
+    );
     await page.addScriptTag({ path: require.resolve("axe-core") });
     const violations = await page.evaluate(async () => {
       // @ts-expect-error axe is injected above
