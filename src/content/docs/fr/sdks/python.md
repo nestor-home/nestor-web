@@ -41,7 +41,7 @@ manifest = Manifest.of(
     Device("enceinte-salon", "raspberry-pi-4", "salon"), AUDIO_CAPTURE, AUDIO_PLAYBACK, EXPRESSION, IDENTIFY
 )
 satellite = Satellite(
-    "http://nestor.local:7860",
+    "http://nestor.local:8471",
     manifest,
     tokens=TokenStore("~/.config/nestor-satellite/enceinte-salon.json"),
     body=Led(),
@@ -89,14 +89,14 @@ Sans écrire une ligne de code, la commande fait du micro et du haut-parleur de 
 satellite :
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
 # ou
-nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 # ou, avec l’adresse du cœur à part
-nestor-satellite run --core http://nestor.local:7860 --room salon --pairing-code K7QF-2M9X
+nestor-satellite run --core http://nestor.local:8471 --room salon --pairing-code K7QF-2M9X
 ```
 
-Sans code, `nestor-satellite run --core http://nestor.local:7860 --room salon` dit un code
+Sans code, `nestor-satellite run --core http://nestor.local:8471 --room salon` dit un code
 d’appareil. `--camera 0` lit les QR codes (avec l’extra `qr`), `--lang fr` parle français, `--id`
 fixe l’identifiant de l’appareil (par défaut, le nom de la machine). Le jeton est gardé dans
 `~/.config/nestor-satellite/<id>.json` (mode 600), avec les empreintes des codes refusés ; les

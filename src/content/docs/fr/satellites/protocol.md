@@ -221,7 +221,7 @@ se lisent bien à voix haute et sur n’importe quel écran.
 ### 4.3 URI d’appairage
 
 ```text
-nestor+http://nestor.local:7860/?code=K7QF2M9X
+nestor+http://nestor.local:8471/?code=K7QF2M9X
 nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 ```
 

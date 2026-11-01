@@ -12,7 +12,8 @@ personne les autorise, et rien dans Nestor ne suppose qu’elles sont là.
 Les satellites se connectent au canal vocal du serveur : installez-le avec l’extra `voice` et
 ajoutez-le à la configuration (voir [Fournisseurs](/fr/docs/providers/)).
 
-<!-- PORTS -->
+Le canal vocal écoute sur le port 8471 (son `port` dans `nestor.yaml`). Les satellites s’y
+connectent, tout comme le client navigateur de développement, sur `/client`.
 
 ## Ce que fait un satellite
 
@@ -47,7 +48,7 @@ et la première acceptée gagne :
   l’administration ;
 - un **code d’enrôlement** créé dans l’administration (`K7QF-2M9X`), que la personne donne à
   l’appareil, le plus souvent sous forme d’URI d’appairage :
-  `nestor+http://nestor.local:7860/?code=K7QF2M9X`.
+  `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
 
 | Méthode                   | La personne…                                                                               |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
@@ -80,7 +81,7 @@ nestor satellites revoke enceinte-salon                         # désappaire un
 déclaré. Puis, sur l’appareil, donnez-lui l’URI d’appairage :
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
 ```
 
 ## Prêts à l’emploi

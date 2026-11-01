@@ -8,15 +8,20 @@ import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
 Nestor a besoin d’un **modèle de langage** pour l’agent, et de services de **parole** seulement
 pour le canal vocal. On le joint par des **canaux** : Telegram, le canal vocal, ou les deux. Tout se
-règle dans `nestor.yaml`, avec les clés dans le `.env` posé à côté. `nestor init` écrit OpenRouter
-et ElevenLabs : choisissez un autre fournisseur ci-dessous, collez ses blocs à la place des blocs
-correspondants, puis lancez `nestor check`.
+règle dans `nestor.yaml`, avec les clés dans le `.env` posé à côté. `nestor init` demande le
+serveur de modèle et le modèle, et écrit Telegram, ou le canal vocal avec ElevenLabs quand l’extra
+`voice` est installé. Pour changer de fournisseur ensuite, collez ses blocs ci-dessous à la place
+des blocs correspondants, puis lancez `nestor check`.
 
 ## Modèle de langage
 
 L’agent parle à tout serveur qui expose l’API Chat Completions d’OpenAI, en streaming.
 L’adaptateur est testé avec OpenRouter ; les autres parlent la même API et devraient fonctionner.
 Choisissez un modèle qui gère les appels d’outils : c’est par eux que l’agent agit.
+
+La clé du modèle est `MODEL_API_KEY`, dans `.env`, quel que soit le fournisseur. Les serveurs locaux
+n’en demandent pas : laissez-la vide. OpenRouter, OpenAI, Mistral et Anthropic refusent une clé
+vide, et `nestor check` nomme la variable à remplir.
 
 <Providers kind="model" locale="fr">
 <ProviderSetup kind="model" brand="openrouter">
@@ -25,14 +30,14 @@ Une seule clé pour les modèles de nombreux éditeurs, Claude et Gemini compris
 défaut, et celui avec lequel l’adaptateur est testé.
 
 ```bash
-OPENROUTER_API_KEY=sk-or-...
+MODEL_API_KEY=sk-or-...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://openrouter.ai/api/v1
-  api_key: ${OPENROUTER_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: anthropic/claude-haiku-5.5
 ```
 
@@ -40,14 +45,14 @@ model:
 <ProviderSetup kind="model" brand="openai">
 
 ```bash
-OPENAI_API_KEY=sk-...
+MODEL_API_KEY=sk-...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://api.openai.com/v1
-  api_key: ${OPENAI_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: gpt-5-mini
 ```
 
@@ -55,14 +60,14 @@ model:
 <ProviderSetup kind="model" brand="mistral">
 
 ```bash
-MISTRAL_API_KEY=...
+MODEL_API_KEY=...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://api.mistral.ai/v1
-  api_key: ${MISTRAL_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: mistral-small-latest
 ```
 
@@ -70,14 +75,14 @@ model:
 <ProviderSetup kind="model" brand="groq">
 
 ```bash
-GROQ_API_KEY=gsk_...
+MODEL_API_KEY=gsk_...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://api.groq.com/openai/v1
-  api_key: ${GROQ_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: openai/gpt-oss-120b
 ```
 
@@ -87,14 +92,14 @@ model:
 Par le point d’accès compatible OpenAI de Google.
 
 ```bash
-GEMINI_API_KEY=...
+MODEL_API_KEY=...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://generativelanguage.googleapis.com/v1beta/openai/
-  api_key: ${GEMINI_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: gemini-flash-latest
 ```
 
@@ -105,22 +110,21 @@ Par la couche de compatibilité OpenAI d’Anthropic, réservée par Anthropic a
 production. OpenRouter est la voie testée vers Claude.
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-...
+MODEL_API_KEY=sk-ant-...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://api.anthropic.com/v1/
-  api_key: ${ANTHROPIC_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: claude-haiku-5-5
 ```
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="ollama">
 
-Pas de clé, donc pas d’`api_key` ni rien dans `.env`. `model` est un modèle que le serveur a
-téléchargé.
+Pas de clé : laissez `MODEL_API_KEY` vide. `model` est un modèle que le serveur a téléchargé.
 
 ```yaml
 model:
@@ -132,7 +136,7 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="lm-studio">
 
-Démarrez le serveur de LM Studio. Pas de clé. `model` est l’identifiant que LM Studio affiche
+Démarrez le serveur de LM Studio. Pas de clé : laissez `MODEL_API_KEY` vide. `model` est l’identifiant que LM Studio affiche
 pour le modèle chargé.
 
 ```yaml
@@ -145,7 +149,8 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="vllm">
 
-Pas d’`api_key`, sauf si vous avez lancé vLLM avec `--api-key`. `model` est le nom que vLLM sert.
+Laissez `MODEL_API_KEY` vide, sauf si vous avez lancé vLLM avec `--api-key`. `model` est le nom
+que vLLM sert.
 
 ```yaml
 model:
@@ -157,7 +162,7 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="llama-cpp">
 
-Pas de clé. `llama-server` sert le seul modèle qu’il a chargé, quoi que dise `model`.
+Pas de clé : laissez `MODEL_API_KEY` vide. `llama-server` sert le seul modèle qu’il a chargé, quoi que dise `model`.
 
 ```yaml
 model:
@@ -172,8 +177,13 @@ model:
 Les noms de modèles sont des exemples : tout modèle du catalogue du fournisseur qui gère les appels
 d’outils convient, et tout autre hébergeur compatible OpenAI se règle de la même façon. Sur la
 plupart des machines domestiques, un modèle local répond plus lentement qu’un modèle hébergé, et
-c’est le canal vocal qui le ressent en premier. Avec Docker, `localhost` désigne le conteneur
-lui-même : utilisez `http://host.docker.internal:<port>` à la place.
+c’est le canal vocal qui le ressent en premier.
+
+Avec Docker, `localhost` désigne le conteneur lui-même. Un serveur de modèle qui tourne sur l’hôte
+est à l’adresse `http://host.docker.internal:<port>/v1` : `http://host.docker.internal:11434/v1`
+pour Ollama, `http://host.docker.internal:1234/v1` pour LM Studio. Sous Linux, cette adresse n’est
+pas la boucle locale de l’hôte : le serveur de modèle doit donc écouter au-delà
+(`OLLAMA_HOST=0.0.0.0` pour Ollama, `--host 0.0.0.0` pour llama.cpp).
 
 `model` accepte aussi `extra_body`, fusionné dans chaque requête (routage d’OpenRouter, réglages de
 raisonnement…), `connect_timeout_s` (5) et `read_timeout_s` (30). Un `triage_model` avec les mêmes
@@ -254,7 +264,7 @@ channels:
 ```
 
 `room` est la pièce où se tient la conversation vocale. `host: 0.0.0.0` permet aux satellites de
-votre réseau de joindre le serveur ; appairez-les ensuite comme l’explique
+votre réseau de joindre le serveur, sur le port 8471 (réglé par `port`) ; appairez-les ensuite comme l’explique
 [Satellites](/fr/docs/satellites/).
 
 </ProviderSetup>
@@ -262,12 +272,16 @@ votre réseau de joindre le serveur ; appairez-les ensuite comme l’explique
 
 ## En français
 
-Nestor parle anglais par défaut. Pour un foyer francophone, réglez la langue de la persona et, avec
-le canal vocal, celle de la transcription :
+`nestor init` demande la langue du foyer. Sans réglage, Nestor parle anglais, à l’heure UTC. Pour
+passer une configuration existante en français, réglez la `locale` de la persona (les phrases fixes
+et l’administration), la `language` dans laquelle écrit le modèle, le fuseau `timezone` du foyer et,
+avec le canal vocal, la `language` de la transcription :
 
 ```yaml
 persona:
+  locale: fr
   language: French
+  timezone: Europe/Paris
 
 channels:
   - kind: voice
@@ -278,7 +292,7 @@ channels:
 ## Où ranger les clés
 
 - **`.env`**, à côté de `nestor.yaml`, appelé par `${NOM}` : ce qu’écrit `nestor init` et ce
-  qu’utilisent les blocs ci-dessus. Une variable déjà définie dans l’environnement (le shell, un
+  qu’utilisent les blocs ci-dessus. Nestor le relit à chaque démarrage. Une variable déjà définie dans l’environnement (le shell, un
   gestionnaire de services, Docker) l’emporte sur le fichier.
 - **Le coffre**, chiffré dans le dossier de données, appelé par `${secret:nom}` : réglé avec
   `nestor secrets set <nom>` (saisi sans écho) ou depuis l’administration, listé avec

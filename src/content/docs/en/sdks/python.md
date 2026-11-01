@@ -40,7 +40,7 @@ manifest = Manifest.of(
     Device("enceinte-salon", "raspberry-pi-4", "salon"), AUDIO_CAPTURE, AUDIO_PLAYBACK, EXPRESSION, IDENTIFY
 )
 satellite = Satellite(
-    "http://nestor.local:7860",
+    "http://nestor.local:8471",
     manifest,
     tokens=TokenStore("~/.config/nestor-satellite/enceinte-salon.json"),
     body=Led(),
@@ -83,14 +83,14 @@ The manifest’s pairing methods follow from what you pass; you never list them 
 To use this machine’s microphone and speaker as a satellite without writing code:
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
 # or
-nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 # or, the core's address given apart
-nestor-satellite run --core http://nestor.local:7860 --room salon --pairing-code K7QF-2M9X
+nestor-satellite run --core http://nestor.local:8471 --room salon --pairing-code K7QF-2M9X
 ```
 
-Without a code, `nestor-satellite run --core http://nestor.local:7860 --room salon` says a device
+Without a code, `nestor-satellite run --core http://nestor.local:8471 --room salon` says a device
 code. `--camera 0` reads QR codes (with the `qr` extra), `--lang fr` speaks French, `--id` sets
 the device id (default: the host name). The token is kept in
 `~/.config/nestor-satellite/<id>.json` (mode 600), with the hashes of refused codes; later runs

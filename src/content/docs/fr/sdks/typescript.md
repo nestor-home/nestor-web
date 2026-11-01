@@ -73,7 +73,7 @@ import {
 
 const provisioning = provisioningFromEnv(); // NESTOR_PAIRING_URI or NESTOR_PAIRING_CODE, if set
 const satellite = new Satellite({
-  core: provisioning?.core ?? "http://nestor.local:7860",
+  core: provisioning?.core ?? "http://nestor.local:8471",
   manifest: Manifest.of(
     { id: "enceinte-salon", model: "raspberry-pi-4", room: "salon" },
     AUDIO_CAPTURE,
@@ -123,9 +123,9 @@ Dans Node, la commande fait du micro et du haut-parleur de cette machine un sate
 et `play` de SoX par défaut) :
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' npx nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' npx nestor-satellite run --room salon
 # ou
-npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 ```
 
 Lancez-la depuis un projet où les deux paquets sont installés. Avec un code seul, donnez le cœur

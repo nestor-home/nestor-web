@@ -12,7 +12,8 @@ Nestor assumes they are there.
 Satellites connect to the server’s voice channel: install it with the `voice` extra and add it to
 the configuration (see [Providers](/docs/providers/)).
 
-<!-- PORTS -->
+The voice channel listens on port 8471 (its `port` in `nestor.yaml`). Satellites connect there,
+and so does the browser client for development, at `/client`.
 
 ## What a satellite does
 
@@ -44,7 +45,7 @@ accepted wins:
 
 - a **device code**, six digits the device presents, which the person types in the admin;
 - an **enrollment code** made in the admin (`K7QF-2M9X`), which the person gives to the device,
-  usually as a pairing URI: `nestor+http://nestor.local:7860/?code=K7QF2M9X`.
+  usually as a pairing URI: `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
 
 | Method                    | The person…                                                                  |
 | ------------------------- | ---------------------------------------------------------------------------- |
@@ -76,7 +77,7 @@ nestor satellites revoke enceinte-salon                           # unpairs a de
 Then, on the device, hand it the pairing URI:
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
 ```
 
 ## Ready to run

@@ -56,5 +56,4 @@ export const QUICKSTART: readonly { id: string; command: string }[] = STEPS.map(
   return { id, command: DOCKER.slice(from, from + n).join(" && ") };
 });
 
-// PORTS: the admin's default port changes with the next server release
-export const ADMIN_URL = "http://localhost:8080";
+export const ADMIN_URL = "http://localhost:8470";

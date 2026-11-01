@@ -128,7 +128,7 @@ test("the providers' page shows one provider's setup at a time, chosen by click,
   await page.goto("/docs/providers/");
   const models = page.getByRole("tablist", { name: "Language models" });
   await expect(models.getByRole("tab", { name: "OpenRouter" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.locator("#model-openrouter-setup")).toContainText("OPENROUTER_API_KEY=");
+  await expect(page.locator("#model-openrouter-setup")).toContainText("MODEL_API_KEY=");
   await expect(page.locator("#model-ollama-setup")).toBeHidden();
 
   await models.getByRole("tab", { name: /Ollama/ }).click();

@@ -20,31 +20,34 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-`nestor init` asks for the assistant’s name, your first name, a login and a password (10
-characters or more), then writes `nestor.yaml`, its secrets in `.env` (readable by you only) and
-`state/`, which holds the owner account. It never overwrites a file.
+`nestor init` asks for the assistant’s name, your first name, the household’s language (`en` or
+`fr`), its time zone (this machine’s by default), the model server and the model, then a login and a
+password (10 characters or more). It writes `nestor.yaml`, its secrets in `.env` (readable by you
+only) and `state/`, which holds the owner account. It never overwrites a file.
 
-This is Nestor in text: the admin, Telegram, connectors. To talk to it aloud and pair satellites,
-install the voice channel with it: `uv tool install 'nestor-home[voice]'`.
+This is Nestor in text, on Telegram, with any OpenAI-compatible model: the admin and the connectors
+come with it. To talk to it aloud and pair satellites, install the voice channel with it:
+`uv tool install 'nestor-home[voice]'`. `nestor init` then asks whether you want it; without the
+extra, the voice block of `nestor.yaml` stays commented out.
 
-The generated configuration uses OpenRouter for the model, and ElevenLabs for the voice channel:
-put their keys in `.env`, or pick other providers in [Providers](/docs/providers/). Nestor speaks
-English; [Providers](/docs/providers/) also says how to run it in French. Then:
+Fill the keys `nestor init` left empty in `.env`: `MODEL_API_KEY` for the model (empty for a local
+server such as Ollama), and `TELEGRAM_BOT_TOKEN`, or `ELEVENLABS_API_KEY` for the voice channel.
+[Providers](/docs/providers/) says where to get each one. Then:
 
 ```bash
 nestor check   # validates the configuration and builds the adapters
 nestor run
 ```
 
-There is nothing to source: `nestor` reads the `.env` next to its configuration. pip and Docker
-work too, see [Install](/docs/install/).
+`nestor check` names any key still empty. There is nothing to source: `nestor` reads the `.env`
+next to its configuration at each start. pip and Docker work too, see [Install](/docs/install/).
 
 ## Open the admin
 
-<!-- PORTS -->
-
-Open the admin in a browser, on the machine’s address, and sign in with the owner’s login. The admin holds the configuration, the household, the satellites
-and the journal of everything Nestor did.
+The admin listens on port 8470: open `http://localhost:8470` on the machine itself, or
+`http://<its address>:8470` from another device, and sign in with the owner’s login. The admin
+holds the configuration, the household, the satellites and the journal of everything Nestor did.
+`admin.port` in `nestor.yaml` changes the port.
 
 ## Next
 

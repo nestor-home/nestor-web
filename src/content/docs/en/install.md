@@ -16,9 +16,10 @@ ways run the same server:
 | Upgrade                      | `uv tool upgrade nestor-home`                            | `pip install -U nestor-home`                 | `docker compose pull`                |
 | Good for                     | a development machine, trying it out, writing satellites | an environment you already run               | a server at home that stays on       |
 
-The package alone runs Nestor in text: the admin, Telegram, connectors. The realtime voice channel,
-which satellites connect to, is the `voice` extra: install `'nestor-home[voice]'` to add it. The
-image has it.
+The package alone runs Nestor in text: the admin, Telegram, connectors, any OpenAI-compatible
+model. The realtime voice channel, which satellites connect to, is the `voice` extra: install
+`'nestor-home[voice]'` to add it. The image has every extra. A configuration that uses the voice
+channel without the extra fails at start and names the command to run.
 
 ## With uv
 
@@ -31,8 +32,9 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-With the voice channel, the first line is `uv tool install 'nestor-home[voice]'`.
-Fill `.env` (see [Providers](/docs/providers/)), then:
+With the voice channel, the first line is `uv tool install 'nestor-home[voice]'`, and
+`nestor init` asks whether to use it. Fill the keys left empty in `.env` (see
+[Providers](/docs/providers/)), then:
 
 ```bash
 nestor check
@@ -40,7 +42,7 @@ nestor run
 ```
 
 `nestor` reads `nestor.yaml` in the current folder; `nestor -c <file>` reads another, from
-anywhere. It also reads the `.env` next to that file, so there is nothing to source. A variable
+anywhere. It also reads the `.env` next to that file at each start, so there is nothing to source. A variable
 already set in the environment (the shell, a service manager) wins over the file.
 
 To upgrade, extras included:
@@ -79,10 +81,10 @@ docker compose up -d
 ```
 
 `data/` holds `nestor.yaml`, its `.env` and `state/`. The container starts as root only to give
-`data` to its user (uid 1000), then runs as that user. It publishes two ports: the admin’s and the voice
-server’s, which satellites pair with.
-
-<!-- PORTS -->
+`data` to its user (uid 1000), then runs as that user. It publishes two ports: 8470 for the admin
+(`http://<the machine’s address>:8470`) and 8471 for the voice server, which satellites pair with.
+To change them, set `admin.port` and the voice channel’s `port` in `nestor.yaml`, and the matching
+`ports` in `compose.yaml`.
 
 Every `nestor` command runs through the image, which reads `/data/nestor.yaml`:
 
@@ -91,7 +93,8 @@ docker compose run --rm nestor check
 docker compose run --rm nestor secrets list
 ```
 
-Nestor reads `data/.env` itself. After changing it, restart the container:
+Nestor reads `data/.env` itself, at each start; a variable set in the container’s environment
+still wins over the file. After changing it, restart the container:
 
 ```bash
 docker compose restart

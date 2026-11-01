@@ -72,7 +72,7 @@ import {
 
 const provisioning = provisioningFromEnv(); // NESTOR_PAIRING_URI or NESTOR_PAIRING_CODE, if set
 const satellite = new Satellite({
-  core: provisioning?.core ?? "http://nestor.local:7860",
+  core: provisioning?.core ?? "http://nestor.local:8471",
   manifest: Manifest.of(
     { id: "enceinte-salon", model: "raspberry-pi-4", room: "salon" },
     AUDIO_CAPTURE,
@@ -120,9 +120,9 @@ In Node, to use this machine’s microphone and speaker as a satellite (with `re
 SoX by default):
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' npx nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' npx nestor-satellite run --room salon
 # or
-npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 ```
 
 Run it from a project where both packages are installed. With a bare code, give the core with

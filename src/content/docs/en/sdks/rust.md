@@ -45,7 +45,7 @@ async fn main() -> nestor_satellite::Result<()> {
     let device = Device::new("enceinte-salon", "raspberry-pi-4", "salon")?;
     let manifest = Manifest::new(device, [AUDIO_CAPTURE, AUDIO_PLAYBACK, IDENTIFY])?;
     let tokens = TokenStore::new("~/.config/nestor-satellite/enceinte-salon.json");
-    let satellite = Satellite::builder("http://nestor.local:7860", manifest, tokens).body(Led);
+    let satellite = Satellite::builder("http://nestor.local:8471", manifest, tokens).body(Led);
     satellite.source(Microphone::new()).sink(Speaker::new()).build()?.run().await // pairs once, then reconnects
 }
 ```
@@ -87,7 +87,7 @@ async fn main() -> nestor_satellite::Result<()> {
     let device = Device::new("ecran-cuisine", "raspberry-pi-zero", "cuisine")?;
     let manifest = Manifest::new(device, [AUDIO_PLAYBACK, IDENTIFY])?;
     let tokens = TokenStore::new("~/.config/nestor-satellite/ecran-cuisine.json");
-    let satellite = Satellite::builder("http://nestor.local:7860", manifest, tokens)
+    let satellite = Satellite::builder("http://nestor.local:8471", manifest, tokens)
         .display(Screen) // declares device_code.display
         .accepts_enrollment(EnrollmentMethod::Input) // declares enrollment.input
         .build()?;
@@ -113,12 +113,12 @@ To use this machine’s microphone and speaker as a satellite:
 
 ```bash
 cargo install nestor-satellite --features cli
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
 # or
-nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 ```
 
-Without a code, `nestor-satellite run --core http://nestor.local:7860 --room salon` says a device
+Without a code, `nestor-satellite run --core http://nestor.local:8471 --room salon` says a device
 code through the speaker and logs it. `nestor-satellite devices` lists the sound cards,
 `--language fr` speaks French, `--null-audio` runs without a sound card. `nestor-satellite run
 --help` lists the rest.

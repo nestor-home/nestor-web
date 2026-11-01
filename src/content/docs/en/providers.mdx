@@ -8,9 +8,10 @@ import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
 Nestor needs a **language model** for the agent, and **speech** services only for the voice
 channel. People reach it through **channels**: Telegram, the voice channel, or both. Everything is
-set in `nestor.yaml`, with the keys in the `.env` next to it. `nestor init` writes OpenRouter and
-ElevenLabs: pick another provider below, paste its blocks over the matching ones, then run
-`nestor check`.
+set in `nestor.yaml`, with the keys in the `.env` next to it. `nestor init` asks for the model
+server and the model, and writes Telegram, or the voice channel with ElevenLabs when the `voice`
+extra is installed. To change a provider later, paste its blocks below over the matching ones, then
+run `nestor check`.
 
 ## Language model
 
@@ -18,20 +19,24 @@ The agent talks to any server that speaks the OpenAI Chat Completions API, with 
 adapter is tested against OpenRouter; the others speak the same API and are expected to work. Pick
 a model that supports tool calls: the agent acts through them.
 
+The model's key is `MODEL_API_KEY`, in `.env`, whatever the provider. Local servers need none:
+leave it empty. OpenRouter, OpenAI, Mistral and Anthropic refuse an empty key, and `nestor check`
+names the variable to fill.
+
 <Providers kind="model" locale="en">
 <ProviderSetup kind="model" brand="openrouter">
 
 One key for models from many vendors, Claude and Gemini included. It is the default, and the provider the adapter is tested against.
 
 ```bash
-OPENROUTER_API_KEY=sk-or-...
+MODEL_API_KEY=sk-or-...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://openrouter.ai/api/v1
-  api_key: ${OPENROUTER_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: anthropic/claude-haiku-5.5
 ```
 
@@ -39,14 +44,14 @@ model:
 <ProviderSetup kind="model" brand="openai">
 
 ```bash
-OPENAI_API_KEY=sk-...
+MODEL_API_KEY=sk-...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://api.openai.com/v1
-  api_key: ${OPENAI_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: gpt-5-mini
 ```
 
@@ -54,14 +59,14 @@ model:
 <ProviderSetup kind="model" brand="mistral">
 
 ```bash
-MISTRAL_API_KEY=...
+MODEL_API_KEY=...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://api.mistral.ai/v1
-  api_key: ${MISTRAL_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: mistral-small-latest
 ```
 
@@ -69,14 +74,14 @@ model:
 <ProviderSetup kind="model" brand="groq">
 
 ```bash
-GROQ_API_KEY=gsk_...
+MODEL_API_KEY=gsk_...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://api.groq.com/openai/v1
-  api_key: ${GROQ_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: openai/gpt-oss-120b
 ```
 
@@ -86,14 +91,14 @@ model:
 Through Google’s OpenAI-compatible endpoint.
 
 ```bash
-GEMINI_API_KEY=...
+MODEL_API_KEY=...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://generativelanguage.googleapis.com/v1beta/openai/
-  api_key: ${GEMINI_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: gemini-flash-latest
 ```
 
@@ -104,21 +109,21 @@ Through Anthropic’s OpenAI compatibility layer, which Anthropic intends for te
 production. OpenRouter is the tested way to Claude.
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-...
+MODEL_API_KEY=sk-ant-...
 ```
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: https://api.anthropic.com/v1/
-  api_key: ${ANTHROPIC_API_KEY}
+  api_key: ${MODEL_API_KEY}
   model: claude-haiku-5-5
 ```
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="ollama">
 
-No key, so no `api_key` and nothing in `.env`. `model` is one the server has pulled.
+No key: leave `MODEL_API_KEY` empty. `model` is one the server has pulled.
 
 ```yaml
 model:
@@ -130,7 +135,7 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="lm-studio">
 
-Start LM Studio’s server. No key. `model` is the identifier LM Studio shows for the loaded model.
+Start LM Studio’s server. No key: leave `MODEL_API_KEY` empty. `model` is the identifier LM Studio shows for the loaded model.
 
 ```yaml
 model:
@@ -142,7 +147,8 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="vllm">
 
-No `api_key` unless you started vLLM with `--api-key`. `model` is the name vLLM serves.
+Leave `MODEL_API_KEY` empty, unless you started vLLM with `--api-key`. `model` is the name vLLM
+serves.
 
 ```yaml
 model:
@@ -154,7 +160,7 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="llama-cpp">
 
-No key. `llama-server` serves the one model it loaded, whatever `model` says.
+No key: leave `MODEL_API_KEY` empty. `llama-server` serves the one model it loaded, whatever `model` says.
 
 ```yaml
 model:
@@ -168,8 +174,13 @@ model:
 
 The model names are examples: any model of the provider’s catalogue that supports tool calls will
 do, and any other OpenAI-compatible host works the same way. On most home hardware a local model
-answers more slowly than a hosted one, and the voice channel feels it first. With Docker,
-`localhost` is the container itself: use `http://host.docker.internal:<port>` instead.
+answers more slowly than a hosted one, and the voice channel feels it first.
+
+With Docker, `localhost` is the container itself. A model server running on the host is
+`http://host.docker.internal:<port>/v1`: `http://host.docker.internal:11434/v1` for Ollama,
+`http://host.docker.internal:1234/v1` for LM Studio. On Linux, that address is not the host’s
+loopback, so the model server must listen beyond it: `OLLAMA_HOST=0.0.0.0` for Ollama,
+`--host 0.0.0.0` for llama.cpp.
 
 `model` also takes `extra_body`, merged into every request (OpenRouter’s routing, reasoning
 settings…), `connect_timeout_s` (5) and `read_timeout_s` (30). A `triage_model` with the same keys
@@ -249,19 +260,24 @@ channels:
 ```
 
 `room` is where the voice conversation takes place. `host: 0.0.0.0` lets satellites on your
-network reach the server; then pair them as [Satellites](/docs/satellites/) explains.
+network reach the server, on port 8471 (set by `port`); then pair them as
+[Satellites](/docs/satellites/) explains.
 
 </ProviderSetup>
 </Providers>
 
 ## In French
 
-Nestor speaks English by default. For a French-speaking household, set the language of the persona
-and, with the voice channel, of the transcription:
+`nestor init` asks for the household’s language. Without it, Nestor speaks English, on UTC. To
+switch an existing configuration to French, set the persona’s `locale` (the fixed phrases and the
+admin), the `language` the model writes in, the household’s `timezone` and, with the voice channel,
+the transcription’s `language`:
 
 ```yaml
 persona:
+  locale: fr
   language: French
+  timezone: Europe/Paris
 
 channels:
   - kind: voice
@@ -272,8 +288,8 @@ channels:
 ## Where keys live
 
 - **`.env`**, next to `nestor.yaml`, referred to as `${NAME}`: what `nestor init` writes and the
-  blocks above use. A variable already set in the environment (the shell, a service manager,
-  Docker) wins over the file.
+  blocks above use. Nestor reads it at each start. A variable already set in the environment (the
+  shell, a service manager, Docker) wins over the file.
 - **The vault**, encrypted in the data folder, referred to as `${secret:name}`: set with
   `nestor secrets set <name>` (asked without echo) or from the admin, listed with
   `nestor secrets list`. Move keys there once the installation settles: none sits in clear on disk,

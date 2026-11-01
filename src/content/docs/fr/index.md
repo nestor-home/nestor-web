@@ -21,34 +21,36 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-`nestor init` demande le nom de l’assistant, votre prénom, un identifiant et un mot de passe (10
-caractères au moins), puis écrit `nestor.yaml`, ses secrets dans `.env` (lisible par vous seul) et
-`state/`, qui contient le compte propriétaire. La commande n’écrase jamais un fichier.
+`nestor init` demande le nom de l’assistant, votre prénom, la langue du foyer (`en` ou `fr`), son
+fuseau horaire (celui de la machine par défaut), le serveur de modèle et le modèle, puis un
+identifiant et un mot de passe (10 caractères au moins). La commande écrit `nestor.yaml`, ses
+secrets dans `.env` (lisible par vous seul) et `state/`, qui contient le compte propriétaire. Elle
+n’écrase jamais un fichier.
 
-Vous avez ainsi Nestor à l’écrit : l’administration, Telegram, les connecteurs. Pour lui parler à
-voix haute et appairer des satellites, installez aussi le canal vocal :
-`uv tool install 'nestor-home[voice]'`.
+Vous avez ainsi Nestor à l’écrit, sur Telegram, avec n’importe quel modèle compatible OpenAI :
+l’administration et les connecteurs sont fournis. Pour lui parler à voix haute et appairer des
+satellites, installez aussi le canal vocal : `uv tool install 'nestor-home[voice]'`. `nestor init`
+vous demande alors si vous le voulez ; sans l’extra, le bloc vocal de `nestor.yaml` reste en
+commentaire.
 
-La configuration générée utilise OpenRouter pour le modèle, et ElevenLabs pour le canal vocal :
-mettez leurs clés dans `.env`, ou choisissez d’autres fournisseurs dans
-[Fournisseurs](/fr/docs/providers/). Nestor parle anglais par défaut ; la même page explique comment
-le passer en français. Ensuite :
+Remplissez les clés que `nestor init` a laissées vides dans `.env` : `MODEL_API_KEY` pour le modèle
+(vide pour un serveur local comme Ollama), et `TELEGRAM_BOT_TOKEN`, ou `ELEVENLABS_API_KEY` pour le
+canal vocal. [Fournisseurs](/fr/docs/providers/) dit où obtenir chacune. Ensuite :
 
 ```bash
 nestor check   # valide la configuration et construit les adaptateurs
 nestor run
 ```
 
-Rien à charger à la main : `nestor` lit le `.env` posé à côté de sa configuration. pip et Docker
-fonctionnent aussi, voir [Installer](/fr/docs/install/).
+`nestor check` nomme toute clé restée vide. Rien à charger à la main : `nestor` relit le `.env`
+posé à côté de sa configuration à chaque démarrage. pip et Docker fonctionnent aussi, voir [Installer](/fr/docs/install/).
 
 ## Ouvrir l’administration
 
-<!-- PORTS -->
-
-Ouvrez l’administration dans un navigateur, à l’adresse de la machine, et connectez-vous avec
-l’identifiant du propriétaire. On y trouve la configuration, le foyer,
-les satellites et le journal de tout ce que Nestor a fait.
+L’administration écoute sur le port 8470 : ouvrez `http://localhost:8470` sur la machine
+elle-même, ou `http://<son adresse>:8470` depuis un autre appareil, et connectez-vous avec
+l’identifiant du propriétaire. On y trouve la configuration, le foyer, les satellites et le journal
+de tout ce que Nestor a fait. `admin.port` dans `nestor.yaml` change le port.
 
 ## Ensuite
 

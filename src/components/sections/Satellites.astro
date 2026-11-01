@@ -35,7 +35,7 @@ async function driver(sdk: Sdk, lang: string) {
 }
 
 /** Each SDK (its id is also its brand mark): the language of its examples and how to run its CLI. */
-const RUN = "nestor-satellite run --core http://nestor.local:7860 --room salon";
+const RUN = "nestor-satellite run --core http://nestor.local:8471 --room salon";
 const SDKS: { id: Sdk; lang: string; cli: string }[] = [
   { id: "python", lang: "python", cli: `pip install "nestor-satellite[sounddevice]" && ${RUN}` },
   { id: "typescript", lang: "ts", cli: `npx ${RUN}` },
