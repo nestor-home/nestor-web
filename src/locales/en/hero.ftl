@@ -1,7 +1,7 @@
 hero-line-1 = The agent
 hero-line-2 = that lives
 hero-line-3 = at home.
-hero-lede = One assistant for the whole household. Ask it once, aloud or by message: it keeps watch, finds the right person in the right place, and can always tell you why it spoke.
+hero-lede = One assistant for the whole household. Ask once, aloud or in a message: it keeps watch, then finds the right person wherever they are. It can always tell you why it spoke.
 hero-story = See how it works
 hero-install = Install it
 hero-note = Open source, on your own machine.

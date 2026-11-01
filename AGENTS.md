@@ -72,8 +72,9 @@ to it), and SDK READMEs stay short and link to their page.
 
 - One Markdown file per page and locale in `src/content/docs/<locale>/` (`index.md` for the first
   page; `.mdx` only where a page holds a component, as the providers' picker in `providers.mdx`:
-  its tiles come from `lib/providers.ts`, each available provider's setup is a `<ProviderSetup>` in
-  the page, and `tests/docs.test.ts` checks both languages give one to each); the reading order and the sidebar's groups are `DOC_GROUPS` in `src/lib/docs.ts`. A page
+  its tiles come from `lib/providers.ts` (models, speech, and channels, whose messaging services are
+  the home page's list in `lib/integrations.ts`), each available one's setup is a `<ProviderSetup>`
+  in the page, and `tests/docs.test.ts` checks both languages give one to each); the reading order and the sidebar's groups are `DOC_GROUPS` in `src/lib/docs.ts`. A page
   needs a `title` and a `description`; `tests/docs.test.ts` fails on a page missing in a locale, a
   file outside the reading order, a link to the other language's docs, or an em-dash.
 - Prose lives in the content files, written for each language (French typography as in the
@@ -136,6 +137,25 @@ docked one its mood with `data-mood` (and a line with `data-say`). Its stills ar
   (`@lobehub/icons-static-svg`, MIT) for AI providers, the admin's lucide glyph for what is not a
   brand, a text monogram for a brand in neither set; never inline elsewhere, never redrawn. In ink by
   default, the brand's colour on hover.
+
+## Writing
+
+Copy reads as written by a careful person, in each language on its own (French is written in French,
+not translated). Every sentence says something concrete: subject, verb, object; "is" and "has" over
+"serves as" or "offers"; an example over an adjective. Hunt for these and rewrite them:
+
+- fake contrasts ("not X but Y", "rather than"), triplets by reflex, slogans in fragments;
+- inflated words (key, seamless, robust, powerful, « véritable », « au cœur de ») and intensifiers;
+- trailing participles (", ensuring…", « , permettant… »), warm-ups and recaps (« Concrètement »);
+- em dashes, Title Case headings, rhetorical questions, French calques (« faire sens »).
+
+| Before                                                           | After                                                                          |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Nestor integrates rather than reimplements.                      | Nestor reimplements none of it.                                                |
+| A catalogue, consent at the provider, a switch per tool.         | Pick a service, consent at the provider, then switch on the tools you want.    |
+| Cloud services are optional by design                            | Cloud services are optional                                                    |
+| Consultable, corrigeable et supprimable depuis l’administration. | Vous pouvez le consulter, le corriger ou le supprimer depuis l’administration. |
+| Une capacité facultative absente dégrade                         | Sans une capacité facultative, il continue avec moins                          |
 
 ## Refreshing the media
 

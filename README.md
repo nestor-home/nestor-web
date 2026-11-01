@@ -1,7 +1,7 @@
 # nestor-web
 
 The website of [Nestor](https://github.com/nestor-home/nestor), the open-source runtime for
-persistent personal agents at home — in English at `/` and in French at `/fr/`.
+persistent personal agents at home, in English at `/` and in French at `/fr/`.
 It lives at https://nestorhome.dev.
 
 Astro (static output), one React island, Tailwind v4 on the admin's design tokens, Project Fluent

@@ -6,7 +6,7 @@ loop-stage-label = Ce que fait Nestor, étape par étape
 loop-1-title = Vous demandez, une fois.
 loop-1-text = À voix haute dans la cuisine, ou par message. Nestor répond tout de suite et crée une **veille** : pour qui, où regarder, quoi chercher, quand s’arrêter.
 loop-1-ask = Dis-moi dès que l’école répond.
-loop-1-say = Je garde un œil sur tes mails et je te dis.
+loop-1-say = Je garde un œil sur tes mails et je te préviens.
 loop-watch = Veille
 loop-watch-state = active
 loop-watch-owner = pour
@@ -19,7 +19,7 @@ loop-watch-end = finit
 loop-watch-end-value = quand Léa est au courant
 
 loop-2-title = Il veille.
-loop-2-text = La conversation se termine, la promesse reste. Les nuits, les redémarrages, un nouveau modèle : la veille continue. Ce qui arrive est trié du moins cher au plus cher : des règles d’abord, puis un petit modèle, et l’agent seulement pour ce qui mérite d’être dit.
+loop-2-text = La conversation s’arrête et la veille continue : la nuit, après un redémarrage, avec un autre modèle. Ce qui arrive est trié du moins cher au plus cher : des règles d’abord, puis un petit modèle, et l’agent seulement pour ce qui mérite d’être dit.
 loop-in-1 = La lettre d’information de la semaine
 loop-in-2 = Votre facture d’électricité
 loop-in-3 = École : la sortie de vendredi est confirmée
@@ -41,7 +41,7 @@ loop-decide-night = Le garde pour le matin : heures calmes.
 loop-say = Léa, l’école a répondu : la sortie de vendredi est maintenue.
 
 loop-4-title = Pas de réponse ? Il écrit.
-loop-4-text = Dit à voix haute, sans réaction ? Peu après, le message suit par écrit, là où Léa lit. Elle répond de là, et le fil sait toujours de quoi on parle.
+loop-4-text = Si personne ne réagit à ce qu’il a dit à voix haute, le message suit par écrit peu après, là où Léa lit. Elle répond de là, et le fil sait toujours de quoi on parle.
 loop-4-in = L’école a répondu : la sortie de vendredi est maintenue. Prévoir un pique-nique.
 loop-4-out = Merci ! Mets-le dans l’agenda de la famille.
 loop-4-done = C’est fait. Je te rappelle le pique-nique jeudi soir.

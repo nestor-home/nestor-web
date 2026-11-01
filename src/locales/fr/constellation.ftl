@@ -1,6 +1,6 @@
 cst-title = Le même agent, dans n’importe quel corps.
 cst-lede = Nestor est l’étoile au centre : un seul agent, une seule mémoire. Chaque appareil ajouté devient un satellite, dans n’importe quelle pièce, et la même conversation continue de l’un à l’autre.
-cst-hint = Ajoutez un appareil à la maison : Nestor s’appaire avec lui et la conversation continue là.
+cst-hint = Ajoutez un appareil à la maison : Nestor s’appaire avec lui et la conversation s’y poursuit.
 cst-label = Votre maison en constellation
 cst-thread = La même conversation
 cst-pairing = appairage

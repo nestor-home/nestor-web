@@ -1,7 +1,7 @@
 ev-title = Le journal fait foi.
 ev-lede = Chaque tour, appel d’outil, tâche, souvenir, prise de parole spontanée et décision de politique est un événement dans un journal en ajout seul, dans un fichier SQLite. L’admin, les tâches durables et le rejeu en découlent : « pourquoi m’a-t-il parlé ? » a toujours une réponse.
 ev-tabs = Les événements d’une veille, dans l’ordre
-ev-declare = Un module déclare un événement en une ligne : une dataclass figée et typée, enregistrée sous son type. Changer sa charge utile augmente sa version, et les anciens enregistrements sont mis à niveau à la lecture.
+ev-declare = Un module déclare un événement en une ligne : une dataclass figée et typée, enregistrée sous son type. Modifier sa charge utile fait monter sa version, et les anciens enregistrements sont mis à niveau à la lecture.
 ev-1 = Elle demande
 ev-2 = La veille est écrite
 ev-3 = Un mail correspond

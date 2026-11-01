@@ -19,7 +19,7 @@ loop-watch-end = ends
 loop-watch-end-value = once Léa knows
 
 loop-2-title = It keeps watch.
-loop-2-text = The conversation ends, the promise doesn’t. Nights, restarts, a new model: the watch carries on. What comes in is sorted from cheap to costly: rules first, then a small model, and the agent only for what deserves words.
+loop-2-text = The conversation ends; the watch carries on through nights, restarts and model changes. What comes in is sorted from cheap to costly: rules first, then a small model, and the agent only for what deserves words.
 loop-in-1 = The weekly newsletter
 loop-in-2 = Your electricity bill
 loop-in-3 = School: Friday’s outing is confirmed
@@ -41,7 +41,7 @@ loop-decide-night = Keeps it for the morning: quiet hours.
 loop-say = Léa, the school wrote: Friday’s outing is on.
 
 loop-4-title = No answer? It writes.
-loop-4-text = Said aloud and nobody reacted? Shortly after, the message follows in writing, wherever Léa reads. She answers there, and the thread still knows what it is about.
+loop-4-text = If nobody reacts to what it said aloud, the message follows in writing shortly after, wherever Léa reads. She answers there, and the thread still knows what it is about.
 loop-4-in = The school wrote: Friday’s outing is on. Bring a packed lunch.
 loop-4-out = Thanks! Put it on the family calendar.
 loop-4-done = Done. I’ll remind you about the lunch on Thursday evening.
