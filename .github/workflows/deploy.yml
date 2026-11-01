@@ -33,7 +33,7 @@ jobs:
 
   deploy:
     needs: resolve
-    uses: nestor-home/.github/.github/workflows/deploy.yml@v1
+    uses: nestor-home/.github/.github/workflows/deploy.yml@main
     with:
       app: nestor-web
       image: ${{ needs.resolve.outputs.image }}
