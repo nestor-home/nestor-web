@@ -4,6 +4,7 @@
   "files": {
     "includes": [
       "**",
+      "!CHANGELOG.md",
       "!dist",
       "!.astro",
       "!test-results",
