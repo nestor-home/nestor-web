@@ -40,12 +40,13 @@ compatible OpenAI, réglé dans `nestor.yaml`) et `ELEVENLABS_API_KEY` pour la v
 `NESTOR_SECRET_KEY` tel quel : c’est lui qui ouvre le coffre des secrets. Ensuite :
 
 ```bash
-set -a; . ./.env; set +a   # nestor lit ses secrets dans l’environnement
-nestor check               # valide la configuration et construit les adaptateurs
+nestor check   # valide la configuration et construit les adaptateurs
 nestor run
 ```
 
-`nestor` lit le `nestor.yaml` du dossier courant ; `nestor -c <fichier>` en lit un autre.
+`nestor` lit le `nestor.yaml` du dossier courant ; `nestor -c <fichier>` en lit un autre. Il lit
+aussi le `.env` posé à côté : rien à charger à la main. Une variable déjà définie dans
+l’environnement l’emporte sur le fichier.
 
 ### Avec Docker
 

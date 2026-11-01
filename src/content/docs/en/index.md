@@ -38,12 +38,13 @@ set in `nestor.yaml`) and `ELEVENLABS_API_KEY` for the voice. Keep `NESTOR_SECRE
 it opens the vault of secrets. Then:
 
 ```bash
-set -a; . ./.env; set +a   # nestor reads its secrets from the environment
-nestor check               # validates the configuration and builds the adapters
+nestor check   # validates the configuration and builds the adapters
 nestor run
 ```
 
-`nestor` reads `nestor.yaml` in the current folder; `nestor -c <file>` reads another.
+`nestor` reads `nestor.yaml` in the current folder; `nestor -c <file>` reads another. It also reads
+the `.env` next to that file, so there is nothing to source. A variable already set in the
+environment wins over the file.
 
 ### With Docker
 
