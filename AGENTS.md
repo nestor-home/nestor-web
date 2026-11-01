@@ -52,13 +52,13 @@ developers' page. Keep it that way when adding content.
 
 ## The character
 
-Nestor's one digital identity — on the website, in the admin, in icons — is the module in
-`src/character/`: shapes (`geometry.ts`), a framework-agnostic SVG renderer (`render.ts`), the
-states in CSS (`nestor.css`), a small controller (`controller.ts`: `state`, `lookAt`, `say`,
-`blink`, `gesture`, paused off screen and when the tab is hidden, static under reduced motion) and a
-React wrapper for the admin (`react.tsx`). **The canonical source is
-`nestor/web/src/character/`**; this folder is a verbatim copy. Change it there, then copy the
-files here.
+Nestor's one digital identity — on the website, in the admin, in icons — is the
+[`@nestor-home/character`](https://github.com/nestor-home/nestor-character) package: its shapes
+(`geometry`), a framework-agnostic SVG renderer, the states in CSS
+(`@nestor-home/character/nestor.css`), a small controller (`NestorController`: `state`, `lookAt`,
+`say`, `blink`, `gesture`, paused off screen and when the tab is hidden, static under reduced
+motion), the logo and the dither. Change the character there, release it, then raise the version
+here.
 
 The design: an ink pebble leaning slightly right, a quiff swept to the right, paper eyes, the
 wordmark's ember cursor as its mouth, and the logo's bow tie (paper wings, ember knot). Flat colours
@@ -81,7 +81,7 @@ docked one its mood with `data-mood` (and a line with `data-say`). Its stills ar
 - **One identity.** `src/styles/tokens.css` is a copy of `nestor/web/src/styles/tokens.css`.
   Change the admin's file, then copy it.
   Paper and ink, one ember accent, Fraunces for display, Instrument Sans for text, IBM Plex Mono
-  for data, hairlines, corner marks and the Bayer dither (`lib/dither.ts`, same as the admin's).
+  for data, hairlines, corner marks and the Bayer dither (from the character package, as in the admin).
 - **No sentence in a component.** Every visible word is a Fluent message in
   `src/locales/{en,fr}/*.ftl`, read with `t("id")` (or `t.html("id")` for `*em*`, `**strong**`,
   `` `code` ``). `tests/no-literals.test.ts` fails on literal text nodes and on literal `alt`,

@@ -1,11 +1,11 @@
 ---
 /**
- * The character on a page of the site: the shared drawing (src/character, a copy of the admin's
- * canonical module) with a starting state, a gaze, and an optional sequence played once in view
- * (`script="listening@0,speaking@900"`, run by the site script).
+ * The character on a page of the site: Nestor's drawing (`@nestor-home/character`) with a starting
+ * state, a gaze, and an optional sequence played once in view (`script="listening@0,speaking@900"`,
+ * run by the site script).
  */
-import "@/character/nestor.css";
-import { type NestorState, renderNestor } from "@/character/render";
+import { type NestorState, renderNestor } from "@nestor-home/character";
+import "@nestor-home/character/nestor.css";
 
 export type { NestorState };
 export type Look = "center" | "left" | "right" | "up" | "down";
