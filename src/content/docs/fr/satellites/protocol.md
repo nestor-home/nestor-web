@@ -7,7 +7,8 @@ description: Le standard que tout satellite implémente, quel que soit son langa
 Un **satellite** est un appareil qui s’appaire à un serveur Nestor (le **cœur**), déclare ce qu’il
 sait faire, fait passer l’audio, remonte des observations et exécute les intentions du cœur. Cette
 page est le standard : les SDK et les pilotes, dans tout langage, l’implémentent, et la
-[suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur les vérifie.
+[suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur les vérifie. Voici la
+version 1 (voir l’[historique](#10-historique)).
 
 Les mots DOIT, NE DOIT PAS, DEVRAIT, NE DEVRAIT PAS et PEUT s’entendent au sens de la
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY).
@@ -331,3 +332,7 @@ voir [Conformité](/fr/docs/satellites/conformance/).
 Les règles propres au cœur (C1 à C6, la course de P4, I3, les limites) sont prouvées par ses tests
 ([`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
 [`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/voice/satellites/test_gateway.py)).
+
+## 10. Historique
+
+- **1.** Première version.
