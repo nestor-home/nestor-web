@@ -16,16 +16,6 @@ interface Props {
 const { t } = Astro.props;
 
 const CODE = "318604";
-const manifest = JSON.stringify(
-  {
-    protocol: "nestor.satellite/1",
-    device: { id: "enceinte-salon", model: "raspberry-pi-4", room: "salon" },
-    pairing_methods: ["device_code.display", "device_code.speech", "enrollment.qr"],
-    capabilities: [{ name: "audio.capture" }, { name: "audio.playback" }, { name: "expression.emotion" }],
-  },
-  null,
-  2,
-);
 /** what the conformance suite prints, as its documentation page shows it */
 const CONFORMANCE_OUTPUT = `$ uvx --from 'nestor-home[voice]' nestor satellites conformance -- <your command>
 PASS  asks to pair
@@ -63,7 +53,6 @@ const sdks: { id: "python" | "typescript" | "rust"; brand: BrandKey; html: strin
     cli: "cargo install nestor-satellite --features cli && nestor-satellite run --core http://nestor.local:7860 --room salon",
   },
 ];
-const manifestHtml = await highlight(manifest, "json");
 const intentHtml = await highlight(intent, "json");
 const conformanceHtml = await highlight(CONFORMANCE_OUTPUT, "bash");
 ---
@@ -128,10 +117,6 @@ const conformanceHtml = await highlight(CONFORMANCE_OUTPUT, "bash");
                 <Check className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
                 {t("sat-admin-paired")}
               </span>
-            </div>
-            <div class="manifest mt-5 border-t border-rule pt-4">
-              <p class="label-mono">{t("sat-manifest")}</p>
-              <div class="code mt-1 [&_pre]:px-0 [&_pre]:py-2 [&_pre]:text-[0.72rem]" set:html={manifestHtml} />
             </div>
           </div>
         </div>
@@ -239,8 +224,7 @@ const conformanceHtml = await highlight(CONFORMANCE_OUTPUT, "bash");
   .digit,
   .typed-digit,
   .approve,
-  .paired,
-  .manifest {
+  .paired {
     transition:
       opacity 380ms var(--ease-out),
       transform 380ms var(--ease-out);
@@ -283,14 +267,6 @@ const conformanceHtml = await highlight(CONFORMANCE_OUTPUT, "bash");
   [data-phase="paired"] .paired,
   [data-phase="manifest"] .paired {
     display: inline-flex;
-  }
-  [data-phase="idle"] .manifest,
-  [data-phase="code"] .manifest,
-  [data-phase="typing"] .manifest,
-  [data-phase="approve"] .manifest,
-  [data-phase="paired"] .manifest {
-    opacity: 0;
-    transform: translateY(8px);
   }
   .sdk-tab[aria-selected="true"] {
     color: var(--ink);

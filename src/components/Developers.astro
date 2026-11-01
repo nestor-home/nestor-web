@@ -1,4 +1,5 @@
 ---
+import SubNav from "@/components/SubNav.astro";
 import Architecture from "@/components/sections/Architecture.astro";
 import Connectors from "@/components/sections/Connectors.astro";
 import Control from "@/components/sections/Control.astro";
@@ -10,26 +11,27 @@ import HomeAssistant from "@/components/sections/HomeAssistant.astro";
 import Quickstart from "@/components/sections/Quickstart.astro";
 import Runtime from "@/components/sections/Runtime.astro";
 import Satellites from "@/components/sections/Satellites.astro";
-import { href, type Locale, pageMeta, translator } from "@/i18n";
+import { type Locale, pageMeta, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
 interface Props {
   locale: Locale;
 }
 const t = translator(Astro.props.locale);
-const nav = [
-  { href: "#runtime", label: t("nav-runtime"), section: "runtime" },
-  { href: "#system", label: t("nav-system"), section: "system" },
-  { href: "#journal", label: t("nav-journal"), section: "journal" },
-  { href: "#extend", label: t("nav-extend"), section: "extend" },
-  { href: "#satellites", label: t("nav-satellites"), section: "satellites" },
-  { href: "#start", label: t("nav-start"), section: "start" },
-  { href: href(t.locale, "docs"), label: t("nav-docs") },
+const sections = [
+  { id: "runtime", label: t("nav-runtime") },
+  { id: "system", label: t("nav-system") },
+  { id: "journal", label: t("nav-journal") },
+  { id: "extend", label: t("nav-extend") },
+  { id: "satellites", label: t("nav-satellites") },
+  { id: "connectors", label: t("nav-connectors") },
+  { id: "start", label: t("nav-start") },
 ];
 ---
 
-<Base locale={t.locale} {...pageMeta(t, "developers")} nav={nav}>
+<Base locale={t.locale} {...pageMeta(t, "developers")}>
   <DevHero t={t} />
+  <SubNav t={t} sections={sections} />
   <Runtime t={t} />
   <Architecture t={t} />
   <Events t={t} />

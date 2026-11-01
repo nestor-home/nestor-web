@@ -1,106 +1,125 @@
 ---
-import { Menu, Moon, Sun, X } from "lucide-react";
+/**
+ * The one global navigation, identical on every page: the logo (home), the site's pages, then the
+ * utilities (language, theme, GitHub) and one call to action. On small screens the pages and the
+ * utilities move into a sheet (a modal <dialog>: focus kept inside, Escape closes, the page below
+ * neither scrolls nor takes focus). In-page sections have their own bar (SubNav.astro).
+ */
+import { ArrowRight, Menu, Moon, Sun, X } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import Wordmark from "@/components/Wordmark.astro";
-import { href, type Locale, type Translator } from "@/i18n";
+import { href, type Locale, type Page, type Translator } from "@/i18n";
 import { REPOS } from "@/lib/site";
-
-export interface NavItem {
-  href: string;
-  label: string;
-  /** the id of the section on this page, for the "being read" highlight */
-  section?: string;
-  /** the page (or part of the site) being read */
-  current?: boolean;
-}
 
 interface Props {
   t: Translator;
   /** this page's address in each language */
   alternates: Record<Locale, string>;
-  nav: NavItem[];
+  /** the page being read, marked in the navigation */
+  current?: Page | undefined;
 }
-const { t, alternates, nav } = Astro.props;
+const { t, alternates, current } = Astro.props;
 const other = t.locale === "en" ? "fr" : "en";
+const pages: { page: Page; label: string }[] = [
+  { page: "home", label: t("nav-product") },
+  { page: "developers", label: t("nav-developers") },
+  { page: "docs", label: t("nav-docs") },
+];
 ---
 
 <header id="top" class="site-header sticky top-0 z-40 border-b border-transparent" data-header>
-  <div class="wrap flex h-14 items-center justify-between gap-4">
-    <a href={href(t.locale, "home")} class="text-[1.45rem]" aria-label={t("nav-home")}>
+  <div class="wrap flex h-14 items-center gap-6">
+    <a href={href(t.locale, "home")} class="text-[1.35rem]" aria-label={t("nav-home")}>
       <Wordmark />
     </a>
-    <nav aria-label={t("nav-label")} class="hidden lg:block">
-      <ul class="flex items-center gap-1 text-[0.9rem] text-ink-muted">
+    <nav aria-label={t("nav-label")} class="hidden md:block">
+      <ul class="flex items-center gap-1 text-sm text-ink-muted">
         {
-          nav.map((item) => (
+          pages.map(({ page, label }) => (
             <li>
               <a
-                href={item.href}
-                data-nav={item.section}
-                aria-current={item.current ? "page" : undefined}
+                href={href(t.locale, page)}
+                aria-current={current === page ? "page" : undefined}
                 class="nav-link rounded-sm px-2.5 py-1.5 transition-colors hover:text-ink"
               >
-                {item.label}
+                {label}
               </a>
             </li>
           ))
         }
       </ul>
     </nav>
-    <div class="flex items-center gap-1.5">
+    <div class="ml-auto flex items-center gap-1">
       <a
         href={alternates[other]}
         hreflang={other}
         lang={other}
-        class="grid h-9 place-items-center rounded-sm px-2 font-mono text-[0.75rem] text-ink-muted hover:text-ink"
+        class="hidden h-9 place-items-center rounded-sm px-2 font-mono text-xs text-ink-muted hover:text-ink md:grid"
         aria-label={t("lang-other-label")}>{t("lang-other")}</a
       >
       <button
         type="button"
         data-theme-toggle
-        class="grid size-9 place-items-center rounded-sm text-ink-muted hover:text-ink"
+        class="hidden size-9 place-items-center rounded-sm text-ink-muted hover:text-ink md:grid"
         aria-label={t("theme-toggle")}
       >
         <Sun className="theme-icon-light size-4" strokeWidth={1.6} aria-hidden="true" />
         <Moon className="theme-icon-dark size-4" strokeWidth={1.6} aria-hidden="true" />
       </button>
-      {
-        nav.length > 0 && (
-          <button
-            type="button"
-            class="menu-button grid size-9 place-items-center rounded-sm text-ink-muted hover:text-ink lg:hidden"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-            data-menu-toggle
-          >
-            <Menu className="menu-open size-4" strokeWidth={1.6} aria-hidden="true" />
-            <X className="menu-close size-4" strokeWidth={1.6} aria-hidden="true" />
-            <span class="sr-only">{t("nav-menu")}</span>
-          </button>
-        )
-      }
-      <a href={REPOS.nestor} class="btn btn-ink ml-1 h-9 px-3 text-[0.85rem]">
+      <a href={REPOS.nestor} class="hidden size-9 place-items-center rounded-sm text-ink-muted hover:text-ink md:grid" aria-label={t("nav-github")}>
         <Brand brand="github" class="size-4" decorative />
-        <span class="hidden sm:inline">{t("nav-github")}</span>
-        <span class="sr-only sm:hidden">{t("nav-github")}</span>
       </a>
+      <a href={href(t.locale, "docs")} class="btn btn-ink ml-2 h-9 px-3">{t("nav-cta")}</a>
+      <button type="button" class="grid size-9 place-items-center rounded-sm text-ink-muted hover:text-ink md:hidden" aria-haspopup="dialog" aria-controls="menu-sheet" data-menu-open>
+        <Menu className="size-5" strokeWidth={1.6} aria-hidden="true" />
+        <span class="sr-only">{t("nav-menu")}</span>
+      </button>
     </div>
   </div>
-  {
-    nav.length > 0 && (
-      <nav id="mobile-menu" class="mobile-menu border-t border-rule lg:hidden" aria-label={t("nav-label")} hidden>
-        <ul class="wrap flex flex-col py-2">
-          {nav.map((item) => (
+
+  <dialog id="menu-sheet" class="sheet" aria-label={t("nav-menu")} data-menu>
+    <div class="flex h-14 items-center justify-between border-b border-rule px-4">
+      <span class="text-[1.35rem]"><Wordmark /></span>
+      <button type="button" class="grid size-9 place-items-center rounded-sm text-ink-muted hover:text-ink" data-menu-close>
+        <X className="size-5" strokeWidth={1.6} aria-hidden="true" />
+        <span class="sr-only">{t("nav-close")}</span>
+      </button>
+    </div>
+    <nav aria-label={t("nav-label")} class="px-4 py-2">
+      <ul class="flex flex-col">
+        {
+          pages.map(({ page, label }) => (
             <li>
-              <a href={item.href} aria-current={item.current ? "page" : undefined} class="block border-b border-rule py-3 text-[1.05rem] text-ink" data-menu-link>
-                {item.label}
+              <a
+                href={href(t.locale, page)}
+                aria-current={current === page ? "page" : undefined}
+                class="sheet-link flex items-center justify-between border-b border-rule py-3 text-lg text-ink"
+              >
+                {label}
+                {current === page && <span class="size-1.5 rounded-full bg-ember" aria-hidden="true" />}
               </a>
             </li>
-          ))}
-        </ul>
-      </nav>
-    )
-  }
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="mt-auto flex flex-col gap-3 border-t border-rule p-4">
+      <a href={href(t.locale, "docs")} class="btn btn-ink justify-center">
+        {t("nav-cta")}
+        <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
+      </a>
+      <div class="flex items-center justify-between gap-2">
+        <a href={alternates[other]} hreflang={other} lang={other} class="btn btn-line flex-1 justify-center">{t("lang-other-name")}</a>
+        <button type="button" data-theme-toggle class="btn btn-line flex-1 justify-center" aria-label={t("theme-toggle")}>
+          <Sun className="theme-icon-light size-4" strokeWidth={1.6} aria-hidden="true" />
+          <Moon className="theme-icon-dark size-4" strokeWidth={1.6} aria-hidden="true" />
+        </button>
+        <a href={REPOS.nestor} class="btn btn-line flex-1 justify-center" aria-label={t("nav-github")}>
+          <Brand brand="github" class="size-4" decorative />
+        </a>
+      </div>
+    </div>
+  </dialog>
 </header>
 
 <style>
@@ -112,22 +131,43 @@ const other = t.locale === "en" ? "fr" : "en";
   .site-header[data-scrolled] {
     border-bottom-color: var(--rule);
   }
-  .menu-close {
-    display: none;
-  }
-  .menu-button[aria-expanded="true"] .menu-open {
-    display: none;
-  }
-  .menu-button[aria-expanded="true"] .menu-close {
-    display: block;
-  }
-  .mobile-menu {
-    background: var(--paper);
-  }
-  .nav-link[data-active],
   .nav-link[aria-current="page"] {
     color: var(--ink);
     background: var(--paper-sunken);
+  }
+  /* the sheet: from the right, over a dimmed page */
+  .sheet {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(22rem, 100vw);
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-left: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .sheet[open] {
+    display: flex;
+    flex-direction: column;
+    animation: sheet-in 280ms var(--ease-out);
+  }
+  .sheet::backdrop {
+    background: color-mix(in oklab, var(--ink) 30%, transparent);
+  }
+  .sheet-link[aria-current="page"] {
+    font-weight: 500;
+  }
+  :global(html:has(.sheet[open])) {
+    overflow: hidden;
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateX(100%);
+    }
   }
   :global(.theme-icon-dark) {
     display: none;

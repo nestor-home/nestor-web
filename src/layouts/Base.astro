@@ -8,7 +8,7 @@ import frauncesLatin from "@fontsource-variable/fraunces/files/fraunces-latin-fu
 import instrumentLatin from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
 import Dock from "@/components/Dock.astro";
 import Footer from "@/components/Footer.astro";
-import Header, { type NavItem } from "@/components/Header.astro";
+import Header from "@/components/Header.astro";
 import { LOCALES, type Locale, type Page, translator } from "@/i18n";
 
 interface Props {
@@ -19,13 +19,12 @@ interface Props {
   description: string;
   /** the sharing picture, /og/<card>-<locale>.png */
   card: Page;
-  nav: NavItem[];
   /** the 404 is not canonical and has no alternates */
   indexable?: boolean;
   /** the docked Nestor of the long pages */
   dock?: boolean;
 }
-const { locale, alternates, title, description, card, nav, indexable = true, dock = indexable } = Astro.props;
+const { locale, alternates, title, description, card, indexable = true, dock = indexable } = Astro.props;
 const t = translator(locale);
 const site = Astro.site ?? new URL("https://nestorhome.dev");
 const canonical = new URL(alternates[locale], site).href;
@@ -80,7 +79,7 @@ const og = new URL(`/og/${card}-${locale}.png`, site).href;
       class="sr-only z-50 rounded-sm bg-ink px-3 py-2 text-paper focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
       >{t("skip")}</a
     >
-    <Header t={t} alternates={alternates} nav={nav} />
+    <Header t={t} alternates={alternates} current={indexable ? card : undefined} />
     <main id="main" tabindex="-1">
       <slot />
     </main>

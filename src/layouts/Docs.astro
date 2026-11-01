@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, Copy } from "l
 import Dither from "@/components/Dither.astro";
 import DocsNav from "@/components/DocsNav.astro";
 import Nestor from "@/components/Nestor.astro";
-import { href, LOCALES, type Locale, translator } from "@/i18n";
+import { LOCALES, type Locale, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 import { docHref, neighbours, parseDocId } from "@/lib/docs";
 import { REPOS } from "@/lib/site";
@@ -29,11 +29,6 @@ const sections = headings.filter((heading) => heading.depth === 2);
 const { previous, next } = neighbours(slug);
 const alternates = Object.fromEntries(LOCALES.map((l) => [l, docHref(l, slug)])) as Record<Locale, string>;
 const edit = `${REPOS.web}/edit/main/src/content/docs/${entry.id}.md`;
-const nav = [
-  { href: docHref(locale, ""), label: t("nav-docs"), current: true },
-  { href: href(locale, "developers"), label: t("nav-developers") },
-  { href: href(locale, "home"), label: t("footer-home") },
-];
 ---
 
 <Base
@@ -42,7 +37,6 @@ const nav = [
   title={t("docs-meta-title", { title: entry.data.title })}
   description={entry.data.description}
   card="docs"
-  nav={nav}
   dock={false}
 >
   <div class="wrap docs-grid pt-8 pb-20 lg:pt-12">

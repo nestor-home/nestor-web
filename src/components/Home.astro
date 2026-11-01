@@ -6,22 +6,16 @@ import Hero from "@/components/sections/Hero.astro";
 import Loop from "@/components/sections/Loop.astro";
 import Trust from "@/components/sections/Trust.astro";
 import TieRule from "@/components/TieRule.astro";
-import { href, type Locale, pageMeta, translator } from "@/i18n";
+import { type Locale, pageMeta, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
 interface Props {
   locale: Locale;
 }
 const t = translator(Astro.props.locale);
-const nav = [
-  { href: "#story", label: t("nav-story"), section: "story" },
-  { href: "#abilities", label: t("nav-abilities"), section: "abilities" },
-  { href: "#trust", label: t("nav-trust"), section: "trust" },
-  { href: href(t.locale, "developers"), label: t("nav-developers") },
-];
 ---
 
-<Base locale={t.locale} {...pageMeta(t, "home")} nav={nav}>
+<Base locale={t.locale} {...pageMeta(t, "home")}>
   <Hero t={t} />
   <Loop t={t} />
   <TieRule />

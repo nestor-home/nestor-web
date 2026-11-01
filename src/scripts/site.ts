@@ -30,23 +30,19 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-theme-t
   });
 }
 
-/* the menu on small screens: a disclosure; closes on a link, Escape, or going wide */
-const menuButton = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
-const menu = document.getElementById("mobile-menu");
-if (menuButton && menu) {
-  const setOpen = (open: boolean) => {
-    menuButton.setAttribute("aria-expanded", String(open));
-    menu.hidden = !open;
-  };
-  menuButton.addEventListener("click", () => setOpen(menu.hidden));
-  for (const link of menu.querySelectorAll("[data-menu-link]")) link.addEventListener("click", () => setOpen(false));
-  addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !menu.hidden) {
-      setOpen(false);
-      menuButton.focus();
-    }
+/* the menu on small screens: a sheet, as a modal dialog (focus kept inside, Escape closes) */
+const sheet = document.querySelector<HTMLDialogElement>("dialog[data-menu]");
+const opener = document.querySelector<HTMLButtonElement>("[data-menu-open]");
+if (sheet && opener) {
+  opener.addEventListener("click", () => sheet.showModal());
+  sheet.querySelector("[data-menu-close]")?.addEventListener("click", () => sheet.close());
+  // a click on the dimmed page closes it
+  sheet.addEventListener("click", (event) => {
+    if (event.target === sheet) sheet.close();
   });
-  matchMedia("(min-width: 64rem)").addEventListener("change", () => setOpen(false));
+  sheet.addEventListener("close", () => opener.focus());
+  for (const link of sheet.querySelectorAll("a[href^='#']")) link.addEventListener("click", () => sheet.close());
+  matchMedia("(min-width: 48rem)").addEventListener("change", () => sheet.close());
 }
 
 /* dither textures */

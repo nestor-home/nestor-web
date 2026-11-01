@@ -15,7 +15,7 @@ const { t } = Astro.props;
 ---
 
 <section id="start" class="section relative overflow-hidden border-t border-rule" aria-labelledby="cta-title" data-mood="idle" data-say={t("char-ready")}>
-  <Dither shape="ramp-up" from={0} to={0.4} dot={3} class="absolute inset-x-0 bottom-0 h-40 text-ink/15" />
+  <Dither shape="ramp-up" from={0} to={0.3} dot={3} class="absolute inset-x-0 bottom-0 h-16 text-ink/10" />
   <div class="wrap relative grid items-center gap-12 lg:grid-cols-12">
     <div class="lg:col-span-6">
       <h2 id="cta-title" data-reveal class="display-1 text-ink">{t("cta-title")}</h2>

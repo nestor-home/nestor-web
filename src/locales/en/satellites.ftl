@@ -10,7 +10,6 @@ sat-admin-hint = Type the code it shows.
 sat-admin-approve = Approve
 sat-admin-paired = Paired
 sat-replay = Replay
-sat-manifest = Its manifest
 sat-intent-title = The core asks for intents, never motions.
 sat-intent-text = The core sends `intent.expression` with `joy` while the matching audio plays. A Reachy moves its head and antennas, a screen could draw a face, a plain speaker ignores it. Nothing assumes a body, a camera or a screen.
 sat-sdk-title = Write one in your language.

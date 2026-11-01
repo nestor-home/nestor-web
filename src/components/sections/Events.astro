@@ -15,7 +15,9 @@ interface Props {
 }
 const { t } = Astro.props;
 
-const DECLARATION = `class WatchTriggered(Event, event_type="watch.triggered"):
+const DECLARATION = `class WatchTriggered(
+    Event, event_type="watch.triggered"
+):
     watch_id: str
     item_id: str
     item_title: str

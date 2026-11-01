@@ -10,7 +10,6 @@ sat-admin-hint = Tapez le code qu’il affiche.
 sat-admin-approve = Approuver
 sat-admin-paired = Appairé
 sat-replay = Rejouer
-sat-manifest = Son manifeste
 sat-intent-title = Le cœur demande des intentions, jamais des mouvements.
 sat-intent-text = Le cœur envoie `intent.expression` avec `joy` pendant que l’audio correspondant est joué. Un Reachy bouge la tête et les antennes, un écran pourrait dessiner un visage, une simple enceinte l’ignore. Rien ne suppose un corps, une caméra ou un écran.
 sat-sdk-title = Écrivez le vôtre dans votre langage.

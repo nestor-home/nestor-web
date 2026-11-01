@@ -1,6 +1,5 @@
 {
   "shots": [
-    "home",
     "journal",
     "connection",
     "satellites",
@@ -33,11 +32,5 @@
       "height": 900,
       "duration": 9.3
     }
-  },
-  "twin": {
-    "width": 720,
-    "height": 720,
-    "duration": 11.6,
-    "theme": "light"
   }
 }

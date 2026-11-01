@@ -54,5 +54,3 @@ export function clip(name: string, locale: Locale): ClipSource[] {
     height: info.height,
   }));
 }
-
-export const twin = INDEX.twin;

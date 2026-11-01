@@ -6,7 +6,7 @@ import Base from "@/layouts/Base.astro";
 const pages = LOCALES.map((locale) => ({ locale, t: translator(locale) }));
 ---
 
-<Base locale="en" {...pageMeta(translator("en"), "home")} nav={[]} indexable={false}>
+<Base locale="en" {...pageMeta(translator("en"), "home")} indexable={false}>
   <section class="relative overflow-hidden">
     <div class="wrap grid min-h-[70vh] content-center gap-16 py-24 md:grid-cols-2">
       {

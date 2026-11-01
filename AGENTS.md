@@ -48,7 +48,7 @@ src/
 ├── styles/           tokens.css (a verbatim copy of the admin's) and global.css
 ├── assets/captures/  admin screenshots (WebP sources; Astro derives AVIF/WebP sizes)
 └── data/             media.json (what was captured)
-public/media/         admin recordings (mp4 + webm + poster) and the Reachy twin clip
+public/media/         admin recordings (mp4 + webm + poster)
 public/schemas/       the satellite protocol's JSON Schemas, generated at build (not committed)
 public/redirect/      the OAuth relay page, copied from the server package at build (not committed)
 ```
@@ -141,10 +141,9 @@ The pictures are the real admin (`nestor/web`) on its mock API, captured with Pl
 cd ../nestor/web && pnpm dev --port 5190 --strictPort &      # the admin on its mocks
 node scripts/capture-admin.mjs     # → .media-raw/ (≈ 6 min; ONLY=journal THEMES=dark LOCALES=en for a subset)
 node scripts/encode-media.mjs      # → src/assets/captures/*.webp, public/media/*, src/data/media.json
-../playground/reachy-twin/.venv/bin/python scripts/render-twin.py   # the Reachy twin clip (MuJoCo, offscreen)
 ```
 
-Shots: `home`, `journal`, `connection`, `satellites`, `system`; clips shown: `journal-live` (home)
+Shots: `journal`, `connection`, `satellites`, `system`; clips shown: `journal-live` (home)
 and `journal-filters` (developers) — each in `light`/`dark` and `en`/`fr`. `command` and `mobile`
 are captured too; encode them with `ONLY=command,mobile` if a section needs them. Sections render
 only what `media.json` lists, so the site builds without them. Content people wrote in the mock

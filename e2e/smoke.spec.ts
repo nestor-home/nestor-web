@@ -298,16 +298,41 @@ test.describe("Nestor in the page", () => {
   });
 });
 
-test("the menu opens on a phone and closes on a link", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+test("one navigation on every page, with the current page marked", async ({ page }) => {
+  for (const [path, current] of [
+    ["/", "Product"],
+    ["/developers/", "Developers"],
+    ["/docs/", "Docs"],
+  ] as const) {
+    await page.goto(path);
+    const nav = page.getByRole("navigation", { name: "Main" }).first();
+    await expect(nav.getByRole("link")).toHaveText(["Product", "Developers", "Docs"]);
+    await expect(nav.getByRole("link", { name: current })).toHaveAttribute("aria-current", "page");
+  }
+});
+
+test("on a phone, the menu is a sheet that keeps focus and closes with Escape", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto("/developers/");
   const button = page.getByRole("button", { name: "Menu" });
   await button.click();
-  await expect(button).toHaveAttribute("aria-expanded", "true");
-  const menu = page.locator("#mobile-menu");
-  await menu.getByRole("link", { name: "How it works" }).click();
-  await expect(menu).toBeHidden();
-  await expect(page).toHaveURL(/#story$/);
+  const sheet = page.getByRole("dialog", { name: "Menu" });
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByRole("link", { name: "Developers" })).toHaveAttribute("aria-current", "page");
+  for (let i = 0; i < 12; i++) await page.keyboard.press("Tab");
+  expect(await sheet.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe("hidden");
+  await page.keyboard.press("Escape");
+  await expect(sheet).toBeHidden();
+  await expect(button).toBeFocused();
+});
+
+test("the developers' page lists its sections, and marks the one being read", async ({ page }) => {
+  await page.goto("/developers/");
+  const sub = page.getByRole("navigation", { name: "On this page" });
+  await sub.getByRole("link", { name: "Journal" }).click();
+  await expect(page).toHaveURL(/#journal$/);
+  await expect(sub.getByRole("link", { name: "Journal" })).toHaveAttribute("data-active", "");
 });
 
 test("Nestor answers in the hero: it listens, then speaks", async ({ page }) => {
