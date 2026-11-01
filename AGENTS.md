@@ -175,8 +175,9 @@ node scripts/encode-media.mjs      # → src/assets/captures/*.webp, public/medi
 Shots: `journal`, `connection`, `satellites`, `system`; clips shown: `journal-live` (home)
 and `journal-filters` (developers) — each in `light`/`dark` and `en`/`fr`. `command` and `mobile`
 are captured too; encode them with `ONLY=command,mobile` if a section needs them. Sections render
-only what `media.json` lists, so the site builds without them. Content people wrote in the mock
-household stays French in the English captures; that is expected.
+only what `media.json` lists, so the site builds without them. The mock household follows the
+account's language, which the capture sets for each locale: English captures show English rooms
+and messages, French ones French.
 
 ## What the build takes from the server package
 
