@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import { LOCALES, type Locale } from "@/i18n";
 import { DOC_SLUGS, docHref, firstCodeBlock, neighbours, parseDocId } from "@/lib/docs";
 import { PROVIDERS, type ProviderKind } from "@/lib/providers";
+import { INSTALL, QUICKSTART } from "@/lib/site";
 
 const ROOT = "src/content/docs";
 
@@ -69,6 +70,30 @@ describe("the documentation", () => {
       expect(firstCodeBlock(read(locale, "sdks/python"), "python")).toContain("Satellite(");
       expect(firstCodeBlock(read(locale, "sdks/typescript"), "ts")).toContain("new Satellite(");
       expect(firstCodeBlock(read(locale, "sdks/rust"), "rust")).toContain("Satellite::builder(");
+    }
+  });
+});
+
+describe("the commands the site shows", () => {
+  /** every `bash` block of a page, as its commands */
+  const bash = (text: string) =>
+    [...text.matchAll(/^```bash\n([\s\S]*?)^```/gm)].map((m) =>
+      (m[1] ?? "")
+        .split("\n")
+        .map((line) => line.replace(/(^|\s+)#.*$/, "").trim())
+        .filter(Boolean),
+    );
+
+  it("are the documentation's, in every language: the install box, then the quickstart with Docker", () => {
+    expect(INSTALL[0]).toBe("uv tool install nestor-home");
+    expect(INSTALL).toContain("nestor init");
+    expect(INSTALL.at(-1)).toBe("nestor run");
+    expect(QUICKSTART.map((s) => s.id)).toEqual(["qs-1", "qs-2", "qs-3", "qs-4"]);
+    expect(QUICKSTART[1]?.command).toBe("docker compose run --rm nestor init");
+    for (const locale of LOCALES) {
+      expect(bash(read(locale, "")).slice(0, 2).flat(), locale).toEqual(INSTALL);
+      const docker = bash(read(locale, "install")).find((block) => block.includes("docker compose up -d"));
+      expect(QUICKSTART.map((s) => s.command).join(" && "), locale).toBe(docker?.join(" && "));
     }
   });
 });

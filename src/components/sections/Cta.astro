@@ -31,7 +31,7 @@ const { t } = Astro.props;
           {t("nav-github")}
         </a>
       </div>
-      <p data-reveal class="mt-6 flex items-center gap-2 font-mono text-[0.75rem] text-ink-muted">
+      <p data-reveal class="mt-6 flex items-center gap-2 font-mono text-xs text-ink-muted">
         <Tie size={13} />
         {t("cta-early")}
       </p>
@@ -39,7 +39,7 @@ const { t } = Astro.props;
     <div class="relative lg:col-span-6">
       <Nestor size={110} state="idle" look="down" script="idle@0,laughing@600,idle@1700" class="cta-nestor" />
       <div data-reveal class="corner-marks border border-rule-strong bg-paper-raised">
-        <p class="border-b border-rule px-4 py-2.5 font-mono text-[0.7rem] text-ink-muted">{t("cta-terminal")}</p>
+        <p class="border-b border-rule px-4 py-2.5 font-mono text-2xs text-ink-muted">{t("cta-terminal")}</p>
         <div class="flex flex-col gap-2 p-4">
           {INSTALL.map((command) => <CopyCommand t={t} command={command} />)}
         </div>
