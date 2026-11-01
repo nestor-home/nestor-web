@@ -1,0 +1,12 @@
+docs-card = Build a satellite, run the server.
+docs-meta-title = { $title } · Nestor documentation
+docs-nav-label = Documentation
+docs-menu = Pages of the documentation
+docs-toc = On this page
+docs-previous = Previous
+docs-next = Next
+docs-edit = Edit this page on GitHub
+docs-group-start = Start
+docs-group-satellites = Satellites
+docs-group-sdks = SDKs
+docs-group-project = Project

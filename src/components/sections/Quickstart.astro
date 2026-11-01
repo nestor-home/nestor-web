@@ -2,8 +2,8 @@
 import CopyCommand from "@/components/CopyCommand.astro";
 import Dither from "@/components/Dither.astro";
 import Tie from "@/components/Tie.astro";
-import type { Translator } from "@/i18n";
-import { ADMIN_URL, QUICKSTART, REPOS } from "@/lib/site";
+import { href, type Translator } from "@/i18n";
+import { ADMIN_URL, QUICKSTART } from "@/lib/site";
 
 interface Props {
   t: Translator;
@@ -22,7 +22,7 @@ const { t } = Astro.props;
         {t("cta-early")}
       </p>
       <p data-reveal class="mt-8">
-        <a class="link font-mono text-[0.8rem]" href={`${REPOS.nestor}#readme`}>{t("qs-docs")} →</a>
+        <a class="link font-mono text-[0.8rem]" href={href(t.locale, "docs")}>{t("qs-docs")} →</a>
       </p>
     </div>
     <div data-reveal class="terminal corner-marks border border-rule-strong bg-paper-raised lg:col-span-7">

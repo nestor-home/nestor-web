@@ -12,9 +12,13 @@ export const REPOS = {
 
 export const ROADMAP_URL = `${REPOS.nestor}#readme`;
 
-/** The quickstart, as the compose file of the core describes it (nestor/compose.yaml). */
+/** The quickstart with Docker, as the documentation's first page gives it (src/content/docs/<locale>/index.md). */
 export const QUICKSTART = [
-  { id: "qs-1", command: "git clone https://github.com/nestor-home/nestor && cd nestor" },
+  {
+    id: "qs-1",
+    command:
+      "curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml && mkdir data && docker compose pull",
+  },
   { id: "qs-2", command: "docker compose run --rm nestor init" },
   { id: "qs-3", command: "$EDITOR data/.env" },
   { id: "qs-4", command: "docker compose up -d" },

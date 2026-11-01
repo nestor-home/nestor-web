@@ -1,9 +1,9 @@
 qs-title = En route en quatre commandes.
-qs-lede = Pas encore publié : construisez-le depuis le dépôt. Il faut Docker et une machine qui reste allumée.
-qs-1 = Récupérer le code.
+qs-lede = Publié en image Docker et en paquet Python. Il faut Docker et une machine qui reste allumée.
+qs-1 = Récupérer le fichier compose et l’image.
 qs-2 = Écrire une première configuration, ses secrets et le compte propriétaire. Rien n’est jamais écrasé.
 qs-3 = Ajouter la clé de votre fournisseur de modèle aux secrets qui viennent d’être écrits.
 qs-4 = Démarrer, puis ouvrir l’administration.
 qs-admin = L’administration est sur
 qs-terminal = Terminal
-qs-docs = Lire le README
+qs-docs = Lire la documentation

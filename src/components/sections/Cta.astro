@@ -20,7 +20,7 @@ const { t } = Astro.props;
       <h2 id="cta-title" data-reveal class="display-1 text-ink">{t("cta-title")}</h2>
       <p data-reveal class="lede mt-8">{t("cta-text")}</p>
       <div data-reveal class="mt-8 flex flex-wrap gap-3">
-        <a href={href(t.locale, "developers", "start")} class="btn btn-ink">
+        <a href={href(t.locale, "docs")} class="btn btn-ink">
           {t("cta-install")}
           <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
         </a>

@@ -34,3 +34,7 @@ sat-cli-rust = Rust
 sat-schemas = Les schémas JSON du protocole
 sat-state-shipped = disponible
 sat-state-later = prévu
+sat-protocol = Le protocole en entier
+sat-docs-python = La documentation du SDK Python
+sat-docs-typescript = La documentation du SDK TypeScript
+sat-docs-rust = La documentation du SDK Rust

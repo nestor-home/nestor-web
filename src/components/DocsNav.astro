@@ -1,0 +1,47 @@
+---
+/** The documentation's pages, grouped: the sidebar on wide screens, a disclosure on small ones. */
+import type { Translator } from "@/i18n";
+import { DOC_GROUPS, docHref } from "@/lib/docs";
+
+interface Props {
+  t: Translator;
+  /** the page being read */
+  slug: string;
+  /** each page's title in this locale, by slug */
+  titles: Record<string, string>;
+}
+const { t, slug, titles } = Astro.props;
+---
+
+<nav aria-label={t("docs-nav-label")}>
+  {
+    DOC_GROUPS.map((group) => (
+      <div class="docs-group">
+        <p class="label-mono">{t(`docs-group-${group.id}`)}</p>
+        <ul class="mt-2 flex flex-col">
+          {group.pages.map((page) => (
+            <li>
+              <a
+                href={docHref(t.locale, page)}
+                aria-current={page === slug ? "page" : undefined}
+                class="docs-link block rounded-sm px-2 py-1.5 text-[0.92rem] text-ink-muted hover:text-ink"
+              >
+                {titles[page]}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</nav>
+
+<style>
+  .docs-group + .docs-group {
+    margin-top: 1.5rem;
+  }
+  .docs-link[aria-current="page"] {
+    color: var(--ink);
+    background: var(--paper-sunken);
+  }
+</style>

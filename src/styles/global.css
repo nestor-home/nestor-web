@@ -443,6 +443,179 @@
   }
 }
 
+/* the documentation's text, written in Markdown (src/content/docs) */
+@layer components {
+  .doc-prose {
+    --astro-code-foreground: var(--ink);
+    --astro-code-background: var(--paper-raised);
+    --astro-code-token-constant: var(--kind-task);
+    --astro-code-token-string: var(--sage);
+    --astro-code-token-string-expression: var(--sage);
+    --astro-code-token-comment: var(--ink-muted);
+    --astro-code-token-keyword: var(--ember);
+    --astro-code-token-parameter: var(--ink);
+    --astro-code-token-function: var(--kind-watch);
+    --astro-code-token-punctuation: var(--ink-muted);
+    --astro-code-token-link: var(--ember);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--ink-muted);
+    overflow-wrap: break-word;
+  }
+  .doc-prose > * + * {
+    margin-top: 1.1rem;
+  }
+  .doc-prose h2 {
+    margin-top: 3.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+    font-size: clamp(1.5rem, 2.6vw, 1.9rem);
+    line-height: 1.15;
+    color: var(--ink);
+  }
+  .doc-prose h3 {
+    margin-top: 2.25rem;
+    font-size: 1.25rem;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .doc-prose h4 {
+    margin-top: 1.75rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .doc-prose h2 + *,
+  .doc-prose h3 + *,
+  .doc-prose h4 + * {
+    margin-top: 0.75rem;
+  }
+  .doc-prose strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .doc-prose a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--rule-strong);
+  }
+  .doc-prose a:hover {
+    text-decoration-color: var(--ember);
+  }
+  .doc-prose ul,
+  .doc-prose ol {
+    padding-left: 1.25rem;
+  }
+  .doc-prose ul {
+    list-style: disc;
+  }
+  .doc-prose ol {
+    list-style: decimal;
+  }
+  .doc-prose li + li,
+  .doc-prose li > ul,
+  .doc-prose li > ol {
+    margin-top: 0.4rem;
+  }
+  .doc-prose li::marker {
+    color: var(--ink-faint);
+  }
+  .doc-prose :not(pre) > code {
+    font-size: 0.86em;
+    color: var(--ink);
+    background: var(--paper-sunken);
+    padding: 0.05em 0.35em;
+    border-radius: 3px;
+    overflow-wrap: anywhere;
+  }
+  .doc-prose pre {
+    overflow-x: auto;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    line-height: 1.65;
+    tab-size: 2;
+  }
+  .doc-prose .doc-code {
+    position: relative;
+  }
+  .doc-prose .doc-code pre {
+    padding-right: 5.5rem;
+  }
+  .doc-copy {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 1.9rem;
+    padding-inline: 0.55rem;
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+    font-family: var(--font-data);
+    font-size: 0.7rem;
+    color: var(--ink-muted);
+  }
+  @media (max-width: 639px) {
+    .doc-prose .doc-code pre {
+      padding-right: 3rem;
+    }
+    /* the word stays for screen readers; the icon is enough on a phone */
+    .doc-copy [data-copy-label] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+  .doc-copy:hover {
+    color: var(--ink);
+    background: var(--paper-sunken);
+  }
+  .doc-copy .copy-done,
+  .doc-copy[data-done] .copy-idle {
+    display: none;
+  }
+  .doc-copy[data-done] .copy-done {
+    display: block;
+    color: var(--sage);
+  }
+  /* tables scroll on their own instead of widening the page */
+  .doc-prose table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .doc-prose th,
+  .doc-prose td {
+    padding: 0.5rem 1rem 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    text-align: left;
+    vertical-align: top;
+  }
+  .doc-prose th {
+    font-family: var(--font-data);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    border-bottom-color: var(--rule-strong);
+  }
+  .doc-prose blockquote {
+    padding: 0.9rem 1.1rem;
+    background: var(--paper-sunken);
+    border-radius: var(--radius);
+    color: var(--ink);
+  }
+}
+
 @keyframes blink {
   0%,
   100% {

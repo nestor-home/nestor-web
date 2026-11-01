@@ -1,9 +1,9 @@
 qs-title = Running in four commands.
-qs-lede = Not released yet: build it from the repository. You need Docker and a machine that stays on.
-qs-1 = Get the code.
+qs-lede = Released as a Docker image and a Python package. You need Docker and a machine that stays on.
+qs-1 = Get the compose file and the image.
 qs-2 = Write a first configuration, its secrets and the owner account. It never overwrites anything.
 qs-3 = Add your model provider’s key to the secrets it just wrote.
 qs-4 = Start it, then open the admin.
 qs-admin = The admin is at
 qs-terminal = Terminal
-qs-docs = Read the README
+qs-docs = Read the documentation

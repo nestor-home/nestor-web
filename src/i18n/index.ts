@@ -86,11 +86,22 @@ export function translator(locale: Locale): Translator {
 export const ROUTES = {
   home: { en: "/", fr: "/fr/" },
   developers: { en: "/developers/", fr: "/fr/developpeurs/" },
+  docs: { en: "/docs/", fr: "/fr/docs/" },
 } as const satisfies Record<string, Record<Locale, string>>;
 export type Page = keyof typeof ROUTES;
 
 export function href(locale: Locale, page: Page, hash = ""): string {
   return `${ROUTES[page][locale]}${hash ? `#${hash}` : ""}`;
+}
+
+/** What the layout needs to know about a page of ROUTES: its addresses, title, description and card. */
+export function pageMeta(t: Translator, page: Page) {
+  return {
+    alternates: ROUTES[page],
+    title: t(`meta-title-${page}`),
+    description: t(`meta-description-${page}`),
+    card: page,
+  };
 }
 
 /** A path in a locale for pages outside ROUTES (the 404). */

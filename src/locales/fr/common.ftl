@@ -1,5 +1,5 @@
-meta-title = Nestor, l’agent qui habite la maison
-meta-description = Nestor est un assistant open source pour tout le foyer : il sait qui est là, se souvient de chacun, prend en charge les tâches longues et prend la parole au bon moment, où que vous soyez.
+meta-title-home = Nestor, l’agent qui habite la maison
+meta-description-home = Nestor est un assistant open source pour tout le foyer : il sait qui est là, se souvient de chacun, prend en charge les tâches longues et prend la parole au bon moment, où que vous soyez.
 meta-title-developers = Nestor pour les développeurs : architecture, satellites, connecteurs
 meta-description-developers = Comment Nestor s’assemble : un agent persistant, des contrats publics, des satellites en WebRTC avec des SDK Python, TypeScript et Rust, des connecteurs, le journal, et l’auto-hébergement avec Docker.
 meta-og-alt = Nestor, l’agent qui habite la maison.
@@ -25,3 +25,4 @@ nf-title = Personne dans cette pièce.
 nf-text = La page demandée n’est pas ici. La maison, c’est par là.
 nf-home = Retour à l’accueil
 nav-menu = Menu
+nav-docs = Docs

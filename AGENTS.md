@@ -20,8 +20,9 @@ see README.md, Production.
 
 ```text
 src/
-├── pages/            home (/ and /fr/), developers (/developers/, /fr/developpeurs/), 404,
-│                     og/[page]-[locale].png, favicon*, robots.txt
+├── pages/            home (/ and /fr/), developers (/developers/, /fr/developpeurs/),
+│                     docs (/docs/…, /fr/docs/…), 404, og/[page]-[locale].png, favicon*, robots.txt
+├── content/docs/     the developer documentation: one Markdown file per page and locale
 ├── components/
 │   ├── Home.astro        the home page: hero, a day at home, why it spoke, six ideas, bodies, start
 │   ├── Developers.astro  the developers' page: architecture, a watch through the system,
@@ -32,25 +33,47 @@ src/
 │   ├── sections/         one file per section
 │   └── *.astro           shared pieces: Shot, Clip, Dither, Brand, CopyCommand, Wordmark…
 ├── islands/          React, only where interaction needs state (the architecture explorer)
+├── layouts/          Base (head, header, footer) and Docs (sidebar, text, sections, prev/next)
 ├── scripts/site.ts   the one global script: reveals, scene beats, the character's sequences and
-│                     gaze, story stepper, pairing, tabs, copy, theme
+│                     gaze, story stepper, pairing, tabs, copy, theme (docs.ts: code copy buttons)
 ├── locales/<lang>/   the words, in Fluent (.ftl), one file per section
 ├── i18n/             the Fluent loader (`translator(locale)`)
 ├── lib/              data and logic: links, brands, dither, Shiki, media index, OG pictures
 ├── styles/           tokens.css (a verbatim copy of the admin's) and global.css
 ├── assets/captures/  admin screenshots (WebP sources; Astro derives AVIF/WebP sizes)
-└── data/             media.json (what was captured), snippets/ (code from the SDK READMEs)
+└── data/             media.json (what was captured)
 public/media/         admin recordings (mp4 + webm + poster) and the Reachy twin clip
 public/schemas/       the satellite protocol's JSON Schemas, generated at build (not committed)
 ```
 
-## Two audiences, two pages
+## Two audiences, three places
 
 The home page is about **use**: a household's day, what Nestor does for the people in it, the
 character, six ideas drawn simply. No contract names, no benchmarks, no internal status, no vendor
 comparisons; honesty lives in one place (the "early project" line near Install). Everything
 technical — architecture, protocol, SDK code, measured latencies, self-hosting — goes to the
 developers' page. Keep it that way when adding content.
+
+How to do things (install, pair, write a satellite, the protocol itself) belongs to the
+**documentation** (`/docs/`, `/fr/docs/`): the developers' page shows and links, the docs explain.
+It is the single source: the protocol specification lives there (the `nestor` repository only links
+to it), and SDK READMEs stay short and link to their page.
+
+## The documentation
+
+- One Markdown file per page and locale in `src/content/docs/<locale>/` (`index.md` for the first
+  page); the reading order and the sidebar's groups are `DOC_GROUPS` in `src/lib/docs.ts`. A page
+  needs a `title` and a `description`; `tests/docs.test.ts` fails on a page missing in a locale, a
+  file outside the reading order, a link to the other language's docs, or an em-dash.
+- Prose lives in the content files, written for each language (French typography as in the
+  catalogues); the layout's words (sidebar groups, "On this page"…) are Fluent messages in
+  `docs.ftl`.
+- Code blocks are highlighted at build (Shiki's `css-variables` theme, coloured by `.doc-prose` in
+  `global.css`) and get a copy button. Commands in the docs are run before they are written.
+- The developers' page shows each SDK's minimal driver: the **first** code block of that SDK's page
+  in its language (`python`, `ts`, `rust`). Change the example there.
+- `e2e/docs.spec.ts` walks every page in both languages, follows every internal link and anchor, and
+  checks overflow, code, copy and accessibility.
 
 ## The character
 
@@ -116,12 +139,6 @@ and `journal-filters` (developers) — each in `light`/`dark` and `en`/`fr`. `co
 are captured too; encode them with `ONLY=command,mobile` if a section needs them. Sections render
 only what `media.json` lists, so the site builds without them. Content people wrote in the mock
 household stays French in the English captures; that is expected.
-
-The code examples come from the SDK READMEs:
-
-```bash
-node scripts/sync-snippets.mjs     # needs the sibling checkouts (../nestor-satellite-*)
-```
 
 ## The protocol's schemas
 

@@ -2,7 +2,7 @@
 import { Menu, Moon, Sun, X } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import Wordmark from "@/components/Wordmark.astro";
-import { href, type Page, type Translator } from "@/i18n";
+import { href, type Locale, type Translator } from "@/i18n";
 import { REPOS } from "@/lib/site";
 
 export interface NavItem {
@@ -10,14 +10,17 @@ export interface NavItem {
   label: string;
   /** the id of the section on this page, for the "being read" highlight */
   section?: string;
+  /** the page (or part of the site) being read */
+  current?: boolean;
 }
 
 interface Props {
   t: Translator;
-  page: Page;
+  /** this page's address in each language */
+  alternates: Record<Locale, string>;
   nav: NavItem[];
 }
-const { t, page, nav } = Astro.props;
+const { t, alternates, nav } = Astro.props;
 const other = t.locale === "en" ? "fr" : "en";
 ---
 
@@ -34,6 +37,7 @@ const other = t.locale === "en" ? "fr" : "en";
               <a
                 href={item.href}
                 data-nav={item.section}
+                aria-current={item.current ? "page" : undefined}
                 class="nav-link rounded-sm px-2.5 py-1.5 transition-colors hover:text-ink"
               >
                 {item.label}
@@ -45,7 +49,7 @@ const other = t.locale === "en" ? "fr" : "en";
     </nav>
     <div class="flex items-center gap-1.5">
       <a
-        href={href(other, page)}
+        href={alternates[other]}
         hreflang={other}
         lang={other}
         class="grid h-9 place-items-center rounded-sm px-2 font-mono text-[0.75rem] text-ink-muted hover:text-ink"
@@ -88,7 +92,7 @@ const other = t.locale === "en" ? "fr" : "en";
         <ul class="wrap flex flex-col py-2">
           {nav.map((item) => (
             <li>
-              <a href={item.href} class="block border-b border-rule py-3 text-[1.05rem] text-ink" data-menu-link>
+              <a href={item.href} aria-current={item.current ? "page" : undefined} class="block border-b border-rule py-3 text-[1.05rem] text-ink" data-menu-link>
                 {item.label}
               </a>
             </li>
@@ -120,7 +124,8 @@ const other = t.locale === "en" ? "fr" : "en";
   .mobile-menu {
     background: var(--paper);
   }
-  .nav-link[data-active] {
+  .nav-link[data-active],
+  .nav-link[aria-current="page"] {
     color: var(--ink);
     background: var(--paper-sunken);
   }
