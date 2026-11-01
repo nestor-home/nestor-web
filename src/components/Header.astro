@@ -27,9 +27,9 @@ const pages: { page: Page; label: string }[] = [
 ];
 ---
 
-<header id="top" class="site-header sticky top-0 z-40 border-b border-transparent" data-header>
-  <div class="wrap flex h-14 items-center gap-6">
-    <a href={href(t.locale, "home")} class="text-[1.35rem]" aria-label={t("nav-home")}>
+<header id="top" class="site-header sticky top-0 z-(--z-header) border-b border-transparent" data-header>
+  <div class="wrap flex h-(--header-h) items-center gap-6">
+    <a href={href(t.locale, "home")} class="text-wordmark" aria-label={t("nav-home")}>
       <Wordmark />
     </a>
     <nav aria-label={t("nav-label")} class="hidden md:block">
@@ -78,8 +78,8 @@ const pages: { page: Page; label: string }[] = [
   </div>
 
   <dialog id="menu-sheet" class="sheet" aria-label={t("nav-menu")} data-menu>
-    <div class="flex h-14 items-center justify-between border-b border-rule px-4">
-      <span class="text-[1.35rem]"><Wordmark /></span>
+    <div class="flex h-(--header-h) items-center justify-between border-b border-rule px-4">
+      <span class="text-wordmark"><Wordmark /></span>
       <button type="button" class="grid size-9 place-items-center rounded-sm text-ink-muted hover:text-ink" data-menu-close>
         <X className="size-5" strokeWidth={1.6} aria-hidden="true" />
         <span class="sr-only">{t("nav-close")}</span>
@@ -124,8 +124,7 @@ const pages: { page: Page; label: string }[] = [
 
 <style>
   .site-header {
-    background: color-mix(in oklab, var(--paper) 88%, transparent);
-    backdrop-filter: saturate(1.2) blur(10px);
+    background: var(--paper);
     transition: border-color var(--duration) var(--ease);
   }
   .site-header[data-scrolled] {

@@ -128,6 +128,11 @@ docked one its mood with `data-mood` (and a line with `data-say`). Its stills ar
 - **Honesty.** No figures from local benches or proofs of concept, anywhere. The home page shows
   what Nestor is designed to do; the developers' page marks anything not built as planned
   (the services: `status` in `lib/integrations.ts`, shown as a "planned" badge on both pages).
+- **Type scale.** Font sizes are Tailwind's steps (`text-xs`… or `var(--text-xs)` in a style
+  block), plus the few declared once in `global.css`'s `@theme` (`text-2xs` for micro labels, the
+  wordmark, the hero); `tests/type-scale.test.ts` fails on an arbitrary size in a component. The
+  header's height and the layers are tokens there too (`--header-h`, `--z-header`, `--z-sticky`,
+  `--z-dock`).
 - **Motion** is transform and opacity only, triggered by IntersectionObserver, never scroll
   handlers that write layout. Everything reads in full without JavaScript, and under
   `prefers-reduced-motion` nothing moves or plays by itself (`e2e` checks it).

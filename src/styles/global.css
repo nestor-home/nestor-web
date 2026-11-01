@@ -3,6 +3,17 @@
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+/* the two sizes Tailwind's scale lacks: micro labels (data, captions) and the header's wordmark */
+@theme {
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-wordmark: 1.35rem;
+  --text-wordmark--line-height: 1;
+  /* the home page's title alone goes past the scale at xl: the one display moment of the site */
+  --text-hero: 5rem;
+  --text-hero--line-height: 0.98;
+}
+
 /* Tailwind reads Nestor's identity through these names only (the same mapping as the admin). */
 @theme inline {
   --color-paper: var(--paper);
@@ -40,7 +51,12 @@
   --section-space: 4rem;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --reveal: 700ms;
-  scroll-padding-top: 4.5rem;
+  /* the sticky header, and the sections' bar under it on pages that have one (SubNav sets it) */
+  --header-h: 3.5rem;
+  --z-header: 40;
+  --z-sticky: 30;
+  --z-dock: 30;
+  scroll-padding-top: calc(var(--header-h) + var(--subnav-h, 0px) + 1rem);
 }
 
 @media (min-width: 640px) {
@@ -150,31 +166,14 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* what is not shipped yet, said as text: integrations, satellites, the documentation's matrices */
-  .badge-planned {
-    display: inline-block;
-    flex-shrink: 0;
-    padding: 0 0.35rem;
-    border: 1px solid var(--rule-strong);
-    border-radius: 999px;
-    font-size: 0.75rem;
-    line-height: 1.1rem;
-    white-space: nowrap;
-    color: var(--ink-muted);
-  }
-
   /* a short label for a group of data (a list, a legend, a column): plain small text, never above a title */
   .label-mono {
-    font-family: var(--font-ui);
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--ink-muted);
+    @apply font-sans text-sm font-medium text-ink-muted;
   }
 
-  /* headings on Tailwind's steps: h1 text-4xl → md:text-5xl → lg:text-6xl */
+  /* headings on Tailwind's steps */
   .display-1 {
-    font-size: 2.25rem;
-    line-height: 1.05;
+    @apply text-4xl leading-[1.05] md:text-5xl lg:text-6xl lg:leading-none;
     letter-spacing: -0.03em;
     font-variation-settings:
       "SOFT" 60,
@@ -182,10 +181,8 @@
       "opsz" 144;
   }
 
-  /* h2 text-3xl → md:text-4xl */
   .display-2 {
-    font-size: 1.875rem;
-    line-height: 1.15;
+    @apply text-3xl leading-[1.15] md:text-4xl md:leading-[1.12];
     letter-spacing: -0.025em;
     font-variation-settings:
       "SOFT" 60,
@@ -194,50 +191,19 @@
   }
 
   .display-3 {
-    font-family: var(--font-display);
+    @apply font-serif text-xl leading-[1.3] font-normal md:text-2xl md:leading-tight;
     font-variation-settings: var(--display-variation);
-    font-weight: 400;
-    font-size: 1.25rem; /* h3 text-xl → md:text-2xl */
-    line-height: 1.3;
     letter-spacing: -0.01em;
   }
 
-  @media (min-width: 768px) {
-    .display-1 {
-      font-size: 3rem;
-    }
-    .display-2 {
-      font-size: 2.25rem;
-      line-height: 1.12;
-    }
-    .display-3 {
-      font-size: 1.5rem;
-      line-height: 1.25;
-    }
-  }
-  @media (min-width: 1024px) {
-    .display-1 {
-      font-size: 3.75rem;
-      line-height: 1;
-    }
-    /* the home page's title alone goes past the scale: the one display moment of the site */
-    .display-hero {
-      font-size: 4.5rem;
-      line-height: 0.98;
-    }
-  }
-  @media (min-width: 1280px) {
-    .display-hero {
-      font-size: 5rem;
-    }
+  /* the home page's title, past display-1 on wide screens */
+  .display-hero {
+    @apply lg:text-7xl lg:leading-[0.98] xl:text-hero;
   }
 
-  /* lead text-lg, running text max-w-prose */
+  /* lead text, running text max-w-prose */
   .lede {
-    font-size: 1.125rem;
-    line-height: 1.75rem;
-    color: var(--ink-muted);
-    max-width: 65ch;
+    @apply max-w-prose text-lg text-ink-muted;
   }
 
   .lede strong,
@@ -330,14 +296,8 @@
 
   /* buttons: ink for the one main action, hairline for the rest */
   .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    height: 2.5rem; /* h-10 px-4 text-sm */
-    padding-inline: 1rem;
+    @apply inline-flex h-10 items-center gap-2 px-4 text-sm font-medium;
     border-radius: var(--radius);
-    font-size: 0.875rem;
-    font-weight: 500;
     text-decoration: none;
     white-space: nowrap;
     transition:

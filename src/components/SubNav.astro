@@ -29,11 +29,14 @@ const { t, sections } = Astro.props;
 <style>
   .subnav {
     position: sticky;
-    top: 3.5rem;
-    z-index: 30;
+    top: var(--header-h);
+    z-index: var(--z-sticky);
     border-block: 1px solid var(--rule);
-    background: color-mix(in oklab, var(--paper) 92%, transparent);
-    backdrop-filter: saturate(1.2) blur(10px);
+    background: var(--paper);
+  }
+  /* anchors land below the bar (global.css: scroll-padding-top) */
+  :global(:root:has(.subnav)) {
+    --subnav-h: 2.625rem;
   }
   .subnav ul {
     scrollbar-width: none;

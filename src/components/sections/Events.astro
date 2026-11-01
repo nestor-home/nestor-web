@@ -96,7 +96,7 @@ const filters = clip("journal-filters", t.locale).length > 0;
                 tabindex={i === 0 ? 0 : -1}
                 class="ev-tab"
               >
-                <span class="font-mono text-[0.7rem] text-ink-muted tabular">{i + 1}</span>
+                <span class="font-mono text-2xs text-ink-muted tabular">{i + 1}</span>
                 <span>{t(`ev-${i + 1}`)}</span>
               </button>
             ))
@@ -124,7 +124,7 @@ const filters = clip("journal-filters", t.locale).length > 0;
           }
         </div>
       </div>
-      <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("ev-clip")}</figcaption>
+      <figcaption class="mt-3 font-mono text-xs text-ink-muted">{t("ev-clip")}</figcaption>
     </figure>
   </div>
 </section>
@@ -151,7 +151,7 @@ const filters = clip("journal-filters", t.locale).length > 0;
     padding: 0.65rem 0.5rem;
     border-bottom: 1px solid var(--rule);
     text-align: left;
-    font-size: 0.92rem;
+    font-size: var(--text-sm);
     color: var(--ink-muted);
     transition:
       color var(--duration) var(--ease),
@@ -181,7 +181,7 @@ const filters = clip("journal-filters", t.locale).length > 0;
   }
   /* the records are for reading their values: long strings wrap inside the card */
   .events-panels :global(pre) {
-    font-size: 0.74rem;
+    font-size: var(--text-xs);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }

@@ -196,10 +196,7 @@ export default function Architecture({ parts, coreLabel, portsLabel }: Props) {
             <p className="prose-copy mt-4">{part.text}</p>
             <ul className="mt-6 border-t border-rule">
               {part.points.map((point) => (
-                <li
-                  key={point}
-                  className="flex gap-3 border-b border-rule py-3 text-[0.92rem] leading-relaxed text-ink-muted"
-                >
+                <li key={point} className="flex gap-3 border-b border-rule py-3 text-sm leading-relaxed text-ink-muted">
                   <Tie />
                   <span>{point}</span>
                 </li>

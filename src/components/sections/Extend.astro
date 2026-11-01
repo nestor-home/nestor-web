@@ -79,7 +79,7 @@ const [mcp, entry, plugin, config] = await Promise.all([
     <ol class="mt-14 flex flex-col">
       <li class="ext-row">
         <div data-reveal>
-          <p class="font-mono text-[0.75rem] text-ember tabular">1</p>
+          <p class="font-mono text-xs text-ember tabular">1</p>
           <h3 class="display-3 mt-2 text-ink">{t("ext-mcp")}</h3>
           <p class="prose-copy mt-3">{t("ext-mcp-text")}</p>
         </div>
@@ -88,7 +88,7 @@ const [mcp, entry, plugin, config] = await Promise.all([
 
       <li class="ext-row">
         <div data-reveal>
-          <p class="font-mono text-[0.75rem] text-ember tabular">2</p>
+          <p class="font-mono text-xs text-ember tabular">2</p>
           <h3 class="display-3 mt-2 text-ink">{t("ext-plugin")}</h3>
           <p class="prose-copy mt-3" set:html={t.html("ext-plugin-text")} />
           <p class="label-mono mt-6">{t("ext-builtins")}</p>
@@ -99,17 +99,17 @@ const [mcp, entry, plugin, config] = await Promise.all([
         <div data-reveal class="flex min-w-0 flex-col gap-3">
           <div class="code border border-rule bg-paper-raised" set:html={entry} />
           <div class="code border border-rule bg-paper-raised" set:html={plugin} />
-          <p class="text-[0.9rem] text-ink-muted">{t("ext-plugin-config")}</p>
+          <p class="text-sm text-ink-muted">{t("ext-plugin-config")}</p>
           <div class="code border border-rule bg-paper-raised" set:html={config} />
         </div>
       </li>
 
       <li class="ext-row">
         <div data-reveal>
-          <p class="font-mono text-[0.75rem] text-ember tabular">3</p>
+          <p class="font-mono text-xs text-ember tabular">3</p>
           <h3 class="display-3 mt-2 text-ink">{t("ext-satellite")}</h3>
           <p class="prose-copy mt-3">{t("ext-satellite-text")}</p>
-          <a href="#satellites" class="link mt-4 inline-block font-mono text-[0.8rem]">{t("ext-satellite-link")}</a>
+          <a href="#satellites" class="link mt-4 inline-block font-mono text-xs">{t("ext-satellite-link")}</a>
         </div>
         <div data-reveal class="min-w-0 self-center">
           <CopyCommand t={t} command={CONFORMANCE} />
@@ -133,7 +133,7 @@ const [mcp, entry, plugin, config] = await Promise.all([
     }
     .ext-row > :first-child {
       position: sticky;
-      top: 6rem;
+      top: calc(var(--header-h) + var(--subnav-h, 0px) + 0.5rem);
       align-self: start;
     }
   }

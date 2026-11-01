@@ -33,14 +33,14 @@ const items = [1, 2, 3, 4, 5, 6];
           }
         </div>
       </div>
-      <figcaption class="relative mt-3 font-mono text-[0.72rem] text-ink-muted">{t("tr-clip")}</figcaption>
+      <figcaption class="relative mt-3 font-mono text-xs text-ink-muted">{t("tr-clip")}</figcaption>
     </figure>
     <dl class="mt-16 grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
       {
         items.map((n, i) => (
           <div data-reveal style={`--i:${i % 3}`} class="border-t border-rule py-6">
-            <dt class="font-serif text-[1.2rem] leading-snug text-ink">{t(`tr-${n}`)}</dt>
-            <dd class="mt-2 text-[0.92rem] leading-relaxed text-ink-muted">{t(`tr-${n}-text`)}</dd>
+            <dt class="font-serif text-xl leading-snug text-ink">{t(`tr-${n}`)}</dt>
+            <dd class="mt-2 text-sm leading-relaxed text-ink-muted">{t(`tr-${n}-text`)}</dd>
           </div>
         ))
       }
