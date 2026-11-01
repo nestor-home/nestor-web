@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 /** The production origin the schemas' `$id`s name. */
-const SITE = "https://nestor.mathislambert.fr";
+const SITE = "https://nestorhome.dev";
 
 test("the protocol's schemas are served where their $id points", async ({ request }) => {
   const path = "/schemas/satellite/2/hello.json";

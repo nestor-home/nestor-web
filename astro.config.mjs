@@ -4,8 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import { protocolSchemas } from "./scripts/schemas.mjs";
 
-/** The production origin; GitHub Pages serves the site at the root of this domain. */
-export const SITE = "https://nestor.mathislambert.fr";
+/** The production origin: the site is served at the root of this domain. */
+export const SITE = "https://nestorhome.dev";
 
 export default defineConfig({
   site: SITE,

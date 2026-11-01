@@ -21,15 +21,24 @@ services:
     labels:
       traefik.enable: "true"
       traefik.docker.network: proxy
-      traefik.http.routers.nestor-web.rule: Host(`nestor.mathislambert.fr`)
+      # nestorhome.dev serves the site; HTTP moves to HTTPS.
+      traefik.http.routers.nestor-web.rule: Host(`nestorhome.dev`)
       traefik.http.routers.nestor-web.entrypoints: websecure
       traefik.http.routers.nestor-web.tls.certresolver: letsencrypt
       traefik.http.services.nestor-web.loadbalancer.server.port: "8080"
-      traefik.http.routers.nestor-web-http.rule: Host(`nestor.mathislambert.fr`)
+      traefik.http.routers.nestor-web-http.rule: Host(`nestorhome.dev`)
       traefik.http.routers.nestor-web-http.entrypoints: web
       traefik.http.routers.nestor-web-http.middlewares: nestor-web-https
       traefik.http.middlewares.nestor-web-https.redirectscheme.scheme: https
       traefik.http.middlewares.nestor-web-https.redirectscheme.permanent: "true"
+      # The former address and www only redirect, path and query kept (published links, OAuth relay).
+      traefik.http.routers.nestor-web-elsewhere.rule: Host(`nestor.mathislambert.fr`) || Host(`www.nestorhome.dev`)
+      traefik.http.routers.nestor-web-elsewhere.entrypoints: web,websecure
+      traefik.http.routers.nestor-web-elsewhere.tls.certresolver: letsencrypt
+      traefik.http.routers.nestor-web-elsewhere.middlewares: nestor-web-canonical
+      traefik.http.middlewares.nestor-web-canonical.redirectregex.regex: ^https?://[^/]+/(.*)
+      traefik.http.middlewares.nestor-web-canonical.redirectregex.replacement: https://nestorhome.dev/$${1}
+      traefik.http.middlewares.nestor-web-canonical.redirectregex.permanent: "true"
     logging:
       driver: json-file
       options: { max-size: 5m, max-file: "3" }
