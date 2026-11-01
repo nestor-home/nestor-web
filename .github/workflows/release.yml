@@ -1,5 +1,5 @@
 # Release pull request on every push to main; when it is merged, builds the site once, packs it
-# into ghcr.io/nestor-home/nestor-web (amd64, arm64) and deploys it to nestor.mathislambert.fr
+# into ghcr.io/nestor-home/nestor-web (amd64, arm64) and deploys it to nestorhome.dev
 # after approval of the `production` environment.
 name: Release
 
@@ -64,5 +64,5 @@ jobs:
     with:
       app: nestor-web
       image: ${{ needs.image.outputs.image }}@${{ needs.image.outputs.digest }}
-      url: https://nestor.mathislambert.fr
+      url: https://nestorhome.dev
     secrets: inherit

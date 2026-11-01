@@ -1,6 +1,6 @@
 /**
  * The satellite protocol's JSON Schemas, served where their `$id` points
- * (https://nestor.mathislambert.fr/schemas/satellite/<version>/<message>.json).
+ * (https://nestorhome.dev/schemas/satellite/<version>/<message>.json).
  *
  * They come from the published server package, at the version pinned below: before `astro dev`
  * and `astro build`, `nestor satellites schemas` writes them (through uvx) and each file lands in
@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /** The nestor-home release (PyPI) whose schemas the site serves. */
-export const NESTOR_SERVER = "0.0.2";
+export const NESTOR_SERVER = "0.1.0";
 
 const PUBLIC = fileURLToPath(new URL("../public/", import.meta.url));
 const SERVED = join(PUBLIC, "schemas");

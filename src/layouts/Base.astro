@@ -27,7 +27,7 @@ interface Props {
 }
 const { locale, alternates, title, description, card, nav, indexable = true, dock = indexable } = Astro.props;
 const t = translator(locale);
-const site = Astro.site ?? new URL("https://nestor.mathislambert.fr");
+const site = Astro.site ?? new URL("https://nestorhome.dev");
 const canonical = new URL(alternates[locale], site).href;
 const og = new URL(`/og/${card}-${locale}.png`, site).href;
 ---

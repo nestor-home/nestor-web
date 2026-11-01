@@ -2,7 +2,7 @@
 
 The website of [Nestor](https://github.com/nestor-home/nestor), the open-source runtime for
 persistent personal agents at home — in English at `/` and in French at `/fr/`.
-It will live at nestor.mathislambert.fr.
+It lives at https://nestorhome.dev.
 
 Astro (static output), one React island, Tailwind v4 on the admin's design tokens, Project Fluent
 for the words, Shiki for the code, real captures of the admin for the pictures.
@@ -20,7 +20,7 @@ how to refresh the captures, the recordings and the code examples.
 
 ## Production
 
-`https://nestor.mathislambert.fr` serves the image `ghcr.io/nestor-home/nestor-web`: the static
+`https://nestorhome.dev` serves the image `ghcr.io/nestor-home/nestor-web`: the static
 build behind an unprivileged, read-only Nginx, joined to the server's Traefik network `proxy`.
 
 Pull requests are squash-merged with a Conventional Commit title. release-please then keeps a
