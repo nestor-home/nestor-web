@@ -53,16 +53,14 @@ runs the published image, with everything it keeps in `./data`:
 ```bash
 mkdir nestor && cd nestor
 curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml
-mkdir data
 docker compose pull
 docker compose run --rm nestor init
 $EDITOR data/.env
 docker compose up -d
 ```
 
-The container runs as user 1000. On Linux, if your own id is another, give it the folder:
-`sudo chown 1000:1000 data`. Port 8080 is the admin, port 7860 the voice server satellites pair
-with.
+The container runs as user 1000 and takes ownership of `data` when it starts. Port 8080 is the
+admin, port 7860 the voice server satellites pair with.
 
 ## The owner account
 
