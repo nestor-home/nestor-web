@@ -1,18 +1,21 @@
 ---
 /**
- * The services Nestor connects to, grouped by what they bring to a household: marks in ink, each
- * named beside it, in the brand's own colour on hover. The developers' page marks what is planned.
+ * The services Nestor connects to, grouped by what they bring to a household (lib/integrations.ts):
+ * marks in ink, each named beside it, in the brand's own colour on hover. What is not shipped yet
+ * carries a "planned" badge, part of the item's text, on every page. `detailed` (the developers'
+ * page) adds how each group is reached.
  */
 import Brand from "@/components/Brand.astro";
 import type { Translator } from "@/i18n";
-import { BRANDS, type Brand as BrandInfo, INTEGRATIONS } from "@/lib/brands";
+import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
+import { INTEGRATIONS } from "@/lib/integrations";
 
 interface Props {
   t: Translator;
-  /** mark the integrations that are not shipped yet */
-  planned?: boolean;
+  /** the developers' page: how each group is reached */
+  detailed?: boolean;
 }
-const { t, planned = false } = Astro.props;
+const { t, detailed = false } = Astro.props;
 ---
 
 <div class="integrations">
@@ -21,14 +24,15 @@ const { t, planned = false } = Astro.props;
       <div class="int-group" data-reveal style={`--i:${gi}`}>
         <p class="label-mono">{t(`int-group-${g.group}`)}</p>
         <ul class="mt-3 flex flex-col">
-          {g.items.map(({ brand, today }) => {
+          {g.items.map(({ brand, status }) => {
             const { name, hex } = BRANDS[brand] as BrandInfo;
             return (
               <li class="int-item" style={hex ? `--brand:${hex}` : undefined}>
                 <Brand brand={brand} class="int-mark size-[1.15rem]" decorative />
                 <span class="min-w-0 truncate">{name}</span>
-                {planned && !today && (
-                  <span class="state ml-auto" data-state="later">
+                {status === "planned" && (
+                  <span class="int-planned ml-auto">
+                    <span class="sr-only">, </span>
                     {t("int-planned")}
                   </span>
                 )}
@@ -36,8 +40,8 @@ const { t, planned = false } = Astro.props;
             );
           })}
         </ul>
-        {g.group === "home" && <p class="mt-2 font-mono text-[0.66rem] text-ink-muted">{t("int-via-ha")}</p>}
-        {g.group === "work" && <p class="mt-2 font-mono text-[0.66rem] text-ink-muted">{t("int-any-mcp")}</p>}
+        {detailed && g.group === "home" && <p class="mt-2 font-mono text-[0.66rem] text-ink-muted">{t("int-via-ha")}</p>}
+        {detailed && g.group === "work" && <p class="mt-2 font-mono text-[0.66rem] text-ink-muted">{t("int-any-mcp")}</p>}
       </div>
     ))
   }
@@ -67,6 +71,15 @@ const { t, planned = false } = Astro.props;
     border-bottom: 1px solid var(--rule);
     font-size: 0.9rem;
     color: var(--ink);
+  }
+  .int-planned {
+    flex-shrink: 0;
+    padding: 0 0.35rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    line-height: 1.1rem;
+    color: var(--ink-muted);
   }
   .int-item :global(.int-mark) {
     color: var(--ink-muted);

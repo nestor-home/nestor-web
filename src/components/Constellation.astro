@@ -64,8 +64,9 @@ const latest = FIRST.at(-1);
                         })}
                       </span>
                     )}
-                    {dev && s.planned && (
-                      <span class="state" data-state="later">
+                    {s.planned && (
+                      <span class="sat-planned">
+                        <span class="sr-only">, </span>
                         {t("cst-planned")}
                       </span>
                     )}
@@ -290,6 +291,14 @@ const latest = FIRST.at(-1);
   }
   .sat:hover .sat-name {
     background: var(--paper-raised);
+  }
+  .sat-planned {
+    padding: 0 0.35rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    line-height: 1.1rem;
+    color: var(--ink-muted);
   }
   .sat-caps {
     display: flex;

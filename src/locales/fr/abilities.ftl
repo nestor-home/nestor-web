@@ -25,6 +25,6 @@ int-group-messages = Messagerie
 int-group-mail = Mail et agenda
 int-group-lists = Listes, notes et musique
 int-group-work = Travail et tâches longues
-int-planned = prévu
+int-planned = bientôt
 int-via-ha = par Home Assistant
 int-any-mcp = et tout serveur MCP
