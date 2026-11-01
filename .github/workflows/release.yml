@@ -30,6 +30,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      # the build generates the protocol's JSON Schemas with uvx (scripts/schemas.mjs)
+      - uses: astral-sh/setup-uv@v7
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - uses: actions/upload-artifact@v7
