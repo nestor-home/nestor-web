@@ -16,3 +16,4 @@ playwright-report/
 .env.*
 !.env.example
 public/schemas/
+public/redirect/

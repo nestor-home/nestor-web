@@ -2,7 +2,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import { protocolSchemas } from "./scripts/schemas.mjs";
+import { serverFiles } from "./scripts/server.mjs";
 
 /** The production origin: the site is served at the root of this domain. */
 export const SITE = "https://nestorhome.dev";
@@ -13,7 +13,7 @@ export default defineConfig({
   trailingSlash: "always",
   build: { format: "directory", inlineStylesheets: "auto" },
   integrations: [
-    protocolSchemas(),
+    serverFiles(),
     react(),
     sitemap({
       i18n: { defaultLocale: "en", locales: { en: "en", fr: "fr" } },
