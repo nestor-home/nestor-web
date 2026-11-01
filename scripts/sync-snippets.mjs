@@ -3,7 +3,7 @@
  * never shows code the SDKs don't document. Run after an SDK's README changed:
  *   node scripts/sync-snippets.mjs [path/to/parent/of/the/sdk/repositories]
  */
-import { copyFileSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -27,12 +27,3 @@ for (const [readme, lang, index, name] of SOURCES) {
   writeFileSync(join(out, `${name}.snippet`), block);
   console.log(`${name}.snippet ← ${readme}`);
 }
-
-/* the protocol's JSON Schemas, served where their `$id` says (nestor.mathislambert.fr/schemas/…) */
-
-const schemas = join(parent, "nestor", "src", "nestor", "modules", "satellites", "schemas");
-const served = join(here, "..", "public", "schemas", "satellite", "1");
-mkdirSync(served, { recursive: true });
-for (const file of readdirSync(schemas).filter((f) => f.endsWith(".json")))
-  copyFileSync(join(schemas, file), join(served, file));
-console.log(`schemas → public/schemas/satellite/1/`);

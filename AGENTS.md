@@ -11,7 +11,9 @@ pnpm build && pnpm e2e                     # Playwright on the built site (start
 E2E_BASE=http://localhost:4321 pnpm e2e    # against a server already running
 ```
 
-All of them must pass; CI runs them on every push and pull request. Releases and deployment:
+`pnpm dev` and `pnpm build` need [uv](https://docs.astral.sh/uv/): they generate the protocol's
+JSON Schemas first (see "The protocol's schemas"). All of them must pass; CI runs them on every
+push and pull request. Releases and deployment:
 see README.md, Production.
 
 ## Layout
@@ -39,7 +41,7 @@ src/
 ├── assets/captures/  admin screenshots (WebP sources; Astro derives AVIF/WebP sizes)
 └── data/             media.json (what was captured), snippets/ (code from the SDK READMEs)
 public/media/         admin recordings (mp4 + webm + poster) and the Reachy twin clip
-public/schemas/       the satellite protocol's JSON Schemas, served where their `$id` points
+public/schemas/       the satellite protocol's JSON Schemas, generated at build (not committed)
 ```
 
 ## Two audiences, two pages
@@ -115,8 +117,19 @@ are captured too; encode them with `ONLY=command,mobile` if a section needs them
 only what `media.json` lists, so the site builds without them. Content people wrote in the mock
 household stays French in the English captures; that is expected.
 
-The code examples come from the SDK READMEs and the schemas from the core:
+The code examples come from the SDK READMEs:
 
 ```bash
-node scripts/sync-snippets.mjs     # needs the sibling checkouts (../nestor-satellite-*, ../nestor)
+node scripts/sync-snippets.mjs     # needs the sibling checkouts (../nestor-satellite-*)
 ```
+
+## The protocol's schemas
+
+The satellite protocol's JSON Schemas are served where their `$id` points
+(`/schemas/satellite/<version>/<message>.json`). They are not committed: before `astro dev` and
+`astro build`, `scripts/schemas.mjs` (an Astro integration) runs
+`uvx --from nestor-home==<NESTOR_SERVER> nestor satellites schemas` and writes each file into
+`public/` at its `$id`'s path, so the version in the URL is the one the schemas declare. The server
+release is pinned once, in `NESTOR_SERVER` at the top of that file; raise it when a server release
+changes the protocol, and update the manifest shown in `sections/Satellites.astro` and its schema
+link if the version changes. Without uv the build stops and says so.
