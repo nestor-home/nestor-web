@@ -1,21 +1,21 @@
 ---
 
-title: "Protocole : nestor.satellite/2"
+title: "Protocole : nestor.satellite/1"
 description: Le standard que tout satellite implémente, quel que soit son langage. Version actuelle, la seule que les serveurs acceptent.
 ---
 
 Un **satellite** est un appareil qui s’appaire à un serveur Nestor (le **cœur**), déclare ce qu’il
 sait faire, fait passer l’audio, remonte des observations et exécute les intentions du cœur. Cette
 page est le standard : les SDK et les pilotes, dans tout langage, l’implémentent, et la
-[suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur les vérifie. Elle
-remplace `nestor.satellite/1`, que les cœurs n’acceptent plus (voir l’[historique](#10-historique)).
+[suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur les vérifie. Voici la
+version 1, la première (voir l’[historique](#10-historique)).
 
 Les mots DOIT, NE DOIT PAS, DEVRAIT, NE DEVRAIT PAS et PEUT s’entendent au sens de la
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY).
 
 Les classes de messages du cœur (`nestor.modules.satellites.wire`) font foi pour les formes. Les
 schémas JSON qu’elles génèrent sont servis à
-`https://nestorhome.dev/schemas/satellite/2/<message>.json` (voir [Schémas](/fr/docs/satellites/schemas/)) ;
+`https://nestorhome.dev/schemas/satellite/1/<message>.json` (voir [Schémas](/fr/docs/satellites/schemas/)) ;
 les SDK en gardent une copie et testent ce qu’ils envoient avec.
 
 ## 1. Vue d’ensemble
@@ -83,7 +83,7 @@ Tous les corps sont en JSON (`Content-Type: application/json`).
 
 ```json
 POST /satellites/pairings
-{"manifest": {"protocol": "nestor.satellite/2",
+{"manifest": {"protocol": "nestor.satellite/1",
               "device": {"id": "capteur-entree", "model": "esp32", "room": "entree"},
               "capabilities": [{"name": "device.identify"}],
               "pairing_methods": ["enrollment.provisioning", "enrollment.qr"]},
@@ -94,7 +94,7 @@ POST /satellites/pairings
 
 GET /satellites/pairings/{pairing_id}
 200 {"status": "pending", "identify": true}
-200 {"status": "approved", "token": "nst2_…", "device_id": "capteur-entree", "room": "entree",
+200 {"status": "approved", "token": "nst1_…", "device_id": "capteur-entree", "room": "entree",
      "capabilities": ["device.identify"]}
 ```
 
@@ -167,7 +167,7 @@ requête ──▶ pending                         ├──▶ approved ──(
 
 ### 3.4 Règles du cœur
 
-- **C1.** Le cœur n’accepte que `nestor.satellite/2`. Un manifeste qui nomme un autre
+- **C1.** Le cœur n’accepte que `nestor.satellite/1`. Un manifeste qui nomme un autre
   `nestor.satellite/<n>` est refusé avec `protocol_unsupported`.
 - **C2.** Un code d’enrôlement appaire un seul appareil : il est consommé dès qu’il est accepté,
   avant que quoi que ce soit puisse l’observer, si bien que deux appareils qui l’utilisent en même
@@ -175,7 +175,7 @@ requête ──▶ pending                         ├──▶ approved ──(
 - **C3.** Une preuve n’est acceptée que tant que son appairage est `pending` ; la première acceptée
   le fait passer aussitôt à `approved`. Un code d’enrôlement refusé parce que l’appairage n’est plus
   en attente n’est pas consommé.
-- **C4.** Le jeton fait 256 bits aléatoires, préfixé `nst2_` ; seul son SHA-256 est conservé.
+- **C4.** Le jeton fait 256 bits aléatoires, préfixé `nst1_` ; seul son SHA-256 est conservé.
 - **C5.** Une nouvelle demande avec le même identifiant d’appareil remplace la demande en attente.
 - **C6.** Le journal enregistre chaque étape : `satellite.pairing.requested` (avec les méthodes
   déclarées), `satellite.addition.started|completed|cancelled|expired`,
@@ -238,7 +238,7 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 
 ```json
 {
-  "protocol": "nestor.satellite/2",
+  "protocol": "nestor.satellite/1",
   "device": { "id": "salon", "model": "reachy-mini", "room": "salon", "brand": "pollen-robotics" },
   "sdk": { "name": "nestor-satellite-python", "version": "0.1.0" },
   "capabilities": [{ "name": "audio.capture" }, { "name": "audio.playback" }, { "name": "device.identify" }],
@@ -335,12 +335,9 @@ Les règles propres au cœur (C1 à C6, la course de P4, I3, les limites) sont p
 
 ## 10. Historique
 
-- **2 (30/10/2026).** Appairage dans les deux sens : codes d’appareil (affichés, dits ou
+- **1.** Première version. Appairage dans les deux sens : codes d’appareil (affichés, dits ou
   journalisés) et codes d’enrôlement (tapés, configurés, scannés) créés par une personne qui ajoute
-  un satellite depuis l’administration, avec l’URI d’appairage. `pairing_methods` dans le
-  manifeste. Identification (`device.identify`, `intent.identify`, `identify` dans les réponses
-  d’attente). Nouveaux points d’accès d’appairage (`/satellites/pairings`), schémas JSON pour chaque
-  corps d’appairage, erreurs avec codes. Jetons préfixés `nst2_`. Aucune compatibilité avec la
-  version 1 : les cœurs refusent ses manifestes, et les satellites appairés en version 1 ne
-  s’authentifient plus. Mettez chaque appareil à jour, puis appairez-le à nouveau.
-- **1.** Appairage par code d’appareil, lien temps réel en WebRTC.
+  un satellite depuis l’administration, avec l’URI d’appairage. Identification, schémas JSON pour
+  chaque message, erreurs avec codes, lien temps réel en WebRTC. Les appareils appairés avec le
+  brouillon non publié `nestor.satellite/0` ne s’authentifient plus : mettez-les à jour, puis
+  appairez-les à nouveau.

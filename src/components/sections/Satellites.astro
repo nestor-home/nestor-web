@@ -17,7 +17,7 @@ const { t } = Astro.props;
 const CODE = "318604";
 const manifest = JSON.stringify(
   {
-    protocol: "nestor.satellite/2",
+    protocol: "nestor.satellite/1",
     device: { id: "enceinte-salon", model: "raspberry-pi-4", room: "salon" },
     pairing_methods: ["device_code.display", "enrollment.provisioning"],
     capabilities: [{ name: "audio.capture" }, { name: "audio.playback" }, { name: "expression.emotion" }],
@@ -184,7 +184,7 @@ const devices = [
       </div>
       <p class="mt-3 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[0.72rem] text-ink-muted">
         <a class="link text-ink-muted" href={docHref(t.locale, "satellites/protocol")}>{t("sat-protocol")}</a>
-        <a class="link text-ink-muted" href="/schemas/satellite/2/manifest.json">{t("sat-schemas")}</a>
+        <a class="link text-ink-muted" href="/schemas/satellite/1/manifest.json">{t("sat-schemas")}</a>
       </p>
     </div>
 
