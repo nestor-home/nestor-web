@@ -4,14 +4,16 @@
  * services, Lobe Icons (`@lobehub/icons-static-svg`, MIT, by LobeHub) for AI providers, which Simple
  * Icons partly dropped at the brands' request, and for a brand in neither set its official mark,
  * kept in src/assets/brands/ with its source and drawn in one colour. The admin's neutral lucide
- * glyph stands for what is not a brand (Hermes, Codex, any mailbox); a brand without any published
+ * glyph stands for what is not a brand (any mailbox); a brand without any published
  * mark gets a text monogram, never a drawn imitation. They are drawn in ink; `hex` is the brand's
  * own colour, shown on hover where it reads on both themes.
  */
 import anthropicSvg from "@lobehub/icons-static-svg/icons/anthropic.svg?raw";
+import codexSvg from "@lobehub/icons-static-svg/icons/codex.svg?raw";
 import elevenlabsSvg from "@lobehub/icons-static-svg/icons/elevenlabs.svg?raw";
 import geminiSvg from "@lobehub/icons-static-svg/icons/gemini.svg?raw";
 import groqSvg from "@lobehub/icons-static-svg/icons/groq.svg?raw";
+import hermesagentSvg from "@lobehub/icons-static-svg/icons/hermesagent.svg?raw";
 import lmstudioSvg from "@lobehub/icons-static-svg/icons/lmstudio.svg?raw";
 import mistralSvg from "@lobehub/icons-static-svg/icons/mistral.svg?raw";
 import ollamaSvg from "@lobehub/icons-static-svg/icons/ollama.svg?raw";
@@ -19,7 +21,7 @@ import openaiSvg from "@lobehub/icons-static-svg/icons/openai.svg?raw";
 import openrouterSvg from "@lobehub/icons-static-svg/icons/openrouter.svg?raw";
 import vllmSvg from "@lobehub/icons-static-svg/icons/vllm.svg?raw";
 import type { LucideIcon } from "lucide-react";
-import { Cpu, Feather, Mail, Mic } from "lucide-react";
+import { Mail, Mic } from "lucide-react";
 import {
   type SimpleIcon,
   siAnthropic,
@@ -131,8 +133,8 @@ export const BRANDS = {
   mcp: mark("MCP", siModelcontextprotocol),
   linear: mark("Linear", siLinear),
   github: mark("GitHub", siGithub),
-  hermes: glyph("Hermes", Feather),
-  codex: glyph("Codex", Cpu),
+  hermes: lobe("Hermes", hermesagentSvg),
+  codex: lobe("Codex", codexSvg),
   python: mark("Python", siPython),
   typescript: mark("TypeScript", siTypescript),
   rust: mark("Rust", siRust),

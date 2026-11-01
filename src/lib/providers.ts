@@ -7,14 +7,12 @@
  * (`lib/integrations.ts`), so the two pages never disagree.
  */
 import type { BrandKey } from "@/lib/brands";
-import { INTEGRATIONS } from "@/lib/integrations";
+import { INTEGRATIONS, type Integration } from "@/lib/integrations";
 
 export type ProviderKind = "model" | "speech" | "channel";
 
-export interface Provider {
-  /** the brand mark and name, and the tile's address: `#<kind>-<brand>` */
-  brand: BrandKey;
-  status: "available" | "planned";
+/** `brand` is the mark, the name and the tile's address: `#<kind>-<brand>` */
+export interface Provider extends Integration {
   /** runs on the household's own machine */
   local?: boolean;
   /** a Fluent message naming the tile, for what is not a brand (the voice channel) */

@@ -6,6 +6,7 @@
  * page) adds how each group is reached.
  */
 import Brand from "@/components/Brand.astro";
+import Planned from "@/components/Planned.astro";
 import type { Translator } from "@/i18n";
 import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
 import { INTEGRATIONS } from "@/lib/integrations";
@@ -30,18 +31,13 @@ const { t, detailed = false } = Astro.props;
               <li class="int-item" style={hex ? `--brand:${hex}` : undefined}>
                 <Brand brand={brand} class="int-mark size-[1.15rem]" decorative />
                 <span class="min-w-0 truncate">{name}</span>
-                {status === "planned" && (
-                  <span class="badge-planned ml-auto">
-                    <span class="sr-only">, </span>
-                    {t("int-planned")}
-                  </span>
-                )}
+                {status === "planned" && <Planned t={t} class="ml-auto" />}
               </li>
             );
           })}
         </ul>
-        {detailed && g.group === "home" && <p class="mt-2 font-mono text-[0.66rem] text-ink-muted">{t("int-via-ha")}</p>}
-        {detailed && g.group === "work" && <p class="mt-2 font-mono text-[0.66rem] text-ink-muted">{t("int-any-mcp")}</p>}
+        {detailed && g.group === "home" && <p class="mt-2 font-mono text-2xs text-ink-muted">{t("int-via-ha")}</p>}
+        {detailed && g.group === "work" && <p class="mt-2 font-mono text-2xs text-ink-muted">{t("int-any-mcp")}</p>}
       </div>
     ))
   }
@@ -69,7 +65,7 @@ const { t, detailed = false } = Astro.props;
     gap: 0.6rem;
     min-height: 2.4rem;
     border-bottom: 1px solid var(--rule);
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     color: var(--ink);
   }
   .int-item :global(.int-mark) {

@@ -4,9 +4,10 @@
  * Available providers' setups are the page's own content, passed as `<ProviderSetup>` children;
  * planned ones get the shared badge and a one-line note. Without JavaScript the default provider
  * (the first, the one `nestor init` writes) shows; with it, `#<kind>-<brand>`, the tile's id, opens
- * another (the shared tabs in scripts/site.ts, with `data-tabs-hash`).
+ * another (the shared tabs in scripts/site.ts, with `data-tabs-hash`; a grid, so every arrow moves).
  */
 import Brand from "@/components/Brand.astro";
+import Planned from "@/components/Planned.astro";
 import { type Locale, translator } from "@/i18n";
 import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
 import { PROVIDERS, type ProviderKind, panelId } from "@/lib/providers";
@@ -21,11 +22,11 @@ const providers = PROVIDERS[kind];
 ---
 
 <div class="providers" data-providers={kind}>
-  <div role="tablist" aria-label={t(`providers-${kind}`)} class="providers-mosaic" data-tabs-hash>
+  <div role="tablist" aria-label={t(`providers-${kind}`)} class="providers-mosaic" data-tabs-grid data-tabs-hash>
     {
       providers.map(({ brand, status, local, label }, i) => {
-        const { hex } = BRANDS[brand] as BrandInfo;
-        const name = label ? t(label) : (BRANDS[brand] as BrandInfo).name;
+        const b = BRANDS[brand] as BrandInfo;
+        const name = label ? t(label) : b.name;
         const id = panelId(kind, brand);
         return (
           <button
@@ -36,7 +37,7 @@ const providers = PROVIDERS[kind];
             aria-selected={i === 0 ? "true" : "false"}
             tabindex={i === 0 ? 0 : -1}
             class="provider"
-            style={hex ? `--brand:${hex}` : undefined}
+            style={b.hex ? `--brand:${b.hex}` : undefined}
           >
             <Brand brand={brand} class="provider-mark size-6" decorative />
             <span class="provider-name">{name}</span>
@@ -46,12 +47,7 @@ const providers = PROVIDERS[kind];
                 {t("providers-local")}
               </span>
             )}
-            {status === "planned" && (
-              <span class="badge-planned">
-                <span class="sr-only">, </span>
-                {t("int-planned")}
-              </span>
-            )}
+            {status === "planned" && <Planned t={t} />}
           </button>
         );
       })
@@ -95,7 +91,7 @@ const providers = PROVIDERS[kind];
     border-radius: var(--radius);
     background: transparent;
     color: var(--ink);
-    font-size: 0.85rem;
+    font-size: var(--text-sm);
     line-height: 1.2;
     text-align: center;
     cursor: pointer;
@@ -124,7 +120,7 @@ const providers = PROVIDERS[kind];
   }
   .provider-caption {
     font-family: var(--font-data);
-    font-size: 0.68rem;
+    font-size: var(--text-2xs);
     color: var(--ink-muted);
   }
   .providers-panels {

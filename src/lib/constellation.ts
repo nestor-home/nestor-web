@@ -22,7 +22,7 @@ export interface Satellite {
   planned?: boolean;
 }
 
-/** Above the star, then below it. */
+/** Above the star, then below it, three to a row (the first of a row sits on the left). */
 export const ROOMS: RoomId[] = ["kitchen", "office", "living", "kids", "bedroom", "hall"];
 
 const voice: Capability[] = ["audio.capture", "audio.playback"];
