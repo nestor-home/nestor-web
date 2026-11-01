@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/nestor-home/nestor-web/compare/v0.4.0...v0.5.0) (2026-11-01)
+
+
+### Features
+
+* overhaul the landing and developer pages ([#21](https://github.com/nestor-home/nestor-web/issues/21)) ([e2eaf57](https://github.com/nestor-home/nestor-web/commit/e2eaf572e486549bda4a520454da5d739887efef))
+
 ## [0.4.0](https://github.com/nestor-home/nestor-web/compare/v0.3.0...v0.4.0) (2026-11-01)
 
 
