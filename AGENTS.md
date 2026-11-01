@@ -9,10 +9,13 @@ The website of Nestor. Read this before changing anything; the product's own rul
 pnpm lint && pnpm typecheck && pnpm test   # Biome, astro check, Vitest
 pnpm build && pnpm e2e                     # Playwright on the built site (starts a preview on 4380)
 E2E_BASE=http://localhost:4321 pnpm e2e    # against a server already running
+docker build -t nestor-web . && docker run --rm -p 8080:8080 nestor-web   # the site's Nginx, then:
+E2E_NGINX=1 E2E_BASE=http://localhost:8080 pnpm e2e e2e/nginx.spec.ts
 ```
 
-`pnpm dev` and `pnpm build` need [uv](https://docs.astral.sh/uv/): they generate the protocol's
-JSON Schemas first (see "The protocol's schemas"). All of them must pass; CI runs them on every
+`pnpm dev` and `pnpm build` need [uv](https://docs.astral.sh/uv/): they take the protocol's JSON
+Schemas and the OAuth relay from the server package first (see "What the build takes from the
+server package"). All of them must pass; CI runs them on every
 push and pull request. Releases and deployment:
 see README.md, Production.
 
@@ -44,6 +47,7 @@ src/
 └── data/             media.json (what was captured)
 public/media/         admin recordings (mp4 + webm + poster) and the Reachy twin clip
 public/schemas/       the satellite protocol's JSON Schemas, generated at build (not committed)
+public/redirect/      the OAuth relay page, copied from the server package at build (not committed)
 ```
 
 ## Two audiences, three places
@@ -140,13 +144,26 @@ are captured too; encode them with `ONLY=command,mobile` if a section needs them
 only what `media.json` lists, so the site builds without them. Content people wrote in the mock
 household stays French in the English captures; that is expected.
 
-## The protocol's schemas
+## What the build takes from the server package
 
-The satellite protocol's JSON Schemas are served where their `$id` points
-(`/schemas/satellite/<version>/<message>.json`). They are not committed: before `astro dev` and
-`astro build`, `scripts/schemas.mjs` (an Astro integration) runs
-`uvx --from nestor-home==<NESTOR_SERVER> nestor satellites schemas` and writes each file into
-`public/` at its `$id`'s path, so the version in the URL is the one the schemas declare. The server
-release is pinned once, in `NESTOR_SERVER` at the top of that file; raise it when a server release
-changes the protocol, and update the manifest shown in `sections/Satellites.astro` and its schema
-link if the version changes. Without uv the build stops and says so.
+The site serves files that ship in the server package (`nestor-home` on PyPI), at one release
+pinned in `NESTOR_SERVER` at the top of `scripts/server.mjs`. That Astro integration runs the
+package through uvx before `astro dev` and `astro build` and writes into `public/` (git-ignored):
+
+- **The protocol's schemas**, served where their `$id` points
+  (`/schemas/satellite/<version>/<message>.json`): `nestor satellites schemas` writes them and each
+  file lands at its `$id`'s path, so the version in the URL is the one the schemas declare.
+- **The OAuth relay** (`nestor/admin/static/relay/` in the package, copied unchanged to
+  `public/redirect/`): the admin's default `relay_url`, `https://nestorhome.dev/redirect/oauth`.
+  An admin not served over HTTPS sends providers there; the page reads `state`
+  (`<state>.<base64url(callback)>`) and forwards the browser to that admin's
+  `/connections/callback` with the query. Providers have that URL registered exactly, without a
+  trailing slash, so `deploy/nginx.conf` serves `/redirect/oauth.html` at `location = /redirect/oauth`
+  (200, query untouched, `Referrer-Policy: no-referrer`, `no-store`), sends `/redirect/oauth/` there
+  with its query, and the page loads `relay.js` beside it. `astro preview` does not do this:
+  `e2e/nginx.spec.ts` runs against the site's image (`E2E_NGINX=1`, see the file; CI does it).
+  Change the page in the server, release it, then raise `NESTOR_SERVER`.
+
+Raise `NESTOR_SERVER` when a server release changes the protocol or the relay, and update the
+manifest shown in `sections/Satellites.astro` and its schema link if the protocol version changes.
+Without uv the build stops and says so.
