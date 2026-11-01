@@ -3,7 +3,7 @@
  * Everything here is progressive — without it, every section reads in full.
  */
 import { drawDither } from "@nestor-home/character";
-import { nextIndex } from "@/lib/tabs";
+import { nextIndex, tabAxes } from "@/lib/tabs";
 
 const root = document.documentElement;
 const reduced = matchMedia("(prefers-reduced-motion: reduce)");
@@ -130,11 +130,13 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy]")
   });
 }
 
-/* tabs (WAI-ARIA tabs pattern, automatic activation); with `data-tabs-hash`, the address keeps the
-   chosen tab (`#<tab id>`) and opens it, so a link can name one */
+/* tabs (WAI-ARIA tabs pattern, automatic activation): the arrows of the list's orientation move
+   (both for `data-tabs-grid`); with `data-tabs-hash`, the address keeps the chosen tab
+   (`#<tab id>`) and opens it, so a link can name one */
 for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
   const tabs = [...list.querySelectorAll<HTMLButtonElement>("[role=tab]")];
   const hash = list.hasAttribute("data-tabs-hash");
+  const axes = tabAxes(list);
   const select = (index: number, focus: boolean) => {
     tabs.forEach((tab, i) => {
       const on = i === index;
@@ -154,7 +156,7 @@ for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
   tabs.forEach((tab, i) => {
     tab.addEventListener("click", () => select(i, false));
     tab.addEventListener("keydown", (event) => {
-      const next = nextIndex(event.key, i, tabs.length);
+      const next = nextIndex(event.key, i, tabs.length, axes);
       if (next === null) return;
       event.preventDefault();
       select(next, true);
@@ -176,12 +178,14 @@ for (const story of document.querySelectorAll<HTMLElement>("[data-story]")) {
   const counter = story.querySelector<HTMLElement>("[data-stage-step]");
   const steps = [...story.querySelectorAll<HTMLElement>("li[data-step]")];
   const character = stage?.querySelector<SVGElement>("svg.nestor");
-  /* the character on the stage takes the state of the step; asleep with Léa at night */
+  /* the character on the stage takes the mood of the step, or the one the step gives the place
+     the person is in (`data-mood-<where>`) */
   const pose = () => {
     if (!character || !stage) return;
     const step = steps.find((s) => s.dataset.step === stage.dataset.step);
-    const asleep = stage.dataset.step === "3" && story.dataset.where === "night";
-    character.dataset.state = asleep ? "sleeping" : (step?.dataset.state ?? "idle");
+    const where = story.dataset.where ?? "";
+    const place = `mood${where.charAt(0).toUpperCase()}${where.slice(1)}`;
+    character.dataset.state = step?.dataset[place] ?? step?.dataset.mood ?? "idle";
   };
   const show = (n: number) => {
     if (!stage || stage.dataset.step === String(n)) return;
