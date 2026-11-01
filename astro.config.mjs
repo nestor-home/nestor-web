@@ -1,3 +1,4 @@
+import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
@@ -15,6 +16,7 @@ export default defineConfig({
   integrations: [
     serverFiles(),
     react(),
+    mdx(), // documentation pages that hold a component (the providers' picker)
     sitemap({
       i18n: { defaultLocale: "en", locales: { en: "en", fr: "fr" } },
     }),

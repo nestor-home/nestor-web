@@ -28,7 +28,7 @@ const { Content, headings } = await render(entry);
 const sections = headings.filter((heading) => heading.depth === 2);
 const { previous, next } = neighbours(slug);
 const alternates = Object.fromEntries(LOCALES.map((l) => [l, docHref(l, slug)])) as Record<Locale, string>;
-const edit = `${REPOS.web}/edit/main/src/content/docs/${entry.id}.md`;
+const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
 ---
 
 <Base
@@ -132,6 +132,7 @@ const edit = `${REPOS.web}/edit/main/src/content/docs/${entry.id}.md`;
   </template>
   <script>
     import "@/scripts/docs";
+    import "@/scripts/providers";
   </script>
 </Base>
 

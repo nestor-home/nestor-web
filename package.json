@@ -19,12 +19,14 @@
     "media": "node scripts/capture-admin.mjs && node scripts/encode-media.mjs"
   },
   "dependencies": {
+    "@astrojs/mdx": "8.1.0",
     "@astrojs/react": "7.1.2",
     "@astrojs/sitemap": "3.7.4",
     "@fluent/bundle": "0.19.1",
     "@fontsource-variable/fraunces": "5.3.0",
     "@fontsource-variable/instrument-sans": "5.3.0",
     "@fontsource/ibm-plex-mono": "5.3.0",
+    "@lobehub/icons-static-svg": "1.95.1",
     "@nestor-home/character": "0.2.0",
     "astro": "7.4.4",
     "lucide-react": "1.64.0",

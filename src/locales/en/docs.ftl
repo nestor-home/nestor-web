@@ -10,3 +10,7 @@ docs-group-start = Start
 docs-group-satellites = Satellites
 docs-group-sdks = SDKs
 docs-group-project = Project
+providers-model = Language models
+providers-speech = Speech providers
+providers-local = local
+providers-planned-note = { $name } is planned: Nestor does not support it yet.

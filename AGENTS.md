@@ -71,7 +71,9 @@ to it), and SDK READMEs stay short and link to their page.
 ## The documentation
 
 - One Markdown file per page and locale in `src/content/docs/<locale>/` (`index.md` for the first
-  page); the reading order and the sidebar's groups are `DOC_GROUPS` in `src/lib/docs.ts`. A page
+  page; `.mdx` only where a page holds a component, as the providers' picker in `providers.mdx`:
+  its tiles come from `lib/providers.ts`, each available provider's setup is a `<ProviderSetup>` in
+  the page, and `tests/docs.test.ts` checks both languages give one to each); the reading order and the sidebar's groups are `DOC_GROUPS` in `src/lib/docs.ts`. A page
   needs a `title` and a `description`; `tests/docs.test.ts` fails on a page missing in a locale, a
   file outside the reading order, a link to the other language's docs, or an em-dash.
 - Prose lives in the content files, written for each language (French typography as in the
@@ -130,8 +132,10 @@ docked one its mood with `data-mood` (and a line with `data-say`). Its stills ar
   `prefers-reduced-motion` nothing moves or plays by itself (`e2e` checks it).
 - **Anti-slop**: no gradients or glows, no emoji, no eyebrows above titles, no coloured side borders,
   no stat tiles; numbers in `tabular-nums`; a description only when it says something.
-- Brand marks come from `lib/brands.ts` (Simple Icons, CC0, nominative use; the admin's lucide glyph when a
-  brand is not there), never inline elsewhere. In ink by default, the brand's colour on hover.
+- Brand marks come from `lib/brands.ts` (nominative use): Simple Icons (CC0) for services, Lobe Icons
+  (`@lobehub/icons-static-svg`, MIT) for AI providers, the admin's lucide glyph for what is not a
+  brand, a text monogram for a brand in neither set; never inline elsewhere, never redrawn. In ink by
+  default, the brand's colour on hover.
 
 ## Refreshing the media
 

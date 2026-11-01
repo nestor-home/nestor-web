@@ -1,0 +1,138 @@
+---
+/**
+ * The documentation's provider picker: a mosaic of marks (a tab list), one provider's setup below.
+ * Available providers' setups are the page's own content, passed as `<ProviderSetup>` children;
+ * planned ones get the shared badge and a one-line note. Without JavaScript the default provider
+ * (the first, the one `nestor init` writes) shows; with it, `#<kind>-<brand>`, the tile's id, opens
+ * another (scripts/providers.ts).
+ */
+import Brand from "@/components/Brand.astro";
+import { type Locale, translator } from "@/i18n";
+import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
+import { PROVIDERS, type ProviderKind, panelId } from "@/lib/providers";
+
+interface Props {
+  kind: ProviderKind;
+  locale: Locale;
+}
+const { kind, locale } = Astro.props;
+const t = translator(locale);
+const providers = PROVIDERS[kind];
+---
+
+<div class="providers" data-providers={kind}>
+  <div role="tablist" aria-label={kind === "model" ? t("providers-model") : t("providers-speech")} class="providers-mosaic">
+    {
+      providers.map(({ brand, status, local }, i) => {
+        const { name, hex } = BRANDS[brand] as BrandInfo;
+        const id = panelId(kind, brand);
+        return (
+          <button
+            type="button"
+            role="tab"
+            id={id}
+            aria-controls={`${id}-setup`}
+            aria-selected={i === 0 ? "true" : "false"}
+            tabindex={i === 0 ? 0 : -1}
+            class="provider"
+            style={hex ? `--brand:${hex}` : undefined}
+          >
+            <Brand brand={brand} class="provider-mark size-6" decorative />
+            <span class="provider-name">{name}</span>
+            {local && (
+              <span class="provider-caption">
+                <span class="sr-only">, </span>
+                {t("providers-local")}
+              </span>
+            )}
+            {status === "planned" && (
+              <span class="badge-planned">
+                <span class="sr-only">, </span>
+                {t("int-planned")}
+              </span>
+            )}
+          </button>
+        );
+      })
+    }
+  </div>
+  <div class="providers-panels">
+    <slot />
+    {
+      providers
+        .filter((p) => p.status === "planned")
+        .map(({ brand }) => {
+          const id = panelId(kind, brand);
+          return (
+            <div role="tabpanel" id={`${id}-setup`} aria-labelledby={id} tabindex="0" class="provider-panel" hidden>
+              <p>{t("providers-planned-note", { name: (BRANDS[brand] as BrandInfo).name })}</p>
+            </div>
+          );
+        })
+    }
+  </div>
+</div>
+
+<style>
+  .providers {
+    margin-top: 1.5rem;
+  }
+  .providers-mosaic {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    gap: 0.5rem;
+  }
+  .provider {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.35rem;
+    padding: 0.85rem 0.4rem 0.7rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--ink);
+    font-size: 0.85rem;
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--duration) var(--ease);
+  }
+  .provider:hover {
+    border-color: var(--rule-strong);
+  }
+  .provider[aria-selected="true"] {
+    border-color: var(--ink);
+    background: var(--paper-raised);
+  }
+  .provider :global(.provider-mark) {
+    color: var(--ink-muted);
+    transition:
+      color var(--duration) var(--ease),
+      transform var(--duration) var(--ease);
+  }
+  .provider:hover :global(.provider-mark),
+  .provider[aria-selected="true"] :global(.provider-mark) {
+    color: var(--brand, var(--ink));
+  }
+  .provider-name {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .provider-caption {
+    font-family: var(--font-data);
+    font-size: 0.68rem;
+    color: var(--ink-muted);
+  }
+  .providers-panels {
+    margin-top: 1.25rem;
+  }
+  .providers-panels :global(.provider-panel > * + *) {
+    margin-top: 1.1rem;
+  }
+  .providers-panels :global(.provider-panel:focus-visible) {
+    outline-offset: 0.5rem;
+  }
+</style>

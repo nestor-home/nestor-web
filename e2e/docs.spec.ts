@@ -75,7 +75,13 @@ test("every link of the documentation leads somewhere, anchors included", async 
   expect(broken).toEqual([]);
 });
 
-for (const path of ["/docs/", "/docs/satellites/protocol/", "/fr/docs/sdks/rust/"]) {
+for (const path of [
+  "/docs/",
+  "/docs/providers/",
+  "/fr/docs/install/",
+  "/docs/satellites/protocol/",
+  "/fr/docs/sdks/rust/",
+]) {
   for (const width of [390, 768, 1440]) {
     test(`${path} at ${width}px: no horizontal scroll`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -132,7 +138,13 @@ test("the developers' page points to the documentation and shows its examples", 
   await expect(page).toHaveURL(/\/docs\/sdks\/python\/$/);
 });
 
-for (const path of ["/docs/", "/docs/satellites/protocol/", "/fr/docs/sdks/typescript/"]) {
+for (const path of [
+  "/docs/",
+  "/docs/providers/",
+  "/fr/docs/install/",
+  "/docs/satellites/protocol/",
+  "/fr/docs/sdks/typescript/",
+]) {
   test(`${path} has no WCAG 2 A/AA violation (axe)`, async ({ page }) => {
     await page.goto(path);
     await page.addScriptTag({ path: require.resolve("axe-core") });
@@ -150,3 +162,36 @@ for (const path of ["/docs/", "/docs/satellites/protocol/", "/fr/docs/sdks/types
     expect(violations).toEqual([]);
   });
 }
+
+test("the providers' page shows one provider's setup at a time, chosen by click, keys or address", async ({ page }) => {
+  await page.goto("/docs/providers/");
+  const models = page.getByRole("tablist", { name: "Language models" });
+  await expect(models.getByRole("tab", { name: "OpenRouter" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#model-openrouter-setup")).toContainText("OPENROUTER_API_KEY=");
+  await expect(page.locator("#model-ollama-setup")).toBeHidden();
+
+  await models.getByRole("tab", { name: /Ollama/ }).click();
+  await expect(page.locator("#model-ollama-setup")).toContainText("http://localhost:11434/v1");
+  await expect(page.locator("#model-openrouter-setup")).toBeHidden();
+  await expect(page).toHaveURL(/#model-ollama$/);
+
+  await page.keyboard.press("ArrowRight");
+  await expect(models.getByRole("tab", { name: /LM Studio/ })).toBeFocused();
+  await expect(page.locator("#model-lm-studio-setup")).toBeVisible();
+
+  await page.goto("/fr/docs/providers/#speech-whisper");
+  const speech = page.getByRole("tablist", { name: "Fournisseurs de parole" });
+  await expect(speech.getByRole("tab", { name: /Whisper/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#speech-whisper-setup")).toContainText("Whisper est prévu");
+  await expect(page.locator("#speech-elevenlabs-setup")).toBeHidden();
+});
+
+test.describe("without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+  test("the providers' page shows the default setups", async ({ page }) => {
+    await page.goto("/docs/providers/");
+    await expect(page.locator("#model-openrouter-setup")).toBeVisible();
+    await expect(page.locator("#speech-elevenlabs-setup")).toBeVisible();
+    await expect(page.locator("#model-openai-setup")).toBeHidden();
+  });
+});

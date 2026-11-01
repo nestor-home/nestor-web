@@ -10,3 +10,7 @@ docs-group-start = Démarrer
 docs-group-satellites = Satellites
 docs-group-sdks = SDK
 docs-group-project = Projet
+providers-model = Modèles de langage
+providers-speech = Fournisseurs de parole
+providers-local = local
+providers-planned-note = { $name } est prévu : Nestor ne le prend pas encore en charge.
