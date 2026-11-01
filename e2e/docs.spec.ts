@@ -1,7 +1,5 @@
-import { createRequire } from "node:module";
 import { expect, type Page, test } from "@playwright/test";
-
-const require = createRequire(import.meta.url);
+import { axe, watch } from "./helpers";
 
 /** Every page of the documentation in a language, as its sidebar lists them. */
 async function pagesOf(page: Page, root: string): Promise<string[]> {
@@ -10,14 +8,6 @@ async function pagesOf(page: Page, root: string): Promise<string[]> {
     .locator("aside.docs-side nav a")
     .evaluateAll((links) => links.map((a) => a.getAttribute("href") ?? ""));
   return [...new Set(hrefs)];
-}
-
-function watch(page: Page) {
-  const problems: string[] = [];
-  page.on("console", (m) => m.type() === "error" && problems.push(m.text()));
-  page.on("pageerror", (e) => problems.push(String(e)));
-  page.on("response", (r) => r.status() >= 400 && problems.push(`${r.status()} ${r.url()}`));
-  return problems;
 }
 
 test("both languages hold the same pages, each with its title, text and the other language", async ({ page }) => {
@@ -75,23 +65,6 @@ test("every link of the documentation leads somewhere, anchors included", async 
   expect(broken).toEqual([]);
 });
 
-for (const path of [
-  "/docs/",
-  "/docs/providers/",
-  "/fr/docs/install/",
-  "/docs/satellites/protocol/",
-  "/fr/docs/sdks/rust/",
-]) {
-  for (const width of [390, 768, 1440]) {
-    test(`${path} at ${width}px: no horizontal scroll`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto(path);
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-      expect(overflow).toBeLessThanOrEqual(0);
-    });
-  }
-}
-
 test("the SDK pages show their code, highlighted, and copy it", async ({ page, context, browserName }) => {
   test.skip(browserName !== "chromium");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
@@ -147,19 +120,7 @@ for (const path of [
 ]) {
   test(`${path} has no WCAG 2 A/AA violation (axe)`, async ({ page }) => {
     await page.goto(path);
-    await page.addScriptTag({ path: require.resolve("axe-core") });
-    const violations = await page.evaluate(async () => {
-      // @ts-expect-error axe is injected above
-      const result = await window.axe.run(document, { runOnly: ["wcag2a", "wcag2aa"] });
-      return result.violations.map(
-        (v: { id: string; nodes: { target: string[] }[] }) =>
-          `${v.id}: ${v.nodes
-            .map((n) => n.target.join(" "))
-            .slice(0, 4)
-            .join(", ")}`,
-      );
-    });
-    expect(violations).toEqual([]);
+    expect(await axe(page)).toEqual([]);
   });
 }
 

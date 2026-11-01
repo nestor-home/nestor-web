@@ -1,7 +1,5 @@
-import { createRequire } from "node:module";
-import { expect, type Page, test } from "@playwright/test";
-
-const require = createRequire(import.meta.url);
+import { expect, test } from "@playwright/test";
+import { axe, renderAll, scrollThrough, watch } from "./helpers";
 
 const PAGES = [
   { path: "/", lang: "en", title: /lives/ },
@@ -11,35 +9,15 @@ const PAGES = [
 ];
 const WIDTHS = [390, 768, 1440];
 
-/** Collects console errors and failed requests for a page's whole life. */
-function watch(page: Page) {
-  const problems: string[] = [];
-  page.on("console", (m) => m.type() === "error" && problems.push(m.text()));
-  page.on("pageerror", (e) => problems.push(String(e)));
-  page.on("requestfailed", (r) => problems.push(`${r.url()} ${r.failure()?.errorText}`));
-  page.on("response", (r) => r.status() >= 400 && problems.push(`${r.status()} ${r.url()}`));
-  return problems;
-}
-
-async function scrollThrough(page: Page) {
-  const height = await page.evaluate(() => document.body.scrollHeight);
-  for (let y = 0; y < height; y += 600) {
-    await page.evaluate((v) => window.scrollTo(0, v), y);
-    await page.waitForTimeout(40);
-  }
-}
-
 for (const { path, lang, title } of PAGES) {
   for (const width of WIDTHS) {
-    test(`${path} at ${width}px: no console error, no horizontal scroll`, async ({ page }) => {
+    test(`${path} at ${width}px: no console error`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       const problems = watch(page);
       await page.goto(path);
       await expect(page.locator("html")).toHaveAttribute("lang", lang);
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
       await scrollThrough(page);
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-      expect(overflow).toBeLessThanOrEqual(0);
       expect(problems).toEqual([]);
     });
   }
@@ -192,33 +170,12 @@ test("the home page loads no framework, and every picture has a text", async ({ 
 
 for (const { path } of PAGES) {
   test(`${path} has no WCAG 2 A/AA violation (axe)`, async ({ page }) => {
+    // still: reveals and demonstrations are shown at once, so axe reads the final colours
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(path);
-    await page.addStyleTag({ content: ".section{content-visibility:visible!important}" });
+    await renderAll(page);
     await scrollThrough(page);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(1500); // let the last reveals and the pairing demonstration finish
-    // reveals staggered by their place (the runtime's lanes run for up to 3.5 s): wait for every finite one
-    await page.evaluate(() =>
-      Promise.all(
-        document
-          .getAnimations()
-          .filter((a) => a.effect?.getComputedTiming().iterations !== Number.POSITIVE_INFINITY)
-          .map((a) => a.finished.catch(() => undefined)),
-      ),
-    );
-    await page.addScriptTag({ path: require.resolve("axe-core") });
-    const violations = await page.evaluate(async () => {
-      // @ts-expect-error axe is injected above
-      const result = await window.axe.run(document, { runOnly: ["wcag2a", "wcag2aa"] });
-      return result.violations.map(
-        (v: { id: string; nodes: { target: string[] }[] }) =>
-          `${v.id}: ${v.nodes
-            .map((n) => n.target.join(" "))
-            .slice(0, 4)
-            .join(", ")}`,
-      );
-    });
-    expect(violations).toEqual([]);
+    expect(await axe(page)).toEqual([]);
   });
 }
 
@@ -353,15 +310,27 @@ test("Nestor answers in the hero: it listens, then speaks", async ({ page }) => 
 });
 
 /* No content runs out of its box: a block whose content is wider than itself must scroll on its
-   own (code, wide diagrams), never spill over its neighbours. Page-level scroll alone misses it. */
-const BOXED = [...PAGES.map((p) => p.path), "/docs/", "/fr/docs/satellites/protocol/", "/docs/sdks/rust/"];
+   own (code, wide diagrams), never spill over its neighbours, and the page never scrolls sideways.
+   Page-level scroll alone misses the first. */
+const BOXED = [
+  ...PAGES.map((p) => p.path),
+  "/docs/",
+  "/docs/providers/",
+  "/fr/docs/install/",
+  "/docs/satellites/protocol/",
+  "/fr/docs/satellites/protocol/",
+  "/docs/sdks/rust/",
+  "/fr/docs/sdks/rust/",
+];
 for (const path of BOXED) {
   for (const width of WIDTHS) {
-    test(`${path} at ${width}px: no content overflows its box`, async ({ page }) => {
+    test(`${path} at ${width}px: no horizontal scroll, no content overflows its box`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto(path);
-      await page.addStyleTag({ content: ".section{content-visibility:visible!important}" });
+      await renderAll(page);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(overflow).toBeLessThanOrEqual(0);
       const spilled = await page.evaluate(() =>
         [...document.querySelectorAll("main *")].flatMap((el) => {
           if (el.closest("svg")) return [];
