@@ -407,9 +407,12 @@ const speakers = [
   .triage-row:last-child {
     border-bottom: 0;
   }
+  /* a gate's name may take two lines ("petit / modèle") rather than leave its column */
   .triage-head {
     padding-block: 0.45rem;
-    white-space: nowrap;
+    align-items: end;
+    line-height: 1.25;
+    text-wrap: balance;
   }
   .gate {
     position: relative;
