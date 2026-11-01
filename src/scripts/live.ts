@@ -36,18 +36,23 @@ function onPointer(handler: (x: number, y: number) => void) {
 /**
  * Circling the pointer (or a finger) around the character: the signed angle swept around its
  * centre is summed over the last few seconds; three full turns call `dizzy`. Stopping, leaving
- * its surroundings or a pause resets the count. Nothing runs while the pointer is elsewhere.
+ * its surroundings or a pause resets the count. Only moves over `area` (the hero) are read.
  */
-function onCircling(target: Element, dizzy: () => void) {
+function onCircling(area: Element, target: Element, dizzy: () => void) {
   const TURNS = 3;
   const WINDOW = 4000;
   let sweeps: { at: number; angle: number }[] = [];
   let last: number | null = null;
   let lastAt = 0;
   let cooldown = 0;
-  addEventListener(
+  area.addEventListener("pointerleave", () => {
+    sweeps = [];
+    last = null;
+  });
+  area.addEventListener(
     "pointermove",
-    (event) => {
+    (event: Event) => {
+      if (!(event instanceof PointerEvent)) return;
       const now = performance.now();
       const box = target.getBoundingClientRect();
       const cx = box.left + box.width / 2;
@@ -105,6 +110,7 @@ if (stage && heroSvg && !reduced) {
   let beat = 0;
   let timer = 0;
   let asleep = false;
+  let dizzy = false;
   const play = () => {
     if (asleep || dizzy) return;
     const [phase, state, wait] = beats[beat % beats.length] as [string, NestorState, number];
@@ -119,8 +125,7 @@ if (stage && heroSvg && !reduced) {
   }).observe(stage);
 
   // circled around for too long, it gets dizzy, then recovers
-  let dizzy = false;
-  onCircling(heroSvg, () => {
+  onCircling(stage, heroSvg, () => {
     dizzy = true;
     clearTimeout(timer);
     stage.dataset.phase = "idle";
@@ -206,8 +211,8 @@ if (stage && heroSvg && !reduced) {
   );
 }
 
-if (heroSvg && reduced) {
-  onCircling(heroSvg, () => {
+if (stage && heroSvg && reduced) {
+  onCircling(stage, heroSvg, () => {
     const before = heroSvg.dataset.state ?? "idle";
     heroSvg.dataset.state = "dizzy";
     window.setTimeout(() => (heroSvg.dataset.state = before), 2600);

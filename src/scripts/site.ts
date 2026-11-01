@@ -130,9 +130,11 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy]")
   });
 }
 
-/* tabs (WAI-ARIA tabs pattern, automatic activation) */
+/* tabs (WAI-ARIA tabs pattern, automatic activation); with `data-tabs-hash`, the address keeps the
+   chosen tab (`#<tab id>`) and opens it, so a link can name one */
 for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
   const tabs = [...list.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+  const hash = list.hasAttribute("data-tabs-hash");
   const select = (index: number, focus: boolean) => {
     tabs.forEach((tab, i) => {
       const on = i === index;
@@ -147,6 +149,7 @@ for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
         for (const c of panel.querySelectorAll("svg.nestor[data-script]")) c.dispatchEvent(new CustomEvent("inview"));
     });
     if (focus) tabs[index]?.focus();
+    if (hash && tabs[index]) history.replaceState(null, "", `#${tabs[index].id}`);
   };
   tabs.forEach((tab, i) => {
     tab.addEventListener("click", () => select(i, false));
@@ -157,6 +160,14 @@ for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
       select(next, true);
     });
   });
+  if (hash) {
+    const follow = () => {
+      const wanted = tabs.findIndex((tab) => tab.id === decodeURIComponent(location.hash.slice(1)));
+      if (wanted >= 0) select(wanted, false);
+    };
+    follow();
+    addEventListener("hashchange", follow);
+  }
 }
 
 /* the guided story: the step in the middle of the screen drives the stage */

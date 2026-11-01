@@ -50,13 +50,17 @@ for (const root of document.querySelectorAll<HTMLElement>("[data-constellation]"
   };
   new ResizeObserver(measure).observe(sky);
 
+  // the devices lit, in the order they were added: the last one's manifest is the one shown
+  const lit: string[] = [];
   let order = 0;
   const set = (dev: string, on: boolean) => {
     for (const el of root.querySelectorAll(`[data-dev="${dev}"]`)) el.toggleAttribute("data-on", on);
     buttons.find((b) => b.dataset.dev === dev)?.setAttribute("aria-pressed", String(on));
+    if (lit.includes(dev)) lit.splice(lit.indexOf(dev), 1);
+    if (on) lit.push(dev);
     const turn = thread?.querySelector<HTMLElement>(`[data-dev="${dev}"]`);
     if (turn && on) turn.style.order = String(++order);
-    if (manifests && on) manifests.dataset.latest = dev;
+    if (manifests) manifests.dataset.latest = lit.at(-1) ?? "";
   };
 
   if (reduced) {
@@ -68,6 +72,8 @@ for (const root of document.querySelectorAll<HTMLElement>("[data-constellation]"
   measure();
 
   const code = () => String(Math.floor(100000 + Math.random() * 900000)).replace(/(\d{3})(\d{3})/, "$1 $2");
+  // the character's reaction to the latest pairing only: a new one cancels the previous return to rest
+  let rest = 0;
   for (const button of buttons) {
     const dev = button.dataset.dev ?? "";
     const label = button.querySelector<HTMLElement>(".sat-code");
@@ -84,6 +90,7 @@ for (const root of document.querySelectorAll<HTMLElement>("[data-constellation]"
       if (label) label.textContent = code();
       button.setAttribute("data-pairing", "");
       if (nestor) {
+        clearTimeout(rest);
         nestor.lookAt(button);
         nestor.state = "listening";
       }
@@ -91,10 +98,10 @@ for (const root of document.querySelectorAll<HTMLElement>("[data-constellation]"
         button.removeAttribute("data-pairing");
         measure();
         set(dev, true);
-        if (!nestor) return;
+        if (!nestor || root.querySelector("button.sat[data-pairing]")) return;
         nestor.state = "laughing";
         nestor.gesture("bob");
-        window.setTimeout(() => {
+        rest = window.setTimeout(() => {
           nestor.state = "idle";
           nestor.center();
         }, 1200);
