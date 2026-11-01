@@ -1,10 +1,4 @@
-.git
-node_modules
-dist
-.astro
-test-results
-playwright-report
-.media-raw
-.env
-.env.*
-*.log
+# The image only needs the static build and the Nginx configuration.
+*
+!dist/
+!deploy/nginx.conf

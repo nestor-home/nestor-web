@@ -1,0 +1,65 @@
+# Release pull request on every push to main; when it is merged, builds the site once, packs it
+# into ghcr.io/nestor-home/nestor-web (amd64, arm64) and deploys it to nestor.mathislambert.fr
+# after approval of the `production` environment.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    uses: nestor-home/.github/.github/workflows/release-please.yml@v1
+
+  site:
+    needs: release
+    if: needs.release.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release.outputs.tag_name }}
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: dist
+          retention-days: 1
+
+  image:
+    needs: [release, site]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    uses: nestor-home/.github/.github/workflows/container.yml@v1
+    with:
+      version: ${{ needs.release.outputs.version }}
+      ref: ${{ needs.release.outputs.tag_name }}
+      artifact: site
+      artifact-path: dist
+
+  deploy:
+    needs: image
+    permissions:
+      contents: read
+      packages: read
+    uses: nestor-home/.github/.github/workflows/deploy.yml@v1
+    with:
+      app: nestor-web
+      image: ${{ needs.image.outputs.image }}@${{ needs.image.outputs.digest }}
+      url: https://nestor.mathislambert.fr
+    secrets: inherit

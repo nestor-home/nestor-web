@@ -11,8 +11,8 @@ pnpm build && pnpm e2e                     # Playwright on the built site (start
 E2E_BASE=http://localhost:4321 pnpm e2e    # against a server already running
 ```
 
-All of them must pass; CI runs them on every push and pull request. `.github/workflows/deploy.yml`
-publishes to GitHub Pages, manually for now (see the comment at its top for the domain).
+All of them must pass; CI runs them on every push and pull request. Releases and deployment:
+see README.md, Production.
 
 ## Layout
 

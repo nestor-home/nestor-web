@@ -35,3 +35,12 @@ jobs:
           name: playwright
           path: test-results/
           retention-days: 7
+
+  # The single check the branch rules require.
+  ci:
+    needs: [check]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1

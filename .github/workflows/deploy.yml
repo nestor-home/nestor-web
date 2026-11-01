@@ -1,43 +1,41 @@
-# Publishes the built site to GitHub Pages. Manual for now: run it from the Actions tab once
-# Pages is enabled for the repository (Settings → Pages → Source: GitHub Actions). When the domain
-# is ready, add `public/CNAME` containing `nestor.mathislambert.fr`, point its DNS at GitHub Pages,
-# and add `push: branches: [main]` below to publish on every merge.
+# Deploys a published version again, e.g. to roll back: Actions → Deploy → Run workflow.
 name: Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: Version to deploy, e.g. 0.2.0
+        required: true
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
+  packages: read
 
 jobs:
-  build:
+  resolve:
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.digest.outputs.image }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: docker/login-action@v4
         with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - id: digest
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          name="ghcr.io/${GITHUB_REPOSITORY,,}"
+          digest=$(docker buildx imagetools inspect "$name:$VERSION" --format '{{json .Manifest}}' | jq -r .digest)
+          echo "image=$name@$digest" >> "$GITHUB_OUTPUT"
 
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+    needs: resolve
+    uses: nestor-home/.github/.github/workflows/deploy.yml@v1
+    with:
+      app: nestor-web
+      image: ${{ needs.resolve.outputs.image }}
+      url: https://nestor.mathislambert.fr
+    secrets: inherit

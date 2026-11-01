@@ -1,7 +1,7 @@
 name: nestor-web
 services:
   site:
-    image: ${NESTOR_WEB_IMAGE:-nestor-web:local}
+    image: ${IMAGE:?deploy.sh writes IMAGE to .env}
     container_name: nestor-web
     restart: unless-stopped
     read_only: true
