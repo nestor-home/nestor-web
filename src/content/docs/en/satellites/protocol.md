@@ -1,14 +1,13 @@
 ---
 
 title: "Protocol: nestor.satellite/1"
-description: The standard every satellite implements, whatever its language. Current version, the only one servers accept.
+description: The standard every satellite implements, whatever its language.
 ---
 
 A **satellite** is a device that pairs with a Nestor server (the **core**), declares what it can
 do, streams audio, reports observations and carries out the core’s intents. This page is the
 standard: SDKs and drivers in any language implement it, and the core’s black-box
-[conformance suite](/docs/satellites/conformance/) checks them against it. This is version 1, the
-first one (see the [changelog](#10-changelog)).
+[conformance suite](/docs/satellites/conformance/) checks them against it.
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
@@ -314,11 +313,3 @@ scenarios). A driver in any language runs the suite from the command line: see
 The core’s own rules (C1 to C6, the race of P4, I3, the limits) are proven by its tests
 ([`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
 [`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/voice/satellites/test_gateway.py)).
-
-## 10. Changelog
-
-- **1.** First version. Pairing in both directions: device codes (shown, spoken or logged) and
-  enrollment codes (typed, provisioned, scanned) made by a person adding a satellite from the admin,
-  with the pairing URI. Identify, JSON Schemas for every message, errors with codes, a realtime link
-  over WebRTC. Devices paired under the unreleased draft `nestor.satellite/0` no longer
-  authenticate: update them, then pair them again.

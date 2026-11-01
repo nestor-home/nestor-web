@@ -18,7 +18,7 @@ La suite a besoin de l’extra `voice` du serveur ; uvx la lance sans rien ins
 uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance [--deadline SECONDES] -- <commande>
 ```
 
-`<version>` est une version du serveur à partir de 0.1.0. Tout ce qui suit `--` est la ligne de
+`<version>` est une version du serveur. Tout ce qui suit `--` est la ligne de
 commande de votre satellite, où :
 
 - `{url}` devient l’adresse du faux cœur ;
