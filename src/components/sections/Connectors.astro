@@ -1,25 +1,15 @@
 ---
-import { KeyRound, Mail } from "lucide-react";
+import { KeyRound } from "lucide-react";
 import Brand from "@/components/Brand.astro";
+import Integrations from "@/components/Integrations.astro";
 import Shot from "@/components/Shot.astro";
 import type { Translator } from "@/i18n";
-import { BRANDS, type BrandKey } from "@/lib/brands";
 
 interface Props {
   t: Translator;
 }
 const { t } = Astro.props;
 
-const catalogue: { brand?: BrandKey; label: string; note?: string; later?: boolean }[] = [
-  { brand: "gmail", label: "con-catalogue-gmail" },
-  { label: "con-catalogue-imap" },
-  { brand: "mcp", label: "con-catalogue-mcp" },
-  { brand: "linear", label: "", note: "con-catalogue-via-mcp" },
-  { brand: "notion", label: "", note: "con-catalogue-via-mcp" },
-  { brand: "github", label: "", note: "con-catalogue-via-mcp" },
-  { brand: "home-assistant", label: "", note: "con-catalogue-via-mcp" },
-  { brand: "google-calendar", label: "con-catalogue-calendar", later: true },
-];
 const tools = [
   { text: "con-tool-search", risk: "con-risk-read", on: true },
   { text: "con-tool-read", risk: "con-risk-read", on: true },
@@ -38,51 +28,34 @@ const tools = [
     <ol class="mt-16 grid gap-px border border-rule bg-rule lg:grid-cols-3">
       <!-- 1. choose -->
       <li data-reveal style="--i:0" class="flex flex-col bg-paper p-6">
-        <p class="font-mono text-[0.75rem] text-ember">1</p>
+        <p class="font-mono text-xs text-ember">1</p>
         <h3 class="display-3 mt-2 text-ink">{t("con-1")}</h3>
         <p class="prose-copy mt-3">{t("con-1-text")}</p>
-        <ul class="mt-6 grid grid-cols-2 gap-2">
-          {
-            catalogue.map((c) => (
-              <li
-                class:list={[
-                  "flex min-h-11 items-center gap-2 border border-rule bg-paper-raised px-2.5 py-2 text-[0.8rem]",
-                  c.later ? "text-ink-muted" : "text-ink",
-                ]}
-              >
-                {c.brand ? <Brand brand={c.brand} class="size-4" decorative /> : <Mail className="size-4" strokeWidth={1.6} aria-hidden="true" />}
-                <span class="min-w-0 truncate">{c.label ? t(c.label) : c.brand ? BRANDS[c.brand].name : ""}</span>
-                {c.note && <span class="ml-auto font-mono text-[0.62rem] whitespace-nowrap text-ink-muted">{t(c.note)}</span>}
-                {c.later && <span class="ml-auto font-mono text-[0.62rem] whitespace-nowrap">{t("con-catalogue-soon")}</span>}
-              </li>
-            ))
-          }
-        </ul>
       </li>
       <!-- 2. consent -->
       <li data-reveal style="--i:1" class="flex flex-col bg-paper p-6">
-        <p class="font-mono text-[0.75rem] text-ember">2</p>
+        <p class="font-mono text-xs text-ember">2</p>
         <h3 class="display-3 mt-2 text-ink">{t("con-2")}</h3>
         <p class="prose-copy mt-3">{t("con-2-text")}</p>
         <div class="consent corner-marks mt-6 border border-rule bg-paper-raised p-4">
-          <p class="flex items-center gap-2 text-[0.85rem] text-ink">
+          <p class="flex items-center gap-2 text-sm text-ink">
             <Brand brand="gmail" class="size-4" decorative />
             {t("con-consent-app")}
           </p>
-          <p class="mt-1 font-mono text-[0.7rem] text-ink-muted">{t("con-consent-account")}</p>
-          <p class="mt-4 border-t border-rule pt-3 text-[0.85rem] text-ink-muted">{t("con-consent-scope")}</p>
-          <p class="mt-3 flex items-center gap-2 font-mono text-[0.68rem] text-sage">
+          <p class="mt-1 font-mono text-2xs text-ink-muted">{t("con-consent-account")}</p>
+          <p class="mt-4 border-t border-rule pt-3 text-sm text-ink-muted">{t("con-consent-scope")}</p>
+          <p class="mt-3 flex items-center gap-2 font-mono text-2xs text-sage">
             <KeyRound className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
             {t("con-consent-pkce")}
           </p>
           <p class="mt-4 flex justify-end">
-            <span class="inline-flex h-8 items-center rounded-sm bg-ink px-3 text-[0.8rem] text-paper">{t("con-consent-allow")}</span>
+            <span class="inline-flex h-8 items-center rounded-sm bg-ink px-3 text-xs text-paper">{t("con-consent-allow")}</span>
           </p>
         </div>
       </li>
       <!-- 3. allow -->
       <li data-reveal style="--i:2" class="flex flex-col bg-paper p-6">
-        <p class="font-mono text-[0.75rem] text-ember">3</p>
+        <p class="font-mono text-xs text-ember">3</p>
         <h3 class="display-3 mt-2 text-ink">{t("con-3")}</h3>
         <p class="prose-copy mt-3">{t("con-3-text")}</p>
         <ul class="mt-6 border-t border-rule">
@@ -90,8 +63,8 @@ const tools = [
             tools.map((tool) => (
               <li class="flex items-start justify-between gap-3 border-b border-rule py-3">
                 <span class="min-w-0">
-                  <span class="block text-[0.85rem] leading-snug text-ink">{t(tool.text)}</span>
-                  <span class:list={["font-mono text-[0.66rem]", tool.on ? "text-ink-muted" : "text-amber"]}>{t(tool.risk)}</span>
+                  <span class="block text-sm leading-snug text-ink">{t(tool.text)}</span>
+                  <span class:list={["font-mono text-2xs", tool.on ? "text-ink-muted" : "text-amber"]}>{t(tool.risk)}</span>
                 </span>
                 <span class="switch" data-on={tool.on ? "" : undefined} role="img" aria-label={t(tool.on ? "con-tool-on" : "con-tool-off")} />
               </li>
@@ -101,7 +74,15 @@ const tools = [
       </li>
     </ol>
 
-    <div class="mt-16 grid gap-12 lg:grid-cols-12">
+    <div class="mt-20">
+      <h3 data-reveal class="display-3 text-ink">{t("int-title")}</h3>
+      <p data-reveal class="mt-3 text-sm text-ink-muted">{t("int-lede")}</p>
+      <div class="mt-8">
+        <Integrations t={t} detailed />
+      </div>
+    </div>
+
+    <div class="mt-20 grid gap-12 lg:grid-cols-12">
       <div class="flex flex-col gap-10 lg:col-span-4">
         <div data-reveal>
           <h3 class="display-3 text-ink">{t("con-vault-title")}</h3>
@@ -118,7 +99,7 @@ const tools = [
             <Shot name="connection" locale={t.locale} alt={t("con-shot")} sizes="(min-width: 1024px) 800px, 100vw" />
           </div>
         </div>
-        <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("con-shot")}</figcaption>
+        <figcaption class="mt-3 font-mono text-xs text-ink-muted">{t("con-shot")}</figcaption>
       </figure>
     </div>
   </div>

@@ -50,5 +50,5 @@ refresh the copy, write the schemas of a server release into the SDK’s folder:
 uvx --from nestor-home==<version> nestor satellites schemas --out schemas/
 ```
 
-`<version>` is the server release the SDK targets. Then adapt the code until its tests pass. The Python SDK keeps
-them in `src/nestor_satellite/schemas/`, the TypeScript and Rust SDKs in `schemas/`.
+`<version>` is the server release the SDK targets. Then adapt the code until its tests pass. The
+Python SDK keeps them in `src/nestor_satellite/schemas/`, the TypeScript and Rust SDKs in `schemas/`.

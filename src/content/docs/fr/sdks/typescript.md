@@ -56,8 +56,8 @@ button.onclick = () => satellite.run(); // a click: browsers only play sound aft
 
 ## Dans Node, sans écran
 
-Sans écran, le code d’appareil est dit sur le haut-parleur avec la voix enregistrée du SDK (hors
-ligne, en anglais ou en français) et écrit dans le journal, sauf si l’URI d’appairage est dans
+Le SDK dit alors le code d’appareil sur le haut-parleur, avec sa voix enregistrée (hors ligne, en
+anglais ou en français), et l’écrit dans le journal, sauf si l’URI d’appairage est dans
 l’environnement.
 
 ```ts
@@ -73,7 +73,7 @@ import {
 
 const provisioning = provisioningFromEnv(); // NESTOR_PAIRING_URI or NESTOR_PAIRING_CODE, if set
 const satellite = new Satellite({
-  core: provisioning?.core ?? "http://nestor.local:7860",
+  core: provisioning?.core ?? "http://nestor.local:8471",
   manifest: Manifest.of(
     { id: "enceinte-salon", model: "raspberry-pi-4", room: "salon" },
     AUDIO_CAPTURE,
@@ -112,20 +112,20 @@ la main.
 - Un code tapé pendant que l’appareil attend : `await satellite.enroll(input.value)`. Un code
   refusé n’est plus jamais envoyé, même après un redémarrage : son SHA-256 est gardé dans le
   magasin de jetons, jamais le code.
-- QR codes : `cameraQrScanner` vient de `@nestor-home/satellite/qr` et demande `zxing-wasm`
+- QR codes : `cameraQrScanner` vient de `@nestor-home/satellite/qr` et a besoin de `zxing-wasm`
   (environ 1 Mo de WebAssembly, chargé depuis jsDelivr sauf si `wasmUrl` dit où votre page le
   sert). Node n’a pas de caméra : un satellite Node ne déclare jamais `enrollment.qr`.
 - `locale` règle la langue dans laquelle il parle aux gens (par défaut, celle de la plateforme).
 
 ## La commande
 
-Dans Node, le micro et le haut-parleur de cette machine comme satellite (`rec` et `play` de SoX par
-défaut) :
+Dans Node, la commande fait du micro et du haut-parleur de cette machine un satellite (avec `rec`
+et `play` de SoX par défaut) :
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' npx nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' npx nestor-satellite run --room salon
 # ou
-npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 ```
 
 Lancez-la depuis un projet où les deux paquets sont installés. Avec un code seul, donnez le cœur
@@ -133,7 +133,7 @@ avec `--core` (`--pairing-code K7QF-2M9X`). Sans l’un ni l’autre, elle dit u
 taper dans Nestor (`--output none` : elle se contente de l’écrire dans le journal). `--input` et
 `--output` prennent toute commande qui enregistre ou joue du PCM brut 48 kHz 16 bits mono, ou
 `none`. Le jeton est gardé dans `~/.config/nestor-satellite/<id>.json` (mode 600).
-`npx nestor-satellite --help` donne le reste.
+`npx nestor-satellite --help` détaille les autres options.
 
 ## Pour aller plus loin
 

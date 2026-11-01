@@ -42,11 +42,11 @@ La commande affiche une URI d’appairage. Donnez-la à l’appareil à son prem
 
 ```bash
 # Python
-uv run my-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+uv run my-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 # TypeScript
-pnpm build && pnpm start run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+pnpm build && pnpm start run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 # Rust
-cargo run -- run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+cargo run -- run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 ```
 
 Il garde son jeton dans `~/.config/my-satellite/<id>.json` ; ensuite, `--core` et `--room`

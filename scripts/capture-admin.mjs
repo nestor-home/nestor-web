@@ -59,19 +59,18 @@ async function open(browser, { theme, locale, viewport = DESKTOP, scale = 2, mob
   });
   await page.goto(`${BASE}/`);
   await settle(page);
-  if (locale === "en") {
-    const status = await page.evaluate(async () => {
-      const r = await fetch("/api/v1/me/locale", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "X-CSRF-Token": "mock-csrf-token" },
-        body: JSON.stringify({ locale: "en" }),
-      });
-      return r.status;
+  // the account's language: the admin and the mock household's texts follow it
+  const status = await page.evaluate(async (l) => {
+    const r = await fetch("/api/v1/me/locale", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": "mock-csrf-token" },
+      body: JSON.stringify({ locale: l }),
     });
-    if (status !== 200) throw new Error(`locale switch failed: ${status}`);
-    await page.reload();
-    await settle(page);
-  }
+    return r.status;
+  }, locale);
+  if (status !== 200) throw new Error(`locale switch failed: ${status}`);
+  await page.reload();
+  await settle(page);
   const lang = await page.evaluate(() => document.documentElement.lang);
   if (lang !== locale) throw new Error(`expected lang ${locale}, got ${lang}`);
   return { context, page };

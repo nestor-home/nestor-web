@@ -14,7 +14,7 @@ const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
 <section class="hero relative overflow-hidden" aria-labelledby="hero-title" data-dock-after>
   <div class="wrap grid items-center gap-10 pt-12 pb-20 sm:pt-16 lg:grid-cols-12 lg:gap-8 lg:pt-20 lg:pb-28">
     <div class="lg:col-span-7">
-      <h1 id="hero-title" class="display-1 text-ink">
+      <h1 id="hero-title" class="display-1 display-hero text-ink">
         {
           lines.map((id, i) => (
             <span class="hero-line block" style={`--i:${i}`}>
@@ -26,13 +26,13 @@ const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
       <div class="hero-after mt-8 md:mt-10">
         <p class="lede">{t("hero-lede")}</p>
         <div class="mt-8 flex flex-wrap items-center gap-3">
-          <a href="#day" class="btn btn-ink" data-dock-follow={t("char-follow")}>
-            {t("hero-day")}
+          <a href="#story" class="btn btn-ink" data-dock-follow={t("char-follow")}>
+            {t("hero-story")}
             <ArrowDown className="size-4" strokeWidth={1.6} aria-hidden="true" />
           </a>
           <a href={href(t.locale, "docs")} class="btn btn-line">{t("hero-install")}</a>
         </div>
-        <p class="mt-6 font-mono text-[0.75rem] text-ink-muted">{t("hero-note")}</p>
+        <p class="mt-6 font-mono text-xs text-ink-muted">{t("hero-note")}</p>
       </div>
     </div>
 
@@ -52,9 +52,9 @@ const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
             from={0.16}
             to={0}
             dot={3}
-            class="hero-disc absolute top-1/2 left-1/2 size-[22rem] -translate-x-1/2 -translate-y-[46%] overflow-hidden rounded-full text-ink/[0.16]"
+            class="hero-disc absolute top-1/2 left-1/2 size-[18rem] -translate-x-1/2 -translate-y-[46%] overflow-hidden rounded-full text-ink/[0.16]"
           />
-          <Nestor state="idle" look="right" size={280} class="hero-nestor relative" id="hero-nestor" label={t("nestor-label")} />
+          <Nestor state="idle" look="right" size={224} class="hero-nestor relative" id="hero-nestor" label={t("nestor-label")} />
         </div>
       </div>
     </div>
@@ -89,10 +89,14 @@ const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
     opacity: 1;
     transform: none;
   }
+  /* a finger circling around it is read by the page (see live.ts), not taken as a scroll */
+  .hero-stage :global(.hero-nestor) {
+    touch-action: none;
+  }
   @media (max-width: 1023px) {
     .hero-stage :global(.hero-nestor) {
-      width: 168px;
-      height: 168px;
+      width: 144px;
+      height: 144px;
     }
   }
 </style>

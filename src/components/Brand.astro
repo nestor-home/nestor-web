@@ -1,6 +1,10 @@
 ---
-/** A third-party mark in the current ink; named for screen readers unless the text beside it already is. */
-import { BRANDS, type BrandKey } from "@/lib/brands";
+/**
+ * A third-party mark in the current ink; named for screen readers unless the text beside it already
+ * is. An official mark keeps its own box; a brand without any published mark shows its monogram,
+ * in a hairline tile.
+ */
+import { BRANDS, type Brand, type BrandKey } from "@/lib/brands";
 
 interface Props {
   brand: BrandKey;
@@ -8,12 +12,29 @@ interface Props {
   decorative?: boolean;
 }
 const { brand, class: className = "size-4", decorative = false } = Astro.props;
-const { name, path } = BRANDS[brand];
+const { name, paths = [], glyph: Glyph, monogram, official, evenodd } = BRANDS[brand] as Brand;
+const label = {
+  role: decorative ? undefined : ("img" as const),
+  "aria-label": decorative ? undefined : name,
+  "aria-hidden": decorative ? ("true" as const) : undefined,
+};
 ---
 
-<svg
-  viewBox="0 0 24 24"
-  class:list={["shrink-0 fill-current", className]}
-  role={decorative ? undefined : "img"}
-  aria-label={decorative ? undefined : name}
-  aria-hidden={decorative ? "true" : undefined}><path d={path}></path></svg>
+{
+  Glyph ? (
+    <Glyph className={`shrink-0 ${className}`} strokeWidth={1.6} {...label} />
+  ) : official ? (
+    <svg viewBox={official.viewBox} class:list={["shrink-0 fill-current", className]} {...label} set:html={official.shapes} />
+  ) : monogram ? (
+    <svg viewBox="0 0 24 24" class:list={["shrink-0", className]} {...label}>
+      <rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="none" stroke="currentColor" stroke-width="1.4" />
+      <text x="12" y="16.2" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor" style="font-family: var(--font-data)">
+        {monogram}
+      </text>
+    </svg>
+  ) : (
+    <svg viewBox="0 0 24 24" class:list={["shrink-0 fill-current", className]} fill-rule={evenodd ? "evenodd" : undefined} {...label}>
+      {paths.map((d) => <path d={d} />)}
+    </svg>
+  )
+}

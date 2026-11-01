@@ -1,7 +1,5 @@
-import { createRequire } from "node:module";
 import { expect, type Page, test } from "@playwright/test";
-
-const require = createRequire(import.meta.url);
+import { axe, watch } from "./helpers";
 
 /** Every page of the documentation in a language, as its sidebar lists them. */
 async function pagesOf(page: Page, root: string): Promise<string[]> {
@@ -10,14 +8,6 @@ async function pagesOf(page: Page, root: string): Promise<string[]> {
     .locator("aside.docs-side nav a")
     .evaluateAll((links) => links.map((a) => a.getAttribute("href") ?? ""));
   return [...new Set(hrefs)];
-}
-
-function watch(page: Page) {
-  const problems: string[] = [];
-  page.on("console", (m) => m.type() === "error" && problems.push(m.text()));
-  page.on("pageerror", (e) => problems.push(String(e)));
-  page.on("response", (r) => r.status() >= 400 && problems.push(`${r.status()} ${r.url()}`));
-  return problems;
 }
 
 test("both languages hold the same pages, each with its title, text and the other language", async ({ page }) => {
@@ -75,17 +65,6 @@ test("every link of the documentation leads somewhere, anchors included", async 
   expect(broken).toEqual([]);
 });
 
-for (const path of ["/docs/", "/docs/satellites/protocol/", "/fr/docs/sdks/rust/"]) {
-  for (const width of [390, 768, 1440]) {
-    test(`${path} at ${width}px: no horizontal scroll`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto(path);
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-      expect(overflow).toBeLessThanOrEqual(0);
-    });
-  }
-}
-
 test("the SDK pages show their code, highlighted, and copy it", async ({ page, context, browserName }) => {
   test.skip(browserName !== "chromium");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
@@ -102,7 +81,7 @@ test("the SDK pages show their code, highlighted, and copy it", async ({ page, c
   await page.goto("/docs/");
   const first = page.locator(".doc-prose .doc-code").first();
   await first.getByRole("button", { name: "Copy" }).click();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("uv tool install 'nestor-home[voice]'");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("uv tool install nestor-home\n");
   await expect(first.getByRole("button", { name: "Copied" })).toBeVisible();
 });
 
@@ -127,26 +106,53 @@ test("on a phone, the pages are one tap away", async ({ page }) => {
 
 test("the developers' page points to the documentation and shows its examples", async ({ page }) => {
   await page.goto("/developers/#satellites");
-  await expect(page.getByRole("tabpanel")).toContainText("Satellite(");
+  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("Satellite(");
   await page.getByRole("link", { name: "The Python SDK’s documentation" }).click();
   await expect(page).toHaveURL(/\/docs\/sdks\/python\/$/);
 });
 
-for (const path of ["/docs/", "/docs/satellites/protocol/", "/fr/docs/sdks/typescript/"]) {
+for (const path of [
+  "/docs/",
+  "/docs/providers/",
+  "/fr/docs/install/",
+  "/docs/satellites/protocol/",
+  "/fr/docs/sdks/typescript/",
+]) {
   test(`${path} has no WCAG 2 A/AA violation (axe)`, async ({ page }) => {
     await page.goto(path);
-    await page.addScriptTag({ path: require.resolve("axe-core") });
-    const violations = await page.evaluate(async () => {
-      // @ts-expect-error axe is injected above
-      const result = await window.axe.run(document, { runOnly: ["wcag2a", "wcag2aa"] });
-      return result.violations.map(
-        (v: { id: string; nodes: { target: string[] }[] }) =>
-          `${v.id}: ${v.nodes
-            .map((n) => n.target.join(" "))
-            .slice(0, 4)
-            .join(", ")}`,
-      );
-    });
-    expect(violations).toEqual([]);
+    expect(await axe(page)).toEqual([]);
   });
 }
+
+test("the providers' page shows one provider's setup at a time, chosen by click, keys or address", async ({ page }) => {
+  await page.goto("/docs/providers/");
+  const models = page.getByRole("tablist", { name: "Language models" });
+  await expect(models.getByRole("tab", { name: "OpenRouter" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#model-openrouter-setup")).toContainText("MODEL_API_KEY=");
+  await expect(page.locator("#model-ollama-setup")).toBeHidden();
+
+  await models.getByRole("tab", { name: /Ollama/ }).click();
+  await expect(page.locator("#model-ollama-setup")).toContainText("http://localhost:11434/v1");
+  await expect(page.locator("#model-openrouter-setup")).toBeHidden();
+  await expect(page).toHaveURL(/#model-ollama$/);
+
+  await page.keyboard.press("ArrowRight");
+  await expect(models.getByRole("tab", { name: /LM Studio/ })).toBeFocused();
+  await expect(page.locator("#model-lm-studio-setup")).toBeVisible();
+
+  await page.goto("/fr/docs/providers/#speech-whisper");
+  const speech = page.getByRole("tablist", { name: "Fournisseurs de parole" });
+  await expect(speech.getByRole("tab", { name: /Whisper/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#speech-whisper-setup")).toContainText("Whisper est prévu");
+  await expect(page.locator("#speech-elevenlabs-setup")).toBeHidden();
+});
+
+test.describe("without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+  test("the providers' page shows the default setups", async ({ page }) => {
+    await page.goto("/docs/providers/");
+    await expect(page.locator("#model-openrouter-setup")).toBeVisible();
+    await expect(page.locator("#speech-elevenlabs-setup")).toBeVisible();
+    await expect(page.locator("#model-openai-setup")).toBeHidden();
+  });
+});

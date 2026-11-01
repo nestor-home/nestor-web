@@ -9,6 +9,12 @@ onglet sur une tablette murale, un robot Reachy Mini. Un micro et un haut-parleu
 écran, une caméra ou des moteurs sont des capacités optionnelles : l’appareil les déclare, une
 personne les autorise, et rien dans Nestor ne suppose qu’elles sont là.
 
+Les satellites se connectent au canal vocal du serveur : installez-le avec l’extra `voice` et
+ajoutez-le à la configuration (voir [Fournisseurs](/fr/docs/providers/)).
+
+Le canal vocal écoute sur le port 8471 (son `port` dans `nestor.yaml`). Les satellites s’y
+connectent, tout comme le client navigateur de développement, sur `/client`.
+
 ## Ce que fait un satellite
 
 - Il s’appaire une fois et garde son jeton.
@@ -36,13 +42,13 @@ l’ignore.
 ## Appairage
 
 Appairer demande une preuve qu’une personne le voulait. Elle circule dans un sens ou dans l’autre,
-et la première acceptée l’emporte :
+et la première acceptée gagne :
 
 - un **code d’appareil**, six chiffres que l’appareil présente et que la personne tape dans
   l’administration ;
 - un **code d’enrôlement** créé dans l’administration (`K7QF-2M9X`), que la personne donne à
   l’appareil, le plus souvent sous forme d’URI d’appairage :
-  `nestor+http://nestor.local:7860/?code=K7QF2M9X`.
+  `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
 
 | Méthode                   | La personne…                                                                               |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
@@ -75,7 +81,7 @@ nestor satellites revoke enceinte-salon                         # désappaire un
 déclaré. Puis, sur l’appareil, donnez-lui l’URI d’appairage :
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
 ```
 
 ## Prêts à l’emploi
@@ -87,6 +93,6 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satel
   les antennes suivent la conversation (son jumeau simulé pour l’instant).
 - Un onglet de navigateur, avec le SDK TypeScript.
 
-Vous écrivez le vôtre ? Le [protocole](/fr/docs/satellites/protocol/) fait foi, les
+Pour écrire le vôtre, le [protocole](/fr/docs/satellites/protocol/) fait foi, les
 [schémas](/fr/docs/satellites/schemas/) donnent la forme de chaque message et la
 [suite de conformité](/fr/docs/satellites/conformance/) vérifie un appareil sur les deux.

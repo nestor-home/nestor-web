@@ -52,8 +52,8 @@ describe("the catalogues", () => {
   });
 
   it("format variables in the reader's language", () => {
-    expect(translator("en")("story-step", { n: 3, total: 8 })).toBe("Step 3 of 8");
-    expect(translator("fr")("story-step", { n: 3, total: 8 })).toBe("Étape 3 sur 8");
+    expect(translator("en")("loop-step", { n: 3, total: 5 })).toBe("Step 3 of 5");
+    expect(translator("fr")("loop-step", { n: 3, total: 5 })).toBe("Étape 3 sur 5");
   });
 });
 

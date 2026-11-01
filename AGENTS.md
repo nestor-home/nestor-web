@@ -27,36 +27,41 @@ src/
 │                     docs (/docs/…, /fr/docs/…), 404, og/[page]-[locale].png, favicon*, robots.txt
 ├── content/docs/     the developer documentation: one Markdown file per page and locale
 ├── components/
-│   ├── Home.astro        the home page: hero, a day at home, why it spoke, six ideas, bodies, start
-│   ├── Developers.astro  the developers' page: architecture, a watch through the system,
-│   │                     satellites and SDKs, connectors, Home Assistant, speed, journal,
-│   │                     security, i18n, self-hosting
+│   ├── Home.astro        the home page: hero, the story (ask once → it watches → it finds you →
+│   │                     you see why), same agent in any body, everyday requests and
+│   │                     integrations, trust and the journal, install
+│   ├── Developers.astro  the developers' page: runtime principles, architecture, the journal's
+│   │                     events, extension points, satellites and SDKs, connectors, Home
+│   │                     Assistant, security, self-hosting, i18n
 │   ├── Nestor.astro      the character (one drawing, six states, a gaze)
 │   ├── Device.astro      its bodies: speaker, robot, tablet, laptop, phone, browser tab
 │   ├── sections/         one file per section
-│   └── *.astro           shared pieces: Shot, Clip, Dither, Brand, CopyCommand, Wordmark…
+│   └── *.astro           shared pieces: Shot, Clip, Dither, Brand, Integrations, CopyCommand…
 ├── islands/          React, only where interaction needs state (the architecture explorer)
 ├── layouts/          Base (head, header, footer) and Docs (sidebar, text, sections, prev/next)
-├── scripts/site.ts   the one global script: reveals, scene beats, the character's sequences and
-│                     gaze, story stepper, pairing, tabs, copy, theme (docs.ts: code copy buttons)
+├── scripts/site.ts   the one global script: reveals, the character's sequences, story stepper
+│                     and its presence switch, pairing, tabs (replaying a panel's character), copy,
+│                     theme (docs.ts: code copy buttons)
 ├── locales/<lang>/   the words, in Fluent (.ftl), one file per section
 ├── i18n/             the Fluent loader (`translator(locale)`)
 ├── lib/              data and logic: links, brands, dither, Shiki, media index, OG pictures
 ├── styles/           tokens.css (a verbatim copy of the admin's) and global.css
 ├── assets/captures/  admin screenshots (WebP sources; Astro derives AVIF/WebP sizes)
 └── data/             media.json (what was captured)
-public/media/         admin recordings (mp4 + webm + poster) and the Reachy twin clip
+public/media/         admin recordings (mp4 + webm + poster)
 public/schemas/       the satellite protocol's JSON Schemas, generated at build (not committed)
 public/redirect/      the OAuth relay page, copied from the server package at build (not committed)
 ```
 
 ## Two audiences, three places
 
-The home page is about **use**: a household's day, what Nestor does for the people in it, the
-character, six ideas drawn simply. No contract names, no benchmarks, no internal status, no vendor
-comparisons; honesty lives in one place (the "early project" line near Install). Everything
-technical — architecture, protocol, SDK code, measured latencies, self-hosting — goes to the
-developers' page. Keep it that way when adding content.
+The home page is about **use**: the promise and the final experience of Nestor, including what is
+planned, told through moments almost every household lives (no niche scenarios, no invented brands,
+shops, prices or dates). One story shows the core loop; no contract names, no benchmarks, no
+internal status, no vendor comparisons; honesty lives in one place (the "early project" line near
+Install). Everything technical (architecture, events, protocol, SDK code, self-hosting) goes to the
+developers' page, where what is not shipped yet carries a discreet "planned" marker. Keep it that
+way when adding content.
 
 How to do things (install, pair, write a satellite, the protocol itself) belongs to the
 **documentation** (`/docs/`, `/fr/docs/`): the developers' page shows and links, the docs explain.
@@ -66,7 +71,10 @@ to it), and SDK READMEs stay short and link to their page.
 ## The documentation
 
 - One Markdown file per page and locale in `src/content/docs/<locale>/` (`index.md` for the first
-  page); the reading order and the sidebar's groups are `DOC_GROUPS` in `src/lib/docs.ts`. A page
+  page; `.mdx` only where a page holds a component, as the providers' picker in `providers.mdx`:
+  its tiles come from `lib/providers.ts` (models, speech, and channels, whose messaging services are
+  the home page's list in `lib/integrations.ts`), each available one's setup is a `<ProviderSetup>`
+  in the page, and `tests/docs.test.ts` checks both languages give one to each); the reading order and the sidebar's groups are `DOC_GROUPS` in `src/lib/docs.ts`. A page
   needs a `title` and a `description`; `tests/docs.test.ts` fails on a page missing in a locale, a
   file outside the reading order, a link to the other language's docs, or an em-dash.
 - Prose lives in the content files, written for each language (French typography as in the
@@ -117,15 +125,42 @@ docked one its mood with `data-mood` (and a line with `data-say`). Its stills ar
   `aria-label`, `title`; `tests/i18n.test.ts` checks both languages hold the same messages and every
   id a component names. A missing message fails the build. Islands get their words as props.
 - **French typography**: narrow no-break spaces before `: ; ? ! »` and after `«`, `’` for apostrophes.
-- **Honesty.** Only measured numbers, with their source and date, and only on the developers'
-  page; anything not built is marked as planned there. The scenes show what Nestor is designed to
-  do for a household; keep them to capabilities the core has.
+- **Honesty.** No figures from local benches or proofs of concept, anywhere. The home page shows
+  what Nestor is designed to do; the developers' page marks anything not built as planned
+  (the services: `status` in `lib/integrations.ts`, shown as a "planned" badge on both pages).
+- **Type scale.** Font sizes are Tailwind's steps (`text-xs`… or `var(--text-xs)` in a style
+  block), plus the few declared once in `global.css`'s `@theme` (`text-2xs` for micro labels, the
+  wordmark, the hero); `tests/type-scale.test.ts` fails on an arbitrary size in a component. The
+  header's height and the layers are tokens there too (`--header-h`, `--z-header`, `--z-sticky`,
+  `--z-dock`).
 - **Motion** is transform and opacity only, triggered by IntersectionObserver, never scroll
   handlers that write layout. Everything reads in full without JavaScript, and under
   `prefers-reduced-motion` nothing moves or plays by itself (`e2e` checks it).
 - **Anti-slop**: no gradients or glows, no emoji, no eyebrows above titles, no coloured side borders,
   no stat tiles; numbers in `tabular-nums`; a description only when it says something.
-- Brand marks come from `lib/brands.ts` (Simple Icons, nominative use), never inline elsewhere.
+- Brand marks come from `lib/brands.ts` (nominative use): Simple Icons (CC0) for services, Lobe Icons
+  (`@lobehub/icons-static-svg`, MIT) for AI providers, the admin's lucide glyph for what is not a
+  brand, a text monogram for a brand in neither set; never inline elsewhere, never redrawn. In ink by
+  default, the brand's colour on hover.
+
+## Writing
+
+Copy reads as written by a careful person, in each language on its own (French is written in French,
+not translated). Every sentence says something concrete: subject, verb, object; "is" and "has" over
+"serves as" or "offers"; an example over an adjective. Hunt for these and rewrite them:
+
+- fake contrasts ("not X but Y", "rather than"), triplets by reflex, slogans in fragments;
+- inflated words (key, seamless, robust, powerful, « véritable », « au cœur de ») and intensifiers;
+- trailing participles (", ensuring…", « , permettant… »), warm-ups and recaps (« Concrètement »);
+- em dashes, Title Case headings, rhetorical questions, French calques (« faire sens »).
+
+| Before                                                           | After                                                                          |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Nestor integrates rather than reimplements.                      | Nestor reimplements none of it.                                                |
+| A catalogue, consent at the provider, a switch per tool.         | Pick a service, consent at the provider, then switch on the tools you want.    |
+| Cloud services are optional by design                            | Cloud services are optional                                                    |
+| Consultable, corrigeable et supprimable depuis l’administration. | Vous pouvez le consulter, le corriger ou le supprimer depuis l’administration. |
+| Une capacité facultative absente dégrade                         | Sans une capacité facultative, il continue avec moins                          |
 
 ## Refreshing the media
 
@@ -135,14 +170,14 @@ The pictures are the real admin (`nestor/web`) on its mock API, captured with Pl
 cd ../nestor/web && pnpm dev --port 5190 --strictPort &      # the admin on its mocks
 node scripts/capture-admin.mjs     # → .media-raw/ (≈ 6 min; ONLY=journal THEMES=dark LOCALES=en for a subset)
 node scripts/encode-media.mjs      # → src/assets/captures/*.webp, public/media/*, src/data/media.json
-../playground/reachy-twin/.venv/bin/python scripts/render-twin.py   # the Reachy twin clip (MuJoCo, offscreen)
 ```
 
-Shots: `home`, `journal`, `connection`, `satellites`, `system`; clips shown: `journal-live` (home)
+Shots: `journal`, `connection`, `satellites`, `system`; clips shown: `journal-live` (home)
 and `journal-filters` (developers) — each in `light`/`dark` and `en`/`fr`. `command` and `mobile`
 are captured too; encode them with `ONLY=command,mobile` if a section needs them. Sections render
-only what `media.json` lists, so the site builds without them. Content people wrote in the mock
-household stays French in the English captures; that is expected.
+only what `media.json` lists, so the site builds without them. The mock household follows the
+account's language, which the capture sets for each locale: English captures show English rooms
+and messages, French ones French.
 
 ## What the build takes from the server package
 

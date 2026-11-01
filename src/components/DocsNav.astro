@@ -24,7 +24,7 @@ const { t, slug, titles } = Astro.props;
               <a
                 href={docHref(t.locale, page)}
                 aria-current={page === slug ? "page" : undefined}
-                class="docs-link block rounded-sm px-2 py-1.5 text-[0.92rem] text-ink-muted hover:text-ink"
+                class="docs-link block rounded-sm px-2 py-1.5 text-sm text-ink-muted hover:text-ink"
               >
                 {titles[page]}
               </a>

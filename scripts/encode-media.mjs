@@ -195,7 +195,7 @@ async function writeInventory() {
       duration: previous.clips?.[clip]?.duration ?? 0,
     };
   }
-  return { shots, clips, ...(previous.twin ? { twin: previous.twin } : {}) };
+  return { shots, clips };
 }
 
 async function main() {

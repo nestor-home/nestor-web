@@ -27,7 +27,6 @@ interface ClipInfo {
 interface MediaIndex {
   shots?: string[];
   clips?: Record<string, ClipInfo>;
-  twin?: { width: number; height: number; duration?: number; file?: string };
 }
 
 const INDEX = Object.values(import.meta.glob<{ default: MediaIndex }>("../data/media.json", { eager: true }))[0]
@@ -54,5 +53,3 @@ export function clip(name: string, locale: Locale): ClipSource[] {
     height: info.height,
   }));
 }
-
-export const twin = INDEX.twin;

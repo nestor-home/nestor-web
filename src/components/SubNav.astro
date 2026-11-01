@@ -1,0 +1,48 @@
+---
+/**
+ * The sections of a long page, in a bar under the header that stays in view: the one being read is
+ * marked as you scroll (the site script, through `data-nav`). Scrolls sideways on small screens.
+ */
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+  sections: { id: string; label: string }[];
+}
+const { t, sections } = Astro.props;
+---
+
+<nav class="subnav" aria-label={t("nav-sections")}>
+  <ul class="wrap flex gap-1 overflow-x-auto py-1.5 text-sm text-ink-muted">
+    {
+      sections.map((s) => (
+        <li class="shrink-0">
+          <a href={`#${s.id}`} data-nav={s.id} class="subnav-link block rounded-sm px-2.5 py-1 hover:text-ink">
+            {s.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .subnav {
+    position: sticky;
+    top: var(--header-h);
+    z-index: var(--z-sticky);
+    border-block: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  /* anchors land below the bar (global.css: scroll-padding-top) */
+  :global(:root:has(.subnav)) {
+    --subnav-h: 2.625rem;
+  }
+  .subnav ul {
+    scrollbar-width: none;
+  }
+  .subnav-link[data-active] {
+    color: var(--ink);
+    background: var(--paper-sunken);
+  }
+</style>

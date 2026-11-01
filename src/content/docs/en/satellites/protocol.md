@@ -13,7 +13,7 @@ standard: SDKs and drivers in any language implement it, and the core’s black-
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
 
-The core’s message classes (`nestor.modules.satellites.wire`) are the source of truth for shapes.
+The core’s message classes (`nestor.modules.satellites.wire`) define the shapes of the messages.
 The JSON Schemas they generate are served at
 `https://nestorhome.dev/schemas/satellite/1/<message>.json` (see [Schemas](/docs/satellites/schemas/));
 SDKs keep a copy and test what they send against it.
@@ -180,8 +180,8 @@ optionally a name, a room and the capabilities to allow at most. It lasts 15 min
 minute to 7 days).
 
 - With an enrollment method, the addition makes the enrollment code, returned once with its pairing
-  URI. The device that presents it is paired at once, named, in the addition’s room, with the
-  capabilities it declared narrowed to the addition’s.
+  URI. The device that presents it is paired at once, with the addition’s name and room, and the
+  capabilities it declared are narrowed to the addition’s.
 - With a device code method, the addition waits for a device: the admin lists the pending devices,
   the person tells them apart (identify), types the code the right one presents, and the addition’s
   name, room and capabilities apply.
@@ -195,7 +195,7 @@ the addition is over.
 
 ### 4.1 Device code
 
-Six decimal digits (`042917`), random, unique among pending pairings. Digits read well aloud and on
+Six decimal digits (`042917`), random, unique among pending pairings. Digits are easy to read aloud and on
 any screen.
 
 ### 4.2 Enrollment code
@@ -209,7 +209,7 @@ any screen.
 ### 4.3 Pairing URI
 
 ```text
-nestor+http://nestor.local:7860/?code=K7QF2M9X
+nestor+http://nestor.local:8471/?code=K7QF2M9X
 nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 ```
 
@@ -254,7 +254,7 @@ names, at most 32, each declared once. Known capabilities: `audio.capture`, `aud
 
 - **W1.** With its token, the device offers WebRTC: `POST /satellites/{device_id}/offer` with
   `Authorization: Bearer <token>` and `{"sdp", "type"}`; the core answers `{"sdp", "type", "pc_id"}`.
-  ICE candidates follow with `PATCH` on the same path. A wrong token answers `401`; another device’s
+  ICE candidates follow with `PATCH` on the same path. A wrong token gets `401`; another device’s
   `pc_id`, `403`.
 - **W2.** On the data channel `nestor`, every message is `{"type", "id", "at", "payload"}`. The device
   MUST send `hello` (its manifest, with the paired device id) first; the core answers `welcome` (the
@@ -263,8 +263,8 @@ names, at most 32, each declared once. Known capabilities: `audio.capture`, `aud
   core are ignored.
 - **W3.** Audio: Opus over WebRTC, the core’s voice to the device, the microphone (with
   `audio.capture`) to the core.
-- **W4.** After a hang-up or a lost link, the device reconnects with the same token, with a growing
-  delay.
+- **W4.** After a hang-up or a lost link, the device reconnects with the same token, waiting longer
+  between attempts.
 
 ## 8. Security considerations
 
@@ -280,7 +280,7 @@ names, at most 32, each declared once. Known capabilities: `audio.capture`, `aud
   frees a slot, so a limited client learns nothing.
 - **Hashing.** Only SHA-256 hashes of codes and tokens are stored, and journaled. A presented code is
   compared with every known hash in constant time. 40 bits can be brute-forced offline from a leaked
-  hash, so the hash is only worth something while the code lives: keep lifetimes short.
+  hash, so a hash protects a code only while it is valid: keep lifetimes short.
 - **Transport.** Codes and tokens cross the network in clear over `http`; use `https` (a
   `nestor+https` URI) outside a trusted home network.
 - **What identify does not prove.** Identify shows which device answers, not that it is the one the

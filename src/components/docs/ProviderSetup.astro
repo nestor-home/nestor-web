@@ -1,0 +1,22 @@
+---
+/**
+ * One provider's setup in the documentation's picker (Providers.astro): the page's own text and code
+ * for it. Only the default provider of its kind shows before a choice.
+ */
+import type { BrandKey } from "@/lib/brands";
+import { PROVIDERS, type ProviderKind, panelId } from "@/lib/providers";
+
+interface Props {
+  kind: ProviderKind;
+  brand: BrandKey;
+}
+const { kind, brand } = Astro.props;
+const known = PROVIDERS[kind].find((p) => p.brand === brand);
+if (known?.status !== "available") throw new Error(`[docs] no available ${kind} provider "${brand}"`);
+const id = panelId(kind, brand);
+const shown = PROVIDERS[kind][0]?.brand === brand;
+---
+
+<div role="tabpanel" id={`${id}-setup`} aria-labelledby={id} tabindex="0" class="provider-panel" hidden={!shown}>
+  <slot />
+</div>

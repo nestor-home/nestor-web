@@ -1,0 +1,88 @@
+---
+/**
+ * What it does, as a household says it: six everyday requests, each showing one capability of the
+ * framework, then the services it connects to.
+ */
+import Integrations from "@/components/Integrations.astro";
+import Tie from "@/components/Tie.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const items = [1, 2, 3, 4, 5, 6];
+---
+
+<section id="abilities" class="section border-t border-rule" aria-labelledby="ab-title" data-mood="listening">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="ab-title" data-reveal class="display-2 text-ink">{t("ab-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("ab-lede")}</p>
+    </div>
+
+    <ul class="abilities mt-14">
+      {
+        items.map((n, i) => (
+          <li data-reveal style={`--i:${i % 3}`} class="ability">
+            <q class="ability-ask">{t(`ab-${n}-ask`)}</q>
+            <p class="mt-5 flex items-center gap-2 text-base text-ink">
+              <Tie size={13} />
+              {t(`ab-${n}-name`)}
+            </p>
+            <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">{t(`ab-${n}-text`)}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-24">
+      <div class="max-w-3xl">
+        <h3 data-reveal class="display-3 text-ink">{t("int-title")}</h3>
+        <p data-reveal class="mt-3 text-sm text-ink-muted">{t("int-lede")}</p>
+      </div>
+      <div class="mt-10">
+        <Integrations t={t} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .abilities {
+    display: grid;
+    gap: 0 2.5rem;
+  }
+  @media (min-width: 768px) {
+    .abilities {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .abilities {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .ability {
+    padding-block: 1.75rem 2.25rem;
+    border-top: 1px solid var(--rule);
+  }
+  .ability-ask {
+    display: block;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-variation);
+    font-size: var(--text-xl); /* text-xl → md:text-2xl */
+    line-height: 1.75rem;
+    color: var(--ink);
+    quotes: "“" "”";
+  }
+  @media (min-width: 1024px) {
+    .ability-ask {
+      font-size: var(--text-2xl);
+      line-height: 2rem;
+    }
+  }
+  :global(:lang(fr)) .ability-ask {
+    quotes: "«\202F" "\202F»";
+  }
+</style>

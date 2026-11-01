@@ -18,9 +18,9 @@ const items = Array.from({ length: 8 }, (_, i) => `ctl-${i + 1}`);
     <dl class="mt-14 grid border-t border-rule md:grid-cols-2 md:gap-x-12">
       {
         items.map((id, i) => (
-          <div data-reveal style={`--i:${i % 2}`} class="grid gap-2 border-b border-rule py-6 sm:grid-cols-[13rem_minmax(0,1fr)] sm:gap-6">
-            <dt class="font-serif text-[1.15rem] leading-snug text-ink">{t(id)}</dt>
-            <dd class="text-[0.95rem] leading-relaxed text-ink-muted">{t(`${id}-text`)}</dd>
+          <div data-reveal style={`--i:${i % 2}`} class="grid gap-2 border-b border-rule py-6 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-6">
+            <dt class="font-serif text-lg leading-snug text-ink">{t(id)}</dt>
+            <dd class="text-base leading-relaxed text-ink-muted">{t(`${id}-text`)}</dd>
           </div>
         ))
       }
@@ -31,7 +31,7 @@ const items = Array.from({ length: 8 }, (_, i) => `ctl-${i + 1}`);
           <Shot name="system" locale={t.locale} alt={t("ctl-shot")} />
         </div>
       </div>
-      <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("ctl-shot")}</figcaption>
+      <figcaption class="mt-3 font-mono text-xs text-ink-muted">{t("ctl-shot")}</figcaption>
     </figure>
   </div>
 </section>

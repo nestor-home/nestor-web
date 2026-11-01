@@ -25,9 +25,9 @@ const names = { en: "English", fr: "Français" } as const;
 <footer class="relative overflow-hidden border-t border-rule">
   <div class="wrap grid gap-12 pt-16 pb-10 md:grid-cols-[1fr_1.4fr]">
     <div class="flex flex-col gap-6">
-      <a href="#top" class="w-fit text-[3.2rem] md:text-[4.2rem]" aria-label={t("footer-top")}><Wordmark /></a>
-      <p class="max-w-sm text-[0.95rem] leading-relaxed text-ink-muted">{t("footer-line")}</p>
-      <p class="flex gap-4 text-[0.9rem]">
+      <a href="#top" class="w-fit text-5xl md:text-7xl" aria-label={t("footer-top")}><Wordmark /></a>
+      <p class="max-w-sm text-base leading-relaxed text-ink-muted">{t("footer-line")}</p>
+      <p class="flex gap-4 text-sm">
         <a class="link" href={href(t.locale, "home")}>{t("footer-home")}</a>
         <a class="link" href={href(t.locale, "developers")}>{t("nav-developers")}</a>
         <a class="link" href={href(t.locale, "docs")}>{t("nav-docs")}</a>
@@ -56,8 +56,8 @@ const names = { en: "English", fr: "Français" } as const;
           repos.map((r) => (
             <li>
               <a href={r.href} class="group flex items-baseline justify-between gap-4 py-3">
-                <span class="font-mono text-[0.85rem] text-ink group-hover:text-ember">{r.name}</span>
-                <span class="flex items-baseline gap-2 text-right text-[0.85rem] text-ink-muted">
+                <span class="font-mono text-sm text-ink group-hover:text-ember">{r.name}</span>
+                <span class="flex items-baseline gap-2 text-right text-sm text-ink-muted">
                   <span class="hidden sm:inline">{t(r.text)}</span>
                   <ArrowUpRight className="size-3.5 self-center" strokeWidth={1.6} aria-hidden="true" />
                 </span>

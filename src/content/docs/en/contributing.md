@@ -6,7 +6,7 @@ description: How changes reach the Nestor repositories, and how each one is rele
 
 Every repository of [nestor-home](https://github.com/nestor-home) follows the same rules, written
 once in the organization’s
-[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md). In short:
+[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md):
 
 - `main` is protected: every change is a pull request, merged once its `ci` check is green.
 - Pull requests are squash-merged, and their title becomes the commit, so it follows

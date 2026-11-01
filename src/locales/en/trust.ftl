@@ -1,0 +1,15 @@
+tr-title = It’s yours, and it shows its work.
+tr-lede = Everything it hears, does and says on its own goes into a journal you can read.
+tr-clip = The journal, in Nestor’s admin.
+tr-1 = On your own machine
+tr-1-text = The journal, memories and settings live in one file on your server. Open source, under the MIT licence.
+tr-2 = Quiet when it should be
+tr-2-text = Quiet hours, “not now”, and never in the middle of a conversation.
+tr-3 = Accounts in a vault
+tr-3-text = Passwords and tokens are encrypted. The model, the journal and the logs never see them.
+tr-4 = It asks before it acts
+tr-4-text = Before it sends a mail or changes anything, it asks. It reads mail for information and takes no orders from it.
+tr-5 = Everyone in their place
+tr-5-text = Roles and permissions for each person, channel and tool. A new device waits for your approval.
+tr-6 = Recognition, if you want it
+tr-6-text = Voice and face profiles only for people who agree. Being recognised never unlocks anything on its own.

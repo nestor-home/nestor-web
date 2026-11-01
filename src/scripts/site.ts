@@ -3,7 +3,7 @@
  * Everything here is progressive — without it, every section reads in full.
  */
 import { drawDither } from "@nestor-home/character";
-import { nextIndex } from "@/lib/tabs";
+import { nextIndex, tabAxes } from "@/lib/tabs";
 
 const root = document.documentElement;
 const reduced = matchMedia("(prefers-reduced-motion: reduce)");
@@ -30,23 +30,19 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-theme-t
   });
 }
 
-/* the menu on small screens: a disclosure; closes on a link, Escape, or going wide */
-const menuButton = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
-const menu = document.getElementById("mobile-menu");
-if (menuButton && menu) {
-  const setOpen = (open: boolean) => {
-    menuButton.setAttribute("aria-expanded", String(open));
-    menu.hidden = !open;
-  };
-  menuButton.addEventListener("click", () => setOpen(menu.hidden));
-  for (const link of menu.querySelectorAll("[data-menu-link]")) link.addEventListener("click", () => setOpen(false));
-  addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !menu.hidden) {
-      setOpen(false);
-      menuButton.focus();
-    }
+/* the menu on small screens: a sheet, as a modal dialog (focus kept inside, Escape closes) */
+const sheet = document.querySelector<HTMLDialogElement>("dialog[data-menu]");
+const opener = document.querySelector<HTMLButtonElement>("[data-menu-open]");
+if (sheet && opener) {
+  opener.addEventListener("click", () => sheet.showModal());
+  sheet.querySelector("[data-menu-close]")?.addEventListener("click", () => sheet.close());
+  // a click on the dimmed page closes it
+  sheet.addEventListener("click", (event) => {
+    if (event.target === sheet) sheet.close();
   });
-  matchMedia("(min-width: 64rem)").addEventListener("change", () => setOpen(false));
+  sheet.addEventListener("close", () => opener.focus());
+  for (const link of sheet.querySelectorAll("a[href^='#']")) link.addEventListener("click", () => sheet.close());
+  matchMedia("(min-width: 48rem)").addEventListener("change", () => sheet.close());
 }
 
 /* dither textures */
@@ -134,28 +130,46 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy]")
   });
 }
 
-/* tabs (WAI-ARIA tabs pattern, automatic activation) */
+/* tabs (WAI-ARIA tabs pattern, automatic activation): the arrows of the list's orientation move
+   (both for `data-tabs-grid`); with `data-tabs-hash`, the address keeps the chosen tab
+   (`#<tab id>`) and opens it, so a link can name one */
 for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
   const tabs = [...list.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+  const hash = list.hasAttribute("data-tabs-hash");
+  const axes = tabAxes(list);
   const select = (index: number, focus: boolean) => {
     tabs.forEach((tab, i) => {
       const on = i === index;
       tab.setAttribute("aria-selected", String(on));
       tab.tabIndex = on ? 0 : -1;
       const panel = document.getElementById(tab.getAttribute("aria-controls") ?? "");
-      if (panel) panel.hidden = !on;
+      if (!panel) return;
+      const shown = panel.hidden && on;
+      panel.hidden = !on;
+      // a character in the panel plays its sequence each time the panel is shown
+      if (shown)
+        for (const c of panel.querySelectorAll("svg.nestor[data-script]")) c.dispatchEvent(new CustomEvent("inview"));
     });
     if (focus) tabs[index]?.focus();
+    if (hash && tabs[index]) history.replaceState(null, "", `#${tabs[index].id}`);
   };
   tabs.forEach((tab, i) => {
     tab.addEventListener("click", () => select(i, false));
     tab.addEventListener("keydown", (event) => {
-      const next = nextIndex(event.key, i, tabs.length);
+      const next = nextIndex(event.key, i, tabs.length, axes);
       if (next === null) return;
       event.preventDefault();
       select(next, true);
     });
   });
+  if (hash) {
+    const follow = () => {
+      const wanted = tabs.findIndex((tab) => tab.id === decodeURIComponent(location.hash.slice(1)));
+      if (wanted >= 0) select(wanted, false);
+    };
+    follow();
+    addEventListener("hashchange", follow);
+  }
 }
 
 /* the guided story: the step in the middle of the screen drives the stage */
@@ -163,14 +177,34 @@ for (const story of document.querySelectorAll<HTMLElement>("[data-story]")) {
   const stage = story.querySelector<HTMLElement>("[data-stage]");
   const counter = story.querySelector<HTMLElement>("[data-stage-step]");
   const steps = [...story.querySelectorAll<HTMLElement>("li[data-step]")];
+  const character = stage?.querySelector<SVGElement>("svg.nestor");
+  /* the character on the stage takes the mood of the step, or the one the step gives the place
+     the person is in (`data-mood-<where>`) */
+  const pose = () => {
+    if (!character || !stage) return;
+    const step = steps.find((s) => s.dataset.step === stage.dataset.step);
+    const where = story.dataset.where ?? "";
+    const place = `mood${where.charAt(0).toUpperCase()}${where.slice(1)}`;
+    character.dataset.state = step?.dataset[place] ?? step?.dataset.mood ?? "idle";
+  };
   const show = (n: number) => {
     if (!stage || stage.dataset.step === String(n)) return;
     stage.dataset.step = String(n);
     stage.style.setProperty("--step", String(n));
     for (const step of steps) step.toggleAttribute("data-current", step.dataset.step === String(n));
     if (counter) counter.textContent = counter.dataset.template?.replace("{n}", String(n)) ?? "";
+    pose();
   };
   show(1);
+  /* where the person is (a group of toggle buttons): the stage and the decision follow */
+  const places = [...story.querySelectorAll<HTMLButtonElement>("[data-where-set]")];
+  for (const button of places) {
+    button.addEventListener("click", () => {
+      story.dataset.where = button.dataset.whereSet ?? "";
+      for (const other of places) other.setAttribute("aria-pressed", String(other === button));
+      pose();
+    });
+  }
   const watcher = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) if (entry.isIntersecting) show(Number((entry.target as HTMLElement).dataset.step));
@@ -239,14 +273,17 @@ for (const character of document.querySelectorAll<SVGElement>("svg.nestor[data-s
     .split(",")
     .map((part) => part.split("@"))
     .map(([state, at]) => ({ state: state ?? "idle", at: Number(at ?? 0) }));
+  let timers: number[] = [];
   character.addEventListener("inview", () => {
     if (reduced.matches) {
       const last = steps.at(-1);
       if (last) character.dataset.state = last.state;
       return;
     }
-    for (const step of steps) setTimeout(() => (character.dataset.state = step.state), step.at);
+    for (const timer of timers) clearTimeout(timer);
+    timers = steps.map((step) => window.setTimeout(() => (character.dataset.state = step.state), step.at));
   });
 }
 
+import "./constellation";
 import "./live";

@@ -1,7 +1,7 @@
 ---
 
 title: Conformité
-description: Vérifier un satellite, écrit dans n’importe quel langage, selon le protocole, en ligne de commande.
+description: Vérifier en ligne de commande qu’un satellite, quel que soit son langage, respecte le protocole.
 ---
 
 Le serveur fournit une suite de conformité boîte noire. Un faux cœur, fait du vrai service
@@ -24,8 +24,8 @@ commande de votre satellite, où :
 - `{url}` devient l’adresse du faux cœur ;
 - `{state}` devient un dossier neuf, pour le jeton et tout ce que garde le satellite.
 
-Les scénarios avec un code d’enrôlement le donnent dans `NESTOR_PAIRING_URI`, comme une personne
-configure un appareil sans écran ; la variable est retirée dans les autres. Votre satellite doit la
+Les scénarios avec un code d’enrôlement le donnent dans `NESTOR_PAIRING_URI`, comme le ferait une
+personne qui configure un appareil sans écran ; la variable est retirée dans les autres. Votre satellite doit la
 lire (règle P1). `--deadline` est le nombre de secondes laissées au satellite pour chaque étape (15
 par défaut).
 
@@ -56,7 +56,7 @@ OK     se connecte avec son jeton (W1)
 1 vérification échouée sur 32
 ```
 
-La commande parle la langue de `LC_ALL`, `LC_MESSAGES` ou `LANG` (anglais ou français).
+La commande écrit dans la langue de `LC_ALL`, `LC_MESSAGES` ou `LANG` (anglais ou français).
 
 | Code de sortie | Sens                                                                                                     |
 | -------------- | -------------------------------------------------------------------------------------------------------- |
@@ -67,9 +67,9 @@ La commande parle la langue de `LC_ALL`, `LC_MESSAGES` ou `LANG` (anglais ou fra
 ## En intégration continue
 
 Lancez la même commande dans un job de votre dépôt, après avoir construit le satellite. Il faut
-Python (uv l’installe) et rien du dépôt Nestor. Épinglez la version du serveur, et montez-la quand
+Python (uv l’installe), mais rien du dépôt Nestor. Épinglez la version du serveur, et montez-la quand
 vous passez à une nouvelle version du protocole.
 
 En Python, la suite est aussi une fonction : `check_satellite(driver)` de
 `nestor.adapters.channels.voice.satellites.conformance` prend une fonction coroutine ou une
-commande, et rend les résultats pour votre propre test.
+commande, et renvoie les résultats à vérifier dans votre propre test.

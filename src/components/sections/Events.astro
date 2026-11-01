@@ -1,0 +1,206 @@
+---
+/**
+ * The journal for developers: how an event is declared (the real `WatchTriggered`), and the records
+ * of one watch from the request to the delivery, as `Event.to_record` writes them. A tab list
+ * (the site script) walks through them; then a recording of the admin reading the same log.
+ */
+import Clip from "@/components/Clip.astro";
+import Shot from "@/components/Shot.astro";
+import type { Translator } from "@/i18n";
+import { highlight } from "@/lib/highlight";
+import { clip } from "@/lib/media";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+const DECLARATION = `class WatchTriggered(
+    Event, event_type="watch.triggered"
+):
+    watch_id: str
+    item_id: str
+    item_title: str
+    summary: str
+    urgent: bool = False`;
+
+const exchange = { conversation_id: "c-7f3a", turn_id: "t-91d2" };
+const kitchen = { channel: "voice", conversation: "kitchen" };
+const office = { channel: "voice", conversation: "office" };
+const record = (type: string, id: string, at: string, source: string, payload: object) =>
+  JSON.stringify({ type, version: 1, id, at, source, session: null, payload }, null, 2);
+
+const events = [
+  record("conversation.turn.user", "e-0a12", "2026-11-02T08:02:11+00:00", "voice", {
+    address: kitchen,
+    text: t("loop-1-ask"),
+    exchange,
+    person: "lea",
+  }),
+  record("watch.created", "e-0a14", "2026-11-02T08:02:13+00:00", "watches", {
+    watch_id: "w-4b10",
+    what: t("ev-what"),
+    keywords: t("loop-watch-keywords-value").split(", "),
+    kinds: ["mail"],
+    once: true,
+    owner: "lea",
+    created_in: kitchen,
+    until: null,
+    exchange,
+  }),
+  record("watch.triggered", "e-1c07", "2026-11-02T16:41:02+00:00", "watches", {
+    watch_id: "w-4b10",
+    item_id: "imap:lea/4821",
+    item_title: t("loop-in-3"),
+    summary: t("ev-summary"),
+    urgent: false,
+  }),
+  record("initiative.considered", "e-1c09", "2026-11-02T16:41:03+00:00", "delivery", {
+    about: "watch w-4b10",
+    reason: { id: "delivery-in-room", args: { person: "Léa", room: t("ev-room") } },
+    spoken: office,
+    written: null,
+    person: "lea",
+  }),
+  record("initiative.delivered", "e-1c0b", "2026-11-02T16:41:05+00:00", "delivery", {
+    address: office,
+    about: "watch w-4b10",
+    person: "lea",
+  }),
+];
+const records = await Promise.all(events.map((json) => highlight(json, "json")));
+const declaration = await highlight(DECLARATION, "python");
+const filters = clip("journal-filters", t.locale).length > 0;
+---
+
+<section id="journal" class="section border-t border-rule" aria-labelledby="ev-title" data-mood="thinking">
+  <div class="wrap">
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <h2 id="ev-title" data-reveal class="display-2 text-ink">{t("ev-title")}</h2>
+        <p data-reveal class="prose-copy mt-6">{t("ev-lede")}</p>
+        <p data-reveal class="prose-copy mt-6">{t("ev-declare")}</p>
+        <div data-reveal class="code mt-4 border border-rule bg-paper-raised" set:html={declaration} />
+      </div>
+
+      <div data-reveal class="events lg:col-span-7">
+        <div role="tablist" aria-label={t("ev-tabs")} aria-orientation="vertical" class="events-tabs">
+          {
+            events.map((_, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`ev-tab-${i + 1}`}
+                aria-controls={`ev-${i + 1}`}
+                aria-selected={i === 0 ? "true" : "false"}
+                tabindex={i === 0 ? 0 : -1}
+                class="ev-tab"
+              >
+                <span class="font-mono text-2xs text-ink-muted tabular">{i + 1}</span>
+                <span>{t(`ev-${i + 1}`)}</span>
+              </button>
+            ))
+          }
+        </div>
+        <div class="events-panels border border-rule bg-paper-raised">
+          {
+            records.map((html, i) => (
+              <div role="tabpanel" id={`ev-${i + 1}`} aria-labelledby={`ev-tab-${i + 1}`} hidden={i !== 0} tabindex="0" class="code" set:html={html} />
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <figure data-reveal class="mt-16">
+      <div class="plate corner-marks">
+        <div class="plate-inner">
+          {
+            filters ? (
+              <Clip name="journal-filters" t={t} label={t("ev-clip")} />
+            ) : (
+              <Shot name="journal" locale={t.locale} alt={t("ev-clip")} />
+            )
+          }
+        </div>
+      </div>
+      <figcaption class="mt-3 font-mono text-xs text-ink-muted">{t("ev-clip")}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .events {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+  @media (min-width: 768px) {
+    .events {
+      grid-template-columns: 13rem minmax(0, 1fr);
+    }
+  }
+  .events-tabs {
+    display: flex;
+    flex-direction: column;
+  }
+  .ev-tab {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding: 0.65rem 0.5rem;
+    border-bottom: 1px solid var(--rule);
+    text-align: left;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    transition:
+      color var(--duration) var(--ease),
+      background-color var(--duration) var(--ease);
+  }
+  .ev-tab:first-child {
+    border-top: 1px solid var(--rule);
+  }
+  .ev-tab:hover {
+    color: var(--ink);
+    background: var(--paper-raised);
+  }
+  .ev-tab[aria-selected="true"] {
+    color: var(--ink);
+    background: var(--paper-raised);
+    box-shadow: inset 0 -2px 0 var(--ember);
+  }
+  .ev-tab:focus {
+    outline: none;
+  }
+  .ev-tab:focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: -2px;
+  }
+  .events-panels {
+    min-height: 22rem;
+  }
+  /* the records are for reading their values: long strings wrap inside the card */
+  .events-panels :global(pre) {
+    font-size: var(--text-xs);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  :global(.js) .events-panels [role="tabpanel"]:not([hidden]) {
+    animation: fade 350ms var(--ease-out);
+  }
+  @media (max-width: 767px) {
+    .events-tabs {
+      flex-direction: row;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .ev-tab {
+      flex: 0 0 auto;
+      border: 1px solid var(--rule);
+      border-right: 0;
+    }
+    .ev-tab:last-child {
+      border-right: 1px solid var(--rule);
+    }
+  }
+</style>

@@ -1,0 +1,13 @@
+ev-title = The journal is the source of truth.
+ev-lede = Every turn, tool call, task, memory, unprompted message and policy decision is an event in an append-only log, in one SQLite file. The admin, durable tasks and replay are read from it, so “why did it speak to me?” always has an answer.
+ev-tabs = The events of one watch, in order
+ev-declare = A module declares an event in one line: a frozen, typed dataclass registered under its type. Changing a payload bumps its version, and older records are upgraded as they are read.
+ev-1 = She asks
+ev-2 = The watch is written
+ev-3 = A mail matches
+ev-4 = The decision, with its reason
+ev-5 = It speaks
+ev-clip = Filtering the journal by person and channel, in the admin.
+ev-what = Tell Léa as soon as the school writes back.
+ev-summary = The school confirms Friday’s outing; bring a packed lunch.
+ev-room = office

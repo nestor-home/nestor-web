@@ -56,8 +56,8 @@ button.onclick = () => satellite.run(); // a click: browsers only play sound aft
 
 ## In Node, headless
 
-No screen: the device code is said on the speaker with the SDK’s recorded voice (offline, English
-or French) and logged, unless the pairing URI is in the environment.
+Without a screen, the SDK says the device code on the speaker with its recorded voice (offline,
+English or French) and logs it, unless the pairing URI is in the environment.
 
 ```ts
 import { AUDIO_CAPTURE, AUDIO_PLAYBACK, EXPRESSION, Manifest, Satellite } from "@nestor-home/satellite";
@@ -72,7 +72,7 @@ import {
 
 const provisioning = provisioningFromEnv(); // NESTOR_PAIRING_URI or NESTOR_PAIRING_CODE, if set
 const satellite = new Satellite({
-  core: provisioning?.core ?? "http://nestor.local:7860",
+  core: provisioning?.core ?? "http://nestor.local:8471",
   manifest: Manifest.of(
     { id: "enceinte-salon", model: "raspberry-pi-4", room: "salon" },
     AUDIO_CAPTURE,
@@ -116,13 +116,13 @@ The manifest’s pairing methods follow from the `pairing` options; you never li
 
 ## The command
 
-In Node, this machine’s microphone and speaker as a satellite (`rec` and `play` from SoX by
-default):
+In Node, to use this machine’s microphone and speaker as a satellite (with `rec` and `play` from
+SoX by default):
 
 ```bash
-NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' npx nestor-satellite run --room salon
+NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' npx nestor-satellite run --room salon
 # or
-npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 ```
 
 Run it from a project where both packages are installed. With a bare code, give the core with

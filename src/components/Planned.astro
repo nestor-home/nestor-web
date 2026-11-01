@@ -1,0 +1,29 @@
+---
+/**
+ * What is not shipped yet, said as text after a name: integrations, satellites, providers. The comma
+ * is for screen readers, which read the name and the badge as one phrase.
+ */
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+  class?: string;
+}
+const { t, class: className } = Astro.props;
+---
+
+<span class:list={["badge-planned", className]}><span class="sr-only">, </span>{t("int-planned")}</span>
+
+<style>
+  .badge-planned {
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 0 0.35rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    font-size: var(--text-xs);
+    line-height: 1.1rem;
+    white-space: nowrap;
+    color: var(--ink-muted);
+  }
+</style>
