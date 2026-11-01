@@ -6,17 +6,17 @@ description: Le standard que tout satellite implémente, quel que soit son langa
 
 Un **satellite** est un appareil qui s’appaire à un serveur Nestor (le **cœur**), déclare ce qu’il
 sait faire, fait passer l’audio, remonte des observations et exécute les intentions du cœur. Cette
-page est le standard : les SDK et les pilotes, dans tout langage, l’implémentent, et la
-[suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur les vérifie. Voici la
-version 1 (voir l’[historique](#10-historique)).
+page fait référence : les SDK et les pilotes l’implémentent, quel que soit leur langage, et la
+[suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur les vérifie. Elle décrit
+la version 1 (voir l’[historique](#10-historique)).
 
 Les mots DOIT, NE DOIT PAS, DEVRAIT, NE DEVRAIT PAS et PEUT s’entendent au sens de la
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY).
 
-Les classes de messages du cœur (`nestor.modules.satellites.wire`) font foi pour les formes. Les
+Les classes de messages du cœur (`nestor.modules.satellites.wire`) font foi pour la forme des messages. Les
 schémas JSON qu’elles génèrent sont servis à
 `https://nestorhome.dev/schemas/satellite/1/<message>.json` (voir [Schémas](/fr/docs/satellites/schemas/)) ;
-les SDK en gardent une copie et testent ce qu’ils envoient avec.
+les SDK en gardent une copie et y confrontent ce qu’ils envoient.
 
 ## 1. Vue d’ensemble
 
@@ -32,8 +32,8 @@ appareil                                cœur                                 me
   │ canal de données `nestor` : hello → welcome, intentions ⇄ acks, observations
 ```
 
-Un appareil configuré avec un code d’enrôlement l’envoie dès sa première requête et il est approuvé
-aussitôt.
+Un appareil configuré avec un code d’enrôlement l’envoie dès sa première requête et se
+voit approuvé aussitôt.
 
 ## 2. Méthodes d’appairage
 
@@ -42,8 +42,8 @@ La preuve qu’une personne voulait appairer un appareil circule dans un sens ou
 - un **code d’appareil** va de l’appareil à la personne, qui le tape dans l’administration ;
 - un **code d’enrôlement** va de l’administration à l’appareil, qui le présente au cœur.
 
-L’appareil déclare les méthodes qu’il prend en charge ; la personne en choisit une. Les méthodes
-sont :
+L’appareil déclare les méthodes qu’il prend en charge ; la personne en choisit une parmi
+celles-ci :
 
 | Méthode                   | Preuve            | La personne…                                                                                          |
 | ------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------- |
@@ -98,7 +98,7 @@ GET /satellites/pairings/{pairing_id}
      "capabilities": ["device.identify"]}
 ```
 
-Les erreurs répondent `pairing.error` : `{"error": code, "detail": texte, "reason"?: …, "retry_after_s"?: …}`.
+Une erreur renvoie un `pairing.error` : `{"error": code, "detail": texte, "reason"?: …, "retry_after_s"?: …}`.
 
 | `error`                | Statut | Sens                                                                                            |
 | ---------------------- | ------ | ----------------------------------------------------------------------------------------------- |
@@ -109,7 +109,7 @@ Les erreurs répondent `pairing.error` : `{"error": code, "detail": texte, "reas
 | `enrollment_refused`   | 403    | le code d’enrôlement n’appaire rien ; `reason` vaut `unknown`, `expired`, `used` ou `cancelled` |
 | `not_pending`          | 409    | l’appairage n’attend plus de preuve : l’autre preuve l’a emporté, ou il a expiré                |
 
-`detail` est en anglais, pour les journaux. Un appareil qui montre ou dit une erreur aux gens DOIT
+`detail` est en anglais, pour les journaux. Un appareil qui affiche une erreur ou l’énonce DOIT
 la traduire à partir de `error` et `reason`, jamais afficher `detail`.
 
 ### 3.2 États d’un appairage
@@ -141,7 +141,7 @@ requête ──▶ pending                         ├──▶ approved ──(
   (`device_code.speech` : une courte phrase, puis les chiffres un par un avec une pause entre
   chacun, le tout dit deux fois, dans la langue de l’appareil, sans avoir besoin du réseau), et
   toujours dans son journal. Un appareil sans écran ni voix DOIT écrire le code d’appareil dans son
-  journal et y dire qu’un code d’enrôlement est le moyen de l’appairer. Il interroge ensuite
+  journal et y indiquer qu’il s’appaire avec un code d’enrôlement. Il interroge ensuite
   l’appairage environ une fois par seconde jusqu’à ce qu’il soit approuvé ou expire ; s’il expire,
   il redemande.
 - **P3.** Un appareil qui a un code d’enrôlement DOIT l’envoyer avec sa requête, avec la méthode par
@@ -175,7 +175,7 @@ requête ──▶ pending                         ├──▶ approved ──(
 - **C3.** Une preuve n’est acceptée que tant que son appairage est `pending` ; la première acceptée
   le fait passer aussitôt à `approved`. Un code d’enrôlement refusé parce que l’appairage n’est plus
   en attente n’est pas consommé.
-- **C4.** Le jeton fait 256 bits aléatoires, préfixé `nst1_` ; seul son SHA-256 est conservé.
+- **C4.** Le jeton compte 256 bits aléatoires, précédés de `nst1_` ; seul son SHA-256 est conservé.
 - **C5.** Une nouvelle demande avec le même identifiant d’appareil remplace la demande en attente.
 - **C6.** Le journal enregistre chaque étape : `satellite.pairing.requested` (avec les méthodes
   déclarées), `satellite.addition.started|completed|cancelled|expired`,
@@ -186,26 +186,26 @@ requête ──▶ pending                         ├──▶ approved ──(
 ### 3.5 Ajouts
 
 Une personne ajoute un satellite depuis l’administration en lançant un **ajout** : la méthode
-choisie et, si elle le veut, un nom, une pièce et les capacités à autoriser au plus. Il dure 15
+choisie et, si elle le veut, un nom, une pièce et le plafond des capacités à autoriser. Il dure 15
 minutes par défaut (de 1 minute à 7 jours).
 
 - Avec une méthode d’enrôlement, l’ajout crée le code d’enrôlement, rendu une seule fois avec son
-  URI d’appairage. L’appareil qui le présente est appairé aussitôt, nommé, dans la pièce de l’ajout,
-  avec les capacités déclarées restreintes à celles de l’ajout.
+  URI d’appairage. L’appareil qui le présente est appairé aussitôt, sous le nom et dans la pièce de l’ajout,
+  et ses capacités déclarées sont restreintes à celles de l’ajout.
 - Avec une méthode par code d’appareil, l’ajout attend un appareil : l’administration liste les
   appareils en attente, la personne les distingue (identification), tape le code que présente le
   bon, et le nom, la pièce et les capacités de l’ajout s’appliquent.
 
 Un ajout se termine quand son appareil est appairé (`completed`), quand une personne l’annule ou
 quand il expire. Il y en a au plus 32 en cours à la fois. Un ajout appaire un seul appareil : le
-cœur le réclame en une étape, si bien que deux personnes qui tapent un code pour lui au même instant
+cœur le réserve en une seule opération, si bien que deux personnes qui tapent un code pour lui au même instant
 appairent un seul appareil, et l’autre apprend que l’ajout est terminé.
 
 ## 4. Codes et URI
 
 ### 4.1 Code d’appareil
 
-Six chiffres décimaux (`042917`), aléatoires, uniques parmi les appairages en attente. Des chiffres
+Six chiffres décimaux (`042917`), aléatoires, uniques parmi les appairages en attente. Les chiffres
 se lisent bien à voix haute et sur n’importe quel écran.
 
 ### 4.2 Code d’enrôlement
@@ -256,7 +256,7 @@ dans `hello`.
 
 - **I1.** Un appareil qui déclare `device.identify` DOIT, sur une réponse d’attente portant
   `"identify": true`, se faire remarquer quelques secondes avec les sorties dont il dispose
-  (clignoter, remuer, sonner, faire flasher son écran), et continuer d’interroger.
+  (clignoter, remuer, sonner, faire scintiller son écran), et continuer d’interroger.
 - **I2.** Une fois appairé et autorisé à `device.identify`, il DOIT accuser réception de
   `intent.identify` comme de toute intention, et se faire remarquer de la même façon.
 - **I3.** Le cœur n’envoie l’identification qu’à un appareil qui l’a déclarée (en attente) ou qui y
@@ -270,7 +270,7 @@ dans `hello`.
 - **W1.** Avec son jeton, l’appareil propose une connexion WebRTC : `POST
   /satellites/{device_id}/offer` avec `Authorization: Bearer <jeton>` et `{"sdp", "type"}` ; le cœur
   répond `{"sdp", "type", "pc_id"}`. Les candidats ICE suivent en `PATCH` sur le même chemin. Un
-  mauvais jeton répond `401` ; le `pc_id` d’un autre appareil, `403`.
+  mauvais jeton reçoit `401` ; le `pc_id` d’un autre appareil, `403`.
 - **W2.** Sur le canal de données `nestor`, chaque message est `{"type", "id", "at", "payload"}`.
   L’appareil DOIT envoyer `hello` (son manifeste, avec l’identifiant appairé) en premier ; le cœur
   répond `welcome` (la pièce appairée et les capacités autorisées). L’appareil DOIT accuser
@@ -278,8 +278,8 @@ dans `hello`.
   observations qui lui sont permises. Les types de message inconnus venant du cœur sont ignorés.
 - **W3.** Audio : Opus sur WebRTC, la voix du cœur vers l’appareil, le micro (avec
   `audio.capture`) vers le cœur.
-- **W4.** Après un raccrochage ou une perte du lien, l’appareil se reconnecte avec le même jeton,
-  avec un délai croissant.
+- **W4.** Après un raccrochage ou une coupure, l’appareil se reconnecte avec le même jeton, en
+  espaçant de plus en plus ses tentatives.
 
 ## 8. Sécurité
 
@@ -296,9 +296,9 @@ dans `hello`.
   une minute glissante. Au-delà de l’une ou l’autre limite, chaque tentative, juste ou fausse, est
   refusée avec `429` jusqu’à ce que la fenêtre libère une place : un client limité n’apprend rien.
 - **Empreintes.** Seuls les SHA-256 des codes et des jetons sont stockés, et journalisés. Un code
-  présenté est comparé à chaque empreinte connue en temps constant. 40 bits se cassent hors ligne à
-  partir d’une empreinte divulguée : l’empreinte ne vaut que tant que le code vit, gardez des durées
-  de vie courtes.
+  présenté est comparé à chaque empreinte connue en temps constant. À partir d’une empreinte divulguée,
+  40 bits se cassent hors ligne : l’empreinte ne protège un code que tant qu’il est valide, d’où des
+  durées de vie courtes.
 - **Transport.** Codes et jetons traversent le réseau en clair sur `http` ; utilisez `https` (une
   URI `nestor+https`) hors d’un réseau domestique de confiance.
 - **Ce que l’identification ne prouve pas.** Elle montre quel appareil répond, pas que c’est celui
@@ -329,7 +329,7 @@ voir [Conformité](/fr/docs/satellites/conformance/).
 | ne présente qu’une fois un code d’enrôlement refusé (faux, expiré, utilisé)                     | P5     |
 | attend Retry-After quand il est limité ; s’appaire une fois la limite levée                     | P6     |
 
-Les règles propres au cœur (C1 à C6, la course de P4, I3, les limites) sont prouvées par ses tests
+Les règles propres au cœur (C1 à C6, la course de P4, I3, les limites) sont vérifiées par ses propres tests
 ([`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
 [`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/voice/satellites/test_gateway.py)).
 

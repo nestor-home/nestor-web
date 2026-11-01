@@ -7,7 +7,7 @@ description: Comment les changements arrivent dans les dépôts Nestor, et comme
 Tous les dépôts de [nestor-home](https://github.com/nestor-home) suivent les mêmes règles, écrites
 une fois dans le
 [CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md) de
-l’organisation. En bref :
+l’organisation :
 
 - `main` est protégée : chaque changement passe par une pull request, fusionnée une fois sa
   vérification `ci` au vert.
@@ -26,7 +26,7 @@ Personne ne pose d’étiquette à la main. Sur chaque dépôt, release-please g
 request avec la prochaine version et son journal des modifications ; la fusionner étiquette la
 version et la publie, dans la même exécution :
 
-| Dépôt                                                                                     | Publié comme                                         |
+| Dépôt                                                                                     | Publié sous                                          |
 | ----------------------------------------------------------------------------------------- | ---------------------------------------------------- |
 | [nestor](https://github.com/nestor-home/nestor)                                           | `nestor-home` sur PyPI, `ghcr.io/nestor-home/nestor` |
 | [nestor-satellite-python](https://github.com/nestor-home/nestor-satellite-python)         | `nestor-satellite` sur PyPI                          |
@@ -41,10 +41,10 @@ tout le reste le correctif.
 
 ## Signaler
 
-Bugs et idées vont dans les issues du dépôt. Pour une vulnérabilité, suivez la
+Bugs et idées se signalent dans les issues du dépôt. Pour une vulnérabilité, suivez la
 [politique de sécurité](https://github.com/nestor-home/.github/blob/main/SECURITY.md).
 
 ## Cette documentation
 
-Elle vit dans [nestor-web](https://github.com/nestor-home/nestor-web), un fichier Markdown par page
+Elle se trouve dans [nestor-web](https://github.com/nestor-home/nestor-web), un fichier Markdown par page
 et par langue sous `src/content/docs/`. Chaque page a un lien pour la modifier.

@@ -109,7 +109,7 @@ French (`.language(…)`, else `LANG`).
 
 ## The command
 
-This machine’s microphone and speaker as a satellite:
+To use this machine’s microphone and speaker as a satellite:
 
 ```bash
 cargo install nestor-satellite --features cli

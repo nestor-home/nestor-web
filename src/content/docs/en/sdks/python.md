@@ -80,7 +80,7 @@ The manifest’s pairing methods follow from what you pass; you never list them 
 
 ## The command
 
-No code at all: this machine’s microphone and speaker as a satellite.
+To use this machine’s microphone and speaker as a satellite without writing code:
 
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satellite run --room salon

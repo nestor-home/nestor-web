@@ -43,12 +43,12 @@ Sur le canal de données `nestor` :
 
 ## Garder une copie dans un SDK
 
-Un SDK garde les schémas dans son dépôt et teste avec eux chaque message qu’il envoie. Pour
+Un SDK garde les schémas dans son dépôt et vérifie avec eux chaque message qu’il envoie. Pour
 rafraîchir la copie, écrivez les schémas d’une version du serveur dans le dossier du SDK :
 
 ```bash
 uvx --from nestor-home==<version> nestor satellites schemas --out schemas/
 ```
 
-`<version>` est la version du serveur que vise le SDK. Adaptez ensuite le code jusqu’à ce que ses tests passent. Le SDK
-Python les garde dans `src/nestor_satellite/schemas/`, les SDK TypeScript et Rust dans `schemas/`.
+`<version>` est la version du serveur que vise le SDK. Adaptez ensuite le code jusqu’à ce que ses tests
+passent. Le SDK Python les garde dans `src/nestor_satellite/schemas/`, les SDK TypeScript et Rust dans `schemas/`.

@@ -110,7 +110,7 @@ sont en anglais ou en français (`.language(…)`, sinon `LANG`).
 
 ## La commande
 
-Le micro et le haut-parleur de cette machine comme satellite :
+Pour faire de cette machine un satellite, avec son micro et son haut-parleur :
 
 ```bash
 cargo install nestor-satellite --features cli
@@ -122,7 +122,7 @@ nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:7860
 Sans code, `nestor-satellite run --core http://nestor.local:7860 --room salon` dit un code
 d’appareil sur le haut-parleur et l’écrit dans le journal. `nestor-satellite devices` liste les
 cartes son, `--language fr` parle français, `--null-audio` tourne sans carte son.
-`nestor-satellite run --help` donne le reste.
+`nestor-satellite run --help` détaille les autres options.
 
 ## Pour aller plus loin
 

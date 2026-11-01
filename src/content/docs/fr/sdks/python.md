@@ -72,20 +72,21 @@ la main.
 - `enrollment=` prend une URI d’appairage ou un code d’enrôlement ; par défaut, il est lu dans
   `NESTOR_PAIRING_URI`, sinon `NESTOR_PAIRING_CODE`. Avec une URI d’appairage, l’adresse du cœur
   peut être `None`.
-- Un code tapé sur l’appareil pendant qu’il attend : `await satellite.enroll("K7QF-2M9X")` rend
+- Un code tapé sur l’appareil pendant qu’il attend : `await satellite.enroll("K7QF-2M9X")` renvoie
   `ACCEPTED`, `REFUSED` (plus jamais envoyé, même après un redémarrage), `NOT_PENDING` (le code
   d’appareil l’a emporté) ou `INVALID`.
 - `locale="fr"` règle la langue dans laquelle il parle aux gens (par défaut, celle de
   l’environnement).
-- Les échecs qu’attendre ne résout pas (un cœur qui parle une autre version du protocole, une
-  requête qu’il rejette) arrêtent `run` avec `PairingFailed`, dit sur toutes les sorties. Un cœur
-  injoignable est réessayé.
+- Les échecs que l’attente ne réglera pas (un cœur qui parle une autre version du protocole, une
+  requête qu’il rejette) arrêtent `run` avec `PairingFailed`, annoncé sur toutes les sorties. Si le
+  cœur est injoignable, il réessaie.
 - `AvCamera("0", format="avfoundation")` lit la première caméra sous macOS,
   `AvCamera("/dev/video0", format="v4l2")` sous Linux (extra `qr`).
 
 ## La commande
 
-Sans écrire une ligne : le micro et le haut-parleur de cette machine comme satellite.
+Sans écrire une ligne de code, la commande fait du micro et du haut-parleur de cette machine un
+satellite :
 
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satellite run --room salon
@@ -99,7 +100,7 @@ Sans code, `nestor-satellite run --core http://nestor.local:7860 --room salon` d
 d’appareil. `--camera 0` lit les QR codes (avec l’extra `qr`), `--lang fr` parle français, `--id`
 fixe l’identifiant de l’appareil (par défaut, le nom de la machine). Le jeton est gardé dans
 `~/.config/nestor-satellite/<id>.json` (mode 600), avec les empreintes des codes refusés ; les
-lancements suivants se reconnectent avec. `nestor-satellite run --help` donne le reste.
+lancements suivants se reconnectent avec. `nestor-satellite run --help` détaille les autres options.
 
 ## Pour aller plus loin
 

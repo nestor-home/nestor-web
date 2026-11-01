@@ -54,7 +54,7 @@ FAIL  acknowledges intent.behavior within 1 s (no ack with this intent's id)
 1 check failed out of 32
 ```
 
-The command speaks the language of `LC_ALL`, `LC_MESSAGES` or `LANG` (English or French).
+The command writes in the language of `LC_ALL`, `LC_MESSAGES` or `LANG` (English or French).
 
 | Exit status | Means                                                                               |
 | ----------- | ----------------------------------------------------------------------------------- |
