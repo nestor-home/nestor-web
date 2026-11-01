@@ -143,7 +143,12 @@ for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
       tab.setAttribute("aria-selected", String(on));
       tab.tabIndex = on ? 0 : -1;
       const panel = document.getElementById(tab.getAttribute("aria-controls") ?? "");
-      if (panel) panel.hidden = !on;
+      if (!panel) return;
+      const shown = panel.hidden && on;
+      panel.hidden = !on;
+      // a character in the panel plays its sequence each time the panel is shown
+      if (shown)
+        for (const c of panel.querySelectorAll("svg.nestor[data-script]")) c.dispatchEvent(new CustomEvent("inview"));
     });
     if (focus) tabs[index]?.focus();
   };
@@ -163,14 +168,32 @@ for (const story of document.querySelectorAll<HTMLElement>("[data-story]")) {
   const stage = story.querySelector<HTMLElement>("[data-stage]");
   const counter = story.querySelector<HTMLElement>("[data-stage-step]");
   const steps = [...story.querySelectorAll<HTMLElement>("li[data-step]")];
+  const character = stage?.querySelector<SVGElement>("svg.nestor");
+  /* the character on the stage takes the state of the step; asleep with Léa at night */
+  const pose = () => {
+    if (!character || !stage) return;
+    const step = steps.find((s) => s.dataset.step === stage.dataset.step);
+    const asleep = stage.dataset.step === "3" && story.dataset.where === "night";
+    character.dataset.state = asleep ? "sleeping" : (step?.dataset.state ?? "idle");
+  };
   const show = (n: number) => {
     if (!stage || stage.dataset.step === String(n)) return;
     stage.dataset.step = String(n);
     stage.style.setProperty("--step", String(n));
     for (const step of steps) step.toggleAttribute("data-current", step.dataset.step === String(n));
     if (counter) counter.textContent = counter.dataset.template?.replace("{n}", String(n)) ?? "";
+    pose();
   };
   show(1);
+  /* where the person is (a group of toggle buttons): the stage and the decision follow */
+  const places = [...story.querySelectorAll<HTMLButtonElement>("[data-where-set]")];
+  for (const button of places) {
+    button.addEventListener("click", () => {
+      story.dataset.where = button.dataset.whereSet ?? "";
+      for (const other of places) other.setAttribute("aria-pressed", String(other === button));
+      pose();
+    });
+  }
   const watcher = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) if (entry.isIntersecting) show(Number((entry.target as HTMLElement).dataset.step));
@@ -239,13 +262,15 @@ for (const character of document.querySelectorAll<SVGElement>("svg.nestor[data-s
     .split(",")
     .map((part) => part.split("@"))
     .map(([state, at]) => ({ state: state ?? "idle", at: Number(at ?? 0) }));
+  let timers: number[] = [];
   character.addEventListener("inview", () => {
     if (reduced.matches) {
       const last = steps.at(-1);
       if (last) character.dataset.state = last.state;
       return;
     }
-    for (const step of steps) setTimeout(() => (character.dataset.state = step.state), step.at);
+    for (const timer of timers) clearTimeout(timer);
+    timers = steps.map((step) => window.setTimeout(() => (character.dataset.state = step.state), step.at));
   });
 }
 

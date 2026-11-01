@@ -24,4 +24,7 @@ export const QUICKSTART = [
   { id: "qs-4", command: "docker compose up -d" },
 ] as const;
 
+/** The shortest install, with pip (the documentation's first page). */
+export const INSTALL = ["pip install 'nestor-home[voice]'", "nestor init", "nestor run"] as const;
+
 export const ADMIN_URL = "http://localhost:8080";

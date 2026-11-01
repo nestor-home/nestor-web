@@ -1,6 +1,6 @@
 ---
 /** A third-party mark in the current ink; named for screen readers unless the text beside it already is. */
-import { BRANDS, type BrandKey } from "@/lib/brands";
+import { BRANDS, type Brand, type BrandKey } from "@/lib/brands";
 
 interface Props {
   brand: BrandKey;
@@ -8,12 +8,27 @@ interface Props {
   decorative?: boolean;
 }
 const { brand, class: className = "size-4", decorative = false } = Astro.props;
-const { name, path } = BRANDS[brand];
+const { name, path, glyph: Glyph } = BRANDS[brand] as Brand;
 ---
 
-<svg
-  viewBox="0 0 24 24"
-  class:list={["shrink-0 fill-current", className]}
-  role={decorative ? undefined : "img"}
-  aria-label={decorative ? undefined : name}
-  aria-hidden={decorative ? "true" : undefined}><path d={path}></path></svg>
+{
+  Glyph ? (
+    <Glyph
+      className={`shrink-0 ${className}`}
+      strokeWidth={1.6}
+      role={decorative ? undefined : "img"}
+      aria-label={decorative ? undefined : name}
+      aria-hidden={decorative ? "true" : undefined}
+    />
+  ) : (
+    <svg
+      viewBox="0 0 24 24"
+      class:list={["shrink-0 fill-current", className]}
+      role={decorative ? undefined : "img"}
+      aria-label={decorative ? undefined : name}
+      aria-hidden={decorative ? "true" : undefined}
+    >
+      <path d={path} />
+    </svg>
+  )
+}

@@ -1,10 +1,10 @@
 ---
+import Abilities from "@/components/sections/Abilities.astro";
 import Bodies from "@/components/sections/Bodies.astro";
 import Cta from "@/components/sections/Cta.astro";
-import Day from "@/components/sections/Day.astro";
 import Hero from "@/components/sections/Hero.astro";
-import Principles from "@/components/sections/Principles.astro";
-import Why from "@/components/sections/Why.astro";
+import Loop from "@/components/sections/Loop.astro";
+import Trust from "@/components/sections/Trust.astro";
 import TieRule from "@/components/TieRule.astro";
 import { href, type Locale, pageMeta, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
@@ -14,18 +14,19 @@ interface Props {
 }
 const t = translator(Astro.props.locale);
 const nav = [
-  { href: "#day", label: t("nav-day"), section: "day" },
-  { href: "#principles", label: t("nav-principles"), section: "principles" },
+  { href: "#story", label: t("nav-story"), section: "story" },
+  { href: "#abilities", label: t("nav-abilities"), section: "abilities" },
+  { href: "#trust", label: t("nav-trust"), section: "trust" },
   { href: href(t.locale, "developers"), label: t("nav-developers") },
 ];
 ---
 
 <Base locale={t.locale} {...pageMeta(t, "home")} nav={nav}>
   <Hero t={t} />
-  <Day t={t} />
+  <Loop t={t} />
   <TieRule />
-  <Why t={t} />
-  <Principles t={t} />
   <Bodies t={t} />
+  <Abilities t={t} />
+  <Trust t={t} />
   <Cta t={t} />
 </Base>

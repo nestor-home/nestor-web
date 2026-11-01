@@ -1,0 +1,15 @@
+tr-title = Il est à vous, et il montre ce qu’il fait.
+tr-lede = Tout ce qu’il entend, fait et dit de lui-même est écrit dans un journal que vous pouvez lire.
+tr-clip = Le journal, dans l’admin de Nestor.
+tr-1 = Sur votre propre machine
+tr-1-text = Le journal, les souvenirs et les réglages tiennent dans un fichier, chez vous. Open source, sous licence MIT.
+tr-2 = Discret quand il faut
+tr-2-text = Des heures calmes, « pas maintenant », et jamais au milieu d’une conversation.
+tr-3 = Des comptes au coffre
+tr-3-text = Mots de passe et jetons sont chiffrés. Ni le modèle, ni le journal, ni les logs ne les voient.
+tr-4 = Il demande avant d’agir
+tr-4-text = Envoyer un mail, ou tout ce qui écrit, demande d’abord. Un mail qu’il lit est une information, jamais un ordre.
+tr-5 = Chacun à sa place
+tr-5-text = Rôles et permissions par personne, par canal et par outil. Un nouvel appareil attend votre accord.
+tr-6 = La reconnaissance, si vous voulez
+tr-6-text = Des profils de voix ou de visage seulement pour qui accepte. Être reconnu ne débloque jamais rien à lui seul.

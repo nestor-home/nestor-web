@@ -1,10 +1,10 @@
 hero-line-1 = L’agent
 hero-line-2 = qui habite
 hero-line-3 = la maison.
-hero-lede = Un assistant pour tout le foyer. Il sait qui est là, se souvient de chacun, se charge des tâches longues, et prend la parole au bon moment, où que vous soyez.
-hero-day = Voir une journée avec Nestor
+hero-lede = Un assistant pour tout le foyer. Vous lui demandez une fois, à voix haute ou par message : il surveille, trouve la bonne personne au bon endroit, et peut toujours dire pourquoi il a parlé.
+hero-story = Voir comment il fait
 hero-install = L’installer
-hero-note = Open source · tourne sur votre propre machine
+hero-note = Open source, sur votre propre machine.
 hero-ask-who = Léa
-hero-ask = Préviens-moi quand mon colis arrive.
-hero-say = Je surveille ta boîte et je te dis.
+hero-ask = Dis-moi dès que l’école répond.
+hero-say = Je surveille tes mails et je te trouve, où que tu sois.

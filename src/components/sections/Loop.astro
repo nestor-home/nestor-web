@@ -1,0 +1,757 @@
+---
+/**
+ * The home page's one story: a request followed from the first word to the answer, the core loop
+ * of Nestor (ask once → it watches → it finds the right person in the right place → you can see
+ * why). The steps scroll; the stage beside them follows the step in the middle of the screen
+ * through one custom property, `--step`, so every change is an opacity or transform transition.
+ * Step 3 lets the reader move Léa (office, out, asleep) and shows the delivery decision change.
+ * Without JavaScript the stage shows the last step and the decision for the office.
+ */
+import { Mail, Moon } from "lucide-react";
+import Brand from "@/components/Brand.astro";
+import Nestor from "@/components/Nestor.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+const TOTAL = 5;
+/** each step: the character's state on the stage (and the docked one's mood) */
+const steps = [
+  { n: 1, state: "listening" },
+  { n: 2, state: "working" },
+  { n: 3, state: "speaking" },
+  { n: 4, state: "speaking" },
+  { n: 5, state: "idle" },
+];
+const WHERE = ["office", "out", "night"] as const;
+
+/** what comes in while it watches: how far each one goes through the triage */
+const incoming = [
+  { id: "loop-in-1", reach: 1, out: "loop-stop" },
+  { id: "loop-in-2", reach: 2, out: "loop-stop" },
+  { id: "loop-in-3", reach: 3, out: "loop-pass" },
+];
+const gates = ["loop-rules", "loop-model", "loop-agent"];
+
+const journal = [
+  { from: 1, at: "08:02", text: "loop-j-1" },
+  { from: 1, at: "08:02", text: "loop-j-2" },
+  { from: 2, at: "16:41", text: "loop-j-3" },
+  { from: 2, at: "16:41", text: "loop-j-4" },
+  { from: 3, at: "16:41", text: "loop-j-5", where: true },
+  { from: 4, at: "16:52", text: "loop-j-6" },
+];
+
+const rooms = [
+  { id: "kitchen", x: 0, y: 0, w: 170, h: 130 },
+  { id: "living", x: 170, y: 0, w: 190, h: 170 },
+  { id: "office", x: 360, y: 0, w: 120, h: 170 },
+  { id: "bedroom", x: 0, y: 130, w: 170, h: 150 },
+  { id: "hall", x: 170, y: 170, w: 310, h: 110 },
+];
+const speakers = [
+  { room: "kitchen", x: 22, y: 108 },
+  { room: "office", x: 458, y: 148 },
+  { room: "bedroom", x: 22, y: 258 },
+];
+---
+
+<section id="story" class="section loop" aria-labelledby="loop-title" data-story data-where="office">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="loop-title" data-reveal class="display-2 text-ink">{t("loop-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("loop-lede")}</p>
+    </div>
+
+    <div class="loop-grid mt-14 lg:mt-20">
+      <!-- the stage: a picture of what the steps say -->
+      <div class="stage-wrap" aria-hidden="true">
+        <div class="stage" data-stage data-step={TOTAL} style={`--step:${TOTAL}`}>
+          <div class="stage-head flex items-center justify-between gap-4 border-b border-rule py-2 pr-2 pl-4">
+            <span class="hidden font-mono text-[0.7rem] text-ink-muted sm:inline">{t("loop-stage-label")}</span>
+            <span class="flex items-center gap-3">
+              <span
+                class="font-mono text-[0.7rem] text-ink-muted tabular"
+                data-stage-step
+                data-template={t("loop-step", { n: "{n}", total: TOTAL })}>{t("loop-step", { n: TOTAL, total: TOTAL })}</span
+              >
+              <Nestor size={52} state="idle" class="stage-nestor -my-2" />
+            </span>
+          </div>
+
+          <div class="scenes relative">
+            <!-- 1. the request, and the watch it becomes -->
+            <div class="scene grid items-center gap-4 sm:grid-cols-2" style="--from:1;--until:1">
+              <div class="flex flex-col gap-2.5">
+                <p class="font-mono text-[0.68rem] text-ink-muted">{t("loop-room-kitchen")}</p>
+                <p class="bubble-ask pop self-end" style="--d:0">
+                  <span class="bubble-who">{t("loop-lea")}</span>
+                  {t("loop-1-ask")}
+                </p>
+                <p class="bubble-say pop self-start" style="--d:1">{t("loop-1-say")}</p>
+              </div>
+              <dl class="card watch pop font-mono text-[0.72rem]" style="--d:2">
+                <div class="flex items-center justify-between border-b border-rule px-3 py-2">
+                  <dt class="text-kind-watch">{t("loop-watch")}</dt>
+                  <dd class="state" data-state="shipped">{t("loop-watch-state")}</dd>
+                </div>
+                {
+                  ["owner", "source", "keywords", "end"].map((k) => (
+                    <div class="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-2 px-3 py-1.5">
+                      <dt class="text-ink-muted">{t(`loop-watch-${k}`)}</dt>
+                      <dd class="text-ink">{t(`loop-watch-${k}-value`)}</dd>
+                    </div>
+                  ))
+                }
+              </dl>
+            </div>
+
+            <!-- 2. what comes in, sorted from cheap to costly -->
+            <div class="scene" style="--from:2;--until:2">
+              <div class="triage card">
+                <div class="triage-row triage-head font-mono text-[0.66rem] text-ink-muted">
+                  <span></span>
+                  {gates.map((g) => <span class="text-center">{t(g)}</span>)}
+                  <span></span>
+                </div>
+                {
+                  incoming.map((m, row) => (
+                    <div class="triage-row" data-pass={m.reach === 3 ? "" : undefined}>
+                      <span class="flex min-w-0 items-center gap-2 text-[0.82rem] text-ink">
+                        <Mail className="size-3.5 shrink-0 text-ink-muted" strokeWidth={1.6} aria-hidden="true" />
+                        <span class="truncate">{t(m.id)}</span>
+                      </span>
+                      {gates.map((_, gate) => (
+                        <span class="gate">
+                          <span
+                            class:list={["gate-dot", gate < m.reach ? "gate-on" : "gate-off"]}
+                            style={`--d:${row * 3 + gate}`}
+                          />
+                        </span>
+                      ))}
+                      <span class="gate-out font-mono text-[0.66rem]" style={`--d:${row * 3 + 3}`}>
+                        {t(m.out)}
+                      </span>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+
+            <!-- 3. the house: where Léa is decides how it reaches her -->
+            <div class="scene" style="--from:3;--until:3">
+              <svg viewBox="-4 -4 612 292" class="house block h-auto w-full" role="presentation">
+                <defs>
+                  <pattern id="loop-occupied" width="4" height="4" patternUnits="userSpaceOnUse">
+                    <rect width="1.5" height="1.5" fill="currentColor"></rect>
+                  </pattern>
+                </defs>
+                {
+                  rooms.map((r) => (
+                    <g class={`room room-${r.id}`}>
+                      <rect class="room-fill" x={r.x} y={r.y} width={r.w} height={r.h} fill="url(#loop-occupied)" />
+                      <rect class="room-wall" x={r.x} y={r.y} width={r.w} height={r.h} />
+                      <text x={r.x + 10} y={r.y + 18} class="room-label">
+                        {t(`loop-room-${r.id}`)}
+                      </text>
+                    </g>
+                  ))
+                }
+                <line x1="380" y1="280" x2="420" y2="280" class="door"></line>
+                {
+                  speakers.map((s) => (
+                    <g class={`sat sat-${s.room}`} transform={`translate(${s.x} ${s.y})`}>
+                      <circle r="18" class="wave wave-1" />
+                      <circle r="18" class="wave wave-2" />
+                      <rect x="-6" y="-6" width="12" height="12" rx="2" class="sat-body" />
+                    </g>
+                  ))
+                }
+                <!-- outside: her phone -->
+                <g class="away" transform="translate(508 96)">
+                  <rect x="0" y="0" width="92" height="132" rx="10" class="away-phone"></rect>
+                  <text x="12" y="22" class="away-label">{t("loop-away")}</text>
+                  <rect x="10" y="40" width="72" height="22" rx="4" class="away-msg"></rect>
+                  <rect x="10" y="70" width="52" height="12" rx="3" class="away-line"></rect>
+                </g>
+                <!-- night -->
+                <g class="night" transform="translate(132 156)">
+                  <circle r="9" class="moon"></circle>
+                  <circle r="9" cx="5" cy="-3" class="moon-cut"></circle>
+                </g>
+                <g class="lea">
+                  <circle r="8" class="lea-dot"></circle>
+                  <text x="13" y="4" class="lea-label">{t("loop-lea")}</text>
+                </g>
+              </svg>
+              <div class="mt-3 grid gap-2 font-mono text-[0.7rem]">
+                {
+                  WHERE.map((w) => (
+                    <p class="decision flex flex-wrap gap-x-3 gap-y-1" data-show={w}>
+                      <span class="text-ink">{t(`loop-decide-${w}`)}</span>
+                      <span class="text-ink-muted">
+                        {t("loop-why")} <span class="text-ember">{t(`loop-why-${w}`)}</span>
+                      </span>
+                    </p>
+                  ))
+                }
+                <p class="decision" data-show="office">
+                  <q class="font-serif text-[1.05rem] text-ink">{t("loop-say")}</q>
+                </p>
+              </div>
+            </div>
+
+            <!-- 4. the written follow-up, and her answer -->
+            <div class="scene" style="--from:4;--until:4">
+              <div class="phone mx-auto">
+                <div class="flex items-center gap-2 border-b border-rule px-3 py-2 font-mono text-[0.68rem] text-ink-muted">
+                  <Brand brand="telegram" class="size-3.5" decorative />
+                  {t("loop-phone")}
+                </div>
+                <div class="flex flex-col gap-2 p-3">
+                  <p class="msg msg-in pop" style="--d:0">{t("loop-4-in")}</p>
+                  <p class="msg msg-out pop" style="--d:2">{t("loop-4-out")}</p>
+                  <p class="msg msg-in pop" style="--d:4">{t("loop-4-done")}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. why: the journal entry of the decision, open -->
+            <div class="scene" style="--from:5;--until:5">
+              <div class="card why corner-marks mx-auto">
+                <p class="flex items-center justify-between border-b border-rule px-4 py-2 font-mono text-[0.68rem] text-ink-muted">
+                  <span>{t("loop-journal")}</span>
+                  <span class="tabular">16:41</span>
+                </p>
+                <div class="px-4 py-4">
+                  {
+                    WHERE.map((w) => (
+                      <div class="decision" data-show={w}>
+                        <p class="font-serif text-[1.25rem] leading-snug text-ink">{t(`loop-j-5-${w}`)}</p>
+                        <p class="mt-2 font-mono text-[0.72rem] text-ink-muted">
+                          {t("loop-why")} <span class="text-ember">{t(`loop-why-${w}`)}</span>
+                        </p>
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- the journal, filling up (wide screens) -->
+          <div class="journal border-t border-rule">
+            <p class="label-mono px-4 pt-3 pb-1">{t("loop-journal")}</p>
+            <ol class="px-2 pb-3">
+              {
+                journal.map((line) => (
+                  <li class="jline" style={`--from:${line.from}`}>
+                    <time class="text-ink-muted tabular">{line.at}</time>
+                    {line.where ? (
+                      WHERE.map((w) => (
+                        <span class="decision min-w-0 truncate text-ink" data-show={w}>
+                          {t(`loop-j-5-${w}`)}
+                          <span class="text-ember"> · {t(`loop-why-${w}`)}</span>
+                        </span>
+                      ))
+                    ) : (
+                      <span class="min-w-0 truncate text-ink">{t(line.text)}</span>
+                    )}
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- the steps -->
+      <ol class="steps">
+        {
+          steps.map((s) => (
+            <li class="step" data-step={s.n} data-state={s.state} data-mood={s.state}>
+              <div class="step-inner">
+                <p class="flex items-center gap-3 font-mono text-[0.75rem] text-ink-muted tabular">
+                  <span class="step-dot" aria-hidden="true" />
+                  {s.n}
+                </p>
+                <h3 class="display-3 mt-3">{t(`loop-${s.n}-title`)}</h3>
+                <p class="prose-copy mt-3" set:html={t.html(`loop-${s.n}-text`)} />
+                {s.n === 3 && (
+                  <div class="where mt-6">
+                    <p id="loop-where" class="label-mono">
+                      {t("loop-where")}
+                    </p>
+                    <div class="mt-2 flex flex-wrap gap-2" role="group" aria-labelledby="loop-where">
+                      {WHERE.map((w, i) => (
+                        <button type="button" class="where-btn" data-where-set={w} aria-pressed={i === 0 ? "true" : "false"}>
+                          {w === "night" && <Moon className="size-3.5" strokeWidth={1.6} aria-hidden="true" />}
+                          {t(`loop-where-${w}`)}
+                        </button>
+                      ))}
+                    </div>
+                    <p class="mt-4 text-[0.95rem] text-ink" aria-live="polite">
+                      {WHERE.map((w) => (
+                        <span class="decision" data-show={w}>
+                          {t(`loop-decide-${w}`)}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .loop-grid {
+    display: grid;
+  }
+
+  /* -- the stage --------------------------------------------------------------------------- */
+  .stage-wrap {
+    position: sticky;
+    top: 3.5rem;
+    z-index: 2;
+    padding-block: 0.75rem;
+    background: var(--paper);
+  }
+  .scene,
+  .jline {
+    --visible: clamp(0, min(var(--step) - var(--from) + 1, var(--until, 99) - var(--step) + 1), 1);
+  }
+  .stage {
+    border: 1px solid var(--rule);
+    background: var(--paper-raised);
+  }
+  .scenes {
+    display: grid;
+    min-height: 20rem;
+    padding: 1.25rem;
+  }
+  .scene {
+    grid-area: 1 / 1;
+    align-self: center;
+    min-width: 0;
+    opacity: var(--visible);
+    transform: translateY(calc((1 - var(--visible)) * 12px));
+    transition:
+      opacity 420ms var(--ease-out),
+      transform 520ms var(--ease-out);
+  }
+  .pop {
+    opacity: var(--visible);
+    transform: translateY(calc((1 - var(--visible)) * 8px));
+    transition:
+      opacity 450ms var(--ease-out),
+      transform 450ms var(--ease-out);
+    transition-delay: calc(var(--d) * 220ms + 120ms);
+  }
+  .card {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .watch {
+    width: 100%;
+  }
+
+  /* triage: three mails, three gates, most stop early */
+  .triage {
+    width: 100%;
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+  .triage-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) repeat(3, 4.2rem) 4.6rem;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 0.85rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .triage-row:last-child {
+    border-bottom: 0;
+  }
+  .triage-head {
+    padding-block: 0.45rem;
+    white-space: nowrap;
+  }
+  .gate {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 1rem;
+  }
+  .gate::before {
+    content: "";
+    position: absolute;
+    inset: 50% -0.25rem auto;
+    height: 1px;
+    background: var(--rule);
+  }
+  .gate-dot {
+    position: relative;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--rule-strong);
+    background: var(--paper);
+  }
+  .gate-on {
+    --lit: clamp(0, var(--step) - 1, 1);
+    background: color-mix(in oklab, var(--ink-muted) calc(var(--lit) * 100%), var(--paper));
+    border-color: color-mix(in oklab, var(--ink-muted) calc(var(--lit) * 100%), var(--rule-strong));
+    transform: scale(calc(0.7 + var(--lit) * 0.3));
+    transition:
+      background-color 300ms var(--ease-out),
+      border-color 300ms var(--ease-out),
+      transform 300ms var(--ease-out);
+    transition-delay: calc(var(--d) * 140ms + 200ms);
+  }
+  [data-pass] .gate-on {
+    background: color-mix(in oklab, var(--ember) calc(var(--lit) * 100%), var(--paper));
+    border-color: color-mix(in oklab, var(--ember) calc(var(--lit) * 100%), var(--rule-strong));
+  }
+  .gate-off {
+    opacity: 0.35;
+  }
+  .gate-out {
+    color: var(--ink-muted);
+    opacity: clamp(0, var(--step) - 1, 1);
+    transition: opacity 300ms var(--ease-out);
+    transition-delay: calc(var(--d) * 140ms + 200ms);
+  }
+  [data-pass] .gate-out {
+    color: var(--ember);
+  }
+
+  /* the house */
+  .house {
+    max-width: 36rem;
+    margin-inline: auto;
+  }
+  .room-wall {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+  .room-fill {
+    color: var(--ember);
+    opacity: 0;
+    transition: opacity 500ms var(--ease-out);
+  }
+  .room-label {
+    font-family: var(--font-data);
+    font-size: 11px;
+    fill: var(--ink-muted);
+  }
+  .door {
+    stroke: var(--paper-raised);
+    stroke-width: 3;
+  }
+  .sat-body {
+    fill: var(--ink);
+  }
+  .wave {
+    fill: none;
+    stroke: var(--ember);
+    stroke-width: 1.2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .lea {
+    transform: translate(420px, 96px);
+    transition: transform 1000ms var(--ease-out);
+  }
+  .lea-dot {
+    fill: var(--ember);
+  }
+  .lea-label {
+    font-family: var(--font-data);
+    font-size: 11px;
+    fill: var(--ink);
+  }
+  .away {
+    opacity: 0.35;
+    transition: opacity 500ms var(--ease-out);
+  }
+  .away-phone {
+    fill: var(--paper);
+    stroke: var(--rule-strong);
+  }
+  .away-label {
+    font-family: var(--font-data);
+    font-size: 10px;
+    fill: var(--ink-muted);
+  }
+  .away-msg {
+    fill: var(--ember-soft);
+    opacity: 0;
+    transition: opacity 400ms var(--ease-out) 600ms;
+  }
+  .away-line {
+    fill: var(--rule);
+  }
+  .night {
+    opacity: 0;
+    transition: opacity 500ms var(--ease-out) 400ms;
+  }
+  .moon {
+    fill: var(--ink-muted);
+  }
+  .moon-cut {
+    fill: var(--paper-raised);
+  }
+
+  /* where Léa is: set on the section by the buttons of step 3 */
+  [data-where="office"] .room-office .room-fill,
+  [data-where="night"] .room-bedroom .room-fill {
+    opacity: 0.3;
+  }
+  [data-where="office"] [data-step="3"] .sat-office .wave-1 {
+    animation: wave 1.6s var(--ease-out) infinite;
+  }
+  [data-where="office"] [data-step="3"] .sat-office .wave-2 {
+    animation: wave 1.6s var(--ease-out) 0.8s infinite;
+  }
+  [data-where="out"] .lea {
+    transform: translate(536px, 196px);
+  }
+  [data-where="out"] .away {
+    opacity: 1;
+  }
+  [data-where="out"] .away-msg {
+    opacity: 1;
+  }
+  [data-where="night"] .lea {
+    transform: translate(84px, 214px);
+  }
+  [data-where="night"] .night {
+    opacity: 1;
+  }
+  @keyframes wave {
+    from {
+      opacity: 0.9;
+      transform: scale(0.4);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.2);
+    }
+  }
+  .decision {
+    display: none;
+  }
+  [data-where="office"] .decision[data-show="office"],
+  [data-where="out"] .decision[data-show="out"],
+  [data-where="night"] .decision[data-show="night"] {
+    display: revert;
+  }
+  [data-where="office"] p.decision[data-show="office"],
+  [data-where="out"] p.decision[data-show="out"],
+  [data-where="night"] p.decision[data-show="night"] {
+    display: flex;
+  }
+  .step .decision {
+    animation: fade 400ms var(--ease-out);
+  }
+
+  /* the phone */
+  .phone {
+    width: min(100%, 22rem);
+    border: 1px solid var(--rule-strong);
+    border-radius: 14px;
+    background: var(--paper);
+    overflow: hidden;
+  }
+  .msg {
+    max-width: 85%;
+    padding: 0.5rem 0.7rem;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    line-height: 1.4;
+  }
+  .msg-out {
+    align-self: flex-end;
+    background: var(--ink);
+    color: var(--paper);
+    border-bottom-right-radius: 3px;
+  }
+  .msg-in {
+    align-self: flex-start;
+    background: var(--paper-sunken);
+    color: var(--ink);
+    border-bottom-left-radius: 3px;
+  }
+  .why {
+    width: min(100%, 26rem);
+  }
+
+  /* the journal */
+  .journal {
+    display: none;
+  }
+  .jline {
+    display: grid;
+    grid-template-columns: 3.2rem minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: baseline;
+    padding: 0.28rem 0.5rem;
+    font-family: var(--font-data);
+    font-size: 0.7rem;
+    border-radius: 2px;
+    --shown: clamp(0, var(--step) - var(--from) + 1, 1);
+    --fresh: clamp(0, 1 - (var(--step) - var(--from)), 1);
+    opacity: var(--shown);
+    transform: translateX(calc((1 - var(--shown)) * -6px));
+    transition:
+      opacity 400ms var(--ease-out),
+      transform 400ms var(--ease-out),
+      background-color 900ms var(--ease-out);
+    background: color-mix(in oklab, var(--ember-soft) calc(var(--fresh) * 100%), transparent);
+  }
+
+  /* -- the steps ------------------------------------------------------------------------------ */
+  .step {
+    display: flex;
+    align-items: center;
+    min-height: 78vh;
+  }
+  .step-inner {
+    max-width: 30rem;
+    padding: 1.25rem 0;
+  }
+  .step h3 {
+    color: var(--ink-muted);
+    transition: color 400ms var(--ease-out);
+  }
+  .step[data-current] h3,
+  :global(.no-js) .step h3 {
+    color: var(--ink);
+  }
+  .step-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1px solid var(--ink-faint);
+    transition:
+      background-color 300ms var(--ease-out),
+      border-color 300ms var(--ease-out);
+  }
+  .step[data-current] .step-dot {
+    background: var(--ember);
+    border-color: var(--ember);
+  }
+  .where-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    transition:
+      background-color var(--duration) var(--ease),
+      color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      transform var(--duration) var(--ease);
+  }
+  .where-btn:hover {
+    color: var(--ink);
+    border-color: var(--ink-muted);
+  }
+  .where-btn:active {
+    transform: scale(0.97);
+  }
+  .where-btn[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+  :global(.no-js) .where {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .stage-wrap {
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      border-bottom: 1px solid var(--rule);
+    }
+    .scenes {
+      min-height: 0;
+      height: min(50vh, 24rem);
+      padding: 0.75rem;
+      overflow: hidden;
+    }
+    .scene {
+      max-height: 100%;
+    }
+    .scene .bubble-ask,
+    .scene .bubble-say {
+      font-size: 0.8rem;
+    }
+    .triage-row {
+      grid-template-columns: minmax(0, 1fr) repeat(3, 1.4rem) 4rem;
+      gap: 0.35rem;
+      padding: 0.55rem 0.6rem;
+    }
+    .triage-head span {
+      font-size: 0;
+    }
+    .step {
+      min-height: 72vh;
+    }
+  }
+  @media (max-width: 639px) {
+    .scene .watch {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .loop-grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 4rem;
+    }
+    .steps {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .stage-wrap {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: start;
+      top: 5rem;
+      padding-block: 0;
+      background: transparent;
+    }
+    .journal {
+      display: block;
+    }
+    .step {
+      min-height: 86vh;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-where="office"] [data-step="3"] .sat-office .wave-1 {
+      animation: none;
+      opacity: 0.8;
+      transform: scale(1.2);
+    }
+    [data-where="office"] [data-step="3"] .sat-office .wave-2 {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+/** Control and trust, from the use side: the journal (the real admin, recorded) and six promises. */
+import Clip from "@/components/Clip.astro";
+import Dither from "@/components/Dither.astro";
+import Shot from "@/components/Shot.astro";
+import type { Translator } from "@/i18n";
+import { clip } from "@/lib/media";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const hasLive = clip("journal-live", t.locale).length > 0;
+const items = [1, 2, 3, 4, 5, 6];
+---
+
+<section id="trust" class="section border-t border-rule" aria-labelledby="tr-title" data-mood="thinking">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="tr-title" data-reveal class="display-2 text-ink">{t("tr-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("tr-lede")}</p>
+    </div>
+    <figure data-reveal class="relative mt-12">
+      <Dither shape="horizon" from={0} to={0.5} dot={3} class="absolute inset-x-[-4%] -bottom-10 h-2/3 text-ink/[0.12]" />
+      <div class="plate corner-marks relative">
+        <div class="plate-inner">
+          {
+            hasLive ? (
+              <Clip name="journal-live" t={t} label={t("tr-clip")} />
+            ) : (
+              <Shot name="journal" locale={t.locale} alt={t("tr-clip")} />
+            )
+          }
+        </div>
+      </div>
+      <figcaption class="relative mt-3 font-mono text-[0.72rem] text-ink-muted">{t("tr-clip")}</figcaption>
+    </figure>
+    <dl class="mt-16 grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
+      {
+        items.map((n, i) => (
+          <div data-reveal style={`--i:${i % 3}`} class="border-t border-rule py-6">
+            <dt class="font-serif text-[1.2rem] leading-snug text-ink">{t(`tr-${n}`)}</dt>
+            <dd class="mt-2 text-[0.92rem] leading-relaxed text-ink-muted">{t(`tr-${n}-text`)}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>

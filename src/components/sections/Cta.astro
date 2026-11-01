@@ -1,11 +1,12 @@
 ---
 import { ArrowRight } from "lucide-react";
 import Brand from "@/components/Brand.astro";
+import CopyCommand from "@/components/CopyCommand.astro";
 import Dither from "@/components/Dither.astro";
 import Nestor from "@/components/Nestor.astro";
 import Tie from "@/components/Tie.astro";
 import { href, type Translator } from "@/i18n";
-import { REPOS } from "@/lib/site";
+import { INSTALL, REPOS } from "@/lib/site";
 
 interface Props {
   t: Translator;
@@ -15,8 +16,8 @@ const { t } = Astro.props;
 
 <section id="start" class="section relative overflow-hidden border-t border-rule" aria-labelledby="cta-title" data-mood="idle" data-say={t("char-ready")}>
   <Dither shape="ramp-up" from={0} to={0.4} dot={3} class="absolute inset-x-0 bottom-0 h-40 text-ink/15" />
-  <div class="wrap relative grid items-center gap-12 md:grid-cols-12">
-    <div class="md:col-span-8">
+  <div class="wrap relative grid items-center gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-6">
       <h2 id="cta-title" data-reveal class="display-1 text-ink">{t("cta-title")}</h2>
       <p data-reveal class="lede mt-8">{t("cta-text")}</p>
       <div data-reveal class="mt-8 flex flex-wrap gap-3">
@@ -35,8 +36,21 @@ const { t } = Astro.props;
         {t("cta-early")}
       </p>
     </div>
-    <div class="flex justify-center md:col-span-4">
-      <Nestor size={200} state="idle" look="left" script="idle@0,laughing@600,idle@1700" />
+    <div class="relative lg:col-span-6">
+      <div data-reveal class="corner-marks border border-rule-strong bg-paper-raised">
+        <p class="border-b border-rule px-4 py-2.5 font-mono text-[0.7rem] text-ink-muted">{t("cta-terminal")}</p>
+        <div class="flex flex-col gap-2 p-4">
+          {INSTALL.map((command) => <CopyCommand t={t} command={command} />)}
+        </div>
+      </div>
+      <Nestor size={120} state="idle" look="up" script="idle@0,laughing@600,idle@1700" class="cta-nestor" />
     </div>
   </div>
 </section>
+
+<style>
+  .cta-nestor {
+    display: block;
+    margin: 1.5rem auto 0;
+  }
+</style>
