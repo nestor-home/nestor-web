@@ -80,7 +80,7 @@ export const BRANDS = {
   spotify: mark("Spotify", siSpotify),
   todoist: mark("Todoist", siTodoist),
   notion: mark("Notion", siNotion),
-  mcp: mark("Model Context Protocol", siModelcontextprotocol),
+  mcp: mark("MCP", siModelcontextprotocol),
   linear: mark("Linear", siLinear),
   github: mark("GitHub", siGithub),
   hermes: glyph("Hermes", Feather),

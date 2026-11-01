@@ -71,10 +71,16 @@ const items = [1, 2, 3, 4, 5, 6];
     display: block;
     font-family: var(--font-display);
     font-variation-settings: var(--display-variation);
-    font-size: clamp(1.35rem, 2.1vw, 1.6rem);
-    line-height: 1.2;
+    font-size: 1.25rem; /* text-xl → md:text-2xl */
+    line-height: 1.75rem;
     color: var(--ink);
     quotes: "“" "”";
+  }
+  @media (min-width: 1024px) {
+    .ability-ask {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
   }
   :global(:lang(fr)) .ability-ask {
     quotes: "«\202F" "\202F»";

@@ -33,6 +33,56 @@ function onPointer(handler: (x: number, y: number) => void) {
   );
 }
 
+/**
+ * Circling the pointer (or a finger) around the character: the signed angle swept around its
+ * centre is summed over the last few seconds; three full turns call `dizzy`. Stopping, leaving
+ * its surroundings or a pause resets the count. Nothing runs while the pointer is elsewhere.
+ */
+function onCircling(target: Element, dizzy: () => void) {
+  const TURNS = 3;
+  const WINDOW = 4000;
+  let sweeps: { at: number; angle: number }[] = [];
+  let last: number | null = null;
+  let lastAt = 0;
+  let cooldown = 0;
+  addEventListener(
+    "pointermove",
+    (event) => {
+      const now = performance.now();
+      const box = target.getBoundingClientRect();
+      const cx = box.left + box.width / 2;
+      const cy = box.top + box.height / 2;
+      const dx = event.clientX - cx;
+      const dy = event.clientY - cy;
+      const distance = Math.hypot(dx, dy);
+      // around it: neither on its very centre nor far away; a pause starts over
+      if (distance < box.width * 0.15 || distance > box.width * 1.6 || now - lastAt > 400 || now < cooldown) {
+        sweeps = [];
+        last = distance > box.width * 1.6 ? null : Math.atan2(dy, dx);
+        lastAt = now;
+        return;
+      }
+      const angle = Math.atan2(dy, dx);
+      if (last !== null) {
+        let delta = angle - last;
+        if (delta > Math.PI) delta -= 2 * Math.PI;
+        if (delta < -Math.PI) delta += 2 * Math.PI;
+        sweeps.push({ at: now, angle: delta });
+        sweeps = sweeps.filter((s) => now - s.at < WINDOW);
+        const swept = sweeps.reduce((sum, s) => sum + s.angle, 0);
+        if (Math.abs(swept) >= TURNS * 2 * Math.PI) {
+          sweeps = [];
+          cooldown = now + 8000;
+          dizzy();
+        }
+      }
+      last = angle;
+      lastAt = now;
+    },
+    { passive: true },
+  );
+}
+
 /* ── the hero ────────────────────────────────────────────────────────────────────────────── */
 
 const stage = document.querySelector<HTMLElement>("[data-hero-stage]");
@@ -56,7 +106,7 @@ if (stage && heroSvg && !reduced) {
   let timer = 0;
   let asleep = false;
   const play = () => {
-    if (asleep) return;
+    if (asleep || dizzy) return;
     const [phase, state, wait] = beats[beat % beats.length] as [string, NestorState, number];
     stage.dataset.phase = phase;
     nestor.state = state;
@@ -67,6 +117,21 @@ if (stage && heroSvg && !reduced) {
     clearTimeout(timer);
     if (entry?.isIntersecting) play();
   }).observe(stage);
+
+  // circled around for too long, it gets dizzy, then recovers
+  let dizzy = false;
+  onCircling(heroSvg, () => {
+    dizzy = true;
+    clearTimeout(timer);
+    stage.dataset.phase = "idle";
+    nestor.center();
+    nestor.state = "dizzy";
+    window.setTimeout(() => {
+      dizzy = false;
+      nestor.state = "idle";
+      timer = window.setTimeout(play, 600);
+    }, 2600);
+  });
 
   // attention: the pointer, or what is hovered or focused
   let lastActivity = performance.now();
@@ -139,6 +204,14 @@ if (stage && heroSvg && !reduced) {
     },
     { passive: true },
   );
+}
+
+if (heroSvg && reduced) {
+  onCircling(heroSvg, () => {
+    const before = heroSvg.dataset.state ?? "idle";
+    heroSvg.dataset.state = "dizzy";
+    window.setTimeout(() => (heroSvg.dataset.state = before), 2600);
+  });
 }
 
 /* ── the dock: a small Nestor in the margin, after the hero ─────────────────────────────── */
