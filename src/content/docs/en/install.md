@@ -13,12 +13,12 @@ ways run the same server:
 | What you get                 | `nestor` on your `PATH`, in its own environment          | `nestor` in a virtual environment you manage | the image, started by `compose.yaml` |
 | Python                       | uv fetches it if needed                                  | yours, 3.12 or later                         | inside the image                     |
 | Configuration, `.env`, state | the folder where you ran `nestor init`                   | the folder where you ran `nestor init`       | `./data`, next to `compose.yaml`     |
-| Upgrade                      | `uv tool upgrade nestor-home`                            | `pip install -U 'nestor-home[voice]'`        | `docker compose pull`                |
+| Upgrade                      | `uv tool upgrade nestor-home`                            | `pip install -U nestor-home`                 | `docker compose pull`                |
 | Good for                     | a development machine, trying it out, writing satellites | an environment you already run               | a server at home that stays on       |
 
-Install the `voice` extra in every case: it is the realtime voice channel satellites connect to,
-and today `nestor` does not start without it, even when the configuration has no voice channel.
-The image already has it.
+The package alone runs Nestor in text: the admin, Telegram, connectors. The realtime voice channel,
+which satellites connect to, is the `voice` extra: install `'nestor-home[voice]'` to add it. The
+image has it.
 
 ## With uv
 
@@ -26,11 +26,12 @@ The image already has it.
 on your `PATH`, nothing to activate.
 
 ```bash
-uv tool install 'nestor-home[voice]'
+uv tool install nestor-home
 mkdir nestor && cd nestor
 nestor init
 ```
 
+With the voice channel, the first line is `uv tool install 'nestor-home[voice]'`.
 Fill `.env` (see [Providers](/docs/providers/)), then:
 
 ```bash
@@ -42,7 +43,7 @@ nestor run
 anywhere. It also reads the `.env` next to that file, so there is nothing to source. A variable
 already set in the environment (the shell, a service manager) wins over the file.
 
-To upgrade, keeping the extra:
+To upgrade, extras included:
 
 ```bash
 uv tool upgrade nestor-home
@@ -54,13 +55,14 @@ In a virtual environment you create and keep:
 
 ```bash
 python3 -m venv ~/.venvs/nestor
-~/.venvs/nestor/bin/pip install 'nestor-home[voice]'
+~/.venvs/nestor/bin/pip install nestor-home
 mkdir nestor && cd nestor
 ~/.venvs/nestor/bin/nestor init
 ```
 
 Then `nestor check` and `nestor run` as above, from the environment (activate it, or call
-`~/.venvs/nestor/bin/nestor`). Upgrade with `~/.venvs/nestor/bin/pip install -U 'nestor-home[voice]'`.
+`~/.venvs/nestor/bin/nestor`). For the voice channel, install `'nestor-home[voice]'` instead. Upgrade
+with the same command and `-U`.
 
 ## With Docker
 
@@ -77,8 +79,10 @@ docker compose up -d
 ```
 
 `data/` holds `nestor.yaml`, its `.env` and `state/`. The container starts as root only to give
-`data` to its user (uid 1000), then runs as that user. Port 8080 is the admin, port 7860 the voice
-server satellites pair with.
+`data` to its user (uid 1000), then runs as that user. It publishes two ports: the admin’s and the voice
+server’s, which satellites pair with.
+
+<!-- PORTS -->
 
 Every `nestor` command runs through the image, which reads `/data/nestor.yaml`:
 
@@ -87,8 +91,11 @@ docker compose run --rm nestor check
 docker compose run --rm nestor secrets list
 ```
 
-After changing `data/.env`, apply it with `docker compose up -d`: Compose also passes the file to
-the container as its environment, and `docker compose restart` keeps the old values.
+Nestor reads `data/.env` itself. After changing it, restart the container:
+
+```bash
+docker compose restart
+```
 
 To upgrade:
 

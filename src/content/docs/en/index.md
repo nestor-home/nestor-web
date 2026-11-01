@@ -15,7 +15,7 @@ Nestor is an early project: expect changes between releases.
 On a computer with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv tool install 'nestor-home[voice]'
+uv tool install nestor-home
 mkdir nestor && cd nestor
 nestor init
 ```
@@ -24,8 +24,12 @@ nestor init
 characters or more), then writes `nestor.yaml`, its secrets in `.env` (readable by you only) and
 `state/`, which holds the owner account. It never overwrites a file.
 
-Its configuration uses OpenRouter for the model and ElevenLabs for the voice: put the two keys in
-`.env`, or pick other providers in [Providers](/docs/providers/). Then:
+This is Nestor in text: the admin, Telegram, connectors. To talk to it aloud and pair satellites,
+install the voice channel with it: `uv tool install 'nestor-home[voice]'`.
+
+The generated configuration uses OpenRouter for the model, and ElevenLabs for the voice channel:
+put their keys in `.env`, or pick other providers in [Providers](/docs/providers/). Nestor speaks
+English; [Providers](/docs/providers/) also says how to run it in French. Then:
 
 ```bash
 nestor check   # validates the configuration and builds the adapters
@@ -37,14 +41,15 @@ work too, see [Install](/docs/install/).
 
 ## Open the admin
 
-Go to [http://localhost:8080](http://localhost:8080), or the machine’s address on port 8080, and
-sign in with the owner’s login. The admin holds the configuration, the household, the satellites
+<!-- PORTS -->
+
+Open the admin in a browser, on the machine’s address, and sign in with the owner’s login. The admin holds the configuration, the household, the satellites
 and the journal of everything Nestor did.
 
 ## Next
 
 - Install with pip or Docker, upgrade, where everything is kept: [Install](/docs/install/).
-- Another model, a local one, or no voice at all: [Providers](/docs/providers/).
+- Another model, a local one, Telegram or the voice channel, Nestor in French: [Providers](/docs/providers/).
 - Pair a first device: [Satellites](/docs/satellites/).
 - Write your own: the SDKs for [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/)
   and [Rust](/docs/sdks/rust/).

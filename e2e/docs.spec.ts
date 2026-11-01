@@ -108,7 +108,7 @@ test("the SDK pages show their code, highlighted, and copy it", async ({ page, c
   await page.goto("/docs/");
   const first = page.locator(".doc-prose .doc-code").first();
   await first.getByRole("button", { name: "Copy" }).click();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("uv tool install 'nestor-home[voice]'");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("uv tool install nestor-home\n");
   await expect(first.getByRole("button", { name: "Copied" })).toBeVisible();
 });
 

@@ -13,12 +13,12 @@ voies lancent le même serveur :
 | Ce qu’on obtient            | `nestor` dans le `PATH`, dans son propre environnement        | `nestor` dans un environnement virtuel que vous gérez | l’image, lancée par `compose.yaml`      |
 | Python                      | uv le télécharge au besoin                                    | le vôtre, 3.12 ou plus                                | dans l’image                            |
 | Configuration, `.env`, état | le dossier où vous avez lancé `nestor init`                   | le dossier où vous avez lancé `nestor init`           | `./data`, à côté de `compose.yaml`      |
-| Mise à jour                 | `uv tool upgrade nestor-home`                                 | `pip install -U 'nestor-home[voice]'`                 | `docker compose pull`                   |
-| Pour                        | une machine de développement, un essai, écrire des satellites | un environnement que vous tenez déjà                  | un serveur à la maison, toujours allumé |
+| Mise à jour                 | `uv tool upgrade nestor-home`                                 | `pip install -U nestor-home`                          | `docker compose pull`                   |
+| Pour                        | une machine de développement, un essai, écrire des satellites | un environnement que vous avez déjà                   | un serveur à la maison, toujours allumé |
 
-Installez l’extra `voice` dans tous les cas : c’est le canal vocal temps réel auquel se connectent
-les satellites, et aujourd’hui `nestor` ne démarre pas sans lui, même quand la configuration n’a
-pas de canal vocal. L’image le contient déjà.
+Le paquet seul fait tourner Nestor à l’écrit : l’administration, Telegram, les connecteurs. Le canal
+vocal temps réel, auquel se connectent les satellites, est l’extra `voice` : installez
+`'nestor-home[voice]'` pour l’ajouter. L’image le contient.
 
 ## Avec uv
 
@@ -26,11 +26,12 @@ pas de canal vocal. L’image le contient déjà.
 commande dans le `PATH`, rien à activer.
 
 ```bash
-uv tool install 'nestor-home[voice]'
+uv tool install nestor-home
 mkdir nestor && cd nestor
 nestor init
 ```
 
+Avec le canal vocal, la première ligne devient `uv tool install 'nestor-home[voice]'`.
 Remplissez `.env` (voir [Fournisseurs](/fr/docs/providers/)), puis :
 
 ```bash
@@ -42,7 +43,7 @@ nestor run
 n’importe où. Il lit aussi le `.env` posé à côté : rien à charger à la main. Une variable déjà
 définie dans l’environnement (le shell, un gestionnaire de services) l’emporte sur le fichier.
 
-Pour mettre à jour, en gardant l’extra :
+Pour mettre à jour, extras compris :
 
 ```bash
 uv tool upgrade nestor-home
@@ -54,13 +55,14 @@ Dans un environnement virtuel que vous créez et gardez :
 
 ```bash
 python3 -m venv ~/.venvs/nestor
-~/.venvs/nestor/bin/pip install 'nestor-home[voice]'
+~/.venvs/nestor/bin/pip install nestor-home
 mkdir nestor && cd nestor
 ~/.venvs/nestor/bin/nestor init
 ```
 
 Ensuite `nestor check` et `nestor run` comme plus haut, depuis l’environnement (activez-le, ou
-appelez `~/.venvs/nestor/bin/nestor`). Mise à jour : `~/.venvs/nestor/bin/pip install -U 'nestor-home[voice]'`.
+appelez `~/.venvs/nestor/bin/nestor`). Pour le canal vocal, installez
+`'nestor-home[voice]'` à la place. Mise à jour : la même commande avec `-U`.
 
 ## Avec Docker
 
@@ -77,8 +79,10 @@ docker compose up -d
 ```
 
 `data/` contient `nestor.yaml`, son `.env` et `state/`. Le conteneur démarre en root le temps de
-donner `data` à son utilisateur (uid 1000), puis tourne sous cet utilisateur. Le port 8080 est
-celui de l’administration, le 7860 celui du serveur vocal auquel s’appairent les satellites.
+donner `data` à son utilisateur (uid 1000), puis tourne sous cet utilisateur. Il publie deux ports :
+celui de l’administration et celui du serveur vocal, auquel s’appairent les satellites.
+
+<!-- PORTS -->
 
 Chaque commande `nestor` passe par l’image, qui lit `/data/nestor.yaml` :
 
@@ -87,8 +91,11 @@ docker compose run --rm nestor check
 docker compose run --rm nestor secrets list
 ```
 
-Après avoir modifié `data/.env`, appliquez avec `docker compose up -d` : Compose transmet aussi le
-fichier au conteneur comme environnement, et `docker compose restart` garde les anciennes valeurs.
+Nestor lit `data/.env` lui-même. Après l’avoir modifié, redémarrez le conteneur :
+
+```bash
+docker compose restart
+```
 
 Pour mettre à jour :
 

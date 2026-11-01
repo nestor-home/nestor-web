@@ -27,4 +27,5 @@ export const QUICKSTART = [
 /** The shortest install, with pip (the documentation's first page). */
 export const INSTALL = ["pip install 'nestor-home[voice]'", "nestor init", "nestor run"] as const;
 
+// PORTS: the admin's default port changes with the next server release
 export const ADMIN_URL = "http://localhost:8080";

@@ -9,6 +9,11 @@ wall tablet, a Reachy Mini robot. A microphone and a speaker are the minimum. A 
 motors are optional capabilities: the device declares them, a person allows them, and nothing in
 Nestor assumes they are there.
 
+Satellites connect to the server’s voice channel: install it with the `voice` extra and add it to
+the configuration (see [Providers](/docs/providers/)).
+
+<!-- PORTS -->
+
 ## What a satellite does
 
 - It pairs once and keeps its token.
@@ -82,6 +87,6 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satel
   antennas follow the conversation (its simulated twin for now).
 - A browser tab, with the TypeScript SDK.
 
-Writing your own? The [protocol](/docs/satellites/protocol/) is the standard, the
+To write your own, the [protocol](/docs/satellites/protocol/) is the reference, the
 [schemas](/docs/satellites/schemas/) give each message’s shape and the
 [conformance suite](/docs/satellites/conformance/) checks a device against both.

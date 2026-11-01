@@ -9,6 +9,11 @@ onglet sur une tablette murale, un robot Reachy Mini. Un micro et un haut-parleu
 écran, une caméra ou des moteurs sont des capacités optionnelles : l’appareil les déclare, une
 personne les autorise, et rien dans Nestor ne suppose qu’elles sont là.
 
+Les satellites se connectent au canal vocal du serveur : installez-le avec l’extra `voice` et
+ajoutez-le à la configuration (voir [Fournisseurs](/fr/docs/providers/)).
+
+<!-- PORTS -->
+
 ## Ce que fait un satellite
 
 - Il s’appaire une fois et garde son jeton.
@@ -36,7 +41,7 @@ l’ignore.
 ## Appairage
 
 Appairer demande une preuve qu’une personne le voulait. Elle circule dans un sens ou dans l’autre,
-et la première acceptée l’emporte :
+et la première acceptée gagne :
 
 - un **code d’appareil**, six chiffres que l’appareil présente et que la personne tape dans
   l’administration ;
@@ -87,6 +92,6 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:7860/?code=K7QF2M9X' nestor-satel
   les antennes suivent la conversation (son jumeau simulé pour l’instant).
 - Un onglet de navigateur, avec le SDK TypeScript.
 
-Vous écrivez le vôtre ? Le [protocole](/fr/docs/satellites/protocol/) fait foi, les
+Pour écrire le vôtre, le [protocole](/fr/docs/satellites/protocol/) fait foi, les
 [schémas](/fr/docs/satellites/schemas/) donnent la forme de chaque message et la
 [suite de conformité](/fr/docs/satellites/conformance/) vérifie un appareil sur les deux.
