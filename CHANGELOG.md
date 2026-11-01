@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/nestor-home/nestor-web/compare/v0.3.0...v0.4.0) (2026-11-01)
+
+
+### Features
+
+* serve the OAuth relay page ([#16](https://github.com/nestor-home/nestor-web/issues/16)) ([27d16d4](https://github.com/nestor-home/nestor-web/commit/27d16d4623015c905ef1c4895ab81dbd77e8e096))
+
 ## [0.3.0](https://github.com/nestor-home/nestor-web/compare/v0.2.0...v0.3.0) (2026-11-01)
 
 
