@@ -2,8 +2,9 @@
  * Nestor's stills, published with the site (and copied to the admin): avatars in both themes,
  * the favicon tile, and PNG sizes for places that need bitmaps.
  */
+
+import { PALETTES, renderMarkStill, renderNestorStill } from "@nestor-home/character";
 import type { APIRoute, GetStaticPaths } from "astro";
-import { PALETTES, renderMarkStill, renderNestorStill } from "@/character/render";
 import { INK, PAPER, pngOf } from "@/lib/og";
 
 const TILE = { ink: PAPER, paper: INK, ember: "#e8835c" };

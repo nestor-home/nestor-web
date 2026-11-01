@@ -3,8 +3,11 @@
  * says what it does, which contracts it implements, and the lines show what it talks to. The only
  * React island of the site; every word arrives resolved from the page's Fluent catalogue.
  */
+
+import { geometry } from "@nestor-home/character";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { BOW_KNOT, BOW_VIEWBOX, BOW_WINGS } from "@/character/geometry";
+
+const { BOW_KNOT, BOW_VIEWBOX, BOW_WINGS } = geometry;
 
 /** The bow tie as a list marker, as everywhere on the site. */
 function Tie() {
