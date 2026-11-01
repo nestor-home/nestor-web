@@ -20,6 +20,8 @@ export default defineConfig({
     }),
   ],
   image: { responsiveStyles: false },
+  // the docs' code takes the identity's colours through CSS variables (.doc-prose in global.css)
+  markdown: { shikiConfig: { theme: "css-variables" } },
   vite: { plugins: [tailwindcss()] },
   devToolbar: { enabled: false },
 });

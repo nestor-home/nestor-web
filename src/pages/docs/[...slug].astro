@@ -1,0 +1,11 @@
+---
+import Docs from "@/layouts/Docs.astro";
+import { DOC_SLUGS } from "@/lib/docs";
+
+export function getStaticPaths() {
+  return DOC_SLUGS.map((slug) => ({ params: { slug: slug || undefined }, props: { slug } }));
+}
+const { slug } = Astro.props;
+---
+
+<Docs locale="en" slug={slug} />

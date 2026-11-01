@@ -10,7 +10,7 @@ import HomeAssistant from "@/components/sections/HomeAssistant.astro";
 import Quickstart from "@/components/sections/Quickstart.astro";
 import Satellites from "@/components/sections/Satellites.astro";
 import Story from "@/components/sections/Story.astro";
-import { href, type Locale, translator } from "@/i18n";
+import { href, type Locale, pageMeta, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
 interface Props {
@@ -22,11 +22,12 @@ const nav = [
   { href: "#satellites", label: t("nav-satellites"), section: "satellites" },
   { href: "#connectors", label: t("nav-connectors"), section: "connectors" },
   { href: "#start", label: t("nav-start"), section: "start" },
+  { href: href(t.locale, "docs"), label: t("nav-docs") },
   { href: href(t.locale, "home"), label: t("footer-home") },
 ];
 ---
 
-<Base locale={t.locale} page="developers" nav={nav}>
+<Base locale={t.locale} {...pageMeta(t, "developers")} nav={nav}>
   <DevHero t={t} />
   <Architecture t={t} />
   <Story t={t} />

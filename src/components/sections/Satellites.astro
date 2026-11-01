@@ -1,13 +1,12 @@
 ---
+import { getEntry } from "astro:content";
 import { Check } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import CopyCommand from "@/components/CopyCommand.astro";
 import Shot from "@/components/Shot.astro";
-import python from "@/data/snippets/python.snippet?raw";
-import rust from "@/data/snippets/rust.snippet?raw";
-import typescript from "@/data/snippets/typescript.snippet?raw";
 import type { Translator } from "@/i18n";
 import type { BrandKey } from "@/lib/brands";
+import { docHref, firstCodeBlock } from "@/lib/docs";
 import { highlight } from "@/lib/highlight";
 
 interface Props {
@@ -20,7 +19,7 @@ const manifest = JSON.stringify(
   {
     protocol: "nestor.satellite/2",
     device: { id: "enceinte-salon", model: "raspberry-pi-4", room: "salon" },
-    pairing_methods: ["device_code.display"],
+    pairing_methods: ["device_code.display", "enrollment.provisioning"],
     capabilities: [{ name: "audio.capture" }, { name: "audio.playback" }, { name: "expression.emotion" }],
   },
   null,
@@ -28,24 +27,32 @@ const manifest = JSON.stringify(
 );
 const intent = JSON.stringify({ type: "intent.expression", payload: { expression: "joy", intensity: 0.7 } });
 
+/** Each SDK's minimal driver: the first example of its page in the documentation. */
+async function driver(sdk: "python" | "typescript" | "rust", lang: "python" | "ts" | "rust") {
+  const page = await getEntry("docs", `${t.locale}/sdks/${sdk}`);
+  const code = page?.body && firstCodeBlock(page.body, lang);
+  if (!code) throw new Error(`[satellites] no \`\`\`${lang} example in the ${t.locale} docs page of the ${sdk} SDK`);
+  return highlight(code, sdk);
+}
+
 const sdks: { id: "python" | "typescript" | "rust"; brand: BrandKey; html: string; cli: string }[] = [
   {
     id: "python",
     brand: "python",
-    html: await highlight(python, "python"),
+    html: await driver("python", "python"),
     cli: 'pip install "nestor-satellite[sounddevice]" && nestor-satellite run --core http://nestor.local:7860 --room salon',
   },
   {
     id: "typescript",
     brand: "typescript",
-    html: await highlight(typescript, "typescript"),
-    cli: "npx @nestor-home/satellite run --core http://nestor.local:7860 --room salon",
+    html: await driver("typescript", "ts"),
+    cli: "npx nestor-satellite run --core http://nestor.local:7860 --room salon",
   },
   {
     id: "rust",
     brand: "rust",
-    html: await highlight(rust, "rust"),
-    cli: "nestor-satellite run --core http://nestor.local:7860 --room salon",
+    html: await driver("rust", "rust"),
+    cli: "cargo install nestor-satellite --features cli && nestor-satellite run --core http://nestor.local:7860 --room salon",
   },
 ];
 const manifestHtml = await highlight(manifest, "json");
@@ -165,14 +172,18 @@ const devices = [
           sdks.map((s, i) => (
             <div role="tabpanel" id={`panel-${s.id}`} aria-labelledby={`tab-${s.id}`} hidden={i !== 0} tabindex="0">
               <div class="code max-h-[30rem] overflow-auto" set:html={s.html} />
-              <div class="border-t border-rule p-3">
+              <div class="flex flex-col gap-3 border-t border-rule p-3">
                 <CopyCommand t={t} command={s.cli} />
+                <a class="link w-fit font-mono text-[0.75rem] text-ink-muted" href={docHref(t.locale, `sdks/${s.id}`)}>
+                  {t(`sat-docs-${s.id}`)} →
+                </a>
               </div>
             </div>
           ))
         }
       </div>
-      <p class="mt-3 font-mono text-[0.72rem] text-ink-muted">
+      <p class="mt-3 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[0.72rem] text-ink-muted">
+        <a class="link text-ink-muted" href={docHref(t.locale, "satellites/protocol")}>{t("sat-protocol")}</a>
         <a class="link text-ink-muted" href="/schemas/satellite/2/manifest.json">{t("sat-schemas")}</a>
       </p>
     </div>
