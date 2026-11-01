@@ -11,6 +11,7 @@
  */
 import { Camera, Mic, MoveHorizontal, Smile, Volume2 } from "lucide-react";
 import Nestor from "@/components/Nestor.astro";
+import Planned from "@/components/Planned.astro";
 import type { Translator } from "@/i18n";
 import { type Capability, FIRST, manifest, ROOMS, SATELLITES } from "@/lib/constellation";
 import { highlight } from "@/lib/highlight";
@@ -38,8 +39,8 @@ const latest = FIRST.at(-1);
   <div class="sky" role="group" aria-label={t("cst-label")}>
     <svg class="links" aria-hidden="true"></svg>
     {
-      ROOMS.map((room) => (
-        <div class="room" data-side={room === "kitchen" || room === "kids" ? "left" : undefined} style={`grid-area:${room}`}>
+      ROOMS.map((room, i) => (
+        <div class="room" data-side={i % 3 === 0 ? "left" : undefined} style={`grid-area:${room}`}>
           <p class="room-name">{t(`cst-room-${room}`)}</p>
           <ul class="room-sats">
             {SATELLITES.filter((s) => s.room === room).map((s) => (
@@ -64,12 +65,7 @@ const latest = FIRST.at(-1);
                         })}
                       </span>
                     )}
-                    {s.planned && (
-                      <span class="badge-planned">
-                        <span class="sr-only">, </span>
-                        {t("cst-planned")}
-                      </span>
-                    )}
+                    {s.planned && <Planned t={t} />}
                   </span>
                 </button>
               </li>
@@ -86,18 +82,18 @@ const latest = FIRST.at(-1);
   </div>
 
   <div class="cst-side">
-    <p class="text-[0.95rem] leading-relaxed text-ink-muted">{t("cst-hint")}</p>
+    <p class="text-base leading-relaxed text-ink-muted">{t("cst-hint")}</p>
     {
       dev ? (
         <>
-          <ul class="mt-5 flex flex-col gap-1.5 text-[0.85rem] text-ink-muted">
+          <ul class="mt-5 flex flex-col gap-1.5 text-sm text-ink-muted">
             {Object.entries(GLYPHS).map(([name, g]) => {
               const Glyph = g.icon;
               return (
                 <li class="flex items-center gap-2">
                   <Glyph className="size-3.5 text-ink" strokeWidth={1.8} aria-hidden="true" />
                   <span>{t(g.label)}</span>
-                  <code class="font-mono text-[0.75rem] text-ink-muted">{name}</code>
+                  <code class="font-mono text-xs text-ink-muted">{name}</code>
                 </li>
               );
             })}
@@ -109,7 +105,7 @@ const latest = FIRST.at(-1);
           </div>
         </>
       ) : (
-        <ol id={`${id}-thread`} class="thread mt-5" aria-live="polite">
+        <ol id={`${id}-thread`} class="thread mt-5" aria-label={t("cst-thread")} aria-live="polite">
           {SATELLITES.map((s) => (
             <li class="turn" data-dev={s.id} data-on>
               <p class="turn-where">{t(`cst-${s.id}`)}</p>
@@ -192,7 +188,7 @@ const latest = FIRST.at(-1);
   .room-name {
     z-index: 1;
     padding-inline: 0.3rem;
-    font-size: 0.8rem;
+    font-size: var(--text-xs);
     color: var(--ink-muted);
   }
   .room-sats {
@@ -252,30 +248,53 @@ const latest = FIRST.at(-1);
     color: var(--ink);
     background: var(--paper-raised);
   }
+  /* a point (0.7rem) and its halo: the box holds both, its margins keep the point's footprint */
   .sat-dot {
+    --halo: 4px;
     position: relative;
     flex-shrink: 0;
-    width: 0.7rem;
-    height: 0.7rem;
-    margin-top: 0.25rem;
+    width: calc(0.7rem + 2 * var(--halo));
+    height: calc(0.7rem + 2 * var(--halo));
+    margin: calc(0.25rem - var(--halo)) calc(-1 * var(--halo)) calc(-1 * var(--halo));
+  }
+  .sat-dot::before,
+  .sat-dot::after {
+    content: "";
+    position: absolute;
     border-radius: 999px;
+  }
+  /* a lit point's halo: a soft disc behind it that breathes (opacity and transform only) */
+  .sat-dot::before {
+    inset: 0;
+    background: var(--ember-soft);
+    opacity: 0;
+    transition: opacity 400ms var(--ease-out);
+  }
+  .sat-dot::after {
+    inset: var(--halo);
     border: 1.5px solid var(--rule-strong);
     background: var(--paper-sunken);
     transition:
       background-color 400ms var(--ease-out),
-      border-color 400ms var(--ease-out),
-      box-shadow 400ms var(--ease-out);
+      border-color 400ms var(--ease-out);
   }
   .sat[data-on] {
     color: var(--ink);
   }
-  .sat[data-on] .sat-dot {
+  .sat[data-on] .sat-dot::after {
     border-color: var(--ember);
     background: var(--ember);
-    box-shadow: 0 0 0 4px var(--ember-soft);
   }
-  :global(.js) .sat[data-on] .sat-dot {
+  .sat[data-on] .sat-dot::before {
+    opacity: 1;
+  }
+  :global(.js) .sat[data-on] .sat-dot::before {
     animation: twinkle 3.4s ease-in-out infinite;
+  }
+  /* off screen, nothing breathes (src/scripts/constellation.ts sets it) */
+  .cst[data-paused] .sat-dot,
+  .cst[data-paused] .sat-dot::before {
+    animation-play-state: paused;
   }
   .sat-text {
     display: flex;
@@ -286,7 +305,7 @@ const latest = FIRST.at(-1);
   }
   .sat-name {
     padding-inline: 0.15rem;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     line-height: 1.25;
   }
   .sat:hover .sat-name {
@@ -306,7 +325,7 @@ const latest = FIRST.at(-1);
     border-radius: 4px;
     background: var(--ink);
     color: var(--paper);
-    font-size: 0.72rem;
+    font-size: var(--text-xs);
     white-space: nowrap;
     opacity: 0;
     transform: translateY(4px);
@@ -320,12 +339,14 @@ const latest = FIRST.at(-1);
     transform: none;
   }
   .sat[data-pairing] .sat-dot {
-    border-color: var(--ember);
     animation: pulse 0.7s ease-in-out infinite;
+  }
+  .sat[data-pairing] .sat-dot::after {
+    border-color: var(--ember);
   }
   @keyframes twinkle {
     50% {
-      box-shadow: 0 0 0 2px var(--ember-soft);
+      transform: scale(0.79);
     }
   }
   @keyframes pulse {
@@ -354,19 +375,19 @@ const latest = FIRST.at(-1);
     display: none;
   }
   .turn-where {
-    font-size: 0.78rem;
+    font-size: var(--text-xs);
     color: var(--ember);
   }
   .turn-ask {
     margin-top: 0.35rem;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     color: var(--ink);
   }
   .turn-say {
     margin-top: 0.3rem;
     font-family: var(--font-display);
     font-variation-settings: var(--display-variation);
-    font-size: 1rem;
+    font-size: var(--text-base);
     line-height: 1.3;
     color: var(--ink);
   }
@@ -384,7 +405,7 @@ const latest = FIRST.at(-1);
     display: block;
   }
   .manifests :global(pre) {
-    font-size: 0.72rem;
+    font-size: var(--text-xs);
   }
 
   /* -- phones: narrower rooms, the same order ----------------------------------------------- */
@@ -397,14 +418,14 @@ const latest = FIRST.at(-1);
       padding: 0.6rem 0.3rem 0.3rem;
     }
     .room-name {
-      font-size: 0.72rem;
+      font-size: var(--text-xs);
     }
     .sat {
       gap: 0.45rem;
       padding-inline: 0.25rem;
     }
     .sat-name {
-      font-size: 0.78rem;
+      font-size: var(--text-xs);
     }
     .star {
       min-height: 8rem;
@@ -412,7 +433,7 @@ const latest = FIRST.at(-1);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :global(.js) .sat[data-on] .sat-dot {
+    :global(.js) .sat[data-on] .sat-dot::before {
       animation: none;
     }
   }

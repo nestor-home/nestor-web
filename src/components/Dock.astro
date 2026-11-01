@@ -27,7 +27,7 @@ const { t } = Astro.props;
     position: fixed;
     right: 1.5rem;
     bottom: 1.25rem;
-    z-index: 30;
+    z-index: var(--z-dock);
     display: none;
     flex-direction: column;
     align-items: flex-end;
@@ -51,7 +51,7 @@ const { t } = Astro.props;
   }
   .dock-bubble {
     max-width: 13rem;
-    font-size: 0.82rem;
+    font-size: var(--text-sm);
     opacity: 0;
     transform: translateY(6px);
     transition:

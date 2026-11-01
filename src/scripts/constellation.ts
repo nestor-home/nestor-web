@@ -49,6 +49,8 @@ for (const root of document.querySelectorAll<HTMLElement>("[data-constellation]"
     }
   };
   new ResizeObserver(measure).observe(sky);
+  // the points breathe only while the sky is on screen
+  new IntersectionObserver(([entry]) => root.toggleAttribute("data-paused", !entry?.isIntersecting)).observe(root);
 
   // the devices lit, in the order they were added: the last one's manifest is the one shown
   const lit: string[] = [];
