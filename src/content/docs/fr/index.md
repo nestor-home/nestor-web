@@ -55,16 +55,15 @@ l’image publiée et garde tout dans `./data` :
 ```bash
 mkdir nestor && cd nestor
 curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml
-mkdir data
 docker compose pull
 docker compose run --rm nestor init
 $EDITOR data/.env
 docker compose up -d
 ```
 
-Le conteneur tourne sous l’utilisateur 1000. Sous Linux, si votre identifiant est différent,
-donnez-lui le dossier : `sudo chown 1000:1000 data`. Le port 8080 est celui de l’administration,
-le 7860 celui du serveur vocal auquel s’appairent les satellites.
+Le conteneur tourne sous l’utilisateur 1000 et prend possession de `data` au démarrage. Le port
+8080 est celui de l’administration, le 7860 celui du serveur vocal auquel s’appairent les
+satellites.
 
 ## Le compte propriétaire
 

@@ -17,7 +17,7 @@ export const QUICKSTART = [
   {
     id: "qs-1",
     command:
-      "curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml && mkdir data && docker compose pull",
+      "curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml && docker compose pull",
   },
   { id: "qs-2", command: "docker compose run --rm nestor init" },
   { id: "qs-3", command: "$EDITOR data/.env" },
