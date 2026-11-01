@@ -280,6 +280,11 @@ const speakers = [
                 </p>
                 <h3 class="display-3 mt-3">{t(`loop-${s.n}-title`)}</h3>
                 <p class="prose-copy mt-3" set:html={t.html(`loop-${s.n}-text`)} />
+                {s.n === TOTAL && (
+                  <a href="#trust" class="link mt-6 inline-block font-mono text-[0.8rem]">
+                    {t("loop-see-journal")}
+                  </a>
+                )}
                 {s.n === 3 && (
                   <div class="where mt-6">
                     <p id="loop-where" class="label-mono">
@@ -371,7 +376,7 @@ const speakers = [
   }
   .triage-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) repeat(3, 4.2rem) 4.6rem;
+    grid-template-columns: minmax(0, 1fr) repeat(3, 5rem) 4.6rem;
     align-items: center;
     gap: 0.5rem;
     padding: 0.7rem 0.85rem;
@@ -393,7 +398,7 @@ const speakers = [
   .gate::before {
     content: "";
     position: absolute;
-    inset: 50% -0.25rem auto;
+    inset: 50% 0 auto;
     height: 1px;
     background: var(--rule);
   }
@@ -684,8 +689,6 @@ const speakers = [
 
   @media (max-width: 1023px) {
     .stage-wrap {
-      margin-inline: calc(var(--gutter) * -1);
-      padding-inline: var(--gutter);
       border-bottom: 1px solid var(--rule);
     }
     .scenes {

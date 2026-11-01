@@ -2,6 +2,7 @@
 import { getEntry } from "astro:content";
 import { Check } from "lucide-react";
 import Brand from "@/components/Brand.astro";
+import Constellation from "@/components/Constellation.astro";
 import CopyCommand from "@/components/CopyCommand.astro";
 import Shot from "@/components/Shot.astro";
 import type { Translator } from "@/i18n";
@@ -65,14 +66,6 @@ const sdks: { id: "python" | "typescript" | "rust"; brand: BrandKey; html: strin
 const manifestHtml = await highlight(manifest, "json");
 const intentHtml = await highlight(intent, "json");
 const conformanceHtml = await highlight(CONFORMANCE_OUTPUT, "bash");
-
-const devices = [
-  { id: "sat-dev-reachy", state: "shipped", label: "sat-state-shipped" },
-  { id: "sat-dev-pi", state: "shipped", label: "sat-state-shipped" },
-  { id: "sat-dev-tab", state: "shipped", label: "sat-state-shipped" },
-  { id: "sat-dev-esp", state: "later", label: "sat-state-later" },
-  { id: "sat-dev-wyoming", state: "later", label: "sat-state-later" },
-];
 ---
 
 <section id="satellites" class="section border-t border-rule" aria-labelledby="sat-title" data-mood="working">
@@ -82,8 +75,12 @@ const devices = [
       <p data-reveal class="lede mt-6">{t("sat-lede")}</p>
     </div>
 
+    <div data-reveal class="mt-14">
+      <Constellation t={t} mode="dev" />
+    </div>
+
     <!-- pairing -->
-    <div class="mt-16 grid gap-10 lg:grid-cols-12">
+    <div class="mt-24 grid gap-10 lg:grid-cols-12">
       <div data-reveal class="lg:col-span-4">
         <h3 class="display-3 text-ink">{t("sat-pair-title")}</h3>
         <p class="prose-copy mt-4">{t("sat-pair-text")}</p>
@@ -134,7 +131,7 @@ const devices = [
             </div>
             <div class="manifest mt-5 border-t border-rule pt-4">
               <p class="label-mono">{t("sat-manifest")}</p>
-              <div class="code mt-1 -mx-5 [&_pre]:py-2 [&_pre]:text-[0.72rem]" set:html={manifestHtml} />
+              <div class="code mt-1 [&_pre]:px-0 [&_pre]:py-2 [&_pre]:text-[0.72rem]" set:html={manifestHtml} />
             </div>
           </div>
         </div>
@@ -205,35 +202,15 @@ const devices = [
       </p>
     </div>
 
-    <!-- devices and the admin -->
-    <div class="mt-24 grid gap-12 lg:grid-cols-12">
-      <div class="lg:col-span-5">
-        <h3 data-reveal class="display-3 text-ink">{t("sat-devices-title")}</h3>
-        <ul class="mt-6 border-t border-rule">
-          {
-            devices.map((d, i) => (
-              <li data-reveal style={`--i:${i}`} class="border-b border-rule py-4">
-                <p class="flex items-baseline justify-between gap-4">
-                  <span class="text-[1rem] text-ink">{t(d.id)}</span>
-                  <span class="state" data-state={d.state}>
-                    {t(d.label)}
-                  </span>
-                </p>
-                <p class="mt-1 text-[0.9rem] leading-relaxed text-ink-muted">{t(`${d.id}-text`)}</p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-      <figure data-reveal class="lg:col-span-7">
-        <div class="plate corner-marks">
-          <div class="plate-inner">
-            <Shot name="satellites" locale={t.locale} alt={t("sat-shot")} sizes="(min-width: 1024px) 700px, 100vw" />
-          </div>
+    <!-- the admin -->
+    <figure data-reveal class="mt-24">
+      <div class="plate corner-marks">
+        <div class="plate-inner">
+          <Shot name="satellites" locale={t.locale} alt={t("sat-shot")} sizes="(min-width: 1024px) 1100px, 100vw" />
         </div>
-        <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("sat-shot")}</figcaption>
-      </figure>
-    </div>
+      </div>
+      <figcaption class="mt-3 font-mono text-[0.72rem] text-ink-muted">{t("sat-shot")}</figcaption>
+    </figure>
   </div>
 </section>
 

@@ -69,3 +69,4 @@ loop-room-hall = entrée
 loop-lea = Léa
 loop-away = dehors
 loop-phone = Téléphone de Léa
+loop-see-journal = Voir le journal

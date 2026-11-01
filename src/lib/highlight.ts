@@ -60,7 +60,11 @@ export async function highlight(code: string, lang: Lang): Promise<string> {
     langs: ["python", "typescript", "rust", "bash", "json", "toml", "yaml"],
   });
   const html = (await highlighter).codeToHtml(code.trim(), { lang, theme: "nestor" });
-  return html
-    .replace(/#00000([1-7])/gi, (hex) => SLOTS[hex.toLowerCase() as keyof typeof SLOTS])
-    .replace(/background-color:#ffffff;?/i, "");
+  return (
+    html
+      .replace(/#00000([1-7])/gi, (hex) => SLOTS[hex.toLowerCase() as keyof typeof SLOTS])
+      .replace(/background-color:#ffffff;?/i, "")
+      // the theme's name would put the character's own class (`.nestor`) on the block
+      .replace('class="shiki nestor"', 'class="shiki"')
+  );
 }

@@ -1,0 +1,418 @@
+---
+/**
+ * The house as a constellation: Nestor is the star at the centre, the rooms sit around it (three
+ * above, three below, at every width), and every device the visitor adds becomes a satellite: it
+ * shows a pairing code for a moment, a thin line draws from the star to it, it lights up, and the
+ * character reacts (src/scripts/constellation.ts measures and draws the lines).
+ *
+ * `mode="home"` tells the same conversation carrying on from device to device; `mode="dev"` shows
+ * what each device declares (capabilities as glyphs, its manifest) and marks what is planned.
+ * Without JavaScript every device is lit (no lines); under reduced motion too, with still lines.
+ */
+import { Camera, Mic, MoveHorizontal, Smile, Volume2 } from "lucide-react";
+import Nestor from "@/components/Nestor.astro";
+import type { Translator } from "@/i18n";
+import { type Capability, FIRST, manifest, ROOMS, SATELLITES } from "@/lib/constellation";
+import { highlight } from "@/lib/highlight";
+
+interface Props {
+  t: Translator;
+  mode: "home" | "dev";
+}
+const { t, mode } = Astro.props;
+const dev = mode === "dev";
+const id = `cst-${mode}`;
+
+const GLYPHS: Record<Capability, { icon: typeof Mic; label: string }> = {
+  "audio.capture": { icon: Mic, label: "cst-cap-capture" },
+  "audio.playback": { icon: Volume2, label: "cst-cap-playback" },
+  "expression.emotion": { icon: Smile, label: "cst-cap-emotion" },
+  "motion.head": { icon: MoveHorizontal, label: "cst-cap-head" },
+  "vision.person_detection": { icon: Camera, label: "cst-cap-vision" },
+};
+const manifests = dev ? await Promise.all(SATELLITES.map((s) => highlight(manifest(s), "json"))) : [];
+const latest = FIRST.at(-1);
+---
+
+<div class="cst" data-constellation data-first={FIRST.join(" ")} data-mode={mode}>
+  <div class="sky" role="group" aria-label={t("cst-label")}>
+    <svg class="links" aria-hidden="true"></svg>
+    {
+      ROOMS.map((room) => (
+        <div class="room" data-side={room === "kitchen" || room === "kids" ? "left" : undefined} style={`grid-area:${room}`}>
+          <p class="room-name">{t(`cst-room-${room}`)}</p>
+          <ul class="room-sats">
+            {SATELLITES.filter((s) => s.room === room).map((s) => (
+              <li>
+                <button
+                  type="button"
+                  class="sat"
+                  data-dev={s.id}
+                  data-on
+                  aria-pressed="true"
+                  aria-controls={dev ? `${id}-manifest-${s.id}` : `${id}-thread`}
+                >
+                  <span class="sat-dot" aria-hidden="true" />
+                  <span class="sat-code font-mono tabular" aria-hidden="true" />
+                  <span class="sat-text">
+                    <span class="sat-name">{t(`cst-${s.id}`)}</span>
+                    {dev && (
+                      <span class="sat-caps" aria-hidden="true">
+                        {s.capabilities.map((c) => {
+                          const Glyph = GLYPHS[c].icon;
+                          return <Glyph className="size-3" strokeWidth={1.8} />;
+                        })}
+                      </span>
+                    )}
+                    {dev && s.planned && (
+                      <span class="state" data-state="later">
+                        {t("cst-planned")}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+    <div class="star" style="grid-area:star">
+      <span class="star-disc">
+        <Nestor size={dev ? 72 : 88} state="idle" class="star-nestor" label={t("nestor-label")} />
+      </span>
+    </div>
+  </div>
+
+  <div class="cst-side">
+    <p class="text-[0.95rem] leading-relaxed text-ink-muted">{t("cst-hint")}</p>
+    {
+      dev ? (
+        <>
+          <ul class="mt-5 flex flex-col gap-1.5 text-[0.85rem] text-ink-muted">
+            {Object.entries(GLYPHS).map(([name, g]) => {
+              const Glyph = g.icon;
+              return (
+                <li class="flex items-center gap-2">
+                  <Glyph className="size-3.5 text-ink" strokeWidth={1.8} aria-hidden="true" />
+                  <span>{t(g.label)}</span>
+                  <code class="font-mono text-[0.72rem] text-ink-faint">{name}</code>
+                </li>
+              );
+            })}
+          </ul>
+          <div class="manifests mt-5 border border-rule bg-paper-raised" data-latest={latest} aria-live="polite">
+            {SATELLITES.map((s, i) => (
+              <div id={`${id}-manifest-${s.id}`} class="manifest code" data-dev={s.id} data-on set:html={manifests[i]} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <ol id={`${id}-thread`} class="thread mt-5" aria-live="polite">
+          {SATELLITES.map((s) => (
+            <li class="turn" data-dev={s.id} data-on>
+              <p class="turn-where">{t(`cst-${s.id}`)}</p>
+              <p class="turn-ask">
+                <span class="text-ink-muted">{t(`cst-${s.id}-who`)}</span> {t(`cst-${s.id}-ask`)}
+              </p>
+              <p class="turn-say">{t(`cst-${s.id}-say`)}</p>
+            </li>
+          ))}
+        </ol>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .cst {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 1024px) {
+    .cst {
+      grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+      gap: 3rem;
+      align-items: start;
+    }
+  }
+
+  /* -- the sky: three rooms above the star, three below ----------------------------------- */
+  .sky {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "kitchen office living"
+      "star star star"
+      "kids bedroom hall";
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+  }
+  .links {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .links :global(line) {
+    stroke: var(--ember);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-dasharray: var(--len) var(--len);
+    stroke-dashoffset: var(--len);
+    transition: stroke-dashoffset 900ms var(--ease-out);
+  }
+  .links :global(line[data-on]) {
+    stroke-dashoffset: 0;
+  }
+  /* rooms stay unpositioned so the lines pass over their area; names keep a halo of the room */
+  .room {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.75rem 0.6rem 0.6rem;
+    border-radius: calc(var(--radius) + 4px);
+    background: var(--paper-sunken);
+  }
+  .room-name,
+  .sat-name {
+    position: relative;
+    width: fit-content;
+    background: var(--paper-sunken);
+    box-decoration-break: clone;
+  }
+  .room-name {
+    z-index: 1;
+    padding-inline: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+  }
+  .room-sats {
+    display: flex;
+    flex-direction: column;
+  }
+  /* rooms on the left put the point on the star's side, so its line never crosses the name */
+  .room[data-side="left"] .sat {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+  .room[data-side="left"] .sat-code {
+    left: auto;
+    right: 0;
+  }
+  .room[data-side="left"] .sat-text {
+    align-items: flex-end;
+  }
+  .room[data-side="left"] .room-name {
+    align-self: flex-end;
+  }
+  .star {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 9.5rem;
+  }
+  .star-disc {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    padding: 0.5rem;
+    border-radius: 999px;
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 1px var(--rule);
+  }
+
+  /* a satellite: a point and its name; its code shows while it pairs */
+  .sat {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.4rem;
+    border-radius: var(--radius);
+    text-align: left;
+    color: var(--ink-muted);
+    transition:
+      color var(--duration) var(--ease),
+      background-color var(--duration) var(--ease);
+  }
+  .sat:hover {
+    color: var(--ink);
+    background: var(--paper-raised);
+  }
+  .sat-dot {
+    position: relative;
+    flex-shrink: 0;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-top: 0.25rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--rule-strong);
+    background: var(--paper-sunken);
+    transition:
+      background-color 400ms var(--ease-out),
+      border-color 400ms var(--ease-out),
+      box-shadow 400ms var(--ease-out);
+  }
+  .sat[data-on] {
+    color: var(--ink);
+  }
+  .sat[data-on] .sat-dot {
+    border-color: var(--ember);
+    background: var(--ember);
+    box-shadow: 0 0 0 4px var(--ember-soft);
+  }
+  :global(.js) .sat[data-on] .sat-dot {
+    animation: twinkle 3.4s ease-in-out infinite;
+  }
+  .sat-text {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  .sat-name {
+    padding-inline: 0.15rem;
+    font-size: 0.9rem;
+    line-height: 1.25;
+  }
+  .sat:hover .sat-name {
+    background: var(--paper-raised);
+  }
+  .sat-caps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    color: var(--ink-muted);
+  }
+  .sat-code {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% - 0.2rem);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.72rem;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 250ms var(--ease-out),
+      transform 250ms var(--ease-out);
+    pointer-events: none;
+  }
+  .sat[data-pairing] .sat-code {
+    opacity: 1;
+    transform: none;
+  }
+  .sat[data-pairing] .sat-dot {
+    border-color: var(--ember);
+    animation: pulse 0.7s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    50% {
+      box-shadow: 0 0 0 2px var(--ember-soft);
+    }
+  }
+  @keyframes pulse {
+    50% {
+      transform: scale(1.3);
+    }
+  }
+
+  /* -- beside: the conversation, or the manifests --------------------------------------------- */
+  .thread {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .turn {
+    padding: 0.8rem 0.95rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+  :global(.js) .turn[data-on] {
+    animation: rise 500ms var(--ease-out);
+  }
+  .turn:not([data-on]),
+  .manifest:not([data-on]) {
+    display: none;
+  }
+  .turn-where {
+    font-size: 0.78rem;
+    color: var(--ember);
+  }
+  .turn-ask {
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+  .turn-say {
+    margin-top: 0.3rem;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-variation);
+    font-size: 1rem;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  /* only the latest device's manifest shows */
+  .manifests[data-latest] .manifest {
+    display: none;
+  }
+  .manifests[data-latest="speaker"] .manifest[data-dev="speaker"],
+  .manifests[data-latest="tablet"] .manifest[data-dev="tablet"],
+  .manifests[data-latest="reachy"] .manifest[data-dev="reachy"],
+  .manifests[data-latest="phone"] .manifest[data-dev="phone"],
+  .manifests[data-latest="browser"] .manifest[data-dev="browser"],
+  .manifests[data-latest="pi"] .manifest[data-dev="pi"],
+  .manifests[data-latest="esp"] .manifest[data-dev="esp"] {
+    display: block;
+  }
+  .manifests :global(pre) {
+    font-size: 0.72rem;
+  }
+
+  /* -- phones: narrower rooms, the same order ----------------------------------------------- */
+  @media (max-width: 639px) {
+    .sky {
+      gap: 0.5rem;
+      padding: 0.6rem;
+    }
+    .room {
+      padding: 0.6rem 0.3rem 0.3rem;
+    }
+    .room-name {
+      font-size: 0.72rem;
+    }
+    .sat {
+      gap: 0.45rem;
+      padding-inline: 0.25rem;
+    }
+    .sat-name {
+      font-size: 0.78rem;
+    }
+    .star {
+      min-height: 8rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .sat[data-on] .sat-dot {
+      animation: none;
+    }
+  }
+</style>

@@ -274,4 +274,5 @@ for (const character of document.querySelectorAll<SVGElement>("svg.nestor[data-s
   });
 }
 
+import "./constellation";
 import "./live";

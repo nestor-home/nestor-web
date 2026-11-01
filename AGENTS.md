@@ -27,18 +27,21 @@ src/
 │                     docs (/docs/…, /fr/docs/…), 404, og/[page]-[locale].png, favicon*, robots.txt
 ├── content/docs/     the developer documentation: one Markdown file per page and locale
 ├── components/
-│   ├── Home.astro        the home page: hero, a day at home, why it spoke, six ideas, bodies, start
-│   ├── Developers.astro  the developers' page: architecture, a watch through the system,
-│   │                     satellites and SDKs, connectors, Home Assistant, speed, journal,
-│   │                     security, i18n, self-hosting
+│   ├── Home.astro        the home page: hero, the story (ask once → it watches → it finds you →
+│   │                     you see why), same agent in any body, everyday requests and
+│   │                     integrations, trust and the journal, install
+│   ├── Developers.astro  the developers' page: runtime principles, architecture, the journal's
+│   │                     events, extension points, satellites and SDKs, connectors, Home
+│   │                     Assistant, security, self-hosting, i18n
 │   ├── Nestor.astro      the character (one drawing, six states, a gaze)
 │   ├── Device.astro      its bodies: speaker, robot, tablet, laptop, phone, browser tab
 │   ├── sections/         one file per section
-│   └── *.astro           shared pieces: Shot, Clip, Dither, Brand, CopyCommand, Wordmark…
+│   └── *.astro           shared pieces: Shot, Clip, Dither, Brand, Integrations, CopyCommand…
 ├── islands/          React, only where interaction needs state (the architecture explorer)
 ├── layouts/          Base (head, header, footer) and Docs (sidebar, text, sections, prev/next)
-├── scripts/site.ts   the one global script: reveals, scene beats, the character's sequences and
-│                     gaze, story stepper, pairing, tabs, copy, theme (docs.ts: code copy buttons)
+├── scripts/site.ts   the one global script: reveals, the character's sequences, story stepper
+│                     and its presence switch, pairing, tabs (replaying a panel's character), copy,
+│                     theme (docs.ts: code copy buttons)
 ├── locales/<lang>/   the words, in Fluent (.ftl), one file per section
 ├── i18n/             the Fluent loader (`translator(locale)`)
 ├── lib/              data and logic: links, brands, dither, Shiki, media index, OG pictures
@@ -52,11 +55,13 @@ public/redirect/      the OAuth relay page, copied from the server package at bu
 
 ## Two audiences, three places
 
-The home page is about **use**: a household's day, what Nestor does for the people in it, the
-character, six ideas drawn simply. No contract names, no benchmarks, no internal status, no vendor
-comparisons; honesty lives in one place (the "early project" line near Install). Everything
-technical — architecture, protocol, SDK code, measured latencies, self-hosting — goes to the
-developers' page. Keep it that way when adding content.
+The home page is about **use**: the promise and the final experience of Nestor, including what is
+planned, told through moments almost every household lives (no niche scenarios, no invented brands,
+shops, prices or dates). One story shows the core loop; no contract names, no benchmarks, no
+internal status, no vendor comparisons; honesty lives in one place (the "early project" line near
+Install). Everything technical (architecture, events, protocol, SDK code, self-hosting) goes to the
+developers' page, where what is not shipped yet carries a discreet "planned" marker. Keep it that
+way when adding content.
 
 How to do things (install, pair, write a satellite, the protocol itself) belongs to the
 **documentation** (`/docs/`, `/fr/docs/`): the developers' page shows and links, the docs explain.
@@ -117,15 +122,16 @@ docked one its mood with `data-mood` (and a line with `data-say`). Its stills ar
   `aria-label`, `title`; `tests/i18n.test.ts` checks both languages hold the same messages and every
   id a component names. A missing message fails the build. Islands get their words as props.
 - **French typography**: narrow no-break spaces before `: ; ? ! »` and after `«`, `’` for apostrophes.
-- **Honesty.** Only measured numbers, with their source and date, and only on the developers'
-  page; anything not built is marked as planned there. The scenes show what Nestor is designed to
-  do for a household; keep them to capabilities the core has.
+- **Honesty.** No figures from local benches or proofs of concept, anywhere. The home page shows
+  what Nestor is designed to do; the developers' page marks anything not built as planned
+  (`INTEGRATIONS[].today` in `lib/brands.ts` for the services).
 - **Motion** is transform and opacity only, triggered by IntersectionObserver, never scroll
   handlers that write layout. Everything reads in full without JavaScript, and under
   `prefers-reduced-motion` nothing moves or plays by itself (`e2e` checks it).
 - **Anti-slop**: no gradients or glows, no emoji, no eyebrows above titles, no coloured side borders,
   no stat tiles; numbers in `tabular-nums`; a description only when it says something.
-- Brand marks come from `lib/brands.ts` (Simple Icons, nominative use), never inline elsewhere.
+- Brand marks come from `lib/brands.ts` (Simple Icons, CC0, nominative use; the admin's lucide glyph when a
+  brand is not there), never inline elsewhere. In ink by default, the brand's colour on hover.
 
 ## Refreshing the media
 

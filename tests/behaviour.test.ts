@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import { related } from "@/islands/Architecture";
 import { nextIndex } from "@/lib/tabs";
 
-describe("the SDK tabs", () => {
-  it("move with the arrows and wrap around", () => {
+describe("the tab lists", () => {
+  it("move with the arrows of either orientation and wrap around", () => {
     expect(nextIndex("ArrowRight", 2, 3)).toBe(0);
     expect(nextIndex("ArrowLeft", 0, 3)).toBe(2);
     expect(nextIndex("Home", 2, 3)).toBe(0);
     expect(nextIndex("End", 0, 3)).toBe(2);
+    expect(nextIndex("ArrowDown", 2, 3)).toBe(0);
+    expect(nextIndex("ArrowUp", 0, 3)).toBe(2);
     expect(nextIndex("a", 0, 3)).toBeNull();
   });
 });

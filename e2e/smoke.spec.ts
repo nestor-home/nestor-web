@@ -79,12 +79,51 @@ test("the theme toggle switches the page and remembers it", async ({ page }) => 
 
 test("the story's stage follows the step being read", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/developers/");
+  await page.goto("/");
   const stage = page.locator("[data-stage]");
-  await page.evaluate(() => document.querySelector('li[data-step="5"]')?.scrollIntoView({ block: "center" }));
-  await expect(stage).toHaveAttribute("data-step", "5");
-  await page.evaluate(() => document.querySelector('li[data-step="7"]')?.scrollIntoView({ block: "center" }));
-  await expect(stage).toHaveAttribute("data-step", "7");
+  await page.evaluate(() => document.querySelector('li[data-step="2"]')?.scrollIntoView({ block: "center" }));
+  await expect(stage).toHaveAttribute("data-step", "2");
+  await page.evaluate(() => document.querySelector('li[data-step="4"]')?.scrollIntoView({ block: "center" }));
+  await expect(stage).toHaveAttribute("data-step", "4");
+});
+
+test("moving the person changes the delivery decision", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.evaluate(() => document.querySelector('li[data-step="3"]')?.scrollIntoView({ block: "center" }));
+  const story = page.locator("#story");
+  const step = page.locator('li[data-step="3"]');
+  await expect(step.getByText("Says it aloud, on the office speaker.")).toBeVisible();
+  const out = step.getByRole("button", { name: "Out" });
+  await out.click();
+  await expect(out).toHaveAttribute("aria-pressed", "true");
+  await expect(story).toHaveAttribute("data-where", "out");
+  await expect(step.getByText("Writes to her phone.")).toBeVisible();
+  await step.getByRole("button", { name: "Asleep" }).click();
+  await expect(step.getByText("Keeps it for the morning: quiet hours.")).toBeVisible();
+  await expect(page.locator("[data-stage] svg.nestor")).toHaveAttribute("data-state", "sleeping");
+});
+
+test("a device added to the constellation pairs, links to Nestor and carries the conversation", async ({ page }) => {
+  await page.goto("/#bodies");
+  const sky = page.locator("#bodies [data-constellation]");
+  const phone = sky.getByRole("button", { name: "An old phone" });
+  await expect(phone).toHaveAttribute("aria-pressed", "false");
+  await expect(sky.getByText("Wake me up at seven.")).toBeHidden();
+  await phone.click();
+  await expect(phone).toHaveAttribute("data-pairing", "");
+  await expect(phone).toHaveAttribute("aria-pressed", "true", { timeout: 3000 });
+  await expect(sky.locator('line[data-dev="phone"]')).toHaveAttribute("data-on", "");
+  await expect(sky.getByText("Wake me up at seven.")).toBeVisible();
+  await phone.click();
+  await expect(phone).toHaveAttribute("aria-pressed", "false");
+});
+
+test("the journal's events can be read one by one", async ({ page }) => {
+  await page.goto("/developers/#journal");
+  const decision = page.getByRole("tab", { name: /The decision/ });
+  await decision.click();
+  await expect(page.locator("#ev-4")).toContainText("delivery-in-room");
 });
 
 test("choosing a part of the architecture explains it", async ({ page }) => {
@@ -104,7 +143,7 @@ test("the SDK tabs work with the arrow keys", async ({ page }) => {
   const ts = page.getByRole("tab", { name: "TypeScript" });
   await expect(ts).toHaveAttribute("aria-selected", "true");
   await expect(ts).toBeFocused();
-  await expect(page.getByRole("tabpanel")).toContainText("browserWebRtc"); // the TypeScript SDK page’s first example
+  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("browserWebRtc"); // the TypeScript SDK page’s first example
 });
 
 test("a quickstart command is copied", async ({ page, context, browserName }) => {
@@ -203,14 +242,13 @@ test.describe("Nestor in the page", () => {
     await expect(nestor).toHaveAttribute("data-running", "true");
   });
 
-  test("docks in the margin after the hero, takes the mood of the scene, and can be hidden", async ({ page }) => {
+  test("docks in the margin after the hero, takes the mood of the step, and can be hidden", async ({ page }) => {
     await page.goto("/");
     const dock = page.locator("[data-dock]");
     await expect(dock).not.toHaveAttribute("data-shown", "");
-    await page.locator("#day .scene").nth(6).scrollIntoViewIfNeeded();
-    await page.evaluate(() => document.querySelectorAll("#day .scene")[6]?.scrollIntoView({ block: "center" }));
+    await page.evaluate(() => document.querySelector('li[data-step="3"]')?.scrollIntoView({ block: "center" }));
     await expect(dock).toHaveAttribute("data-shown", "");
-    await expect(dock.locator("svg.nestor")).toHaveAttribute("data-state", /sleeping|speaking/);
+    await expect(dock.locator("svg.nestor")).toHaveAttribute("data-state", "speaking");
     const box = await dock.boundingBox();
     // the text column ends where the wrap's padding begins; the dock stays to its right
     const textRight = await page
@@ -269,7 +307,7 @@ test("the menu opens on a phone and closes on a link", async ({ page }) => {
   const menu = page.locator("#mobile-menu");
   await menu.getByRole("link", { name: "How it works" }).click();
   await expect(menu).toBeHidden();
-  await expect(page).toHaveURL(/#principles$/);
+  await expect(page).toHaveURL(/#story$/);
 });
 
 test("Nestor answers in the hero: it listens, then speaks", async ({ page }) => {
@@ -280,10 +318,28 @@ test("Nestor answers in the hero: it listens, then speaks", async ({ page }) => 
   await expect(page.locator("[data-hero-stage]")).toHaveAttribute("data-phase", "say");
 });
 
-test("a scene of the day plays when it comes into view", async ({ page }) => {
-  await page.goto("/");
-  const scene = page.locator("#day .scene").nth(4);
-  await scene.scrollIntoViewIfNeeded();
-  await expect(scene).toHaveAttribute("data-inview", "");
-  await expect(scene.locator(".nestor")).toHaveAttribute("data-state", "speaking", { timeout: 3000 });
-});
+/* No content runs out of its box: a block whose content is wider than itself must scroll on its
+   own (code, wide diagrams), never spill over its neighbours. Page-level scroll alone misses it. */
+const BOXED = [...PAGES.map((p) => p.path), "/docs/", "/fr/docs/satellites/protocol/", "/docs/sdks/rust/"];
+for (const path of BOXED) {
+  for (const width of WIDTHS) {
+    test(`${path} at ${width}px: no content overflows its box`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto(path);
+      await page.addStyleTag({ content: ".section{content-visibility:visible!important}" });
+      const spilled = await page.evaluate(() =>
+        [...document.querySelectorAll("main *")].flatMap((el) => {
+          if (el.closest("svg")) return [];
+          const style = getComputedStyle(el);
+          if (style.display === "inline" || style.display === "none" || style.overflowX !== "visible") return [];
+          if (el.clientWidth === 0 || el.scrollWidth <= el.clientWidth + 1) return [];
+          return [
+            `${el.tagName.toLowerCase()}.${[...el.classList].slice(0, 3).join(".")}: ${el.scrollWidth} > ${el.clientWidth}`,
+          ];
+        }),
+      );
+      expect(spilled).toEqual([]);
+    });
+  }
+}

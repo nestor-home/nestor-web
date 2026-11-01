@@ -127,7 +127,7 @@ test("on a phone, the pages are one tap away", async ({ page }) => {
 
 test("the developers' page points to the documentation and shows its examples", async ({ page }) => {
   await page.goto("/developers/#satellites");
-  await expect(page.getByRole("tabpanel")).toContainText("Satellite(");
+  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("Satellite(");
   await page.getByRole("link", { name: "The Python SDK’s documentation" }).click();
   await expect(page).toHaveURL(/\/docs\/sdks\/python\/$/);
 });
