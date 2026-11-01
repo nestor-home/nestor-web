@@ -29,6 +29,7 @@ export const INTEGRATIONS: { group: string; items: Integration[] }[] = [
       { brand: "whatsapp", status: "planned" },
       { brand: "signal", status: "planned" },
       { brand: "discord", status: "planned" },
+      { brand: "matrix", status: "planned" },
     ],
   },
   {

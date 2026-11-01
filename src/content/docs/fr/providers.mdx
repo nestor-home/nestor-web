@@ -1,16 +1,16 @@
 ---
 title: Fournisseurs
-description: Le modèle et les services de parole avec lesquels Nestor fonctionne aujourd’hui, ce qui est prévu, et comment régler chacun.
+description: Les modèles, services de parole et canaux avec lesquels Nestor fonctionne aujourd’hui, ce qui est prévu, et comment régler chacun.
 ---
 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-Nestor a besoin d’un **modèle de langage** pour l’agent, toujours, et de services de **parole**
-pour le canal vocal, seulement si vous l’utilisez. Les deux se règlent dans `nestor.yaml`, leurs
-clés dans le `.env` posé à côté. `nestor init` écrit OpenRouter et ElevenLabs : choisissez un autre
-fournisseur ci-dessous, collez ses blocs à la place des blocs correspondants, puis lancez
-`nestor check`.
+Nestor a besoin d’un **modèle de langage** pour l’agent, et de services de **parole** seulement
+pour le canal vocal. On le joint par des **canaux** : Telegram, le canal vocal, ou les deux. Tout se
+règle dans `nestor.yaml`, avec les clés dans le `.env` posé à côté. `nestor init` écrit OpenRouter
+et ElevenLabs : choisissez un autre fournisseur ci-dessous, collez ses blocs à la place des blocs
+correspondants, puis lancez `nestor check`.
 
 ## Modèle de langage
 
@@ -21,8 +21,8 @@ Choisissez un modèle qui gère les appels d’outils : c’est par eux que l�
 <Providers kind="model" locale="fr">
 <ProviderSetup kind="model" brand="openrouter">
 
-Une seule clé pour les modèles de nombreux éditeurs, Claude et Gemini compris. Le choix par défaut,
-et celui qui est testé.
+Une seule clé pour les modèles de nombreux éditeurs, Claude et Gemini compris. C’est le choix par
+défaut, et celui avec lequel l’adaptateur est testé.
 
 ```bash
 OPENROUTER_API_KEY=sk-or-...
@@ -101,8 +101,8 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-Par la couche de compatibilité OpenAI d’Anthropic, qu’Anthropic propose pour tester plutôt que pour
-la production. OpenRouter est la voie testée vers Claude.
+Par la couche de compatibilité OpenAI d’Anthropic, réservée par Anthropic aux essais, pas à la
+production. OpenRouter est la voie testée vers Claude.
 
 ```bash
 ANTHROPIC_API_KEY=sk-ant-...
@@ -119,55 +119,50 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="ollama">
 
-Rien à mettre dans `.env` : un serveur local n’a pas de clé, mais `api_key` ne peut pas être vide,
-n’importe quel mot convient. `model` est un modèle que le serveur a téléchargé.
+Pas de clé, donc pas d’`api_key` ni rien dans `.env`. `model` est un modèle que le serveur a
+téléchargé.
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: http://localhost:11434/v1
-  api_key: local
   model: qwen3
 ```
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="lm-studio">
 
-Démarrez le serveur de LM Studio. Pas de clé : n’importe quel mot convient. `model` est
-l’identifiant que LM Studio affiche pour le modèle chargé.
+Démarrez le serveur de LM Studio. Pas de clé. `model` est l’identifiant que LM Studio affiche
+pour le modèle chargé.
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: http://localhost:1234/v1
-  api_key: local
   model: qwen3-8b
 ```
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="vllm">
 
-Pas de clé, sauf si vous avez lancé vLLM avec `--api-key`. `model` est le nom que vLLM sert.
+Pas d’`api_key`, sauf si vous avez lancé vLLM avec `--api-key`. `model` est le nom que vLLM sert.
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: http://localhost:8000/v1
-  api_key: local
   model: Qwen/Qwen3-8B
 ```
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="llama-cpp">
 
-`llama-server` écoute par défaut sur le 8080, le port de l’administration : lancez-le avec
-`--port 8081`. Il sert le seul modèle qu’il a chargé, quoi que dise `model`.
+Pas de clé. `llama-server` sert le seul modèle qu’il a chargé, quoi que dise `model`.
 
 ```yaml
 model:
   kind: openai-compatible
-  base_url: http://localhost:8081/v1
-  api_key: local
+  base_url: http://localhost:8080/v1
   model: local
 ```
 
@@ -178,8 +173,7 @@ Les noms de modèles sont des exemples : tout modèle du catalogue du fourniss
 d’outils convient, et tout autre hébergeur compatible OpenAI se règle de la même façon. Sur la
 plupart des machines domestiques, un modèle local répond plus lentement qu’un modèle hébergé, et
 c’est le canal vocal qui le ressent en premier. Avec Docker, `localhost` désigne le conteneur
-lui-même : utilisez `host.docker.internal`, et sous Linux ajoutez
-`extra_hosts: ["host.docker.internal:host-gateway"]` au service `nestor` de `compose.yaml`.
+lui-même : utilisez `http://host.docker.internal:<port>` à la place.
 
 `model` accepte aussi `extra_body`, fusionné dans chaque requête (routage d’OpenRouter, réglages de
 raisonnement…), `connect_timeout_s` (5) et `read_timeout_s` (30). Un `triage_model` avec les mêmes
@@ -188,7 +182,7 @@ clés confie le tri des éléments entrants à un modèle plus petit.
 ## Parole
 
 Le canal vocal transcrit la personne et dit la réponse. ElevenLabs est aujourd’hui le seul
-fournisseur, pour les deux ; un nouveau n’arrive qu’après avoir tenu sur des mesures reproductibles
+fournisseur, pour les deux ; un autre ne sera ajouté qu’après avoir tenu sur des mesures reproductibles
 (latence, fins de tour, interruptions).
 
 <Providers kind="speech" locale="fr">
@@ -208,20 +202,31 @@ channels:
     speech:
       api_key: ${ELEVENLABS_API_KEY}
       voice_id: GPAQQPp9dazaB2bl4zg9
-      language: fr
 ```
 
-`voice_id` est n’importe quelle voix de votre bibliothèque ElevenLabs. `language` est la langue
-que la transcription attend (`fr` par défaut, `en` pour l’anglais) ; la voix suit la langue du
-texte.
+`voice_id` est n’importe quelle voix de votre bibliothèque ElevenLabs. La voix suit la langue du
+texte ; la transcription attend de l’anglais, sauf si `speech` fixe une autre `language` (voir plus
+bas).
 
 </ProviderSetup>
 </Providers>
 
-## Sans la voix
+## Canaux
 
-Nestor fonctionne sans canal vocal : parlez-lui par Telegram, sans fournisseur de parole.
-Remplacez l’entrée `voice` de `channels` par :
+Chaque canal est une entrée de `channels`, et plusieurs peuvent tourner ensemble, avec la même
+mémoire. Telegram est livré avec le paquet. Le canal vocal est l’extra `voice` (voir
+[Installer](/fr/docs/install/)) : la voix en temps réel dans un navigateur et sur les
+[satellites](/fr/docs/satellites/), avec les services de parole ci-dessus.
+
+<Providers kind="channel" locale="fr">
+<ProviderSetup kind="channel" brand="telegram">
+
+Créez un bot avec [@BotFather](https://t.me/BotFather) sur Telegram et mettez son jeton dans
+`.env` :
+
+```bash
+TELEGRAM_BOT_TOKEN=123456:ABC-...
+```
 
 ```yaml
 channels:
@@ -229,13 +234,46 @@ channels:
     token: ${TELEGRAM_BOT_TOKEN}
 ```
 
-```bash
-TELEGRAM_BOT_TOKEN=123456:ABC-...
+Ajoutez `"telegram:<votre chat id>"` à vos `accounts` dans `household` pour que le bot vous
+reconnaisse. Il lit les messages texte ; les messages vocaux et les photos sont ignorés.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="voice">
+
+Installez l’extra `voice` (l’image Docker le contient), puis ajoutez le canal avec son fournisseur
+de parole :
+
+```yaml
+channels:
+  - kind: voice
+    room: salon
+    host: 0.0.0.0
+    speech:
+      api_key: ${ELEVENLABS_API_KEY}
+      voice_id: GPAQQPp9dazaB2bl4zg9
 ```
 
-Le jeton vient de [@BotFather](https://t.me/BotFather) sur Telegram. Ajoutez
-`"telegram:<votre chat id>"` à vos `accounts` dans `household` pour que le bot vous reconnaisse.
-Gardez tout de même l’extra `voice` installé (voir [Installer](/fr/docs/install/)).
+`room` est la pièce où se tient la conversation vocale. `host: 0.0.0.0` permet aux satellites de
+votre réseau de joindre le serveur ; appairez-les ensuite comme l’explique
+[Satellites](/fr/docs/satellites/).
+
+</ProviderSetup>
+</Providers>
+
+## En français
+
+Nestor parle anglais par défaut. Pour un foyer francophone, réglez la langue de la persona et, avec
+le canal vocal, celle de la transcription :
+
+```yaml
+persona:
+  language: French
+
+channels:
+  - kind: voice
+    speech:
+      language: fr
+```
 
 ## Où ranger les clés
 
@@ -244,8 +282,8 @@ Gardez tout de même l’extra `voice` installé (voir [Installer](/fr/docs/inst
   gestionnaire de services, Docker) l’emporte sur le fichier.
 - **Le coffre**, chiffré dans le dossier de données, appelé par `${secret:nom}` : réglé avec
   `nestor secrets set <nom>` (saisi sans écho) ou depuis l’administration, listé avec
-  `nestor secrets list`. Préférable une fois l’installation stabilisée : aucune clé en clair sur
-  le disque, et l’administration peut les changer.
+  `nestor secrets list`. Mieux vaut y passer une fois l’installation stabilisée : aucune clé ne
+  reste en clair sur le disque, et l’administration peut les changer.
 
 ```bash
 nestor secrets set openrouter   # puis, dans nestor.yaml : api_key: ${secret:openrouter}

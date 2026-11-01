@@ -21,10 +21,11 @@ const providers = PROVIDERS[kind];
 ---
 
 <div class="providers" data-providers={kind}>
-  <div role="tablist" aria-label={kind === "model" ? t("providers-model") : t("providers-speech")} class="providers-mosaic">
+  <div role="tablist" aria-label={t(`providers-${kind}`)} class="providers-mosaic">
     {
-      providers.map(({ brand, status, local }, i) => {
-        const { name, hex } = BRANDS[brand] as BrandInfo;
+      providers.map(({ brand, status, local, label }, i) => {
+        const { hex } = BRANDS[brand] as BrandInfo;
+        const name = label ? t(label) : (BRANDS[brand] as BrandInfo).name;
         const id = panelId(kind, brand);
         return (
           <button

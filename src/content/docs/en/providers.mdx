@@ -1,15 +1,16 @@
 ---
 title: Providers
-description: The model and the speech services Nestor works with today, what is planned, and how to set each one up.
+description: The models, speech services and channels Nestor works with today, what is planned, and how to set each one up.
 ---
 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-Nestor needs a **language model** for the agent, always, and **speech** services for the voice
-channel, only if you use it. Both are set in `nestor.yaml`, their keys in the `.env` next to it.
-`nestor init` writes OpenRouter and ElevenLabs: pick another provider below, paste its blocks over
-the matching ones, then run `nestor check`.
+Nestor needs a **language model** for the agent, and **speech** services only for the voice
+channel. People reach it through **channels**: Telegram, the voice channel, or both. Everything is
+set in `nestor.yaml`, with the keys in the `.env` next to it. `nestor init` writes OpenRouter and
+ElevenLabs: pick another provider below, paste its blocks over the matching ones, then run
+`nestor check`.
 
 ## Language model
 
@@ -20,7 +21,7 @@ a model that supports tool calls: the agent acts through them.
 <Providers kind="model" locale="en">
 <ProviderSetup kind="model" brand="openrouter">
 
-One key for models from many vendors, Claude and Gemini included. The default, and the tested one.
+One key for models from many vendors, Claude and Gemini included. It is the default, and the provider the adapter is tested against.
 
 ```bash
 OPENROUTER_API_KEY=sk-or-...
@@ -99,7 +100,7 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-Through Anthropic’s OpenAI compatibility layer, which Anthropic offers for testing rather than
+Through Anthropic’s OpenAI compatibility layer, which Anthropic intends for testing, not for
 production. OpenRouter is the tested way to Claude.
 
 ```bash
@@ -117,55 +118,48 @@ model:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="ollama">
 
-Nothing to put in `.env`: a local server has no key, but `api_key` cannot be empty, so any word
-will do. `model` is one the server has pulled.
+No key, so no `api_key` and nothing in `.env`. `model` is one the server has pulled.
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: http://localhost:11434/v1
-  api_key: local
   model: qwen3
 ```
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="lm-studio">
 
-Start LM Studio’s server. No key: any word will do. `model` is the identifier LM Studio shows for
-the loaded model.
+Start LM Studio’s server. No key. `model` is the identifier LM Studio shows for the loaded model.
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: http://localhost:1234/v1
-  api_key: local
   model: qwen3-8b
 ```
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="vllm">
 
-No key unless you started vLLM with `--api-key`. `model` is the name vLLM serves.
+No `api_key` unless you started vLLM with `--api-key`. `model` is the name vLLM serves.
 
 ```yaml
 model:
   kind: openai-compatible
   base_url: http://localhost:8000/v1
-  api_key: local
   model: Qwen/Qwen3-8B
 ```
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="llama-cpp">
 
-`llama-server` listens on 8080 by default, the admin’s port: start it with `--port 8081`. It serves
-the one model it loaded, whatever `model` says.
+No key. `llama-server` serves the one model it loaded, whatever `model` says.
 
 ```yaml
 model:
   kind: openai-compatible
-  base_url: http://localhost:8081/v1
-  api_key: local
+  base_url: http://localhost:8080/v1
   model: local
 ```
 
@@ -175,8 +169,7 @@ model:
 The model names are examples: any model of the provider’s catalogue that supports tool calls will
 do, and any other OpenAI-compatible host works the same way. On most home hardware a local model
 answers more slowly than a hosted one, and the voice channel feels it first. With Docker,
-`localhost` is the container itself: use `host.docker.internal` instead, and on Linux add
-`extra_hosts: ["host.docker.internal:host-gateway"]` to the `nestor` service of `compose.yaml`.
+`localhost` is the container itself: use `http://host.docker.internal:<port>` instead.
 
 `model` also takes `extra_body`, merged into every request (OpenRouter’s routing, reasoning
 settings…), `connect_timeout_s` (5) and `read_timeout_s` (30). A `triage_model` with the same keys
@@ -205,19 +198,30 @@ channels:
     speech:
       api_key: ${ELEVENLABS_API_KEY}
       voice_id: GPAQQPp9dazaB2bl4zg9
-      language: fr
 ```
 
-`voice_id` is any voice of your ElevenLabs library. `language` is what the transcription listens
-for (`fr` by default, `en` for English); the voice follows the language of the text.
+`voice_id` is any voice of your ElevenLabs library. The voice follows the language of the text;
+the transcription listens for English unless `speech` sets another `language` (see
+below).
 
 </ProviderSetup>
 </Providers>
 
-## Without voice
+## Channels
 
-Nestor works without a voice channel: talk to it through Telegram, with no speech provider. Replace
-the `voice` entry of `channels` with:
+Each channel is an entry of `channels`, and several can run side by side with the same memory.
+Telegram comes with the package. The voice channel is the `voice` extra (see
+[Install](/docs/install/)): realtime voice in a browser and on [satellites](/docs/satellites/),
+with the speech services above.
+
+<Providers kind="channel" locale="en">
+<ProviderSetup kind="channel" brand="telegram">
+
+Create a bot with Telegram’s [@BotFather](https://t.me/BotFather) and put its token in `.env`:
+
+```bash
+TELEGRAM_BOT_TOKEN=123456:ABC-...
+```
 
 ```yaml
 channels:
@@ -225,13 +229,45 @@ channels:
     token: ${TELEGRAM_BOT_TOKEN}
 ```
 
-```bash
-TELEGRAM_BOT_TOKEN=123456:ABC-...
+Add `"telegram:<your chat id>"` to your `accounts` in `household` so the bot knows you. It reads
+text messages; voice notes and pictures are ignored.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="voice">
+
+Install the `voice` extra (the Docker image has it), then add the channel with its speech
+provider:
+
+```yaml
+channels:
+  - kind: voice
+    room: salon
+    host: 0.0.0.0
+    speech:
+      api_key: ${ELEVENLABS_API_KEY}
+      voice_id: GPAQQPp9dazaB2bl4zg9
 ```
 
-The token comes from Telegram’s [@BotFather](https://t.me/BotFather). Add `"telegram:<your chat id>"`
-to your `accounts` in `household` so the bot knows you. Keep the `voice` extra installed all the
-same (see [Install](/docs/install/)).
+`room` is where the voice conversation takes place. `host: 0.0.0.0` lets satellites on your
+network reach the server; then pair them as [Satellites](/docs/satellites/) explains.
+
+</ProviderSetup>
+</Providers>
+
+## In French
+
+Nestor speaks English by default. For a French-speaking household, set the language of the persona
+and, with the voice channel, of the transcription:
+
+```yaml
+persona:
+  language: French
+
+channels:
+  - kind: voice
+    speech:
+      language: fr
+```
 
 ## Where keys live
 
@@ -240,8 +276,8 @@ same (see [Install](/docs/install/)).
   Docker) wins over the file.
 - **The vault**, encrypted in the data folder, referred to as `${secret:name}`: set with
   `nestor secrets set <name>` (asked without echo) or from the admin, listed with
-  `nestor secrets list`. Better once the installation settles: no key in clear on disk, and the
-  admin can change them.
+  `nestor secrets list`. Move keys there once the installation settles: none sits in clear on disk,
+  and the admin can change them.
 
 ```bash
 nestor secrets set openrouter   # then, in nestor.yaml: api_key: ${secret:openrouter}

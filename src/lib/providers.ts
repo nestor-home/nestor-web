@@ -1,12 +1,15 @@
 /**
- * The providers the documentation's picker shows (docs/providers): the language models the agent
- * talks to and the speech services of the voice channel. `available` providers have a setup, written
- * in the page's content; `planned` ones show the shared badge and a one-line note. The first of a
- * kind is its default: the one `nestor init` writes, shown without JavaScript.
+ * What the documentation's pickers show (docs/providers): the language models the agent talks to,
+ * the speech services of the voice channel, and the channels people reach Nestor through.
+ * `available` ones have a setup, written in the page's content; `planned` ones show the shared
+ * badge and a one-line note. The first of a kind is shown without JavaScript (for models and
+ * speech, the one `nestor init` writes). The messaging channels are the home page's own list
+ * (`lib/integrations.ts`), so the two pages never disagree.
  */
 import type { BrandKey } from "@/lib/brands";
+import { INTEGRATIONS } from "@/lib/integrations";
 
-export type ProviderKind = "model" | "speech";
+export type ProviderKind = "model" | "speech" | "channel";
 
 export interface Provider {
   /** the brand mark and name, and the tile's address: `#<kind>-<brand>` */
@@ -14,7 +17,11 @@ export interface Provider {
   status: "available" | "planned";
   /** runs on the household's own machine */
   local?: boolean;
+  /** a Fluent message naming the tile, for what is not a brand (the voice channel) */
+  label?: string;
 }
+
+const messaging = INTEGRATIONS.find((g) => g.group === "messages")?.items ?? [];
 
 export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
   model: [
@@ -38,6 +45,11 @@ export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
     { brand: "whisper", status: "planned", local: true },
     { brand: "kokoro", status: "planned", local: true },
     { brand: "piper", status: "planned", local: true },
+  ],
+  channel: [
+    ...messaging.filter((c) => c.status === "available"),
+    { brand: "voice", status: "available", label: "providers-voice" },
+    ...messaging.filter((c) => c.status === "planned"),
   ],
 };
 
