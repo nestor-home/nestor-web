@@ -22,7 +22,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      # the build generates the protocol's JSON Schemas with uvx (scripts/schemas.mjs)
+      # the build takes the protocol's JSON Schemas and the OAuth relay from the server package with uvx (scripts/server.mjs)
       - uses: astral-sh/setup-uv@v7
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
@@ -31,6 +31,12 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e
+      # what only the site's Nginx does (deploy/nginx.conf): the OAuth relay's exact URL, redirects
+      - run: docker build -t nestor-web . && docker run -d --rm -p 8080:8080 nestor-web
+      - run: pnpm e2e e2e/nginx.spec.ts
+        env:
+          E2E_NGINX: "1"
+          E2E_BASE: http://localhost:8080
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
