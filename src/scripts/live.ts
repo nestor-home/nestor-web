@@ -10,8 +10,7 @@
  * Nothing here runs under reduced motion: the characters keep their static pose and the dock stays
  * hidden. Every loop pauses when the character is off screen or the tab is hidden.
  */
-import { NestorController } from "@/character/controller";
-import type { NestorState } from "@/character/render";
+import { NestorController, type NestorState } from "@nestor-home/character";
 
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const interactive = "a, button, [role=tab], summary";

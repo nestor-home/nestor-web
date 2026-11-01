@@ -2,7 +2,7 @@
  * The site's only global script: small, dependency-free behaviours wired by data attributes.
  * Everything here is progressive — without it, every section reads in full.
  */
-import { drawDither } from "@/character/dither";
+import { drawDither } from "@nestor-home/character";
 import { nextIndex } from "@/lib/tabs";
 
 const root = document.documentElement;
