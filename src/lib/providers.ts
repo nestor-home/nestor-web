@@ -31,6 +31,7 @@ export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
   ],
   speech: [
     { brand: "elevenlabs", status: "available" },
+    { brand: "gradium", status: "planned" },
     { brand: "deepgram", status: "planned" },
     { brand: "cartesia", status: "planned" },
     { brand: "openai", status: "planned" },

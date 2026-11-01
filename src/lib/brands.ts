@@ -134,6 +134,7 @@ export const BRANDS = {
   vllm: lobe("vLLM", vllmSvg, siVllm),
   "llama-cpp": monogram("llama.cpp", "L"),
   elevenlabs: lobe("ElevenLabs", elevenlabsSvg),
+  gradium: monogram("Gradium", "G"),
   deepgram: mark("Deepgram", siDeepgram),
   cartesia: monogram("Cartesia", "C"),
   whisper: lobe("Whisper", openaiSvg), // OpenAI's model: its maker's mark
