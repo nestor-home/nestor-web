@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/nestor-home/nestor-web/compare/v0.2.0...v0.3.0) (2026-11-01)
+
+
+### Features
+
+* document nestor.satellite/1 ([#13](https://github.com/nestor-home/nestor-web/issues/13)) ([aa4a1a7](https://github.com/nestor-home/nestor-web/commit/aa4a1a72588b74fdb8df265cf90ef64560cd7701))
+
 ## [0.2.0](https://github.com/nestor-home/nestor-web/compare/v0.1.0...v0.2.0) (2026-11-01)
 
 
