@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/nestor-home/nestor-web/compare/v0.5.0...v0.5.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* describe watch triage as one small-model read per mail ([#24](https://github.com/nestor-home/nestor-web/issues/24)) ([a2483de](https://github.com/nestor-home/nestor-web/commit/a2483dec176c6c3f085fdf3437a9d0a21bc60e5f))
+
 ## [0.5.0](https://github.com/nestor-home/nestor-web/compare/v0.4.0...v0.5.0) (2026-11-01)
 
 
