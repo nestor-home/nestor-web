@@ -17,9 +17,9 @@ voies lancent le même serveur :
 | Pour                        | une machine de développement, un essai, écrire des satellites | un environnement que vous avez déjà                   | un serveur à la maison, toujours allumé |
 
 Le paquet seul fait tourner Nestor à l’écrit : l’administration, Telegram, les connecteurs, tout
-modèle compatible OpenAI. Le canal vocal temps réel, auquel se connectent les satellites, est
-l’extra `voice` : installez `'nestor-home[voice]'` pour l’ajouter. L’image contient tous les extras.
-Une configuration qui utilise le canal vocal sans l’extra échoue au démarrage et donne la commande
+modèle compatible OpenAI, et les satellites à l’écrit. Leur voix temps réel est l’extra `voice` :
+installez `'nestor-home[voice]'` pour l’ajouter. L’image contient tous les extras. Une configuration
+qui donne une voix aux satellites sans l’extra échoue au démarrage et donne la commande
 à lancer.
 
 ## Avec uv
@@ -33,7 +33,7 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-Avec le canal vocal, la première ligne devient `uv tool install 'nestor-home[voice]'`, et
+Avec la voix des satellites, la première ligne devient `uv tool install 'nestor-home[voice]'`, et
 `nestor init` demande s’il faut l’utiliser. Remplissez les clés laissées vides dans `.env` (voir
 [Fournisseurs](/fr/docs/providers/)), puis :
 
@@ -64,7 +64,7 @@ mkdir nestor && cd nestor
 ```
 
 Ensuite `nestor check` et `nestor run` comme plus haut, depuis l’environnement (activez-le, ou
-appelez `~/.venvs/nestor/bin/nestor`). Pour le canal vocal, installez
+appelez `~/.venvs/nestor/bin/nestor`). Pour la voix des satellites, installez
 `'nestor-home[voice]'` à la place. Mise à jour : la même commande avec `-U`.
 
 ## Avec Docker
@@ -83,8 +83,8 @@ docker compose up -d
 
 `data/` contient `nestor.yaml`, son `.env` et `state/`. Le conteneur démarre en root le temps de
 donner `data` à son utilisateur (uid 1000), puis tourne sous cet utilisateur. Il publie deux ports :
-8470 pour l’administration (`http://<adresse de la machine>:8470`) et 8471 pour le serveur vocal,
-auquel s’appairent les satellites. Pour les changer, réglez `admin.port` et le `port` du canal vocal
+8470 pour l’administration (`http://<adresse de la machine>:8470`) et 8471 pour les satellites,
+qui s’y appairent et y parlent. Pour les changer, réglez `admin.port` et le `port` du canal des satellites
 dans `nestor.yaml`, puis les `ports` correspondants dans `compose.yaml`.
 
 Chaque commande `nestor` passe par l’image, qui lit `/data/nestor.yaml` :

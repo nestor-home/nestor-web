@@ -5,21 +5,21 @@ description: Devices that give Nestor a voice and a body, and how a person pairs
 ---
 
 A satellite is a device paired with the Nestor server: a Raspberry Pi with a speaker, a tab on a
-wall tablet, a Reachy Mini robot. A microphone and a speaker are the minimum. A screen, a camera or
-motors are optional capabilities: the device declares them, a person allows them, and nothing in
-Nestor assumes they are there.
+wall tablet, a Reachy Mini robot. People type on it, talk to it, or both: a keyboard and a screen
+are enough, and so are a microphone and a speaker. A camera or motors are optional capabilities
+too: the device declares them, a person allows them, and nothing in Nestor assumes they are there.
 
-Satellites connect to the server’s voice channel: install it with the `voice` extra and add it to
-the configuration (see [Providers](/docs/providers/)).
-
-The voice channel listens on port 8471 (its `port` in `nestor.yaml`). Satellites connect there,
-and so does the browser client for development, at `/client`.
+Satellites connect to the server’s `satellites` channel, on port 8471 (its `port` in
+`nestor.yaml`). In writing they need nothing more; to talk aloud, give the channel a `voice`, with
+the `voice` extra (see [Providers](/docs/providers/)).
 
 ## What a satellite does
 
 - It pairs once and keeps its token.
 - It declares in a manifest who it is and what it can do.
-- It streams audio both ways over WebRTC.
+- It holds a link to the server, a WebSocket that carries every message.
+- It talks with the assistant in writing, aloud or both: typed text and written answers on the
+  link, audio both ways over WebRTC.
 - It carries out the server’s intents and acknowledges each one.
 - It reports the observations it was allowed to (speech activity, a person detected).
 
@@ -30,6 +30,8 @@ its head and antennas, a screen could draw a face, a plain speaker ignores it.
 
 | Capability                | The device…                                             |
 | ------------------------- | ------------------------------------------------------- |
+| `text.input`              | sends what a person typed                               |
+| `text.display`            | shows the assistant’s answers                           |
 | `audio.capture`           | sends its microphone to the server                      |
 | `audio.playback`          | plays the server’s voice                                |
 | `audio.speech_activity`   | reports when someone starts and stops speaking          |

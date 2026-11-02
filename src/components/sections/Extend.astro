@@ -59,7 +59,7 @@ const CONFORMANCE =
   "uvx --from 'nestor-home[voice]' nestor satellites conformance -- nestor-satellite run --core {url} --room salon --null-audio --token-file {state}/token.json";
 
 /** the adapters nestor-home declares itself (its pyproject's `nestor.adapters`) */
-const BUILTINS = ["openai-compatible", "hermes", "telegram", "voice", "home-assistant", "mcp", "google", "imap"];
+const BUILTINS = ["openai-compatible", "hermes", "telegram", "satellites", "home-assistant", "mcp", "google", "imap"];
 
 const [mcp, entry, plugin, config] = await Promise.all([
   highlight(MCP, "yaml"),

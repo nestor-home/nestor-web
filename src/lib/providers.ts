@@ -46,7 +46,7 @@ export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
   ],
   channel: [
     ...messaging.filter((c) => c.status === "available"),
-    { brand: "voice", status: "available", label: "providers-voice" },
+    { brand: "satellites", status: "available", label: "providers-satellites" },
     ...messaging.filter((c) => c.status === "planned"),
   ],
 };

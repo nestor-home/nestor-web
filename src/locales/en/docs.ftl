@@ -13,6 +13,6 @@ docs-group-project = Project
 providers-model = Language models
 providers-speech = Speech providers
 providers-channel = Channels
-providers-voice = Voice
+providers-satellites = Satellites
 providers-local = local
 providers-planned-note = { $name } is planned: Nestor does not support it yet.

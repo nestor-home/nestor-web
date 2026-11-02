@@ -5,21 +5,22 @@ description: Les appareils qui donnent à Nestor une voix et un corps, et commen
 ---
 
 Un satellite est un appareil appairé au serveur Nestor : un Raspberry Pi avec une enceinte, un
-onglet sur une tablette murale, un robot Reachy Mini. Un micro et un haut-parleur suffisent. Un
-écran, une caméra ou des moteurs sont des capacités optionnelles : l’appareil les déclare, une
-personne les autorise, et rien dans Nestor ne suppose qu’elles sont là.
+onglet sur une tablette murale, un robot Reachy Mini. On tape dessus, on lui parle, ou les deux :
+un clavier et un écran suffisent, un micro et un haut-parleur aussi. Une caméra ou des moteurs sont
+aussi des capacités optionnelles : l’appareil les déclare, une personne les autorise, et rien dans
+Nestor ne suppose qu’elles sont là.
 
-Les satellites se connectent au canal vocal du serveur : installez-le avec l’extra `voice` et
-ajoutez-le à la configuration (voir [Fournisseurs](/fr/docs/providers/)).
-
-Le canal vocal écoute sur le port 8471 (son `port` dans `nestor.yaml`). Les satellites s’y
-connectent, tout comme le client navigateur de développement, sur `/client`.
+Les satellites se connectent au canal `satellites` du serveur, sur le port 8471 (son `port` dans
+`nestor.yaml`). À l’écrit, il ne leur faut rien de plus ; pour parler à voix haute, donnez une
+`voice` au canal, avec l’extra `voice` (voir [Fournisseurs](/fr/docs/providers/)).
 
 ## Ce que fait un satellite
 
 - Il s’appaire une fois et garde son jeton.
 - Il déclare dans un manifeste qui il est et ce qu’il sait faire.
-- Il fait passer l’audio dans les deux sens en WebRTC.
+- Il tient un lien avec le serveur, un WebSocket qui porte tous les messages.
+- Il parle avec l’assistant par écrit, à voix haute ou les deux : le texte tapé et les réponses
+  écrites passent par le lien, l’audio dans les deux sens en WebRTC.
 - Il exécute les intentions du serveur et accuse réception de chacune.
 - Il remonte les observations qu’on lui a permises (activité vocale, personne détectée).
 
@@ -31,6 +32,8 @@ l’ignore.
 
 | Capacité                  | L’appareil…                                          |
 | ------------------------- | ---------------------------------------------------- |
+| `text.input`              | envoie ce qu’une personne a tapé                     |
+| `text.display`            | affiche les réponses de l’assistant                  |
 | `audio.capture`           | envoie son micro au serveur                          |
 | `audio.playback`          | joue la voix du serveur                              |
 | `audio.speech_activity`   | signale quand quelqu’un commence et arrête de parler |
