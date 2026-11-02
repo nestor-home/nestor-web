@@ -13,7 +13,7 @@ interface Props {
 const { t } = Astro.props;
 const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
 const installs = QUICK_INSTALL;
-const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-models", "hero-fact-sdks"];
+const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
 ---
 
 <section class="hero relative overflow-hidden" aria-labelledby="hero-title" data-dock-after>
@@ -99,7 +99,6 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-models", "her
     display: none;
   }
   .hero-install:has(#hero-install-uv:checked) :global(.hero-way-uv),
-  .hero-install:has(#hero-install-pip:checked) :global(.hero-way-pip),
   .hero-install:has(#hero-install-docker:checked) :global(.hero-way-docker) {
     display: flex;
   }

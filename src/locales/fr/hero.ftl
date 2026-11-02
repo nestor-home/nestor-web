@@ -10,5 +10,4 @@ hero-start = Démarrer
 hero-install-title = Installer
 hero-fact-license = Licence MIT
 hero-fact-python = Python 3.12+
-hero-fact-models = Tout modèle compatible OpenAI
 hero-fact-sdks = SDK satellites en Python, TypeScript, Rust
