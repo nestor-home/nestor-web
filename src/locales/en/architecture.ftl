@@ -14,7 +14,7 @@ arch-memory-point-1 = Shared within the household by default, personal in its so
 arch-memory-point-2 = Full-text search today; search by meaning (vectors) is planned
 
 arch-initiative = Initiative
-arch-initiative-text = Watches created from the conversation, three-stage triage of what comes in, and a delivery decision (to whom, where, how, when) written with its reason.
+arch-initiative-text = Watches created from the conversation, a small model that reads what comes in against all of them at once, and a delivery decision (to whom, where, how, when) written with its reason.
 arch-initiative-point-1 = Quiet hours, “not now”, never during a conversation
 arch-initiative-point-2 = A spoken message left unanswered is followed up in writing
 

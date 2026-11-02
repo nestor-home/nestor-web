@@ -33,13 +33,13 @@ const steps: { mood: string; scene: string; where?: Partial<Record<Where, string
   { mood: "idle", scene: "why" },
 ];
 
-/** what comes in while it watches: how far each one goes through the triage */
+/** what comes in while it watches: the small model reads every mail, the agent writes only for a match */
 const incoming = [
   { id: "loop-in-1", reach: 1, out: "loop-stop" },
-  { id: "loop-in-2", reach: 2, out: "loop-stop" },
-  { id: "loop-in-3", reach: 3, out: "loop-pass" },
+  { id: "loop-in-2", reach: 1, out: "loop-stop" },
+  { id: "loop-in-3", reach: 2, out: "loop-pass" },
 ];
-const gates = ["loop-rules", "loop-model", "loop-agent"];
+const gates = ["loop-model", "loop-agent"];
 
 const journal = [
   { from: 1, at: "08:02", text: "loop-j-1" },
@@ -108,7 +108,7 @@ const speakers = [
                           <dd class="state" data-state="shipped">{t("loop-watch-state")}</dd>
                         </div>
                         {
-                          ["owner", "source", "keywords", "end"].map((k) => (
+                          ["owner", "source", "what", "end"].map((k) => (
                             <div class="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-2 px-3 py-1.5">
                               <dt class="text-ink-muted">{t(`loop-watch-${k}`)}</dt>
                               <dd class="text-ink">{t(`loop-watch-${k}-value`)}</dd>
@@ -118,7 +118,7 @@ const speakers = [
                       </dl>
                     </>
                   )}
-                  {/* 2. what comes in, sorted from cheap to costly */}
+                  {/* 2. what comes in: the small model reads it all, the agent writes for a match */}
                   {scene === "triage" && (
                     <>
                       <div class="triage card">
@@ -129,7 +129,7 @@ const speakers = [
                         </div>
                         {
                           incoming.map((m, row) => (
-                            <div class="triage-row" data-pass={m.reach === 3 ? "" : undefined}>
+                            <div class="triage-row" data-pass={m.reach === gates.length ? "" : undefined}>
                               <span class="flex min-w-0 items-center gap-2 text-sm text-ink">
                                 <Mail className="size-3.5 shrink-0 text-ink-muted" strokeWidth={1.6} aria-hidden="true" />
                                 <span class="truncate">{t(m.id)}</span>
@@ -138,11 +138,11 @@ const speakers = [
                                 <span class="gate">
                                   <span
                                     class:list={["gate-dot", gate < m.reach ? "gate-on" : "gate-off"]}
-                                    style={`--d:${row * 3 + gate}`}
+                                    style={`--d:${row * gates.length + gate}`}
                                   />
                                 </span>
                               ))}
-                              <span class="gate-out font-mono text-2xs" style={`--d:${row * 3 + 3}`}>
+                              <span class="gate-out font-mono text-2xs" style={`--d:${row * gates.length + gates.length}`}>
                                 {t(m.out)}
                               </span>
                             </div>
@@ -390,7 +390,7 @@ const speakers = [
     width: 100%;
   }
 
-  /* triage: three mails, three gates, most stop early */
+  /* triage: three mails, each read by the small model, one goes on to the agent */
   .triage {
     width: 100%;
     max-width: 34rem;
@@ -398,7 +398,7 @@ const speakers = [
   }
   .triage-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) repeat(3, 5rem) 4.6rem;
+    grid-template-columns: minmax(0, 1fr) repeat(2, 5rem) 4.6rem;
     align-items: center;
     gap: 0.5rem;
     padding: 0.7rem 0.85rem;
@@ -733,7 +733,7 @@ const speakers = [
       font-size: var(--text-xs);
     }
     .triage-row {
-      grid-template-columns: minmax(0, 1fr) repeat(3, 1.4rem) 4rem;
+      grid-template-columns: minmax(0, 1fr) repeat(2, 1.4rem) 4rem;
       gap: 0.35rem;
       padding: 0.55rem 0.6rem;
     }

@@ -101,7 +101,7 @@ test("the journal's events can be read one by one", async ({ page }) => {
   await page.goto("/developers/#journal");
   const decision = page.getByRole("tab", { name: /The decision/ });
   await decision.click();
-  await expect(page.locator("#ev-4")).toContainText("delivery-in-room");
+  await expect(page.locator("#ev-5")).toContainText("delivery-in-room");
 });
 
 test("choosing a part of the architecture explains it", async ({ page }) => {
