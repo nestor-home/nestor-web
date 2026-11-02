@@ -6,11 +6,11 @@ description: The models, speech services and channels Nestor works with today, w
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-Nestor needs a **language model** for the agent, and **speech** services only for the voice
-channel. People reach it through **channels**: Telegram, the voice channel, or both. Everything is
-set in `nestor.yaml`, with the keys in the `.env` next to it. `nestor init` asks for the model
-server and the model, and writes Telegram, or the voice channel with ElevenLabs when the `voice`
-extra is installed. To change a provider later, paste its blocks below over the matching ones, then
+Nestor needs a **language model** for the agent, and **speech** services only to talk aloud.
+People reach it through **channels**: Telegram, satellites (in writing, aloud or both), or all of
+them. Everything is set in `nestor.yaml`, with the keys in the `.env` next to it. `nestor init`
+asks for the model server and the model, and writes satellites with Telegram, or satellites with
+their voice on ElevenLabs when the `voice` extra is installed. To change a provider later, paste its blocks below over the matching ones, then
 run `nestor check`.
 
 ## Language model
@@ -174,7 +174,7 @@ model:
 
 The model names are examples: any model of the provider’s catalogue that supports tool calls will
 do, and any other OpenAI-compatible host works the same way. On most home hardware a local model
-answers more slowly than a hosted one, and the voice channel feels it first.
+answers more slowly than a hosted one, and speech feels it first.
 
 With Docker, `localhost` is the container itself. A model server running on the host is
 `http://host.docker.internal:<port>/v1`: `http://host.docker.internal:11434/v1` for Ollama,
@@ -188,7 +188,7 @@ gives the sorting of incoming items to a smaller model.
 
 ## Speech
 
-The voice channel transcribes the person and speaks the answer. ElevenLabs is the one provider
+The satellites’ voice transcribes the person and speaks the answer. ElevenLabs is the one provider
 today, for both; a new one ships once it holds up on reproducible measurements (latency, turn
 ends, interruptions).
 
@@ -203,12 +203,12 @@ ELEVENLABS_API_KEY=sk_...
 
 ```yaml
 channels:
-  - kind: voice
-    room: salon
+  - kind: satellites
     host: 0.0.0.0
-    speech:
-      api_key: ${ELEVENLABS_API_KEY}
-      voice_id: GPAQQPp9dazaB2bl4zg9
+    voice:
+      speech:
+        api_key: ${ELEVENLABS_API_KEY}
+        voice_id: GPAQQPp9dazaB2bl4zg9
 ```
 
 `voice_id` is any voice of your ElevenLabs library. The voice follows the language of the text;
@@ -221,9 +221,9 @@ below).
 ## Channels
 
 Each channel is an entry of `channels`, and several can run side by side with the same memory.
-Telegram comes with the package. The voice channel is the `voice` extra (see
-[Install](/docs/install/)): realtime voice in a browser and on [satellites](/docs/satellites/),
-with the speech services above.
+Telegram and [satellites](/docs/satellites/) come with the package. Satellites talk in writing
+out of the box; their voice is the `voice` extra (see [Install](/docs/install/)), with the speech
+services above.
 
 <Providers kind="channel" locale="en">
 <ProviderSetup kind="channel" brand="telegram">
@@ -244,24 +244,32 @@ Add `"telegram:<your chat id>"` to your `accounts` in `household` so the bot kno
 text messages; voice notes and pictures are ignored.
 
 </ProviderSetup>
-<ProviderSetup kind="channel" brand="voice">
+<ProviderSetup kind="channel" brand="satellites">
 
-Install the `voice` extra (the Docker image has it), then add the channel with its speech
-provider:
+Devices people type on, talk to, or both. In writing, nothing more is needed:
 
 ```yaml
 channels:
-  - kind: voice
-    room: salon
+  - kind: satellites
     host: 0.0.0.0
-    speech:
-      api_key: ${ELEVENLABS_API_KEY}
-      voice_id: GPAQQPp9dazaB2bl4zg9
 ```
 
-`room` is where the voice conversation takes place. `host: 0.0.0.0` lets satellites on your
-network reach the server, on port 8471 (set by `port`); then pair them as
-[Satellites](/docs/satellites/) explains.
+To talk to them too, install the `voice` extra (the Docker image has it) and add a `voice` with its
+speech provider:
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      speech:
+        api_key: ${ELEVENLABS_API_KEY}
+        voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`host: 0.0.0.0` lets satellites on your network reach the server, on port 8471 (set by `port`);
+then pair them as [Satellites](/docs/satellites/) explains. Each satellite talks in the room it was
+paired in. Add `"satellites:*"` to your `accounts` in `household`.
 
 </ProviderSetup>
 </Providers>
@@ -270,8 +278,8 @@ network reach the server, on port 8471 (set by `port`); then pair them as
 
 `nestor init` asks for the household’s language. Without it, Nestor speaks English, on UTC. To
 switch an existing configuration to French, set the persona’s `locale` (the fixed phrases and the
-admin), the `language` the model writes in, the household’s `timezone` and, with the voice channel,
-the transcription’s `language`:
+admin), the `language` the model writes in, the household’s `timezone` and, with the satellites’
+voice, the transcription’s `language`:
 
 ```yaml
 persona:
@@ -280,9 +288,10 @@ persona:
   timezone: Europe/Paris
 
 channels:
-  - kind: voice
-    speech:
-      language: fr
+  - kind: satellites
+    voice:
+      speech:
+        language: fr
 ```
 
 ## Where keys live

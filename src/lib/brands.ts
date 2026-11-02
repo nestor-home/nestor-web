@@ -21,7 +21,7 @@ import openaiSvg from "@lobehub/icons-static-svg/icons/openai.svg?raw";
 import openrouterSvg from "@lobehub/icons-static-svg/icons/openrouter.svg?raw";
 import vllmSvg from "@lobehub/icons-static-svg/icons/vllm.svg?raw";
 import type { LucideIcon } from "lucide-react";
-import { Mail, Mic } from "lucide-react";
+import { Mail, RadioTower } from "lucide-react";
 import {
   type SimpleIcon,
   siAnthropic,
@@ -121,7 +121,7 @@ export const BRANDS = {
   signal: mark("Signal", siSignal),
   discord: mark("Discord", siDiscord),
   matrix: mark("Matrix", siMatrix),
-  voice: glyph("Voice", Mic), // the voice channel, not a brand: its name on a page comes from Fluent
+  satellites: glyph("Satellites", RadioTower), // the satellites channel, not a brand: its name on a page comes from Fluent
   "home-assistant": mark("Home Assistant", siHomeassistant),
   "philips-hue": mark("Philips Hue", siPhilipshue),
   ikea: mark("IKEA", siIkea),

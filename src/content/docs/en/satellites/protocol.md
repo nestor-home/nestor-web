@@ -5,10 +5,11 @@ description: The standard every satellite implements, whatever its language.
 ---
 
 A **satellite** is a device that pairs with a Nestor server (the **core**), declares what it can
-do, streams audio, reports observations and carries out the core’s intents. This page is the
+do, talks with the assistant in writing, aloud or both, reports observations and carries out the
+core’s intents. This page is the
 standard: SDKs and drivers in any language implement it, and the core’s black-box
 [conformance suite](/docs/satellites/conformance/) checks them against it. This is version 1
-(see the [changelog](#10-changelog)).
+(see the [changelog](#12-changelog)).
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
@@ -28,11 +29,15 @@ device                                  core                                 hou
   │                           or, whichever comes first
   │ POST …/{pairing_id}/enrollment ───▶ approved                             (enrollment code made in the admin)
   │ GET  /satellites/pairings/{id} ───▶ approved + token (once)
-  │ POST /satellites/{device_id}/offer (Bearer token, WebRTC SDP)
-  │ data channel `nestor`: hello → welcome, intents ⇄ acks, observations
+  │ WebSocket /satellites/{device_id}/link: hello (token) → welcome, text, intents ⇄ acks, observations
+  │ POST /satellites/{device_id}/audio (Bearer token, WebRTC SDP)    only when audio is allowed
 ```
 
 A device configured with an enrollment code sends it with its first request and is approved at once.
+
+Every device holds one link, a WebSocket that carries every message. A device allowed audio also
+opens a WebRTC connection, which carries only audio. A device with a screen and a keyboard needs no
+WebRTC, no codec and no microphone.
 
 ## 2. Pairing methods
 
@@ -154,7 +159,8 @@ request ──▶ pending                         ├──▶ approved ──(f
 - **P7.** Enrollment codes MUST be normalised before they are sent (section 4.2); a device MAY send
   them as typed, the core normalises too.
 - **P8.** A device MUST keep its token secret (readable by its owner only on a file system) and forget
-  it when the core refuses it (`401` on an offer), then pair again.
+  it when the core refuses it (the link closed with `4401`, or `401` on an audio offer), then pair
+  again.
 
 ### 3.4 Core rules
 
@@ -234,9 +240,24 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 ```
 
 `id` and `room` are lowercase slugs (`^[a-z0-9][a-z0-9_-]{0,63}$`). Capabilities are `family.feature`
-names, at most 32, each declared once. Known capabilities: `audio.capture`, `audio.playback`,
-`audio.speech_activity`, `vision.person_detection`, `expression.emotion`, `motion.head`,
-`device.identify`. The manifest is sent when pairing and in `hello`.
+names, at most 32, each declared once. The manifest is sent when pairing and in `hello`. Known
+capabilities:
+
+| Capability                | The device…                                    |
+| ------------------------- | ---------------------------------------------- |
+| `text.input`              | sends what a person typed (section 8)          |
+| `text.display`            | shows the assistant’s words (section 8)        |
+| `audio.capture`           | sends its microphone (section 9)               |
+| `audio.playback`          | plays the core’s voice (section 9)             |
+| `audio.speech_activity`   | reports when someone starts and stops speaking |
+| `vision.person_detection` | reports the people it sees                     |
+| `expression.emotion`      | shows the assistant’s emotions                 |
+| `motion.head`             | moves with the assistant’s speech              |
+| `device.identify`         | makes itself noticed on request (section 6)    |
+
+A device talks with the assistant in writing (`text.*`), aloud (`audio.*`) or both: it declares what
+it has, and the household allows what it wants. A device with neither is a sensor or a body: it
+reports observations and carries out intents.
 
 ## 6. Identify
 
@@ -250,23 +271,62 @@ names, at most 32, each declared once. Known capabilities: `audio.capture`, `aud
 - Identify only helps a person tell devices apart. It proves nothing: any device can blink when told
   to, so it never replaces a code.
 
-## 7. Realtime link
+## 7. Link
 
-- **W1.** With its token, the device offers WebRTC: `POST /satellites/{device_id}/offer` with
-  `Authorization: Bearer <token>` and `{"sdp", "type"}`; the core answers `{"sdp", "type", "pc_id"}`.
-  ICE candidates follow with `PATCH` on the same path. A wrong token gets `401`; another device’s
-  `pc_id`, `403`.
-- **W2.** On the data channel `nestor`, every message is `{"type", "id", "at", "payload"}`. The device
-  MUST send `hello` (its manifest, with the paired device id) first; the core answers `welcome` (the
-  paired room and the allowed capabilities). The device MUST acknowledge each `intent.*` with `ack`
-  within a second, and MUST only report observations it was allowed. Unknown message types from the
-  core are ignored.
-- **W3.** Audio: Opus over WebRTC, the core’s voice to the device, the microphone (with
-  `audio.capture`) to the core.
-- **W4.** After a hang-up or a lost link, the device reconnects with the same token, waiting longer
-  between attempts.
+- **L1.** With its token, the device opens a WebSocket on `/satellites/{device_id}/link`, under the
+  core’s base URL (`ws://` for `http`, `wss://` for `https`). Its first message MUST be `hello`: its
+  manifest, with the paired device id, and its token. The core answers `welcome`: the paired room
+  and the capabilities allowed. The token travels in `hello` rather than in a header because
+  browsers cannot set headers on a WebSocket.
+- **L2.** The core closes the link without a `welcome` when `hello` is late (10 s), off-contract or
+  for another device (`4400`), or when the token is refused (`4401`). A device whose link closes with
+  `4401` MUST forget its token and pair again (P8).
+- **L3.** Every message is `{"type", "id", "at", "payload"}`, one per WebSocket text frame. The device
+  MUST acknowledge each `intent.*` with `ack` within a second, and MUST only send what it was
+  allowed: observations, `input.text` (section 8). Unknown message types from the core are ignored.
+- **L4.** A device holds one link. A new link of the same device replaces the earlier one, which the
+  core closes with `4409`. The core pings every 20 s (WebSocket pings). A device that sees them
+  SHOULD treat 60 s without any as a lost link; one that cannot (a browser’s WebSocket hides them)
+  relies on the transport closing the link.
+- **L5.** After the core closes the link (`1001` when it stops) or the link is lost, the device
+  reconnects with the same token, waiting longer between attempts.
 
-## 8. Security considerations
+| Close code | Meaning                                          | The device…                      |
+| ---------- | ------------------------------------------------ | -------------------------------- |
+| `1001`     | the core is stopping                             | reconnects (L5)                  |
+| `4400`     | `hello` late, off-contract or for another device | fixes itself, then reconnects    |
+| `4401`     | the token is refused                             | forgets it and pairs again (P8)  |
+| `4409`     | a newer link of this device replaced this one    | stops: the other link is current |
+
+## 8. Text
+
+- **T1.** A device allowed `text.input` sends what a person typed as `input.text`. Each one is a turn
+  of the conversation of the device’s room.
+- **T2.** A device allowed `text.display` receives the assistant’s words as `intent.text`, one
+  message each, in order, and shows them. An answer may come in several messages (the assistant
+  says it is looking something up, then gives the result); `final` marks the last one of a turn. An
+  unprompted message (a reminder, an announcement) is one `intent.text`, `final` set.
+- **T3.** A typed turn is answered in writing when the device was allowed `text.display`, otherwise
+  aloud. A spoken turn is answered aloud; a device also allowed `text.display` shows the same words
+  as they are said.
+- **T4.** `input.text` holds 1 to 4,000 characters, `intent.text` up to 16,000. Text is plain: no
+  Markdown, which a written answer for a screen avoids.
+
+## 9. Audio
+
+- **A1.** A device allowed `audio.capture` or `audio.playback` (in `welcome`) offers WebRTC once
+  welcomed: `POST /satellites/{device_id}/audio` with `Authorization: Bearer <token>` and
+  `{"sdp", "type"}`; the core answers `{"sdp", "type", "pc_id"}`. ICE candidates follow with `PATCH`
+  on the same path. A wrong token gets `401`; a device without a link or not allowed audio, `403`;
+  another device’s `pc_id`, `403`.
+- **A2.** The connection carries Opus audio only: the core’s voice to the device (`audio.playback`),
+  the microphone to the core (`audio.capture`). Messages never go through WebRTC.
+- **A3.** The audio lives with the link: when the link closes, the core hangs up the audio. While the
+  link is up, a device whose audio fails offers again, waiting longer between attempts.
+- **A4.** A device opens its microphone only for this connection. Pairing and the link never wait for
+  it: a browser may be waiting for a person to allow the microphone.
+
+## 10. Security considerations
 
 - **Entropy.** An enrollment code has 40 bits (about 1.1 × 10¹² values). With at most 32 codes in
   progress and at most 5 wrong codes per minute and address (20 from all addresses), the 300 guesses
@@ -281,14 +341,15 @@ names, at most 32, each declared once. Known capabilities: `audio.capture`, `aud
 - **Hashing.** Only SHA-256 hashes of codes and tokens are stored, and journaled. A presented code is
   compared with every known hash in constant time. 40 bits can be brute-forced offline from a leaked
   hash, so a hash protects a code only while it is valid: keep lifetimes short.
-- **Transport.** Codes and tokens cross the network in clear over `http`; use `https` (a
-  `nestor+https` URI) outside a trusted home network.
+- **Transport.** Codes and tokens cross the network in clear over `http` and `ws`; use `https` (a
+  `nestor+https` URI, hence `wss`) outside a trusted home network. The core never logs `hello`’s
+  token.
 - **What identify does not prove.** Identify shows which device answers, not that it is the one the
   person holds: never pair on identify alone.
 - **Consent.** Pairing gives a device only the capabilities a person allowed, never more than it
   declared.
 
-## 9. Conformance
+## 11. Conformance
 
 `check_satellite(driver)` launches the driver once per scenario: a Python coroutine function taking a
 `Launch`, or a command where `{url}` is the core’s URL and `{state}` a fresh folder for its token. The
@@ -296,25 +357,28 @@ enrollment code is given in `NESTOR_PAIRING_URI` (removed from the environment o
 scenarios). A driver in any language runs the suite from the command line: see
 [Conformance](/docs/satellites/conformance/).
 
-| Check                                                                                   | Rules  |
-| --------------------------------------------------------------------------------------- | ------ |
-| declares enrollment.provisioning                                                        | N1, P1 |
-| asks to pair; claims its token once its device code is typed                            | P2     |
-| keeps polling after a pending identify (when it declares `device.identify`)             | I1     |
-| connects with its token; sends a hello first; introduces itself as the paired device    | W1, W2 |
-| acknowledges each intent within 1 s (`intent.identify` when allowed)                    | W2, I2 |
-| every message follows the schema                                                        | W2     |
-| receives the core’s audio; sends its microphone audio                                   | W3     |
-| reconnects with the same token after a hang-up                                          | W4     |
-| pairs with the enrollment code of `NESTOR_PAIRING_URI`, no code typed                   | P1, P3 |
-| falls back to a device code after its enrollment code is refused (wrong, expired, used) | P5     |
-| presents a refused enrollment code only once (wrong, expired, used)                     | P5     |
-| waits for Retry-After when rate-limited; pairs once the limit lifts                     | P6     |
+| Check                                                                                      | Rules  |
+| ------------------------------------------------------------------------------------------ | ------ |
+| declares enrollment.provisioning                                                           | N1, P1 |
+| asks to pair; claims its token once its device code is typed                               | P2     |
+| keeps polling after a pending identify (when it declares `device.identify`)                | I1     |
+| opens its link with its token; sends a hello first; introduces itself as the paired device | L1     |
+| acknowledges each intent within 1 s (`intent.identify` when allowed)                       | L3, I2 |
+| every message follows the schema                                                           | L3     |
+| forgets a refused token and pairs again                                                    | L2, P8 |
+| reconnects with the same token after the core closes the link                              | L5     |
+| acknowledges `intent.text` (when it declares `text.display`)                               | L3, T2 |
+| receives the core’s audio; sends its microphone audio (when it declares `audio.*`)         | A1, A2 |
+| offers no audio when audio is not allowed                                                  | A1     |
+| pairs with the enrollment code of `NESTOR_PAIRING_URI`, no code typed                      | P1, P3 |
+| falls back to a device code after its enrollment code is refused (wrong, expired, used)    | P5     |
+| presents a refused enrollment code only once (wrong, expired, used)                        | P5     |
+| waits for Retry-After when rate-limited; pairs once the limit lifts                        | P6     |
 
 The core’s own rules (C1 to C6, the race of P4, I3, the limits) are proven by its tests
 ([`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
-[`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/voice/satellites/test_gateway.py)).
+[`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/satellites/test_gateway.py)).
 
-## 10. Changelog
+## 12. Changelog
 
 - **1.** First version.

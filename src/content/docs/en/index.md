@@ -26,12 +26,12 @@ password (10 characters or more). It writes `nestor.yaml`, its secrets in `.env`
 only) and `state/`, which holds the owner account. It never overwrites a file.
 
 This is Nestor in text, on Telegram, with any OpenAI-compatible model: the admin and the connectors
-come with it. To talk to it aloud and pair satellites, install the voice channel with it:
+come with it, and so do satellites you type on. To talk to them aloud, install their voice with it:
 `uv tool install 'nestor-home[voice]'`. `nestor init` then asks whether you want it; without the
 extra, the voice block of `nestor.yaml` stays commented out.
 
 Fill the keys `nestor init` left empty in `.env`: `MODEL_API_KEY` for the model (empty for a local
-server such as Ollama), and `TELEGRAM_BOT_TOKEN`, or `ELEVENLABS_API_KEY` for the voice channel.
+server such as Ollama), and `TELEGRAM_BOT_TOKEN`, or `ELEVENLABS_API_KEY` for the satellites’ voice.
 [Providers](/docs/providers/) says where to get each one. Then:
 
 ```bash
@@ -52,7 +52,7 @@ holds the configuration, the household, the satellites and the journal of everyt
 ## Next
 
 - Install with pip or Docker, upgrade, where everything is kept: [Install](/docs/install/).
-- Another model, a local one, Telegram or the voice channel, Nestor in French: [Providers](/docs/providers/).
+- Another model, a local one, Telegram or satellites, Nestor in French: [Providers](/docs/providers/).
 - Pair a first device: [Satellites](/docs/satellites/).
 - Write your own: the SDKs for [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/)
   and [Rust](/docs/sdks/rust/).

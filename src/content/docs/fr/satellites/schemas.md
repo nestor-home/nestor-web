@@ -27,19 +27,21 @@ L’appairage, en HTTP :
 | [`pairing.error`](/schemas/satellite/1/pairing.error.json)           | tout refus                                                           |
 | [`manifest`](/schemas/satellite/1/manifest.json)                     | le manifeste de l’appareil, dans une demande et dans `hello`         |
 
-Sur le canal de données `nestor` :
+Sur le lien, le WebSocket `/satellites/{device_id}/link` :
 
-| Schéma                                                                                 | Envoyé par | Sens                                           |
-| -------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------- |
-| [`hello`](/schemas/satellite/1/hello.json)                                             | appareil   | son manifeste, en premier sur le canal         |
-| [`welcome`](/schemas/satellite/1/welcome.json)                                         | cœur       | la pièce et les capacités autorisées           |
-| [`intent.expression`](/schemas/satellite/1/intent.expression.json)                     | cœur       | montrer une émotion                            |
-| [`intent.behavior`](/schemas/satellite/1/intent.behavior.json)                         | cœur       | une attitude : écoute, réflexion, parole…      |
-| [`intent.beat`](/schemas/satellite/1/intent.beat.json)                                 | cœur       | un mot est joué : un léger accent de la parole |
-| [`intent.identify`](/schemas/satellite/1/intent.identify.json)                         | cœur       | se faire remarquer                             |
-| [`ack`](/schemas/satellite/1/ack.json)                                                 | appareil   | une intention a été reçue                      |
-| [`observation.speech.activity`](/schemas/satellite/1/observation.speech.activity.json) | appareil   | quelqu’un commence ou arrête de parler         |
-| [`observation.person.detected`](/schemas/satellite/1/observation.person.detected.json) | appareil   | une personne est vue                           |
+| Schéma                                                                                 | Envoyé par | Sens                                               |
+| -------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------- |
+| [`hello`](/schemas/satellite/1/hello.json)                                             | appareil   | son manifeste et son jeton, en premier sur le lien |
+| [`welcome`](/schemas/satellite/1/welcome.json)                                         | cœur       | la pièce et les capacités autorisées               |
+| [`intent.expression`](/schemas/satellite/1/intent.expression.json)                     | cœur       | montrer une émotion                                |
+| [`intent.behavior`](/schemas/satellite/1/intent.behavior.json)                         | cœur       | une attitude : écoute, réflexion, parole…          |
+| [`intent.beat`](/schemas/satellite/1/intent.beat.json)                                 | cœur       | un mot est joué : un léger accent de la parole     |
+| [`intent.identify`](/schemas/satellite/1/intent.identify.json)                         | cœur       | se faire remarquer                                 |
+| [`intent.text`](/schemas/satellite/1/intent.text.json)                                 | cœur       | les mots de l’assistant, à afficher                |
+| [`input.text`](/schemas/satellite/1/input.text.json)                                   | appareil   | ce qu’une personne a tapé                          |
+| [`ack`](/schemas/satellite/1/ack.json)                                                 | appareil   | une intention a été reçue                          |
+| [`observation.speech.activity`](/schemas/satellite/1/observation.speech.activity.json) | appareil   | quelqu’un commence ou arrête de parler             |
+| [`observation.person.detected`](/schemas/satellite/1/observation.person.detected.json) | appareil   | une personne est vue                               |
 
 ## Garder une copie dans un SDK
 

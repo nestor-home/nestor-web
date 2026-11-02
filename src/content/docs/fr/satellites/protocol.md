@@ -5,10 +5,11 @@ description: Le standard que tout satellite implémente, quel que soit son langa
 ---
 
 Un **satellite** est un appareil qui s’appaire à un serveur Nestor (le **cœur**), déclare ce qu’il
-sait faire, fait passer l’audio, remonte des observations et exécute les intentions du cœur. Cette
+sait faire, parle avec l’assistant par écrit, à voix haute ou les deux, remonte des observations et
+exécute les intentions du cœur. Cette
 page fait référence : les SDK et les pilotes l’implémentent, quel que soit leur langage, et la
 [suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur les vérifie. Elle décrit
-la version 1 (voir l’[historique](#10-historique)).
+la version 1 (voir l’[historique](#12-historique)).
 
 Les mots DOIT, NE DOIT PAS, DEVRAIT, NE DEVRAIT PAS et PEUT s’entendent au sens de la
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY).
@@ -28,12 +29,16 @@ appareil                                cœur                                 me
   │                           ou, au premier arrivé
   │ POST …/{pairing_id}/enrollment ───▶ approved                             (code d’enrôlement créé dans l’administration)
   │ GET  /satellites/pairings/{id} ───▶ approved + jeton (une fois)
-  │ POST /satellites/{device_id}/offer (jeton Bearer, SDP WebRTC)
-  │ canal de données `nestor` : hello → welcome, intentions ⇄ acks, observations
+  │ WebSocket /satellites/{device_id}/link : hello (jeton) → welcome, texte, intentions ⇄ acks, observations
+  │ POST /satellites/{device_id}/audio (jeton Bearer, SDP WebRTC)     seulement si l’audio est autorisé
 ```
 
 Un appareil configuré avec un code d’enrôlement l’envoie dès sa première requête et se
 voit approuvé aussitôt.
+
+Chaque appareil tient un lien, un WebSocket qui porte tous les messages. Un appareil autorisé à
+l’audio ouvre en plus une connexion WebRTC, qui ne porte que l’audio. Un appareil avec un écran et un
+clavier n’a besoin ni de WebRTC, ni de codec, ni de micro.
 
 ## 2. Méthodes d’appairage
 
@@ -162,8 +167,8 @@ requête ──▶ pending                         ├──▶ approved ──(
 - **P7.** Les codes d’enrôlement DOIVENT être normalisés avant envoi (section 4.2) ; un appareil
   PEUT les envoyer tels que tapés, le cœur normalise aussi.
 - **P8.** Un appareil DOIT garder son jeton secret (lisible par son seul propriétaire sur un système
-  de fichiers) et l’oublier quand le cœur le refuse (`401` sur une offre), puis s’appairer à
-  nouveau.
+  de fichiers) et l’oublier quand le cœur le refuse (lien fermé avec `4401`, ou `401` sur une offre
+  audio), puis s’appairer à nouveau.
 
 ### 3.4 Règles du cœur
 
@@ -247,10 +252,24 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 ```
 
 `id` et `room` sont des identifiants en minuscules (`^[a-z0-9][a-z0-9_-]{0,63}$`). Les capacités
-sont des noms `famille.fonction`, 32 au plus, chacune déclarée une fois. Capacités connues :
-`audio.capture`, `audio.playback`, `audio.speech_activity`, `vision.person_detection`,
-`expression.emotion`, `motion.head`, `device.identify`. Le manifeste est envoyé à l’appairage et
-dans `hello`.
+sont des noms `famille.fonction`, 32 au plus, chacune déclarée une fois. Le manifeste est envoyé à
+l’appairage et dans `hello`. Capacités connues :
+
+| Capacité                  | L’appareil…                                         |
+| ------------------------- | --------------------------------------------------- |
+| `text.input`              | envoie ce qu’une personne a tapé (section 8)        |
+| `text.display`            | affiche les mots de l’assistant (section 8)         |
+| `audio.capture`           | envoie son micro (section 9)                        |
+| `audio.playback`          | joue la voix du cœur (section 9)                    |
+| `audio.speech_activity`   | signale quand quelqu’un commence ou cesse de parler |
+| `vision.person_detection` | signale les personnes qu’il voit                    |
+| `expression.emotion`      | montre les émotions de l’assistant                  |
+| `motion.head`             | bouge avec la parole de l’assistant                 |
+| `device.identify`         | se fait remarquer sur demande (section 6)           |
+
+Un appareil parle avec l’assistant par écrit (`text.*`), à voix haute (`audio.*`) ou les deux : il
+déclare ce qu’il a, le foyer autorise ce qu’il veut. Un appareil sans l’un ni l’autre est un capteur
+ou un corps : il remonte des observations et exécute des intentions.
 
 ## 6. Identification
 
@@ -265,23 +284,64 @@ dans `hello`.
 - L’identification aide seulement une personne à distinguer des appareils. Elle ne prouve rien :
   n’importe quel appareil peut clignoter sur demande, elle ne remplace donc jamais un code.
 
-## 7. Lien temps réel
+## 7. Lien
 
-- **W1.** Avec son jeton, l’appareil propose une connexion WebRTC : `POST
-  /satellites/{device_id}/offer` avec `Authorization: Bearer <jeton>` et `{"sdp", "type"}` ; le cœur
-  répond `{"sdp", "type", "pc_id"}`. Les candidats ICE suivent en `PATCH` sur le même chemin. Un
-  mauvais jeton reçoit `401` ; le `pc_id` d’un autre appareil, `403`.
-- **W2.** Sur le canal de données `nestor`, chaque message est `{"type", "id", "at", "payload"}`.
-  L’appareil DOIT envoyer `hello` (son manifeste, avec l’identifiant appairé) en premier ; le cœur
-  répond `welcome` (la pièce appairée et les capacités autorisées). L’appareil DOIT accuser
-  réception de chaque `intent.*` par un `ack` en moins d’une seconde, et NE DOIT remonter que les
-  observations qui lui sont permises. Les types de message inconnus venant du cœur sont ignorés.
-- **W3.** Audio : Opus sur WebRTC, la voix du cœur vers l’appareil, le micro (avec
-  `audio.capture`) vers le cœur.
-- **W4.** Après un raccrochage ou une coupure, l’appareil se reconnecte avec le même jeton, en
-  espaçant de plus en plus ses tentatives.
+- **L1.** Avec son jeton, l’appareil ouvre un WebSocket sur `/satellites/{device_id}/link`, sous
+  l’URL de base du cœur (`ws://` pour `http`, `wss://` pour `https`). Son premier message DOIT être
+  `hello` : son manifeste, avec l’identifiant appairé, et son jeton. Le cœur répond `welcome` : la
+  pièce appairée et les capacités autorisées. Le jeton voyage dans `hello` plutôt que dans un en-tête
+  parce qu’un navigateur ne peut pas en poser sur un WebSocket.
+- **L2.** Le cœur ferme le lien sans `welcome` quand `hello` tarde (10 s), sort du contrat ou vise un
+  autre appareil (`4400`), ou quand le jeton est refusé (`4401`). Un appareil dont le lien se ferme
+  avec `4401` DOIT oublier son jeton et s’appairer à nouveau (P8).
+- **L3.** Chaque message est `{"type", "id", "at", "payload"}`, un par trame texte du WebSocket.
+  L’appareil DOIT accuser réception de chaque `intent.*` avec `ack` en moins d’une seconde, et NE
+  DOIT envoyer que ce qu’on lui a autorisé : observations, `input.text` (section 8). Les types de
+  message inconnus venant du cœur sont ignorés.
+- **L4.** Un appareil tient un seul lien. Un nouveau lien du même appareil remplace le précédent, que
+  le cœur ferme avec `4409`. Le cœur envoie un ping toutes les 20 s (pings WebSocket). Un appareil qui
+  les voit DEVRAIT tenir le lien pour perdu après 60 s sans aucun ; celui qui ne les voit pas (le
+  WebSocket d’un navigateur les cache) compte sur le transport pour fermer le lien.
+- **L5.** Quand le cœur ferme le lien (`1001` à son arrêt) ou que le lien est perdu, l’appareil se
+  reconnecte avec le même jeton, en espaçant ses tentatives.
 
-## 8. Sécurité
+| Code de fermeture | Sens                                                      | L’appareil…                          |
+| ----------------- | --------------------------------------------------------- | ------------------------------------ |
+| `1001`            | le cœur s’arrête                                          | se reconnecte (L5)                   |
+| `4400`            | `hello` en retard, hors contrat ou pour un autre appareil | se corrige, puis se reconnecte       |
+| `4401`            | le jeton est refusé                                       | l’oublie et s’appaire à nouveau (P8) |
+| `4409`            | un lien plus récent de cet appareil a remplacé celui-ci   | s’arrête : l’autre lien fait foi     |
+
+## 8. Texte
+
+- **T1.** Un appareil autorisé à `text.input` envoie ce qu’une personne a tapé en `input.text`.
+  Chacun est un tour de la conversation de la pièce de l’appareil.
+- **T2.** Un appareil autorisé à `text.display` reçoit les mots de l’assistant en `intent.text`, un
+  message à la fois, dans l’ordre, et les affiche. Une réponse peut tenir en plusieurs messages
+  (l’assistant dit qu’il regarde, puis donne le résultat) ; `final` marque le dernier d’un tour. Un
+  message spontané (un rappel, une annonce) est un seul `intent.text`, `final` posé.
+- **T3.** Un tour tapé reçoit une réponse écrite quand l’appareil est autorisé à `text.display`,
+  sinon à voix haute. Un tour parlé reçoit une réponse à voix haute ; un appareil aussi autorisé à
+  `text.display` affiche les mêmes mots à mesure qu’ils sont dits.
+- **T4.** `input.text` tient 1 à 4 000 caractères, `intent.text` jusqu’à 16 000. Le texte est brut :
+  pas de Markdown, qu’une réponse écrite pour un écran évite.
+
+## 9. Audio
+
+- **A1.** Un appareil autorisé à `audio.capture` ou `audio.playback` (dans `welcome`) propose une
+  connexion WebRTC une fois accueilli : `POST /satellites/{device_id}/audio` avec
+  `Authorization: Bearer <jeton>` et `{"sdp", "type"}` ; le cœur répond `{"sdp", "type", "pc_id"}`.
+  Les candidats ICE suivent en `PATCH` sur le même chemin. Un mauvais jeton reçoit `401` ; un
+  appareil sans lien ou non autorisé à l’audio, `403` ; le `pc_id` d’un autre appareil, `403`.
+- **A2.** La connexion ne porte que de l’audio Opus : la voix du cœur vers l’appareil
+  (`audio.playback`), le micro vers le cœur (`audio.capture`). Les messages ne passent jamais par
+  WebRTC.
+- **A3.** L’audio vit avec le lien : quand le lien se ferme, le cœur raccroche l’audio. Tant que le
+  lien tient, un appareil dont l’audio tombe propose à nouveau, en espaçant ses tentatives.
+- **A4.** Un appareil n’ouvre son micro que pour cette connexion. Ni l’appairage ni le lien ne
+  l’attendent : un navigateur peut attendre qu’une personne autorise le micro.
+
+## 10. Sécurité
 
 - **Entropie.** Un code d’enrôlement a 40 bits (environ 1,1 × 10¹² valeurs). Avec au plus 32 codes
   en cours et au plus 5 codes faux par minute et par adresse (20 toutes adresses confondues), les
@@ -299,14 +359,15 @@ dans `hello`.
   présenté est comparé à chaque empreinte connue en temps constant. À partir d’une empreinte divulguée,
   40 bits se cassent hors ligne : l’empreinte ne protège un code que tant qu’il est valide, d’où des
   durées de vie courtes.
-- **Transport.** Codes et jetons traversent le réseau en clair sur `http` ; utilisez `https` (une
-  URI `nestor+https`) hors d’un réseau domestique de confiance.
+- **Transport.** Codes et jetons traversent le réseau en clair sur `http` et `ws` ; utilisez
+  `https` (une URI `nestor+https`, donc `wss`) hors d’un réseau domestique de confiance. Le cœur ne
+  journalise jamais le jeton de `hello`.
 - **Ce que l’identification ne prouve pas.** Elle montre quel appareil répond, pas que c’est celui
   que la personne a en main : n’appairez jamais sur la seule identification.
 - **Consentement.** L’appairage ne donne à un appareil que les capacités qu’une personne a
   autorisées, jamais plus que ce qu’il a déclaré.
 
-## 9. Conformité
+## 11. Conformité
 
 `check_satellite(driver)` lance le pilote une fois par scénario : une fonction coroutine Python qui
 prend un `Launch`, ou une commande où `{url}` est l’URL du cœur et `{state}` un dossier neuf pour
@@ -319,11 +380,14 @@ voir [Conformité](/fr/docs/satellites/conformance/).
 | déclare enrollment.provisioning                                                                 | N1, P1 |
 | demande à s’appairer ; réclame son jeton une fois son code d’appareil tapé                      | P2     |
 | continue d’interroger après une identification en attente (s’il déclare `device.identify`)      | I1     |
-| se connecte avec son jeton ; envoie d’abord un hello ; se présente comme l’appareil appairé     | W1, W2 |
-| accuse réception de chaque intention en moins d’1 s (`intent.identify` s’il y est autorisé)     | W2, I2 |
-| chaque message suit son schéma                                                                  | W2     |
-| reçoit l’audio du cœur ; envoie l’audio de son micro                                            | W3     |
-| se reconnecte avec le même jeton après un raccrochage                                           | W4     |
+| ouvre son lien avec son jeton ; envoie d’abord un hello ; se présente comme l’appareil appairé  | L1     |
+| accuse réception de chaque intention en moins d’1 s (`intent.identify` s’il y est autorisé)     | L3, I2 |
+| chaque message suit son schéma                                                                  | L3     |
+| oublie un jeton refusé et s’appaire à nouveau                                                   | L2, P8 |
+| se reconnecte avec le même jeton quand le cœur ferme le lien                                    | L5     |
+| accuse réception de `intent.text` (s’il déclare `text.display`)                                 | L3, T2 |
+| reçoit l’audio du cœur ; envoie l’audio de son micro (s’il déclare `audio.*`)                   | A1, A2 |
+| ne propose pas d’audio quand l’audio n’est pas autorisé                                         | A1     |
 | s’appaire avec le code d’enrôlement de `NESTOR_PAIRING_URI`, sans code tapé                     | P1, P3 |
 | se rabat sur un code d’appareil après le refus de son code d’enrôlement (faux, expiré, utilisé) | P5     |
 | ne présente qu’une fois un code d’enrôlement refusé (faux, expiré, utilisé)                     | P5     |
@@ -331,8 +395,8 @@ voir [Conformité](/fr/docs/satellites/conformance/).
 
 Les règles propres au cœur (C1 à C6, la course de P4, I3, les limites) sont vérifiées par ses propres tests
 ([`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
-[`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/voice/satellites/test_gateway.py)).
+[`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/satellites/test_gateway.py)).
 
-## 10. Historique
+## 12. Historique
 
 - **1.** Première version.

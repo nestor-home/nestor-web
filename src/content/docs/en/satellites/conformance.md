@@ -48,7 +48,7 @@ One line per check, then a summary. What the satellite itself prints (its log) c
 PASS  asks to pair
 PASS  declares enrollment.provisioning (P1)
 PASS  claims its token once its device code is typed (P2)
-PASS  connects with its token (W1)
+PASS  opens its link with its token (L1)
 FAIL  acknowledges intent.behavior within 1 s (no ack with this intent's id)
 ...
 1 check failed out of 32

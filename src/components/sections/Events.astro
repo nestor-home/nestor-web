@@ -25,13 +25,13 @@ const DECLARATION = `class WatchTriggered(
     urgent: bool = False`;
 
 const exchange = { conversation_id: "c-7f3a", turn_id: "t-91d2" };
-const kitchen = { channel: "voice", conversation: "kitchen" };
-const office = { channel: "voice", conversation: "office" };
+const kitchen = { channel: "satellites", conversation: "kitchen" };
+const office = { channel: "satellites", conversation: "office" };
 const record = (type: string, id: string, at: string, source: string, payload: object) =>
   JSON.stringify({ type, version: 1, id, at, source, session: null, payload }, null, 2);
 
 const events = [
-  record("conversation.turn.user", "e-0a12", "2026-11-02T08:02:11+00:00", "voice", {
+  record("conversation.turn.user", "e-0a12", "2026-11-02T08:02:11+00:00", "satellites", {
     address: kitchen,
     text: t("loop-1-ask"),
     exchange,

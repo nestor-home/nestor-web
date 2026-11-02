@@ -27,16 +27,18 @@ Pairing, over HTTP:
 | [`pairing.error`](/schemas/satellite/1/pairing.error.json)           | any refusal                                                         |
 | [`manifest`](/schemas/satellite/1/manifest.json)                     | the device’s manifest, in a request and in `hello`                  |
 
-On the data channel `nestor`:
+On the link, the WebSocket `/satellites/{device_id}/link`:
 
 | Schema                                                                                 | Sent by | Means                                       |
 | -------------------------------------------------------------------------------------- | ------- | ------------------------------------------- |
-| [`hello`](/schemas/satellite/1/hello.json)                                             | device  | its manifest, first thing on the channel    |
+| [`hello`](/schemas/satellite/1/hello.json)                                             | device  | its manifest and token, first on the link   |
 | [`welcome`](/schemas/satellite/1/welcome.json)                                         | core    | the room and the capabilities allowed       |
 | [`intent.expression`](/schemas/satellite/1/intent.expression.json)                     | core    | show an emotion                             |
 | [`intent.behavior`](/schemas/satellite/1/intent.behavior.json)                         | core    | an attitude: listening, thinking, speaking… |
 | [`intent.beat`](/schemas/satellite/1/intent.beat.json)                                 | core    | a word is played: a light accent of speech  |
 | [`intent.identify`](/schemas/satellite/1/intent.identify.json)                         | core    | make yourself noticed                       |
+| [`intent.text`](/schemas/satellite/1/intent.text.json)                                 | core    | the assistant’s words, to show              |
+| [`input.text`](/schemas/satellite/1/input.text.json)                                   | device  | what a person typed                         |
 | [`ack`](/schemas/satellite/1/ack.json)                                                 | device  | an intent was received                      |
 | [`observation.speech.activity`](/schemas/satellite/1/observation.speech.activity.json) | device  | someone starts or stops speaking            |
 | [`observation.person.detected`](/schemas/satellite/1/observation.person.detected.json) | device  | a person is seen                            |
