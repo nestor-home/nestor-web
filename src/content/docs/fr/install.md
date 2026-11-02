@@ -8,13 +8,13 @@ Le serveur est le paquet Python [`nestor-home`](https://pypi.org/project/nestor-
 3.12 ou plus récent), publié aussi en image `ghcr.io/nestor-home/nestor` (amd64, arm64). Les trois
 voies lancent le même serveur :
 
-| Installer avec              | uv                                                            | pip                                                   | Docker                                  |
-| --------------------------- | ------------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------- |
-| Ce qu’on obtient            | `nestor` dans le `PATH`, dans son propre environnement        | `nestor` dans un environnement virtuel que vous gérez | l’image, lancée par `compose.yaml`      |
-| Python                      | uv le télécharge au besoin                                    | le vôtre, 3.12 ou plus                                | dans l’image                            |
-| Configuration, `.env`, état | le dossier où vous avez lancé `nestor init`                   | le dossier où vous avez lancé `nestor init`           | `./data`, à côté de `compose.yaml`      |
-| Mise à jour                 | `uv tool upgrade nestor-home`                                 | `pip install -U nestor-home`                          | `docker compose pull`                   |
-| Pour                        | une machine de développement, un essai, écrire des satellites | un environnement que vous avez déjà                   | un serveur à la maison, toujours allumé |
+| Installer avec              | uv                                                            | pip                                                   | Docker                                   |
+| --------------------------- | ------------------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
+| Ce qu’on obtient            | `nestor` dans le `PATH`, dans son propre environnement        | `nestor` dans un environnement virtuel que vous gérez | l’image, avec `docker run` ou Compose    |
+| Python                      | uv le télécharge au besoin                                    | le vôtre, 3.12 ou plus                                | dans l’image                             |
+| Configuration, `.env`, état | le dossier où vous avez lancé `nestor init`                   | le dossier où vous avez lancé `nestor init`           | le dossier monté sur `/data`             |
+| Mise à jour                 | `uv tool upgrade nestor-home`                                 | `pip install -U nestor-home`                          | `docker pull`, puis un nouveau conteneur |
+| Pour                        | une machine de développement, un essai, écrire des satellites | un environnement que vous avez déjà                   | un serveur à la maison, toujours allumé  |
 
 Le paquet seul fait tourner Nestor à l’écrit : l’administration, Telegram, les connecteurs, tout
 modèle compatible OpenAI, et les satellites à l’écrit. Leur voix temps réel est l’extra `voice` :
@@ -69,36 +69,43 @@ appelez `~/.venvs/nestor/bin/nestor`). Pour la voix des satellites, installez
 
 ## Avec Docker
 
-Le [`compose.yaml`](https://github.com/nestor-home/nestor/blob/main/compose.yaml) du dépôt lance
-l’image publiée et garde tout dans `./data` :
+L’image `ghcr.io/nestor-home/nestor` garde tout dans `/data`. Montez-y un dossier, écrivez une
+première configuration, remplissez les clés, puis lancez-la :
 
 ```bash
-mkdir nestor && cd nestor
-curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml
-docker compose pull
-docker compose run --rm nestor init
-$EDITOR data/.env
-docker compose up -d
+docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init
+$EDITOR nestor/.env
+docker run -d --name nestor --restart unless-stopped -v ./nestor:/data -p 8470:8470 -p 8471:8471 ghcr.io/nestor-home/nestor
 ```
 
-`data/` contient `nestor.yaml`, son `.env` et `state/`. Le conteneur démarre en root le temps de
-donner `data` à son utilisateur (uid 1000), puis tourne sous cet utilisateur. Il publie deux ports :
-8470 pour l’administration (`http://<adresse de la machine>:8470`) et 8471 pour les satellites,
-qui s’y appairent et y parlent. Pour les changer, réglez `admin.port` et le `port` du canal des satellites
-dans `nestor.yaml`, puis les `ports` correspondants dans `compose.yaml`.
+`nestor/` contient `nestor.yaml`, son `.env` et `state/`. Le conteneur démarre en root le temps de
+donner `/data` à son utilisateur (uid 1000), puis tourne sous cet utilisateur. Il publie deux ports :
+8470 pour l’administration (`http://<adresse de la machine>:8470`) et 8471 pour les satellites, qui
+s’y appairent et y parlent. Pour les changer, réglez `admin.port` et le `port` du canal des
+satellites dans `nestor.yaml`, puis les options `-p` correspondantes.
 
 Chaque commande `nestor` passe par l’image, qui lit `/data/nestor.yaml` :
 
 ```bash
-docker compose run --rm nestor check
-docker compose run --rm nestor secrets list
+docker run --rm -v ./nestor:/data ghcr.io/nestor-home/nestor check
+docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor secrets list
 ```
 
-Nestor lit `data/.env` lui-même, à chaque démarrage ; une variable définie dans l’environnement du
-conteneur l’emporte toujours sur le fichier. Après l’avoir modifié, redémarrez le conteneur :
+Nestor lit `nestor/.env` lui-même, à chaque démarrage : après l’avoir modifié, `docker restart nestor`.
+Un serveur de modèle sur la même machine (Ollama, LM Studio) se joint à
+`http://host.docker.internal:<port>/v1` depuis le conteneur ; sous Linux, ajoutez
+`--add-host host.docker.internal:host-gateway` à `docker run`.
+
+### Avec Compose
+
+Pour une installation qui dure, le [`compose.yaml`](https://github.com/nestor-home/nestor/blob/main/compose.yaml)
+du dépôt reprend les mêmes réglages (la ligne `host.docker.internal` comprise) et une réplique
+Litestream facultative. Il garde tout dans `./data` :
 
 ```bash
-docker compose restart
+curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml
+docker compose run --rm nestor init
+docker compose up -d
 ```
 
 Pour mettre à jour :
@@ -109,7 +116,7 @@ docker compose up -d
 ```
 
 `compose.yaml` suit `latest`. Pour rester sur une ligne de versions, fixez l’étiquette, par exemple
-`ghcr.io/nestor-home/nestor:0.3` (ou `0.3.0` pour une version précise).
+`ghcr.io/nestor-home/nestor:0.6` (ou `0.6.0` pour une version précise).
 
 ## Le compte propriétaire
 
@@ -122,4 +129,4 @@ nestor accounts create-owner --login alex
 
 Le mot de passe est demandé. `--person` désigne le membre du foyer auquel il appartient (par
 défaut, le premier de la configuration). Redémarrez Nestor s’il tourne. Avec Docker, la même
-commande s’écrit `docker compose run --rm nestor accounts create-owner --login alex`.
+commande s’écrit `docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor accounts create-owner --login alex`.
