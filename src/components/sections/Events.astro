@@ -40,13 +40,19 @@ const events = [
   record("watch.created", "e-0a14", "2026-11-02T08:02:13+00:00", "watches", {
     watch_id: "w-4b10",
     what: t("ev-what"),
-    keywords: t("loop-watch-keywords-value").split(", "),
     kinds: ["mail"],
     once: true,
     owner: "lea",
     created_in: kitchen,
     until: null,
     exchange,
+  }),
+  record("watch.sorted", "e-1c05", "2026-11-02T16:41:01+00:00", "watches", {
+    item_id: "imap:lea/4821",
+    item_title: t("loop-in-3"),
+    asked: ["w-4b10"],
+    matched: ["w-4b10"],
+    unsorted: false,
   }),
   record("watch.triggered", "e-1c07", "2026-11-02T16:41:02+00:00", "watches", {
     watch_id: "w-4b10",

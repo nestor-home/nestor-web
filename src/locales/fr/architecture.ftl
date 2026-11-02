@@ -14,7 +14,7 @@ arch-memory-point-1 = Partagée dans le foyer par défaut, personnelle par sa so
 arch-memory-point-2 = Recherche plein texte aujourd’hui ; la recherche par le sens (vecteurs) est prévue
 
 arch-initiative = Initiative
-arch-initiative-text = Des veilles créées depuis la conversation, un tri en trois étages de ce qui arrive, et une décision de livraison (à qui, où, comment, quand) écrite avec sa raison.
+arch-initiative-text = Des veilles créées depuis la conversation, un petit modèle qui lit ce qui arrive pour toutes les veilles à la fois, et une décision de livraison (à qui, où, comment, quand) écrite avec sa raison.
 arch-initiative-point-1 = Heures calmes, « pas maintenant », jamais pendant une conversation
 arch-initiative-point-2 = Un message vocal resté sans réponse est doublé d’un message écrit
 
