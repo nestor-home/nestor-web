@@ -7,6 +7,7 @@ docs-previous = Précédent
 docs-next = Suivant
 docs-edit = Modifier cette page sur GitHub
 docs-group-start = Démarrer
+docs-group-agent = Fonctionnement
 docs-group-satellites = Satellites
 docs-group-sdks = SDK
 docs-group-project = Projet

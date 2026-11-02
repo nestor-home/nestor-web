@@ -1,0 +1,83 @@
+---
+title: Mémoire
+description: Ce que l’agent retient, ce que chaque tour en emporte, comment il retrouve le reste, et comment une conversation devient un épisode une fois terminée.
+---
+
+import Consolidation from "@/components/docs/diagrams/Consolidation.astro";
+import HybridSearch from "@/components/docs/diagrams/HybridSearch.astro";
+import MemoryTurn from "@/components/docs/diagrams/MemoryTurn.astro";
+
+Nestor retient deux choses : des **souvenirs**, les faits durables qu’on lui a dits (« Léa est
+végétarienne »), et des **épisodes**, le sujet de chaque conversation passée. Les deux se
+reconstruisent depuis le journal, qui garde chaque mot. La mémoire est généreuse : un tour emporte
+plus que le strict nécessaire, parce qu’une ligne que le modèle ignore coûte peu, et qu’un souvenir
+qui lui manque coûte une mauvaise réponse.
+
+## Ce que chaque tour emporte
+
+<MemoryTurn locale="fr" n={4} />
+
+La **couche du foyer** porte les derniers souvenirs, jusqu’à 150, chacun daté : de deux souvenirs qui
+se contredisent, le modèle garde le plus récent. Ils sont les mêmes d’un tour à l’autre, donc le
+cache du fournisseur les garde. Quand un foyer en a davantage, la **couche du tour** ajoute ceux que
+les trois derniers messages de la personne qui parle retrouvent parmi les autres.
+
+La couche du tour porte aussi les **épisodes** de la personne qui parle : ses trois dernières
+conversations, puis les plus anciennes que ses mots retrouvent. Un épisode n’est visible que de ceux
+qui ont pris part à la conversation ; ce qui concerne tout le foyer va dans les souvenirs.
+
+L’agent atteint le reste avec des outils. `recall` cherche dans les souvenirs et les conversations,
+entre deux dates si on le demande (« qu’est-ce qu’on s’est dit la semaine dernière ? »).
+`read_conversation` relit une conversation depuis le journal, mot pour mot, pour ceux qui y ont pris
+part.
+
+## Retrouver par les mots et par le sens
+
+<HybridSearch locale="fr" n={5} />
+
+Chaque recherche se fait deux fois. **Par les mots**, l’index plein texte de SQLite classe ce qui
+partage des mots avec la question, sans tenir compte des accents. **Par le sens**, un modèle
+d’embedding transforme la question en vecteur, et les vecteurs les plus proches sortent de
+[sqlite-vec](https://github.com/asg017/sqlite-vec). La fusion par rang réciproque réunit les deux
+listes : ce qui est haut dans l’une remonte, ce qui est dans les deux passe en tête.
+
+La moitié par le sens est facultative. Déclarez un modèle d’embedding dans `models` et désignez-le
+dans `memory.embedder` :
+
+```yaml
+models:
+  embed:
+    kind: openai-compatible-embeddings
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/text-embedding-3-small
+memory:
+  embedder: embed
+```
+
+Tout serveur qui parle l’API d’embeddings d’OpenAI convient, y compris en local (`llama-server
+--embeddings` de llama.cpp). Les vecteurs sont calculés en tâche de fond à mesure que les souvenirs
+s’écrivent : un tour ne les attend jamais. Quand une question ne peut pas être transformée en vecteur
+en moins d’une seconde (`memory.query_timeout_s`), ce tour cherche par les mots seuls. Changer de
+modèle réindexe tout en tâche de fond.
+
+## Quand une conversation se termine
+
+<Consolidation locale="fr" n={6} />
+
+Une conversation est terminée quand son silence dépasse ce que permet chaque médium de son lieu. Un
+petit modèle la lit alors et écrit son **épisode** : deux ou trois phrases et quelques sujets, pour
+ceux qui y ont pris part. Il note aussi les faits durables que l’agent n’a pas retenus pendant la
+conversation. Les deux sont journalisés. Si Nestor était arrêté entre-temps, il rattrape au démarrage
+suivant, jamais deux fois.
+
+## Réglages
+
+| Réglage | Par défaut | Rôle |
+| --- | --- | --- |
+| `memory.recent` | 150 | souvenirs dans la couche du foyer |
+| `memory.found` | 12 | souvenirs que les mots peuvent ajouter au-delà |
+| `memory.recent_episodes` | 3 | dernières conversations de la personne qui parle |
+| `memory.found_episodes` | 4 | conversations plus anciennes que ses mots peuvent ajouter |
+| `memory.embedder` | aucun | le modèle d’embedding, pour chercher par le sens |
+| `memory.consolidation` | `agent.background` | le modèle qui écrit les épisodes |

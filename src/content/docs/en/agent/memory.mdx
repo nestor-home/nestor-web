@@ -1,0 +1,78 @@
+---
+title: Memory
+description: What the agent remembers, what each turn carries of it, how it finds the rest, and how a conversation becomes an episode once it is over.
+---
+
+import Consolidation from "@/components/docs/diagrams/Consolidation.astro";
+import HybridSearch from "@/components/docs/diagrams/HybridSearch.astro";
+import MemoryTurn from "@/components/docs/diagrams/MemoryTurn.astro";
+
+Nestor remembers two things: **memories**, lasting facts it was told ("Léa is vegetarian"), and
+**episodes**, what each past conversation was about. Both are rebuilt from the journal, which keeps
+every word. Memory is generous: a turn carries more than it strictly needs, because a line the
+model skips costs little and a memory it lacks costs a wrong answer.
+
+## What a turn carries
+
+<MemoryTurn locale="en" n={4} />
+
+The **household layer** carries the latest memories, up to 150, each dated so that of two memories
+that disagree the model keeps the later one. They are the same from one turn to the next, so the
+provider's cache keeps them. When a household has more, the **turn layer** adds those the last three
+messages of whoever speaks find among the others.
+
+The turn layer also carries the **episodes** of whoever speaks: their three latest conversations,
+then older ones their words find. An episode is seen only by the people who took part in it; what
+concerns the whole household goes to the memories.
+
+The agent reaches the rest with tools. `recall` searches memories and conversations, between two
+dates when asked ("what did we say last week?"). `read_conversation` rereads one conversation from
+the journal, word for word, for the people who took part in it.
+
+## Finding by words and by meaning
+
+<HybridSearch locale="en" n={5} />
+
+Every search runs twice. **By words**, SQLite's full-text index ranks what shares words with the
+question, accents ignored. **By meaning**, an embedding model turns the question into a vector, and
+the nearest vectors come out of [sqlite-vec](https://github.com/asg017/sqlite-vec). Reciprocal rank
+fusion merges both lists: what is high in either comes high, what is in both comes first.
+
+The meaning half is optional. Name an embedding model in `models` and point `memory.embedder` at it:
+
+```yaml
+models:
+  embed:
+    kind: openai-compatible-embeddings
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/text-embedding-3-small
+memory:
+  embedder: embed
+```
+
+Any server that speaks the OpenAI embeddings API works, a local one included (llama.cpp's
+`llama-server --embeddings`). Vectors are computed in the background as memories are written: a turn
+never waits for them. When a question cannot be embedded within a second (`memory.query_timeout_s`),
+that turn searches by words only. Changing the model reindexes everything in the background.
+
+## When a conversation is over
+
+<Consolidation locale="en" n={6} />
+
+A conversation is over once its silence is longer than any medium of its place allows. A small
+model then reads it and writes its **episode**: two or three sentences and a few topics, for the
+people who took part. It also writes down the lasting facts the agent did not remember during the
+conversation. Both are journaled. If Nestor was stopped in the meantime, it catches up at the next
+start, never twice.
+
+## Settings
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `memory.recent` | 150 | memories in the household layer |
+| `memory.found` | 12 | memories the words may add beyond them |
+| `memory.recent_episodes` | 3 | latest conversations of whoever speaks |
+| `memory.found_episodes` | 4 | older conversations their words may add |
+| `memory.embedder` | none | the embedding model, for search by meaning |
+| `memory.consolidation` | `agent.background` | the model that writes episodes |

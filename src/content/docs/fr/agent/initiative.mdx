@@ -1,0 +1,49 @@
+---
+title: Initiative
+description: Quand Nestor parle sans qu’on le lui demande. Réveils, veilles, messages transmis, et le coursier qui décide où et comment chacun arrive.
+---
+
+import Initiative from "@/components/docs/diagrams/Initiative.astro";
+
+La plupart du temps, Nestor répond. Parfois, il parle le premier : un rappel qu’on lui a demandé, un
+courrier qu’il devait guetter, une tâche terminée, une question à transmettre à quelqu’un d’autre.
+Tous prennent le même chemin.
+
+<Initiative locale="fr" n={7} />
+
+## Ce qui l’appelle
+
+**Les réveils.** « Rappelle-moi demain à 9 h d’appeler le plombier », « chaque jour de la semaine à
+8 h, donne-moi la météo » : l’agent appelle `schedule` avec une consigne assez complète pour agir
+seul, et une heure unique ou des heures certains jours, à l’heure du foyer. À l’échéance, l’agent se
+réveille pour un tour en tâche de fond avec ses outils, sur le modèle `agent.background`. Un réveil
+manqué pendant que Nestor était arrêté s’exécute une fois au démarrage suivant.
+
+**Les veilles.** « Préviens-moi quand la banque écrit » : une veille se crée depuis la conversation.
+Chaque courrier entrant est lu une fois par un petit modèle face à toutes les veilles à la fois, et
+ce qui correspond est annoncé à qui l’a demandé, urgent ou non.
+
+**Les tâches.** Quand un exécutant termine une tâche, son résultat est annoncé une fois à qui l’a
+demandé, même après un redémarrage.
+
+**Les messages.** « Dis à Hugo que le dîner est à 20 h », « demande à Léa si elle a besoin de la
+voiture » : l’agent appelle `message_person`. Un message qui attend une réponse ouvre une question,
+que les deux voient dans leurs tours jusqu’à ce que la réponse revienne et que l’agent la transmette.
+Le réglage `may_message` de chaque personne dit à qui elle peut faire écrire l’agent.
+
+## Où et comment il arrive
+
+Le **coursier** décide d’abord, et écrit sa décision et sa raison dans le journal :
+
+- la personne a demandé l’écrit, ou elle est absente : un message là où elle lit (Telegram
+  aujourd’hui) ;
+- elle est à la maison : dit par le satellite de la pièce où elle se trouve, ou par le satellite
+  principal du foyer quand la maison sait seulement qu’elle est là ;
+- heures calmes : rien n’est dit sauf urgence, et le message part quand même par écrit ;
+- aucune information de présence : la conversation d’où vient la demande, sinon un message.
+
+L’agent formule ensuite le message pour ce lieu et ce médium, en sachant ce qui s’y est dit dans la
+conversation ouverte. Quand personne ne réagit à un message dit, le coursier relance par écrit.
+
+La présence vient de Home Assistant, à la granularité que la maison connaît : une pièce quand elle la
+sait, seulement présent ou absent sinon.

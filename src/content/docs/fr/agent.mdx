@@ -1,0 +1,84 @@
+---
+title: Comment fonctionne l’agent
+description: Un seul agent pour tout le foyer. Ses parties, ce qui se passe pendant un tour, et comment ses consignes sont assemblées.
+---
+
+import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
+import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
+import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
+
+Nestor fait tourner un seul agent pour le foyer. Parlez-lui dans la cuisine, écrivez-lui depuis le
+bureau : c’est le même agent, avec la même mémoire. Cette page montre ses parties et suit un message
+de son arrivée à la réponse. [Mémoire](/fr/docs/agent/memory/) et
+[Initiative](/fr/docs/agent/initiative/) détaillent ce qu’il retient et quand il prend la parole.
+
+## Les parties
+
+<SystemMap locale="fr" n={1} />
+
+Le **cœur** contient l’agent de conversation et les modules autour de lui : la mémoire, l’initiative,
+les tâches déléguées, le foyer. Il ne dépend d’aucun fournisseur. Tout le reste est un **adaptateur**
+derrière un contrat : les modèles, Home Assistant, les connecteurs, les exécutants et les canaux.
+
+Le **journal** fait foi. Chaque effet y est ajouté comme un événement : un tour, un appel d’outil,
+un souvenir, une livraison, une décision de politique avec sa raison. L’administration l’affiche en
+fils de conversation, et un redémarrage y retrouve tout l’état en cours : conversations ouvertes,
+tâches à suivre, réveils à venir, messages pas encore livrés.
+
+## Un tour
+
+<TurnFlow locale="fr" n={2} />
+
+Une **conversation** regroupe les tours proches dans le temps, comme Assist dans Home Assistant.
+Après cinq minutes de silence à voix haute, ou quatre heures par écrit, le tour suivant en ouvre une
+nouvelle et le modèle ne relit plus les tours précédents. Chaque canal peut fixer sa propre durée
+avec `conversation_ends_after_s`. Les souvenirs, eux, traversent toutes les conversations.
+
+L’agent reste rapide parce que rien de long ne se passe pendant un tour. Ce qui est fréquent et court
+est un outil direct (allumer une lampe, retenir un fait, programmer un réveil). Ce qui prend des
+minutes part chez un **exécutant** sous forme de tâche durable : l’agent dit qu’il s’en occupe, la
+tâche tourne en arrière-plan, et le résultat est annoncé une fois, à qui l’a demandé.
+
+## Les consignes
+
+<PromptLayers locale="fr" n={3} />
+
+Les consignes sont assemblées à chaque tour, en couches rangées de la plus stable à la plus
+changeante. Un fournisseur qui met les prompts en cache lit dans son cache tout ce qui précède un
+point de cache, plus vite et pour une fraction du prix. Un nouveau tour dans le même foyer ne paie
+plein tarif que sa couche de tour et les nouveaux messages.
+
+Chaque module ajoute ses sections à une couche : la mémoire met ce qui est retenu dans la couche du
+foyer, et les conversations passées de la personne qui parle dans celle du tour ; l’initiative ajoute
+les veilles et les réveils ; la messagerie, les questions qui attendent encore leur réponse.
+
+## Les modèles par rôle
+
+Les modèles sont des profils que vous nommez dans `models`, et chaque rôle désigne l’un d’eux. Avec
+un seul modèle, il n’y a rien d’autre à écrire.
+
+```yaml
+models:
+  rapide:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+  soigne:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-sonnet-5.5
+
+agent:
+  spoken: rapide      # la voix : les premiers mots arrivent vite
+  written: soigne     # l’écrit laisse quelques secondes
+  background: rapide  # les réveils ; le modèle écrit par défaut
+watches:
+  model: rapide       # trie le courrier entrant selon les veilles
+memory:
+  consolidation: rapide  # résume chaque conversation une fois terminée
+```
+
+Un rôle omis prend le modèle d’un autre : `spoken` et `written` se remplacent l’un l’autre,
+`background` et les veilles prennent `written`, et la consolidation prend `background`.

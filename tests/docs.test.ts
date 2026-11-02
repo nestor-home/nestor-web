@@ -116,7 +116,7 @@ describe("the providers' page", () => {
 describe("the reading order", () => {
   it("leads from one page to the next, with nothing before the first or after the last", () => {
     expect(neighbours("")).toEqual({ next: "install" });
-    expect(neighbours("providers")).toEqual({ previous: "install", next: "satellites" });
+    expect(neighbours("providers")).toEqual({ previous: "install", next: "agent" });
     expect(neighbours("satellites/protocol")).toEqual({ previous: "satellites", next: "satellites/schemas" });
     expect(neighbours(DOC_SLUGS.at(-1) ?? "")).toEqual({ previous: DOC_SLUGS.at(-2) });
     expect(neighbours("no/such/page")).toEqual({});

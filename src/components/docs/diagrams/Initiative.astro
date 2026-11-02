@@ -1,0 +1,100 @@
+---
+/**
+ * How the agent speaks first: what calls for it, the courier that picks where and how (its reason
+ * journaled), the agent that words it for that place, and the ways it arrives.
+ */
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+const triggers = [
+  { id: "schedule", event: "schedule.fired" },
+  { id: "watch", event: "watch.triggered" },
+  { id: "task", event: "task.ended" },
+  { id: "message", event: "message.requested" },
+] as const;
+const arrivals = ["spoken", "written", "followup"] as const;
+---
+
+<Figure t={t} n={n} caption="dg-initiative-caption">
+  <div class="init">
+    <div class="dg-region">
+      <span class="dg-label">{t("dg-initiative-triggers")}</span>
+      <div class="init-stack is-two">
+        {
+          triggers.map((trigger) => (
+            <div class="dg-node">
+              <span class="dg-title">{t(`dg-initiative-${trigger.id}`)}</span>
+              <span class="dg-event mt-1.5">{trigger.event}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
+
+    <div class="init-middle">
+      <div class="dg-node init-courier">
+        <span class="dg-title">{t("dg-initiative-courier")}</span>
+        <span class="dg-note">{t("dg-initiative-courier-note")}</span>
+        <span class="dg-event mt-1.5">{"initiative.considered"}</span>
+      </div>
+      <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
+      <div class="dg-node is-core">
+        <span class="dg-title">{t("dg-initiative-agent")}</span>
+        <span class="dg-note">{t("dg-initiative-agent-note")}</span>
+      </div>
+    </div>
+
+    <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
+
+    <div class="dg-region">
+      <span class="dg-label">{t("dg-initiative-arrives")}</span>
+      <div class="init-stack is-three">
+        {
+          arrivals.map((arrival) => (
+            <div class:list={["dg-node", arrival === "followup" && "is-quiet"]}>
+              <span class="dg-title">{t(`dg-initiative-${arrival}`)}</span>
+              <span class="dg-note">{t(`dg-initiative-${arrival}-note`)}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</Figure>
+
+<style>
+  .init {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+  .init > .dg-arrow,
+  .init-middle > .dg-arrow {
+    justify-self: center;
+  }
+  .init-stack,
+  .init-middle {
+    display: grid;
+    gap: 0.5rem;
+    align-content: center;
+  }
+  @container (min-width: 30rem) {
+    .init-stack.is-two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .init-stack.is-three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .init-courier {
+    border-color: var(--ember);
+  }
+</style>

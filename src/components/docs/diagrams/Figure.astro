@@ -1,0 +1,25 @@
+---
+/**
+ * A diagram of the documentation: its board (the parts, laid out by the figure inside) and a caption
+ * that says what to read in it. The board is hidden from screen readers only when `decorative`;
+ * otherwise its words are read in order, which each figure writes as a sentence would go.
+ */
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+  n: number;
+  caption: string;
+  class?: string;
+}
+const { t, n, caption, class: className } = Astro.props;
+---
+
+<figure class="dg">
+  <div class:list={["dg-board corner-marks", className]}>
+    <slot />
+  </div>
+  <figcaption class="dg-caption">
+    <span class="dg-caption-number">{t("dg-figure", { n })}</span>{t(caption)}
+  </figcaption>
+</figure>

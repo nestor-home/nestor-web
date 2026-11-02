@@ -1,0 +1,128 @@
+---
+/**
+ * A turn, from the message to the answer: numbered steps on an ember rail, and beside each one the
+ * events the journal records for it.
+ */
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+const steps = [
+  { id: "arrives", events: ["conversation.turn.user"] },
+  { id: "joins", events: [] },
+  { id: "builds", events: [] },
+  { id: "acts", events: ["agent.tool.called", "agent.tool.completed"] },
+  { id: "answers", events: ["conversation.turn.assistant", "conversation.turn.cut"] },
+  { id: "delegates", events: ["task.started", "task.ended"] },
+] as const;
+---
+
+<Figure t={t} n={n} caption="dg-turn-caption">
+  <div class="turn-head" aria-hidden="true">
+    <span class="dg-label">{t("dg-turn-steps")}</span>
+    <span class="dg-label">{t("dg-turn-journal")}</span>
+  </div>
+  <ol class="turn">
+    {
+      steps.map((step, i) => (
+        <li class="turn-step">
+          <span class="turn-number">{i + 1}</span>
+          <div class="turn-text">
+            <span class="dg-title">{t(`dg-turn-${step.id}`)}</span>
+            <span class="dg-note">{t(`dg-turn-${step.id}-note`)}</span>
+          </div>
+          <div class="turn-events">
+            {step.events.map((event) => <span class="dg-event">{event}</span>)}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</Figure>
+
+<style>
+  .turn-head {
+    display: none;
+  }
+  :global(.doc-prose) .turn {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  :global(.doc-prose) .turn-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    column-gap: 0.85rem;
+    margin: 0;
+    padding-bottom: 1.1rem;
+  }
+  :global(.doc-prose) .turn-step:last-child {
+    padding-bottom: 0;
+  }
+  /* the rail between the numbers */
+  .turn-step:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: 1.85rem;
+    bottom: 0.15rem;
+    left: calc(0.875rem - 0.5px);
+    width: 1px;
+    background: var(--ember);
+    opacity: 0.45;
+  }
+  .turn-number {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: var(--hairline) solid var(--ember);
+    border-radius: 999px;
+    background: var(--paper);
+    font-family: var(--font-data);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--ember);
+  }
+  .turn-text {
+    padding-top: 0.2rem;
+  }
+  .turn-events {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+  }
+  .turn-events:empty {
+    display: none;
+  }
+  @container (min-width: 31rem) {
+    .turn-head {
+      display: grid;
+      grid-template-columns: 1.75rem minmax(0, 1fr) 12.75rem;
+      column-gap: 0.85rem;
+    }
+    .turn-head > :first-child {
+      grid-column: 2;
+    }
+    :global(.doc-prose) .turn-step {
+      grid-template-columns: 1.75rem minmax(0, 1fr) 12.75rem;
+    }
+    .turn-events {
+      grid-column: 3;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-top: 0;
+      padding-top: 0.3rem;
+    }
+    .turn-events:empty {
+      display: flex;
+    }
+  }
+</style>

@@ -1,0 +1,138 @@
+---
+/**
+ * The instructions of a turn, in layers from the most stable to the most variable: the provider caches
+ * what comes before each cache point, so most of a turn is read from its cache.
+ */
+import Dither from "@/components/Dither.astro";
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+const layers = [
+  { id: "stable", cached: true },
+  { id: "household", cached: true },
+  { id: "turn", cached: false },
+  { id: "conversation", cached: false },
+] as const;
+---
+
+<Figure t={t} n={n} caption="dg-layers-caption">
+  <div class="layers">
+    {
+      layers.map((layer) => (
+        <div class:list={["layer", layer.cached && "is-cached"]}>
+          {layer.cached && <Dither shape="ramp-left" from={0} to={0.4} dot={2} class="absolute inset-y-0 right-0 w-1/4 text-ink/15" />}
+          <div class="layer-text">
+            <span class="dg-title">{t(`dg-layers-${layer.id}`)}</span>
+            <span class="dg-note">{t(`dg-layers-${layer.id}-note`)}</span>
+          </div>
+          <span class="layer-pace">{t(`dg-layers-${layer.id}-pace`)}</span>
+          {layer.cached && (
+            <span class="layer-point">
+              <span class="layer-point-mark" aria-hidden="true" />
+              {t("dg-layers-point")}
+            </span>
+          )}
+        </div>
+      ))
+    }
+    <div class="layers-cache" aria-hidden="true">
+      <span class="layers-bracket"></span>
+      <span class="dg-label">{t("dg-layers-cached")}</span>
+    </div>
+  </div>
+</Figure>
+
+<style>
+  .layers {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .layer {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    gap: 0.4rem;
+    padding: 0.75rem 0.9rem 0.8rem;
+    border: var(--hairline) solid var(--rule-strong);
+    background: var(--paper);
+  }
+  .layer + .layer {
+    border-top: 0;
+  }
+  .layer:first-child {
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .layer:nth-child(4) {
+    border-radius: 0 0 var(--radius) var(--radius);
+    border-style: dashed;
+    background: transparent;
+  }
+  .layer.is-cached {
+    border-color: var(--ink);
+  }
+  .layer.is-cached + .layer {
+    border-top: var(--hairline) solid var(--ink);
+  }
+  .layer-text,
+  .layer-pace,
+  .layer-point {
+    position: relative;
+  }
+  .layer-pace {
+    font-family: var(--font-data);
+    font-size: var(--text-2xs);
+    color: var(--ink-faint);
+  }
+  /* where the provider cuts its cache: after the stable layer, and after the household's */
+  .layer-point {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-data);
+    font-size: var(--text-2xs);
+    color: var(--ember);
+  }
+  .layer-point-mark {
+    width: 0.9rem;
+    height: 1px;
+    background: var(--ember);
+  }
+  .layers-cache {
+    display: none;
+  }
+  @container (min-width: 30rem) {
+    .layers {
+      grid-template-columns: minmax(0, 1fr) 7.5rem;
+      column-gap: 0.75rem;
+    }
+    .layer {
+      grid-column: 1;
+      padding-right: 25%;
+    }
+    .layers-cache {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .layers-cache .dg-label {
+      margin: 0;
+      color: var(--ink);
+    }
+    .layers-bracket {
+      align-self: stretch;
+      width: 0.5rem;
+      margin-block: 0.4rem;
+      border: var(--hairline) solid var(--ink);
+      border-left: 0;
+    }
+  }
+</style>

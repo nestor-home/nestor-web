@@ -729,3 +729,191 @@
   font-size: 0.68rem;
   opacity: 0.75;
 }
+
+/*
+ * The documentation's diagrams (components/docs/diagrams): drawn in HTML, so every word is a Fluent
+ * message, wraps, and reads without JavaScript. A board lays out from its own width (a container),
+ * so the same figure reads in the article's column and on a phone: flows run across when there is
+ * room, and down otherwise.
+ */
+@layer components {
+  .dg {
+    margin-block: 2.25rem 2.5rem;
+  }
+  .dg-board {
+    container-type: inline-size;
+    position: relative;
+    padding: 1.25rem;
+    border: var(--hairline) solid var(--rule);
+    border-radius: var(--radius);
+    background-color: var(--paper-raised);
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    line-height: 1.45;
+  }
+  @media (min-width: 40rem) {
+    .dg-board {
+      padding: 1.75rem;
+    }
+  }
+  .dg-caption {
+    margin-top: 0.75rem;
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+  .dg-caption-number {
+    margin-right: 0.5rem;
+    font-family: var(--font-data);
+    font-size: var(--text-xs);
+    color: var(--ink);
+  }
+
+  /* a part of the system */
+  .dg-node {
+    position: relative;
+    min-width: 0;
+    padding: 0.6rem 0.75rem 0.65rem;
+    border: var(--hairline) solid var(--rule-strong);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+  .dg-title {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .dg-note {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: var(--text-xs);
+    line-height: 1.45;
+    color: var(--ink-muted);
+  }
+  /* the one part a figure is about: ink, as the character */
+  .dg-node.is-core {
+    border-color: var(--ink);
+    background: var(--ink);
+  }
+  .dg-node.is-core .dg-title {
+    color: var(--paper);
+  }
+  .dg-node.is-core .dg-note {
+    color: color-mix(in oklab, var(--paper) 74%, var(--ink));
+  }
+  /* what runs only when asked, or is planned */
+  .dg-node.is-quiet {
+    border-style: dashed;
+    background: transparent;
+  }
+
+  /* a group of parts, named in small type at its top; framed when the group is a thing of its own */
+  .dg-region {
+    position: relative;
+    min-width: 0;
+  }
+  .dg-region.is-framed {
+    padding: 0.85rem;
+    border: var(--hairline) dashed var(--rule-strong);
+    border-radius: var(--radius);
+  }
+  .dg-label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-family: var(--font-data);
+    font-size: var(--text-2xs);
+    line-height: 1.3;
+    color: var(--ink-faint);
+  }
+
+  /* an event the journal records, by its name */
+  .dg-event {
+    display: inline-block;
+    padding: 0 0.4rem;
+    border: var(--hairline) solid var(--rule-strong);
+    border-radius: 999px;
+    font-family: var(--font-data);
+    font-size: var(--text-2xs);
+    line-height: 1.15rem;
+    white-space: nowrap;
+    color: var(--ink-muted);
+    background: var(--paper);
+  }
+
+  /* arrows: a hairline and a chevron; `is-hot` follows the path a figure tells */
+  .dg-arrow {
+    --arrow: var(--ink-faint);
+    position: relative;
+    flex: none;
+    align-self: center;
+    justify-self: center;
+    color: var(--arrow);
+  }
+  .dg-arrow.is-hot {
+    --arrow: var(--ember);
+  }
+  .dg-arrow::before,
+  .dg-arrow::after {
+    content: "";
+    position: absolute;
+  }
+  .dg-arrow::before {
+    background: var(--arrow);
+  }
+  .dg-arrow::after {
+    width: 7px;
+    height: 7px;
+    border-top: 1.5px solid var(--arrow);
+    border-right: 1.5px solid var(--arrow);
+  }
+  .dg-arrow.is-right,
+  .dg-arrow.is-flow {
+    width: 2.25rem;
+    height: 9px;
+  }
+  .dg-arrow.is-right::before,
+  .dg-arrow.is-flow::before {
+    inset: 4px 1px auto 0;
+    height: 1px;
+  }
+  .dg-arrow.is-right::after,
+  .dg-arrow.is-flow::after {
+    top: 1px;
+    right: 1px;
+    transform: rotate(45deg);
+  }
+  .dg-arrow.is-down {
+    width: 9px;
+    height: 1.75rem;
+  }
+  .dg-arrow.is-down::before {
+    inset: 0 auto 1px 4px;
+    width: 1px;
+  }
+  .dg-arrow.is-down::after {
+    bottom: 1px;
+    left: 1px;
+    transform: rotate(135deg);
+  }
+  /* a flow runs down on a narrow board */
+  @container (max-width: 39.99rem) {
+    .dg-arrow.is-flow {
+      width: 9px;
+      height: 1.75rem;
+    }
+    .dg-arrow.is-flow::before {
+      inset: 0 auto 1px 4px;
+      width: 1px;
+      height: auto;
+    }
+    .dg-arrow.is-flow::after {
+      top: auto;
+      right: auto;
+      bottom: 1px;
+      left: 1px;
+      transform: rotate(135deg);
+    }
+  }
+}

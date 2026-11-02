@@ -8,6 +8,7 @@ import { type Locale, ROUTES } from "@/i18n";
 /** Groups of the sidebar; their names are the Fluent messages `docs-group-<id>`. */
 export const DOC_GROUPS = [
   { id: "start", pages: ["", "install", "providers"] },
+  { id: "agent", pages: ["agent", "agent/memory", "agent/initiative"] },
   { id: "satellites", pages: ["satellites", "satellites/protocol", "satellites/schemas", "satellites/conformance"] },
   { id: "sdks", pages: ["sdks/python", "sdks/typescript", "sdks/rust", "sdks/templates"] },
   { id: "project", pages: ["contributing"] },

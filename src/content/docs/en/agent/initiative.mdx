@@ -1,0 +1,48 @@
+---
+title: Initiative
+description: When Nestor speaks without being asked. Wake-ups, watches, messages passed on, and the courier that decides where and how each one arrives.
+---
+
+import Initiative from "@/components/docs/diagrams/Initiative.astro";
+
+Most of the time Nestor answers. Sometimes it speaks first: a reminder someone asked for, a mail
+it was told to watch for, a task that finished, a question to pass on to someone else. All of them
+take the same road.
+
+<Initiative locale="en" n={7} />
+
+## What calls for it
+
+**Wake-ups.** "Remind me tomorrow at 9 to call the plumber", "every weekday at 8, tell me the
+weather": the agent calls `schedule` with an instruction complete enough to act on alone, and a time
+once or times on chosen days, in the household's clock. When it is due, the agent wakes up for a
+background turn with its tools, on the `agent.background` model. A wake-up missed while Nestor was
+stopped runs once at the next start.
+
+**Watches.** "Tell me when the bank writes": a watch is created from the conversation. Each incoming
+mail is read once by a small model against every watch at the same time, and a match is announced
+to whoever asked, urgent or not.
+
+**Tasks.** When an executor finishes a task, its result is announced once to whoever asked, even
+after a restart.
+
+**Messages.** "Tell Hugo dinner is at eight", "ask Léa if she needs the car": the agent calls
+`message_person`. A message that expects a reply opens a question, which both of them see in their
+turns until the answer comes back and the agent passes it on. Each person's `may_message` says whom
+they may have the agent write to.
+
+## Where and how it arrives
+
+The **courier** decides first, and writes its decision and the reason to the journal:
+
+- the person asked for writing, or is away: a message where they read (Telegram today);
+- they are home: spoken by the satellite of the room they are in, or by the household's main
+  satellite when the home only knows they are home;
+- quiet hours: nothing spoken unless urgent, and the message still goes in writing;
+- no presence at all: the conversation the request came from, else a message.
+
+The agent then words the message for that place and medium, knowing what was said there in the
+open conversation. When nobody reacts to a spoken message, the courier follows up in writing.
+
+Presence comes from Home Assistant, at the granularity the home has: a room when it knows, only home
+or away when that is all it knows.

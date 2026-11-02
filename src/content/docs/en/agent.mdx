@@ -1,0 +1,84 @@
+---
+title: How the agent works
+description: One agent for the whole household. What it is made of, what happens during a turn, and how its instructions are built.
+---
+
+import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
+import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
+import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
+
+Nestor runs one agent for the household. Speak to it in the kitchen, write to it from the office:
+it is the same agent, with the same memory. This page shows its parts and follows a message from
+the moment it arrives to the answer. [Memory](/docs/agent/memory/) and
+[Initiative](/docs/agent/initiative/) go further into what it remembers and when it speaks first.
+
+## The parts
+
+<SystemMap locale="en" n={1} />
+
+The **core** holds the conversation agent and the modules around it: memory, initiative, delegated
+tasks, the household. It depends on no vendor. Everything outside it is an **adapter** behind a
+contract: the models, Home Assistant, connectors, executors, and the channels people use.
+
+The **journal** is the source of truth. Each effect is an event appended to it: a turn, a tool call,
+a memory, a delivery, a policy decision with its reason. The admin shows it as conversation threads,
+and a restart rebuilds the running state from it: open conversations, tasks to follow, wake-ups to
+come, messages not delivered yet.
+
+## A turn
+
+<TurnFlow locale="en" n={2} />
+
+A **conversation** groups turns close in time, as Home Assistant's Assist does. After five minutes
+of silence aloud, or four hours in writing, the next turn opens a new one and the model no longer
+rereads the earlier turns. Each channel can set its own window with `conversation_ends_after_s`.
+Memories cross every conversation.
+
+The agent stays fast because nothing long happens inside a turn. What is frequent and short is a
+direct tool (turn on a light, remember a fact, set a wake-up). What takes minutes goes to an
+**executor** as a durable task: the agent says it has started, the task runs in the background, and
+the result is announced once, to whoever asked.
+
+## The instructions
+
+<PromptLayers locale="en" n={3} />
+
+The instructions are built for each turn, in layers ordered from the most stable to the most
+variable. A provider that caches prompts reads everything before a cache point from its cache,
+faster and at a fraction of the price. A
+new turn in the same household pays in full only for its turn layer and the new messages.
+
+Each module adds its own sections to a layer: memory adds what is remembered to the household layer,
+and the past conversations of whoever speaks to the turn layer; initiative adds the watches and the
+wake-ups; messaging adds the questions still waiting for an answer.
+
+## Models by role
+
+The models are profiles you name in `models`, and each role points to one of them. With a single
+model, there is nothing else to write.
+
+```yaml
+models:
+  quick:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+  careful:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-sonnet-5.5
+
+agent:
+  spoken: quick      # the voice: the first words come fast
+  written: careful   # writing allows a few seconds
+  background: quick  # wake-ups; the written model by default
+watches:
+  model: quick       # sorts incoming mail against the watches
+memory:
+  consolidation: quick  # summarizes each conversation once it is over
+```
+
+A role left out takes another one's model: `spoken` and `written` stand in for each other,
+`background` and the watches take `written`, and the consolidation takes `background`.

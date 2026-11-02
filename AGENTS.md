@@ -80,6 +80,11 @@ to it), and SDK READMEs stay short and link to their page.
 - Prose lives in the content files, written for each language (French typography as in the
   catalogues); the layout's words (sidebar groups, "On this page"…) are Fluent messages in
   `docs.ftl`.
+- Diagrams are Astro components in `src/components/docs/diagrams/`, drawn in HTML on the site's
+  tokens (no Mermaid, no images): every word a Fluent message in `diagrams.ftl`, the layout chosen
+  by the board's own width (a container query), so a figure reads in the article's column and on a
+  phone. Their shared pieces (board, node, region, arrow, event) are the `.dg-*` classes in
+  `global.css`; a figure has one ink node (what it is about) and ember for the path it tells.
 - Code blocks are highlighted at build (Shiki's `css-variables` theme, coloured by `.doc-prose` in
   `global.css`) and get a copy button. Commands in the docs are run before they are written.
 - The developers' page shows each SDK's minimal driver: the **first** code block of that SDK's page
