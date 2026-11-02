@@ -1,6 +1,6 @@
 /**
  * What the documentation's pickers show (docs/providers): the language models the agent talks to,
- * the speech services of the voice channel, and the channels people reach Nestor through.
+ * the speech services of the satellites’ voice, and the channels people reach Nestor through.
  * `available` ones have a setup, written in the page's content; `planned` ones show the shared
  * badge and a one-line note. The first of a kind is shown without JavaScript (for models and
  * speech, the one `nestor init` writes). The messaging channels are the home page's own list
@@ -15,7 +15,7 @@ export type ProviderKind = "model" | "speech" | "channel";
 export interface Provider extends Integration {
   /** runs on the household's own machine */
   local?: boolean;
-  /** a Fluent message naming the tile, for what is not a brand (the voice channel) */
+  /** a Fluent message naming the tile, for what is not a brand (the satellites channel) */
   label?: string;
 }
 

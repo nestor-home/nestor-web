@@ -39,6 +39,17 @@ function blocks(page: string, heading: string): string[][] {
 /** The shortest install, as the documentation's first page gives it (src/content/docs/en/index.md). */
 export const INSTALL: readonly string[] = blocks(START, "## The short way").flat();
 
+/** The package and the image, one command each: the home page's quick install. */
+export const PACKAGE = "nestor-home";
+export const IMAGE = "ghcr.io/nestor-home/nestor";
+export const QUICK_INSTALL: readonly { id: string; label: string; command: string }[] = [
+  { id: "uv", label: "uv", command: `uv tool install ${PACKAGE}` },
+  { id: "pip", label: "pip", command: `pip install ${PACKAGE}` },
+  { id: "docker", label: "Docker", command: `docker pull ${IMAGE}` },
+];
+if (!INSTALL.includes(`uv tool install ${PACKAGE}`) || !GUIDE.includes(IMAGE))
+  throw new Error("[site] the quick install no longer matches the documentation");
+
 /** The steps of the quickstart with Docker, and how many of the documentation's commands each takes. */
 const STEPS = [
   ["qs-1", 3],

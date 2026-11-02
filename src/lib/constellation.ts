@@ -6,6 +6,8 @@
  */
 export type RoomId = "kitchen" | "office" | "living" | "kids" | "bedroom" | "hall";
 export type Capability =
+  | "text.input"
+  | "text.display"
   | "audio.capture"
   | "audio.playback"
   | "expression.emotion"
@@ -27,10 +29,12 @@ export const ROOMS: RoomId[] = ["kitchen", "office", "living", "kids", "bedroom"
 
 const voice: Capability[] = ["audio.capture", "audio.playback"];
 const face: Capability[] = [...voice, "expression.emotion"];
+/** a screen people can also type on: the same conversation, in writing */
+const screen: Capability[] = ["text.input", "text.display", ...face];
 
 export const SATELLITES: Satellite[] = [
   { id: "speaker", room: "kitchen", model: "pi-speaker", pairing: "device_code.speech", capabilities: voice },
-  { id: "browser", room: "office", model: "browser", pairing: "device_code.display", capabilities: face },
+  { id: "browser", room: "office", model: "browser", pairing: "device_code.display", capabilities: screen },
   {
     id: "reachy",
     room: "living",
@@ -46,9 +50,9 @@ export const SATELLITES: Satellite[] = [
     capabilities: voice,
     planned: true,
   },
-  { id: "phone", room: "kids", model: "old-phone", pairing: "device_code.display", capabilities: face },
+  { id: "phone", room: "kids", model: "old-phone", pairing: "device_code.display", capabilities: screen },
   { id: "pi", room: "bedroom", model: "raspberry-pi-4", pairing: "enrollment.provisioning", capabilities: voice },
-  { id: "tablet", room: "hall", model: "wall-tablet", pairing: "device_code.display", capabilities: face },
+  { id: "tablet", room: "hall", model: "wall-tablet", pairing: "device_code.display", capabilities: screen },
 ];
 
 /** What the house starts with when the page runs (everything is lit without JavaScript). */

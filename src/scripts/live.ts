@@ -233,7 +233,8 @@ if (stage && heroSvg) {
   }
 
   // circled around for too long, it gets dizzy, then recovers (still under reduced motion: one state)
-  onCircling(stage, heroSvg, () => {
+  // the whole hero listens: a circle around the character leaves its narrow column at every turn
+  onCircling(stage.closest("section") ?? stage, heroSvg, () => {
     if (!nestor) {
       const before = heroSvg.dataset.state ?? "idle";
       heroSvg.dataset.state = "dizzy";

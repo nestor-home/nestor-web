@@ -20,7 +20,7 @@ const CONFORMANCE_OUTPUT = `$ uvx --from 'nestor-home[voice]' nestor satellites 
 PASS  asks to pair
 PASS  declares enrollment.provisioning (P1)
 PASS  claims its token once its device code is typed (P2)
-PASS  connects with its token (W1)
+PASS  opens its link with its token, a hello first, as the paired device (L1)
 ...`;
 const intent = JSON.stringify({ type: "intent.expression", payload: { expression: "joy", intensity: 0.7 } });
 
@@ -37,7 +37,7 @@ async function driver(sdk: Sdk, lang: string) {
 /** Each SDK (its id is also its brand mark): the language of its examples and how to run its CLI. */
 const RUN = "nestor-satellite run --core http://nestor.local:8471 --room salon";
 const SDKS: { id: Sdk; lang: string; cli: string }[] = [
-  { id: "python", lang: "python", cli: `pip install "nestor-satellite[sounddevice]" && ${RUN}` },
+  { id: "python", lang: "python", cli: `pip install "nestor-satellite[voice,sounddevice]" && ${RUN}` },
   { id: "typescript", lang: "ts", cli: `npx ${RUN}` },
   { id: "rust", lang: "rust", cli: `cargo install nestor-satellite --features cli && ${RUN}` },
 ];

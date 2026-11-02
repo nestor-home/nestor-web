@@ -121,7 +121,7 @@ test("the SDK tabs work with the arrow keys", async ({ page }) => {
   const ts = page.getByRole("tab", { name: "TypeScript" });
   await expect(ts).toHaveAttribute("aria-selected", "true");
   await expect(ts).toBeFocused();
-  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("browserWebRtc"); // the TypeScript SDK page’s first example
+  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("LocalStorageTokenStore"); // the TypeScript SDK page’s first example
 });
 
 test("a quickstart command is copied", async ({ page, context, browserName }) => {

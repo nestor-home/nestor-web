@@ -1,10 +1,14 @@
 hero-line-1 = L’agent
 hero-line-2 = qui habite
 hero-line-3 = la maison.
-hero-lede = Un assistant pour tout le foyer. Vous demandez une fois, à voix haute ou par message : il surveille, puis prévient la bonne personne, où qu’elle soit. Il peut toujours dire pourquoi il a parlé.
+hero-lede = Un framework open source pour l’assistant de tout le foyer. Il tourne sur votre machine avec le modèle de votre choix, répond par message ou à voix haute, et surveille pour vous. Chaque mot qu’il dit est dans un journal que vous pouvez lire.
 hero-story = Voir comment il fait
-hero-install = L’installer
-hero-note = Open source, sur votre propre machine.
 hero-ask-who = Léa
 hero-ask = Dis-moi dès que l’école répond.
 hero-say = Je surveille tes mails et je te trouve, où que tu sois.
+hero-start = Démarrer
+hero-install-title = Installer
+hero-fact-license = Licence MIT
+hero-fact-python = Python 3.12+
+hero-fact-models = Tout modèle compatible OpenAI
+hero-fact-sdks = SDK satellites en Python, TypeScript, Rust
