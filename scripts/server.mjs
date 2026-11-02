@@ -19,7 +19,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /** The nestor-home release (PyPI) whose files the site serves. */
-export const NESTOR_SERVER = "0.5.0";
+export const NESTOR_SERVER = "0.6.0";
 
 const PUBLIC = fileURLToPath(new URL("../public/", import.meta.url));
 const SCHEMAS = join(PUBLIC, "schemas");
