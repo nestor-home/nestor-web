@@ -1,14 +1,18 @@
 ---
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
+import Brand from "@/components/Brand.astro";
+import CopyCommand from "@/components/CopyCommand.astro";
 import Dither from "@/components/Dither.astro";
 import Nestor from "@/components/Nestor.astro";
 import { href, type Translator } from "@/i18n";
+import { QUICK_INSTALL, REPOS } from "@/lib/site";
 
 interface Props {
   t: Translator;
 }
 const { t } = Astro.props;
 const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
+const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
 ---
 
 <section class="hero relative overflow-hidden" aria-labelledby="hero-title" data-dock-after>
@@ -26,13 +30,38 @@ const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
       <div class="hero-after mt-8 md:mt-10">
         <p class="lede">{t("hero-lede")}</p>
         <div class="mt-8 flex flex-wrap items-center gap-3">
-          <a href="#story" class="btn btn-ink" data-dock-follow={t("char-follow")}>
-            {t("hero-story")}
-            <ArrowDown className="size-4" strokeWidth={1.6} aria-hidden="true" />
+          <a href={href(t.locale, "docs")} class="btn btn-ink">
+            {t("hero-start")}
+            <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
           </a>
-          <a href={href(t.locale, "docs")} class="btn btn-line">{t("hero-install")}</a>
+          <a href={REPOS.nestor} class="btn btn-line">
+            <Brand brand="github" class="size-4" decorative />
+            {t("nav-github")}
+          </a>
+          <a href="#story" class="link inline-flex items-center gap-1.5 px-2 font-mono text-xs" data-dock-follow={t("char-follow")}>
+            {t("hero-story")}
+            <ArrowDown className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
+          </a>
         </div>
-        <p class="mt-6 font-mono text-xs text-ink-muted">{t("hero-note")}</p>
+
+        <!-- the quick install: one tab per way, without a script (a radio, its label, then its commands) -->
+        <div class="hero-install mt-8 max-w-xl font-mono text-2xs" style={`--ways: ${QUICK_INSTALL.length}`} role="group" aria-label={t("hero-install-title")}>
+          {
+            QUICK_INSTALL.map((way, i) => (
+              <>
+                <input type="radio" name="hero-install" id={`hero-install-${way.id}`} class="sr-only" checked={i === 0} />
+                <label for={`hero-install-${way.id}`} class="hero-tab cursor-pointer rounded-sm px-2.5 py-1 text-ink-muted hover:text-ink">
+                  {way.label}
+                </label>
+                <CopyCommand t={t} command={way.command} class="hero-way mt-2" />
+              </>
+            ))
+          }
+        </div>
+
+        <ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs text-ink-muted">
+          {facts.map((id) => <li>{t(id)}</li>)}
+        </ul>
       </div>
     </div>
 
@@ -62,6 +91,31 @@ const lines = ["hero-line-1", "hero-line-2", "hero-line-3"];
 </section>
 
 <style>
+  /* the install tabs: labels on the first row, the checked radio's commands under them */
+  .hero-install {
+    display: grid;
+    grid-template-columns: repeat(var(--ways, 2), max-content) 1fr;
+    justify-content: start;
+    column-gap: 0.25rem;
+  }
+  .hero-tab {
+    grid-row: 1;
+  }
+  .hero-install :global(.hero-way) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .hero-install input:not(:checked) + .hero-tab + :global(.hero-way) {
+    display: none;
+  }
+  .hero-install input:checked + .hero-tab {
+    background: var(--color-paper-sunken);
+    color: var(--color-ink);
+  }
+  .hero-install input:focus-visible + .hero-tab {
+    outline: 2px solid var(--color-ember);
+    outline-offset: 2px;
+  }
   .hero-line {
     animation: rise 900ms var(--ease-out) both;
     animation-delay: calc(var(--i) * 90ms + 60ms);

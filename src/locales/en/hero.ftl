@@ -1,10 +1,13 @@
 hero-line-1 = The agent
 hero-line-2 = that lives
 hero-line-3 = at home.
-hero-lede = One assistant for the whole household. Ask once, aloud or in a message: it keeps watch, then finds the right person wherever they are. It can always tell you why it spoke.
+hero-lede = An open-source framework for a household assistant. It runs on your machine with the model you choose, answers in a message or aloud, and keeps watch for you. Every word it says is in a journal you can read.
 hero-story = See how it works
-hero-install = Install it
-hero-note = Open source, on your own machine.
 hero-ask-who = Léa
 hero-ask = Tell me as soon as the school writes back.
 hero-say = I’ll watch your mail and find you, wherever you are.
+hero-start = Get started
+hero-install-title = Install
+hero-fact-license = MIT license
+hero-fact-python = Python 3.12+
+hero-fact-sdks = Satellite SDKs in Python, TypeScript, Rust

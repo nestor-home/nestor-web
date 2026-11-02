@@ -41,10 +41,9 @@ export const INSTALL: readonly string[] = blocks(START, "## The short way").flat
 
 /** The steps of the quickstart with Docker, and how many of the documentation's commands each takes. */
 const STEPS = [
-  ["qs-1", 3],
+  ["qs-1", 1],
   ["qs-2", 1],
   ["qs-3", 1],
-  ["qs-4", 1],
 ] as const;
 const DOCKER = blocks(GUIDE, "## With Docker")[0] ?? [];
 if (STEPS.reduce((sum, [, n]) => sum + n, 0) !== DOCKER.length)
@@ -55,5 +54,16 @@ export const QUICKSTART: readonly { id: string; command: string }[] = STEPS.map(
   const from = STEPS.slice(0, i).reduce((sum, [, size]) => sum + size, 0);
   return { id, command: DOCKER.slice(from, from + n).join(" && ") };
 });
+
+/** The home page's quick install: the first commands of each way, as the documentation gives them. */
+export const QUICK_INSTALL: readonly { id: string; label: string; command: string }[] = [
+  { id: "uv", label: "uv", command: INSTALL.join("\n") },
+  {
+    id: "docker",
+    label: "Docker",
+    // the documentation's docker run commands, without the editor opened on the keys
+    command: DOCKER.filter((line) => !line.startsWith("$EDITOR")).join("\n"),
+  },
+];
 
 export const ADMIN_URL = "http://localhost:8470";

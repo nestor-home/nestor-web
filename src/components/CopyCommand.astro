@@ -1,5 +1,5 @@
 ---
-/** A shell command on one line, with a copy button; the prompt is decoration, not copied. */
+/** Shell commands, one per line, with a copy button; the prompts are decoration, not copied. */
 import { Check, Copy } from "lucide-react";
 import type { Translator } from "@/i18n";
 
@@ -11,9 +11,17 @@ interface Props {
 const { t, command, class: className = "" } = Astro.props;
 ---
 
-<div class:list={["copy-command flex items-center gap-3 border border-rule bg-paper-raised py-1 pr-1 pl-3", className]}>
+<div class:list={["copy-command flex gap-3 border border-rule bg-paper-raised py-1 pr-1 pl-3", command.includes("\n") ? "items-start" : "items-center", className]}>
   <code tabindex="0" class="min-w-0 flex-1 overflow-x-auto py-1.5 font-mono text-xs whitespace-nowrap text-ink">
-    <span class="text-ink-faint select-none" aria-hidden="true">$ </span>{command}
+    {
+      command.split("\n").map((line, i) => (
+        <>
+          {i > 0 && <br />}
+          <span class="text-ink-faint select-none" aria-hidden="true">$ </span>
+          {line}
+        </>
+      ))
+    }
   </code>
   <button
     type="button"

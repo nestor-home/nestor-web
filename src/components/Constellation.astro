@@ -9,7 +9,7 @@
  * what each device declares (capabilities as glyphs, its manifest) and marks what is planned.
  * Without JavaScript every device is lit (no lines); under reduced motion too, with still lines.
  */
-import { Camera, Mic, MoveHorizontal, Smile, Volume2 } from "lucide-react";
+import { Camera, Keyboard, MessageSquareText, Mic, MoveHorizontal, Smile, Volume2 } from "lucide-react";
 import Nestor from "@/components/Nestor.astro";
 import Planned from "@/components/Planned.astro";
 import type { Translator } from "@/i18n";
@@ -25,6 +25,8 @@ const dev = mode === "dev";
 const id = `cst-${mode}`;
 
 const GLYPHS: Record<Capability, { icon: typeof Mic; label: string }> = {
+  "text.input": { icon: Keyboard, label: "cst-cap-input" },
+  "text.display": { icon: MessageSquareText, label: "cst-cap-display" },
   "audio.capture": { icon: Mic, label: "cst-cap-capture" },
   "audio.playback": { icon: Volume2, label: "cst-cap-playback" },
   "expression.emotion": { icon: Smile, label: "cst-cap-emotion" },

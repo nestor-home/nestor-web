@@ -29,7 +29,7 @@ arch-channels-point-1 = Voice and Telegram today; WhatsApp, Signal, Discord and 
 arch-channels-point-2 = Each channel has its own conversation window; memories cross them all
 
 arch-satellites = Satellites
-arch-satellites-text = Devices that pair with a code and use standard protocols: WebRTC audio, events on a data channel. They declare their capabilities and carry out intents: the core asks for joy, the device picks the motion. None of them runs an agent of its own.
+arch-satellites-text = Devices that pair with a code and hold one WebSocket link to the server: typed text and the assistant’s words, events, intents. Audio goes over WebRTC when the device has a microphone or a speaker. They declare their capabilities and carry out intents: the core asks for joy, the device picks the motion. None of them runs an agent of its own.
 arch-satellites-point-1 = SDKs in Python, TypeScript and Rust; a black-box conformance suite
 arch-satellites-point-2 = Planned: a lighter WebSocket profile for microcontrollers, and a Wyoming gateway for Home Assistant voice satellites
 
@@ -49,6 +49,6 @@ arch-executors-point-1 = Hermes today; Codex and others are planned on the same 
 arch-executors-point-2 = Tasks survive a restart and deliver once
 
 arch-providers = Models
-arch-providers-text = The agent’s model is an adapter: any OpenAI-compatible API, cloud or local. Speech services are set in the voice channel’s configuration.
+arch-providers-text = The agent’s model is an adapter: any OpenAI-compatible API, cloud or local. Speech services are set in the `voice` section of the satellites channel.
 arch-providers-point-1 = Swapping one changes configuration, never the core
 arch-providers-point-2 = Cloud services are optional; local models use the same contracts

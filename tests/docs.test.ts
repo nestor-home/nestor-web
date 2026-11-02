@@ -88,11 +88,13 @@ describe("the commands the site shows", () => {
     expect(INSTALL[0]).toBe("uv tool install nestor-home");
     expect(INSTALL).toContain("nestor init");
     expect(INSTALL.at(-1)).toBe("nestor run");
-    expect(QUICKSTART.map((s) => s.id)).toEqual(["qs-1", "qs-2", "qs-3", "qs-4"]);
-    expect(QUICKSTART[1]?.command).toBe("docker compose run --rm nestor init");
+    expect(QUICKSTART.map((s) => s.id)).toEqual(["qs-1", "qs-2", "qs-3"]);
+    expect(QUICKSTART[0]?.command).toBe("docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init");
     for (const locale of LOCALES) {
       expect(bash(read(locale, "")).slice(0, 2).flat(), locale).toEqual(INSTALL);
-      const docker = bash(read(locale, "install")).find((block) => block.includes("docker compose up -d"));
+      const docker = bash(read(locale, "install")).find((block) =>
+        block.some((line) => line.startsWith("docker run -d")),
+      );
       expect(QUICKSTART.map((s) => s.command).join(" && "), locale).toBe(docker?.join(" && "));
     }
   });

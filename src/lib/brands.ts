@@ -56,7 +56,6 @@ import {
   siTodoist,
   siTypescript,
   siVllm,
-  siWebrtc,
   siWhatsapp,
 } from "simple-icons";
 import cartesiaSvg from "@/assets/brands/cartesia.svg?raw";
@@ -138,7 +137,6 @@ export const BRANDS = {
   python: mark("Python", siPython),
   typescript: mark("TypeScript", siTypescript),
   rust: mark("Rust", siRust),
-  webrtc: mark("WebRTC", siWebrtc),
   "raspberry-pi": mark("Raspberry Pi", siRaspberrypi),
   sqlite: mark("SQLite", siSqlite),
   // model and speech providers (the documentation's providers page)

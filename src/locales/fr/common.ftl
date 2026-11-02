@@ -1,7 +1,7 @@
 meta-title-home = Nestor, l’agent qui habite la maison
 meta-description-home = Nestor est un assistant open source pour tout le foyer. Vous demandez une fois, à voix haute ou par message : il surveille, puis prévient la bonne personne où qu’elle soit, et peut toujours dire pourquoi il a parlé.
 meta-title-developers = Nestor pour les développeurs : le runtime, son journal et comment l’étendre
-meta-description-developers = Comment Nestor fonctionne : un agent persistant, un journal d’événements, des contrats publics, des adaptateurs en plugins Python, des satellites en WebRTC avec des SDK Python, TypeScript et Rust, MCP, Home Assistant, et l’auto-hébergement.
+meta-description-developers = Comment Nestor fonctionne : un agent persistant, un journal d’événements, des contrats publics, des adaptateurs en plugins Python, des satellites par écrit ou à voix haute avec des SDK Python, TypeScript et Rust, MCP, Home Assistant, et l’auto-hébergement.
 meta-og-alt = Nestor, l’agent qui habite la maison.
 skip = Aller au contenu
 nav-label = Principale

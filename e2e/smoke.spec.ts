@@ -121,15 +121,17 @@ test("the SDK tabs work with the arrow keys", async ({ page }) => {
   const ts = page.getByRole("tab", { name: "TypeScript" });
   await expect(ts).toHaveAttribute("aria-selected", "true");
   await expect(ts).toBeFocused();
-  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("browserWebRtc"); // the TypeScript SDK page’s first example
+  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("LocalStorageTokenStore"); // the TypeScript SDK page’s first example
 });
 
 test("a quickstart command is copied", async ({ page, context, browserName }) => {
   test.skip(browserName !== "chromium");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/developers/#start");
-  await page.locator("#start").getByRole("button", { name: "Copy" }).nth(1).click();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("docker compose run --rm nestor init");
+  await page.locator("#start").getByRole("button", { name: "Copy" }).nth(0).click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init",
+  );
   await expect(page.locator("#start").getByRole("button", { name: "Copied" })).toBeVisible();
 });
 
