@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/nestor-home/nestor-web/compare/v0.5.1...v0.6.0) (2026-11-02)
+
+
+### Features
+
+* an open-source framework's home page, and the site on the published SDKs ([#28](https://github.com/nestor-home/nestor-web/issues/28)) ([8400f6a](https://github.com/nestor-home/nestor-web/commit/8400f6a820c3803fe46e60e71f4152e873295f08))
+
 ## [0.5.1](https://github.com/nestor-home/nestor-web/compare/v0.5.0...v0.5.1) (2026-11-02)
 
 
