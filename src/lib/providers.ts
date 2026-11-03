@@ -1,5 +1,5 @@
 /**
- * What the documentation's pickers show (docs/providers): the language models the agent talks to,
+ * What the documentation's pickers show (docs/models, docs/channels): the language models the agent talks to,
  * the speech services of the satellites’ voice, and the channels people reach Nestor through.
  * `available` ones have a setup, written in the page's content; `planned` ones show the shared
  * badge and a one-line note. The first of a kind is shown without JavaScript (for models and

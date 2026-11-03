@@ -474,7 +474,9 @@
     color: var(--ink-muted);
     overflow-wrap: break-word;
   }
-  .doc-prose > * + * {
+  /* the article's flow, and the same inside its tab panels (provider mosaics, tabs) */
+  .doc-prose > * + *,
+  .doc-prose :where([role="tabpanel"]) > * + * {
     margin-top: 1.1rem;
   }
   .doc-prose h2 {

@@ -4,11 +4,13 @@
  * first one), served at `/docs/<slug>/` and `/fr/docs/<slug>/`.
  */
 import { type Locale, ROUTES } from "@/i18n";
+import type { BrandKey } from "@/lib/brands";
 
 /** Groups of the sidebar; their names are the Fluent messages `docs-group-<id>`. */
 export const DOC_GROUPS = [
-  { id: "start", pages: ["", "install", "providers"] },
+  { id: "start", pages: ["", "quickstart", "install"] },
   { id: "agent", pages: ["agent", "agent/memory", "agent/initiative"] },
+  { id: "configure", pages: ["configuration", "models", "channels", "connections"] },
   { id: "satellites", pages: ["satellites", "satellites/protocol", "satellites/schemas", "satellites/conformance"] },
   { id: "sdks", pages: ["sdks/python", "sdks/typescript", "sdks/rust", "sdks/templates"] },
   { id: "project", pages: ["contributing"] },
@@ -45,3 +47,14 @@ export function firstCodeBlock(markdown: string, lang: string): string | undefin
   const fence = new RegExp(`^\`\`\`${lang}[^\\n]*\\n([\\s\\S]*?)^\`\`\``, "m");
   return fence.exec(markdown)?.[1];
 }
+
+/** The tabs a page shows (`<Tabs set>` and its `<Tab>`s): each set's choices, the first shown before one is made.
+ * Their names are the brands' own; the list's label is the Fluent message `tabs-<set>`. */
+export const TAB_SETS = {
+  install: ["uv", "pip", "docker"],
+} as const satisfies Record<string, readonly BrandKey[]>;
+
+export type TabSet = keyof typeof TAB_SETS;
+
+/** A tab's id, which is also the address that opens it; its panel is `<id>-panel`. */
+export const tabId = (set: TabSet, choice: string): string => `${set}-${choice}`;

@@ -12,7 +12,7 @@ Nestor ne suppose qu’elles sont là.
 
 Les satellites se connectent au canal `satellites` du serveur, sur le port 8471 (son `port` dans
 `nestor.yaml`). À l’écrit, il ne leur faut rien de plus ; pour parler à voix haute, donnez une
-`voice` au canal, avec l’extra `voice` (voir [Fournisseurs](/fr/docs/providers/)).
+`voice` au canal, avec l’extra `voice` (voir [Canaux et voix](/fr/docs/channels/#voix)).
 
 ## Ce que fait un satellite
 

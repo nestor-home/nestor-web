@@ -1,8 +1,16 @@
 ---
-
-title: Install
-description: The server with uv, pip or Docker; where each keeps its configuration, and how to upgrade.
+title: Installation
+description: Install the server with uv, pip or Docker, keep it running, and upgrade it.
 ---
+
+import Tab from "@/components/docs/Tab.astro";
+import Tabs from "@/components/docs/Tabs.astro";
+
+Install Nestor on the machine that will run it for the household: a computer, a mini PC or a
+Raspberry Pi that stays on. The [Quickstart](/docs/quickstart/) is the same uv install with a first
+conversation; this page covers every way, and what changes between them.
+
+## Choose a way
 
 The server is the Python package [`nestor-home`](https://pypi.org/project/nestor-home/) (Python
 3.12 or later), also published as the image `ghcr.io/nestor-home/nestor` (amd64, arm64). The three
@@ -21,20 +29,22 @@ model, and satellites in writing. Their realtime voice is the `voice` extra: ins
 `'nestor-home[voice]'` to add it. The image has every extra. A configuration that gives satellites a
 voice without the extra fails at start and names the command to run.
 
-## With uv
+## Install and run
+
+<Tabs set="install" locale="en">
+<Tab set="install" choice="uv">
 
 [uv](https://docs.astral.sh/uv/) installs `nestor` as a tool: an isolated environment, the command
-on your `PATH`, nothing to activate.
+on your `PATH`, nothing to activate. The [Quickstart](/docs/quickstart/) follows these steps one by one.
 
 ```bash
-uv tool install nestor-home
+uv tool install 'nestor-home[voice]'   # or nestor-home, without the satellites' voice
 mkdir nestor && cd nestor
 nestor init
 ```
 
-With the satellites’ voice, the first line is `uv tool install 'nestor-home[voice]'`, and
-`nestor init` asks whether to use it. Fill the keys left empty in `.env` (see
-[Providers](/docs/providers/)), then:
+`nestor init` asks whether to use the voice when the extra is installed. Fill the keys it left
+empty in `.env` (each page of [Configure](/docs/configuration/) names its own), then:
 
 ```bash
 nestor check
@@ -51,7 +61,8 @@ To upgrade, extras included:
 uv tool upgrade nestor-home
 ```
 
-## With pip
+</Tab>
+<Tab set="install" choice="pip">
 
 In a virtual environment you create and keep:
 
@@ -62,11 +73,12 @@ mkdir nestor && cd nestor
 ~/.venvs/nestor/bin/nestor init
 ```
 
-Then `nestor check` and `nestor run` as above, from the environment (activate it, or call
+Fill the keys left empty in `.env`, then `nestor check` and `nestor run` from the environment (activate it, or call
 `~/.venvs/nestor/bin/nestor`). For the satellites’ voice, install `'nestor-home[voice]'` instead. Upgrade
 with the same command and `-U`.
 
-## With Docker
+</Tab>
+<Tab set="install" choice="docker">
 
 The image `ghcr.io/nestor-home/nestor` keeps everything in `/data`. Mount a folder there, write a
 first configuration, fill the keys, then start it:
@@ -116,6 +128,9 @@ docker compose up -d
 
 `compose.yaml` follows `latest`. To stay on a release line, set the tag in it, for example
 `ghcr.io/nestor-home/nestor:0.6` (or `0.6.0` for one exact release).
+
+</Tab>
+</Tabs>
 
 ## The owner account
 

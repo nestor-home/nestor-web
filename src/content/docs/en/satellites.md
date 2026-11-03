@@ -11,7 +11,7 @@ too: the device declares them, a person allows them, and nothing in Nestor assum
 
 Satellites connect to the server’s `satellites` channel, on port 8471 (its `port` in
 `nestor.yaml`). In writing they need nothing more; to talk aloud, give the channel a `voice`, with
-the `voice` extra (see [Providers](/docs/providers/)).
+the `voice` extra (see [Channels and voice](/docs/channels/#voice)).
 
 ## What a satellite does
 

@@ -1,0 +1,116 @@
+---
+title: Canaux et voix
+description: Comment on joint Nestor, sur Telegram ou par des satellites, et comment donner une voix aux satellites.
+---
+
+import Providers from "@/components/docs/Providers.astro";
+import ProviderSetup from "@/components/docs/ProviderSetup.astro";
+
+On joint Nestor par des canaux. Chaque canal est une entrée de `channels` ; plusieurs tournent
+ensemble, et partagent un seul agent et une seule mémoire : une question posée à voix haute dans la
+cuisine peut se poursuivre sur Telegram. `nestor init` écrit les satellites, avec leur voix quand
+l’extra `voice` est installé, et Telegram sinon.
+
+## Choisir ses canaux
+
+<Providers kind="channel" locale="fr">
+<ProviderSetup kind="channel" brand="telegram">
+
+Créez un bot avec [@BotFather](https://t.me/BotFather) sur Telegram et mettez son jeton dans
+`.env` :
+
+```ini
+TELEGRAM_BOT_TOKEN=123456:ABC-...
+```
+
+```yaml
+channels:
+  - kind: telegram
+    token: ${TELEGRAM_BOT_TOKEN}
+```
+
+Ajoutez ensuite `"telegram:<votre identifiant>"` à vos `accounts` dans `household` pour que le bot
+vous reconnaisse. Pour trouver votre identifiant, écrivez au bot : il ignore les inconnus, et le
+journal du serveur affiche l’identifiant du message ignoré. Le bot lit les messages texte ; les
+messages vocaux et les photos sont ignorés.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="satellites">
+
+Des appareils sur lesquels on tape, auxquels on parle, ou les deux. À l’écrit, rien de plus :
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+```
+
+Pour leur parler aussi, ajoutez une `voice` (voir [Voix](#voix) plus bas) :
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      speech:
+        api_key: ${ELEVENLABS_API_KEY}
+        voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`host: 0.0.0.0` permet aux satellites de votre réseau de joindre le serveur, sur le port 8471
+(réglé par `port`) ; appairez-les ensuite comme l’explique [Satellites](/fr/docs/satellites/).
+Chaque satellite parle dans la pièce où il a été appairé. Ajoutez `"satellites:*"` aux `accounts`
+de la personne qui s’en sert.
+
+</ProviderSetup>
+</Providers>
+
+## Voix
+
+Un satellite qui a un micro et un haut-parleur peut parler avec Nestor à voix haute. Le serveur
+transcrit alors ce que dit la personne et dit la réponse. Il faut pour cela l’extra `voice` :
+`nestor-home[voice]` (voir [Installer](/fr/docs/install/)) ; l’image Docker le contient. Une
+configuration qui a une voix sans l’extra s’arrête au démarrage et donne la commande à lancer.
+
+<Providers kind="speech" locale="fr">
+<ProviderSetup kind="speech" brand="elevenlabs">
+
+Scribe v2 Realtime transcrit, v4 Turbo parle ; une seule clé couvre les deux.
+
+```ini
+ELEVENLABS_API_KEY=sk_...
+```
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      speech:
+        api_key: ${ELEVENLABS_API_KEY}
+        voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`voice_id` est n’importe quelle voix de votre bibliothèque ElevenLabs. La voix suit la langue du
+texte ; la transcription attend de l’anglais, sauf si `speech` fixe une autre `language`.
+
+</ProviderSetup>
+</Providers>
+
+Un nouveau fournisseur de parole n’arrive qu’après avoir tenu sur des mesures reproductibles :
+latence, fin de tour, interruptions.
+
+Le bloc `voice` accepte aussi :
+
+- `style` : comment l’assistant écrit pour cette voix, par exemple les balises d’expression qu’elle
+  interprète ;
+- `quiet_s` (0,5) : le silence, en secondes, avant de dire un message spontané ;
+- `fallback_clips` : un dossier avec `stt.wav` et `tts.wav`, joués quand le service de parole est
+  en panne.
+
+## Quand une conversation se termine
+
+Chaque tour appartient à une conversation. Passé un silence, elle est terminée : le message suivant
+en commence une nouvelle, et celle qui s’achève est résumée dans la
+[mémoire](/fr/docs/agent/memory/). Le silence dépend du médium : 5 minutes à voix haute, 4 heures à
+l’écrit. Chaque canal peut fixer le sien avec `conversation_ends_after_s`.

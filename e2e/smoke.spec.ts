@@ -317,8 +317,12 @@ test("Nestor answers in the hero: it listens, then speaks", async ({ page }) => 
 const BOXED = [
   ...PAGES.map((p) => p.path),
   "/docs/",
-  "/docs/providers/",
+  "/docs/quickstart/",
   "/fr/docs/install/",
+  "/fr/docs/configuration/",
+  "/docs/models/",
+  "/fr/docs/channels/",
+  "/docs/connections/",
   "/docs/agent/",
   "/fr/docs/agent/memory/",
   "/fr/docs/agent/initiative/",

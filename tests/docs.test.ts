@@ -84,14 +84,14 @@ describe("the commands the site shows", () => {
         .filter(Boolean),
     );
 
-  it("are the documentation's, in every language: the install box, then the quickstart with Docker", () => {
+  it("are the documentation's, in every language: the install box from the quickstart, then Docker", () => {
     expect(INSTALL[0]).toBe("uv tool install nestor-home");
     expect(INSTALL).toContain("nestor init");
     expect(INSTALL.at(-1)).toBe("nestor run");
     expect(QUICKSTART.map((s) => s.id)).toEqual(["qs-1", "qs-2", "qs-3"]);
     expect(QUICKSTART[0]?.command).toBe("docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init");
     for (const locale of LOCALES) {
-      expect(bash(read(locale, "")).slice(0, 2).flat(), locale).toEqual(INSTALL);
+      expect(bash(read(locale, "quickstart")).slice(0, 3).flat(), locale).toEqual(INSTALL);
       const docker = bash(read(locale, "install")).find((block) =>
         block.some((line) => line.startsWith("docker run -d")),
       );
@@ -100,10 +100,10 @@ describe("the commands the site shows", () => {
   });
 });
 
-describe("the providers' page", () => {
-  it("gives every available provider a setup in every language, and none to a planned one", () => {
+describe("the provider mosaics", () => {
+  it("give every available provider a setup in every language, and none to a planned one", () => {
     for (const locale of LOCALES) {
-      const text = read(locale, "providers");
+      const text = read(locale, "models") + read(locale, "channels");
       const setups = [...text.matchAll(/<ProviderSetup kind="(\w+)" brand="([\w-]+)">/g)].map((m) => `${m[1]}/${m[2]}`);
       const available = (Object.keys(PROVIDERS) as ProviderKind[]).flatMap((kind) =>
         PROVIDERS[kind].filter((p) => p.status === "available").map((p) => `${kind}/${p.brand}`),
@@ -115,8 +115,8 @@ describe("the providers' page", () => {
 
 describe("the reading order", () => {
   it("leads from one page to the next, with nothing before the first or after the last", () => {
-    expect(neighbours("")).toEqual({ next: "install" });
-    expect(neighbours("providers")).toEqual({ previous: "install", next: "agent" });
+    expect(neighbours("")).toEqual({ next: "quickstart" });
+    expect(neighbours("agent/initiative")).toEqual({ previous: "agent/memory", next: "configuration" });
     expect(neighbours("satellites/protocol")).toEqual({ previous: "satellites", next: "satellites/schemas" });
     expect(neighbours(DOC_SLUGS.at(-1) ?? "")).toEqual({ previous: DOC_SLUGS.at(-2) });
     expect(neighbours("no/such/page")).toEqual({});

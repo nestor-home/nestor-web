@@ -70,13 +70,28 @@ to it), and SDK READMEs stay short and link to their page.
 
 ## The documentation
 
+- The structure follows the large AI open-source projects (Pydantic AI, the OpenAI Agents SDK,
+  Ollama), in `DOC_GROUPS` (`src/lib/docs.ts`), which is the reading order and the sidebar:
+  **Start** (Introduction: what Nestor does for you, then a "where to start" table; Quickstart: one
+  path, from nothing to a first conversation; Installation: every way, in tabs), **How it works**
+  (concepts, with diagrams), **Configure** (one task per page: the configuration file, models,
+  channels and voice, home and services), then **Satellites**, **SDKs** and **Project**, for
+  developers. Each fact has one page; others link to it rather than repeat it.
+- A page opens with one or two sentences saying what it gives the reader, then goes in the order
+  they will act. Every option shown exists in the server (read its code before writing), and every
+  command is run before it is written.
 - One Markdown file per page and locale in `src/content/docs/<locale>/` (`index.md` for the first
-  page; `.mdx` only where a page holds a component, as the providers' picker in `providers.mdx`:
-  its tiles come from `lib/providers.ts` (models, speech, and channels, whose messaging services are
-  the home page's list in `lib/integrations.ts`), each available one's setup is a `<ProviderSetup>`
-  in the page, and `tests/docs.test.ts` checks both languages give one to each); the reading order and the sidebar's groups are `DOC_GROUPS` in `src/lib/docs.ts`. A page
-  needs a `title` and a `description`; `tests/docs.test.ts` fails on a page missing in a locale, a
-  file outside the reading order, a link to the other language's docs, or an em-dash.
+  page; `.mdx` only where a page holds a component). Provider mosaics (`Providers.astro`, on
+  `models.mdx` and `channels.mdx`) take their tiles from `lib/providers.ts` (models, speech, and
+  channels, whose messaging services are the home page's list in `lib/integrations.ts`); each
+  available one's setup is a `<ProviderSetup>` in the page, and `tests/docs.test.ts` checks both
+  languages give one to each. Choices shown one at a time (the ways to install) are `<Tabs set>` with
+  a `<Tab>` each, their sets in `TAB_SETS`; a tab opens from the address (`#install-docker`).
+  The quickstart's commands are the home page's install box, and the Docker tab's first block its
+  Docker steps (`lib/site.ts`). A moved page keeps its old address in `redirects`
+  (`astro.config.mjs`). A page needs a `title` and a `description`; `tests/docs.test.ts` fails on a
+  page missing in a locale, a file outside the reading order, a link to the other language's docs,
+  or an em-dash.
 - Prose lives in the content files, written for each language (French typography as in the
   catalogues); the layout's words (sidebar groups, "On this page"…) are Fluent messages in
   `docs.ftl`.

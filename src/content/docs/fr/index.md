@@ -1,62 +1,53 @@
 ---
 
-title: Démarrer
-description: Lancer un serveur Nestor, choisir ses fournisseurs et ouvrir l’administration.
+title: Introduction
+description: Ce que Nestor fait pour un foyer, de quoi il est fait, et par où commencer dans cette documentation.
 ---
 
-Nestor est un assistant open source pour tout le foyer. Un seul agent sait qui est à la maison, se
-souvient de chacun, pilote Home Assistant et prend la parole quand c’est important. Son
-serveur tourne sur une machine qui reste allumée ; enceintes, tablettes et robots s’y appairent
-comme [satellites](/fr/docs/satellites/).
+Nestor est un assistant open source pour tout le foyer. Il tourne sur une machine de la maison qui
+reste allumée, et tout le monde parle au même assistant : à voix haute dans la cuisine, par écrit
+depuis le bureau, sur Telegram quand on est dehors.
 
 Le projet est jeune : attendez-vous à des changements d’une version à l’autre.
 
-## Le plus court
+## Ce qu’il fait pour vous
 
-Sur un ordinateur équipé d’[uv](https://docs.astral.sh/uv/) :
+- **Il répond à chacun, et sait qui demande.** Chaque personne a ses conversations et ses
+  souvenirs ; un seul agent sert toute la maison.
+- **Il se souvient.** De ce que vous lui dites, de ce qui s’est dit dans les conversations passées,
+  avec les dates. Il retrouve de lui-même ce qui compte à chaque tour.
+- **Il pilote la maison.** Par Home Assistant, il sait qui est là et peut allumer, ouvrir, lire et
+  régler ce que Home Assistant contrôle.
+- **Il veille.** Demandez-lui de surveiller vos mails pour un colis ou une réponse : il lit ce qui
+  arrive et vous prévient quand quelque chose correspond.
+- **Il prend la parole au bon moment, auprès de la bonne personne.** Un rappel, une réponse arrivée
+  plus tard, une question pour quelqu’un d’autre : il trouve qui doit l’entendre, où, et se tait la
+  nuit.
+- **Il tient un journal.** Chaque tour, appel d’outil, souvenir et livraison y est écrit, avec sa
+  raison. L’administration l’affiche en conversations.
 
-```bash
-uv tool install nestor-home
-mkdir nestor && cd nestor
-nestor init
-```
+## De quoi il est fait
 
-`nestor init` demande le nom de l’assistant, votre prénom, la langue du foyer (`en` ou `fr`), son
-fuseau horaire (celui de la machine par défaut), le serveur de modèle et le modèle, puis un
-identifiant et un mot de passe (10 caractères au moins). La commande écrit `nestor.yaml`, ses
-secrets dans `.env` (lisible par vous seul) et `state/`, qui contient le compte propriétaire. Elle
-n’écrase jamais un fichier.
+- **Le serveur**, le paquet Python `nestor-home` : l’agent, sa mémoire, son journal et
+  l’administration, sur les ports 8470 (administration) et 8471 (appareils).
+- **Un modèle de langage** de votre choix, hébergé ou sur votre propre machine.
+- **Des canaux** pour le joindre : Telegram, et les **satellites**, des appareils sur lesquels on
+  tape ou auxquels on parle (un Raspberry Pi avec une enceinte, une tablette au mur, un robot
+  Reachy Mini).
+- **Des intégrations** dont il se sert : Home Assistant, tout serveur MCP, des boîtes mail, des
+  agents pour les tâches longues.
 
-Vous avez ainsi Nestor à l’écrit, sur Telegram, avec n’importe quel modèle compatible OpenAI :
-l’administration, les connecteurs et les satellites sur lesquels on tape sont fournis. Pour leur
-parler à voix haute, installez aussi leur voix : `uv tool install 'nestor-home[voice]'`. `nestor init`
-vous demande alors si vous le voulez ; sans l’extra, le bloc vocal de `nestor.yaml` reste en
-commentaire.
+[Comment fonctionne l’agent](/fr/docs/agent/) montre comment tout cela s’assemble.
 
-Remplissez les clés que `nestor init` a laissées vides dans `.env` : `MODEL_API_KEY` pour le modèle
-(vide pour un serveur local comme Ollama), et `TELEGRAM_BOT_TOKEN`, ou `ELEVENLABS_API_KEY` pour la
-voix des satellites. [Fournisseurs](/fr/docs/providers/) dit où obtenir chacune. Ensuite :
+## Par où commencer
 
-```bash
-nestor check   # valide la configuration et construit les adaptateurs
-nestor run
-```
-
-`nestor check` nomme toute clé restée vide. Rien à charger à la main : `nestor` relit le `.env`
-posé à côté de sa configuration à chaque démarrage. pip et Docker fonctionnent aussi, voir [Installer](/fr/docs/install/).
-
-## Ouvrir l’administration
-
-L’administration écoute sur le port 8470 : ouvrez `http://localhost:8470` sur la machine
-elle-même, ou `http://<son adresse>:8470` depuis un autre appareil, et connectez-vous avec
-l’identifiant du propriétaire. On y trouve la configuration, le foyer, les satellites et le journal
-de tout ce que Nestor a fait. `admin.port` dans `nestor.yaml` change le port.
-
-## Ensuite
-
-- Installer avec pip ou Docker, mettre à jour, savoir où tout est rangé : [Installer](/fr/docs/install/).
-- Un autre modèle, un modèle local, Telegram ou les satellites, Nestor en français :
-  [Fournisseurs](/fr/docs/providers/).
-- Appairer un premier appareil : [Satellites](/fr/docs/satellites/).
-- Écrire le vôtre : les SDK [Python](/fr/docs/sdks/python/), [TypeScript](/fr/docs/sdks/typescript/)
-  et [Rust](/fr/docs/sdks/rust/).
+| Vous voulez…                                           | Lisez                                                                                                          |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| essayer Nestor sur votre ordinateur en dix minutes     | [Démarrage rapide](/fr/docs/quickstart/)                                                                       |
+| l’installer pour de bon, sur un serveur ou avec Docker | [Installer](/fr/docs/install/)                                                                                 |
+| comprendre ce qu’il fait pendant une conversation      | [Comment fonctionne l’agent](/fr/docs/agent/), [Mémoire](/fr/docs/agent/memory/)                               |
+| choisir un modèle, local ou hébergé                    | [Modèles](/fr/docs/models/)                                                                                    |
+| lui parler à voix haute, ou sur Telegram               | [Canaux et voix](/fr/docs/channels/)                                                                           |
+| brancher Home Assistant, vos mails, des serveurs MCP   | [Maison et services](/fr/docs/connections/)                                                                    |
+| ajouter une enceinte ou un écran dans une pièce        | [Satellites](/fr/docs/satellites/)                                                                             |
+| construire votre propre appareil                       | le SDK [Python](/fr/docs/sdks/python/), [TypeScript](/fr/docs/sdks/typescript/) ou [Rust](/fr/docs/sdks/rust/) |
