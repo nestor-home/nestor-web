@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/nestor-home/nestor-web/compare/v0.6.1...v0.6.2) (2026-11-03)
+
+
+### Bug Fixes
+
+* **deps:** update astro monorepo ([#34](https://github.com/nestor-home/nestor-web/issues/34)) ([cf906d2](https://github.com/nestor-home/nestor-web/commit/cf906d2cc24f23d5063e00ab894e4add7780ac68))
+
 ## [0.6.1](https://github.com/nestor-home/nestor-web/compare/v0.6.0...v0.6.1) (2026-11-03)
 
 
