@@ -24,7 +24,7 @@ how to refresh the captures, the recordings and the code examples.
 build behind an unprivileged, read-only Nginx, joined to the server's Traefik network `proxy`.
 
 Pull requests are squash-merged with a Conventional Commit title. release-please then keeps a
-release pull request open; merging it builds the site, publishes the image (amd64, arm64) and
+release pull request open, for `docs:` commits too (on this site the docs are the product); merging it builds the site, publishes the image (amd64, arm64) and
 deploys it once the `production` environment is approved (`.github/workflows/release.yml`).
 To deploy an earlier version again: Actions → Deploy → Run workflow.
 
