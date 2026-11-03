@@ -99,7 +99,12 @@ to it), and SDK READMEs stay short and link to their page.
   tokens (no Mermaid, no images): every word a Fluent message in `diagrams.ftl`, the layout chosen
   by the board's own width (a container query), so a figure reads in the article's column and on a
   phone. Their shared pieces (board, node, region, arrow, event) are the `.dg-*` classes in
-  `global.css`; a figure has one ink node (what it is about) and ember for the path it tells.
+  `global.css`, and every figure follows the same convention: a numbered `Figure` with a caption
+  that says what to read; one ink node (`is-core`, what it is about); ember (`is-hot`) for the path
+  it tells; dashed (`is-quiet`, on a node or an arrow) for what runs only when allowed, asked or
+  planned; arrows drawn only by `.dg-arrow` (`is-right`, `is-left`, `is-down`, `is-flow`); fluid
+  columns only, so nothing leaves the board at any width. Never an ASCII diagram in a code block:
+  a `text` block holds real output (a URI, a command's lines), nothing drawn.
 - Code blocks are highlighted at build (Shiki's `css-variables` theme, coloured by `.doc-prose` in
   `global.css`) and get a copy button. Commands in the docs are run before they are written.
 - The developers' page shows each SDK's minimal driver: the **first** code block of that SDK's page

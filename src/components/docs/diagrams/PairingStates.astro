@@ -1,0 +1,194 @@
+---
+/**
+ * The states of a pairing: a request without a code waits in `pending` until a proof is accepted, a
+ * request with an enrollment code is `approved` at once, the first poll takes the token (`claimed`),
+ * and a deadline that passes first ends in `expired`. On a wide board the happy path runs across, the
+ * enrollment code drops onto `approved` from above and `expired` lies below; on a narrow one, everything
+ * runs down and each way to `expired` names where it starts.
+ */
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+// the states' names are the protocol's own values, never translated
+const EXPIRED = "expired";
+---
+
+<Figure t={t} n={n} caption="dg-states-caption">
+  <div class="ps">
+    <div class="ps-entry ps-plain">
+      <span class="dg-note">{t("dg-states-without")}</span>
+    </div>
+    <span class="dg-arrow is-flow is-hot ps-a1" aria-hidden="true"></span>
+
+
+    <div class="dg-node ps-state ps-pending">
+      <span class="dg-title ps-name">{"pending"}</span>
+      <span class="dg-note">{t("dg-states-pending")}</span>
+    </div>
+    <div class="ps-step ps-a2">
+      <span class="dg-note">{t("dg-states-proof")}</span>
+      <span class="dg-arrow is-flow is-hot" aria-hidden="true"></span>
+    </div>
+    <div class="ps-entry ps-enrolled">
+      <span class="dg-label ps-or">{t("dg-states-or")}</span>
+      <span class="dg-note">{t("dg-states-enrolled")}</span>
+      <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
+    </div>
+    <div class="dg-node ps-state ps-approved">
+      <span class="dg-title ps-name">{"approved"}</span>
+      <span class="dg-note">{t("dg-states-approved")}</span>
+    </div>
+    <div class="ps-step ps-a3">
+      <span class="dg-note">{t("dg-states-claim")}</span>
+      <span class="dg-arrow is-flow is-hot" aria-hidden="true"></span>
+    </div>
+    <div class="dg-node is-core ps-state ps-claimed">
+      <span class="dg-title ps-name">{"claimed"}</span>
+      <span class="dg-note">{t("dg-states-claimed")}</span>
+    </div>
+
+    {
+      (["pending", "approved"] as const).map((from) => (
+        <div class={`ps-late ps-late-${from}`}>
+          <span class="dg-label ps-from">{t("dg-states-from-to", { from, to: EXPIRED })}</span>
+          <span class="dg-arrow is-down" aria-hidden="true" />
+          <span class="dg-note">{t(`dg-states-late-${from}`)}</span>
+        </div>
+      ))
+    }
+    <div class="dg-node is-quiet ps-state ps-expired">
+      <span class="dg-title ps-name">{EXPIRED}</span>
+      <span class="dg-note">{t("dg-states-expired")}</span>
+    </div>
+  </div>
+</Figure>
+
+<style>
+  /* narrow: everything runs down, in reading order */
+  .ps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  .ps-state {
+    width: min(100%, 16rem);
+  }
+  .ps-name {
+    font-family: var(--font-data);
+  }
+  .ps-entry,
+  .ps-step,
+  .ps-late {
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+  }
+  .ps-entry .dg-label,
+  .ps-late .dg-label {
+    margin: 0;
+  }
+  .ps-or {
+    color: var(--ember);
+  }
+  .ps-late {
+    margin-top: 0.75rem;
+  }
+  .ps-late + .ps-late {
+    margin-top: 0.25rem;
+  }
+
+  /* wide: the happy path across, the enrollment code from above, expired below */
+  @container (min-width: 40rem) {
+    .ps {
+      /* fluid only: whatever the board's width, nothing runs out of it */
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1fr);
+      grid-template-rows: auto auto auto auto;
+      align-items: center;
+      column-gap: 0.25rem;
+      row-gap: 0;
+    }
+    .ps-plain {
+      grid-area: 2 / 1;
+    }
+    .ps-a1 {
+      grid-area: 2 / 2;
+    }
+    .ps-pending {
+      grid-area: 2 / 3;
+    }
+    .ps-enrolled {
+      grid-area: 1 / 5;
+      align-self: end;
+      padding-bottom: 0.35rem;
+    }
+    .ps-approved {
+      grid-area: 2 / 5;
+    }
+    .ps-a2 {
+      grid-area: 2 / 4;
+    }
+    .ps-a3 {
+      grid-area: 2 / 6;
+    }
+    .ps-a2,
+    .ps-a3 {
+      justify-self: stretch;
+      justify-items: stretch;
+    }
+    .ps-a2 .dg-arrow,
+    .ps-a3 .dg-arrow {
+      width: 100%;
+    }
+    /* a transition's words sit above its arrow, which stays on the states' line like the first one */
+    .ps-a2,
+    .ps-a3 {
+      position: relative;
+    }
+    .ps-a2 .dg-note,
+    .ps-a3 .dg-note {
+      position: absolute;
+      bottom: calc(100% + 0.35rem);
+      left: 0;
+      right: 0;
+    }
+    .ps-a1 {
+      width: 100%;
+    }
+    .ps-claimed {
+      grid-area: 2 / 7;
+    }
+    .ps-state {
+      width: 100%;
+    }
+
+    .ps-late {
+      align-self: start;
+      margin: 0;
+      padding-block: 0.35rem;
+    }
+    .ps-late-pending {
+      grid-area: 3 / 3;
+    }
+    .ps-late-approved {
+      grid-area: 3 / 5;
+    }
+    .ps-late .ps-from {
+      display: none;
+    }
+    .ps-expired {
+      grid-area: 4 / 3 / 5 / 6;
+      justify-self: stretch;
+    }
+    .ps-enrolled > .ps-or {
+      display: none;
+    }
+  }
+</style>

@@ -4,6 +4,9 @@ title: "Protocol: nestor.satellite/1"
 description: The standard every satellite implements, whatever its language.
 ---
 
+import PairingFlow from "@/components/docs/diagrams/PairingFlow.astro";
+import PairingStates from "@/components/docs/diagrams/PairingStates.astro";
+
 A **satellite** is a device that pairs with a Nestor server (the **core**), declares what it can
 do, talks with the assistant in writing, aloud or both, reports observations and carries out the
 core’s intents. This page is the
@@ -21,23 +24,19 @@ SDKs keep a copy and test what they send against it.
 
 ## 1. Overview
 
-```text
-device                                  core                                 household member
-  │ POST /satellites/pairings ────────▶ pending + device code            ◀── starts an addition (optional)
-  │ presents the device code (screen, voice, log)
-  │                                                       ◀──────────────── types the device code
-  │                           or, whichever comes first
-  │ POST …/{pairing_id}/enrollment ───▶ approved                             (enrollment code made in the admin)
-  │ GET  /satellites/pairings/{id} ───▶ approved + token (once)
-  │ WebSocket /satellites/{device_id}/link: hello (token) → welcome, text, intents ⇄ acks, observations
-  │ POST /satellites/{device_id}/audio (Bearer token, WebRTC SDP)    only when audio is allowed
-```
+A satellite goes through three phases, in this order:
 
-A device configured with an enrollment code sends it with its first request and is approved at once.
+1. **Pairing**, once. The device asks to pair, and a person proves they meant it: with a device code
+   the device presents, or an enrollment code given to it ([section 2](#2-pairing-methods)). The
+   core then gives the device its token, once ([section 3](#3-pairing)).
+2. **The link**, for as long as the device runs: a WebSocket opened with the token, which carries
+   every message: text, intents and their acknowledgements, observations ([section 7](#7-link)).
+3. **Audio**, only for a device allowed it: a WebRTC connection tied to the link, which carries
+   audio and nothing else ([section 9](#9-audio)).
 
-Every device holds one link, a WebSocket that carries every message. A device allowed audio also
-opens a WebRTC connection, which carries only audio. A device with a screen and a keyboard needs no
-WebRTC, no codec and no microphone.
+<PairingFlow locale="en" n={1} />
+
+A device with a screen and a keyboard needs no WebRTC, no codec and no microphone.
 
 ## 2. Pairing methods
 
@@ -115,16 +114,7 @@ Errors answer `pairing.error`: `{"error": code, "detail": text, "reason"?: …, 
 
 ### 3.2 States of a pairing
 
-```text
-             device code typed in the admin
-           ┌───────────────────────────────┐
-request ──▶ pending                         ├──▶ approved ──(first poll: token)──▶ claimed
-  │        └───────────────────────────────┘        │
-  │          enrollment code accepted               │ deadline passes, token unclaimed
-  │                                                 ▼
-  └── with an enrollment code ──▶ approved      expired ◀── deadline passes while pending,
-                                                             or the device asks again (superseded)
-```
+<PairingStates locale="en" n={2} />
 
 - A pending pairing lasts 10 minutes. An unknown, superseded or forgotten `pairing_id` reads as
   `expired`, so polling reveals nothing.

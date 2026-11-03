@@ -4,6 +4,9 @@ title: "Protocole : nestor.satellite/1"
 description: Le standard que tout satellite implémente, quel que soit son langage.
 ---
 
+import PairingFlow from "@/components/docs/diagrams/PairingFlow.astro";
+import PairingStates from "@/components/docs/diagrams/PairingStates.astro";
+
 Un **satellite** est un appareil qui s’appaire à un serveur Nestor (le **cœur**), déclare ce qu’il
 sait faire, parle avec l’assistant par écrit, à voix haute ou les deux, remonte des observations et
 exécute les intentions du cœur. Cette
@@ -21,24 +24,21 @@ les SDK en gardent une copie et y confrontent ce qu’ils envoient.
 
 ## 1. Vue d’ensemble
 
-```text
-appareil                                cœur                                 membre du foyer
-  │ POST /satellites/pairings ────────▶ pending + code d’appareil        ◀── lance un ajout (facultatif)
-  │ présente le code d’appareil (écran, voix, journal)
-  │                                                       ◀──────────────── tape le code d’appareil
-  │                           ou, au premier arrivé
-  │ POST …/{pairing_id}/enrollment ───▶ approved                             (code d’enrôlement créé dans l’administration)
-  │ GET  /satellites/pairings/{id} ───▶ approved + jeton (une fois)
-  │ WebSocket /satellites/{device_id}/link : hello (jeton) → welcome, texte, intentions ⇄ acks, observations
-  │ POST /satellites/{device_id}/audio (jeton Bearer, SDP WebRTC)     seulement si l’audio est autorisé
-```
+Un satellite passe par trois phases, dans cet ordre :
 
-Un appareil configuré avec un code d’enrôlement l’envoie dès sa première requête et se
-voit approuvé aussitôt.
+1. **L’appairage**, une fois. L’appareil demande à s’appairer, et une personne prouve qu’elle le
+   voulait : par un code d’appareil que l’appareil présente, ou par un code d’enrôlement qu’on lui
+   donne ([section 2](#2-méthodes-dappairage)). Le cœur remet alors son jeton à l’appareil, une
+   seule fois ([section 3](#3-appairage)).
+2. **Le lien**, tant que l’appareil tourne : un WebSocket ouvert avec le jeton, qui porte tous les
+   messages : le texte, les intentions et leurs acquittements, les observations
+   ([section 7](#7-lien)).
+3. **L’audio**, seulement pour un appareil qui y est autorisé : une connexion WebRTC liée au lien,
+   qui ne porte que l’audio ([section 9](#9-audio)).
 
-Chaque appareil tient un lien, un WebSocket qui porte tous les messages. Un appareil autorisé à
-l’audio ouvre en plus une connexion WebRTC, qui ne porte que l’audio. Un appareil avec un écran et un
-clavier n’a besoin ni de WebRTC, ni de codec, ni de micro.
+<PairingFlow locale="fr" n={1} />
+
+Un appareil avec un écran et un clavier n’a besoin ni de WebRTC, ni de codec, ni de micro.
 
 ## 2. Méthodes d’appairage
 
@@ -119,16 +119,7 @@ la traduire à partir de `error` et `reason`, jamais afficher `detail`.
 
 ### 3.2 États d’un appairage
 
-```text
-             code d’appareil tapé dans l’administration
-           ┌───────────────────────────────┐
-requête ──▶ pending                         ├──▶ approved ──(première lecture : jeton)──▶ claimed
-  │        └───────────────────────────────┘        │
-  │          code d’enrôlement accepté              │ l’échéance passe, jeton non réclamé
-  │                                                 ▼
-  └── avec un code d’enrôlement ──▶ approved     expired ◀── l’échéance passe en attente,
-                                                              ou l’appareil redemande (remplacé)
-```
+<PairingStates locale="fr" n={2} />
 
 - Un appairage en attente dure 10 minutes. Un `pairing_id` inconnu, remplacé ou oublié se lit
   `expired` : interroger ne révèle rien.

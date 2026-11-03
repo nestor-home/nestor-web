@@ -886,6 +886,24 @@
     right: 1px;
     transform: rotate(45deg);
   }
+  /* across, pointing back (a sequence's answer) */
+  .dg-arrow.is-left {
+    width: 2.25rem;
+    height: 9px;
+  }
+  .dg-arrow.is-left::before {
+    inset: 4px 0 auto 1px;
+    height: 1px;
+  }
+  .dg-arrow.is-left::after {
+    top: 1px;
+    left: 1px;
+    transform: rotate(-135deg);
+  }
+  /* what runs only when allowed or asked, as `.dg-node.is-quiet`: a dashed line */
+  .dg-arrow.is-quiet::before {
+    background: repeating-linear-gradient(90deg, var(--arrow) 0 4px, transparent 4px 7px);
+  }
   .dg-arrow.is-down {
     width: 9px;
     height: 1.75rem;
