@@ -77,7 +77,7 @@ Pour la voix, installez `'nestor-home[voice]'` ; pour mettre à jour, ajoutez 
 L’image garde tout dans `/data`. Montez-y un dossier, écrivez une première configuration,
 remplissez les clés, puis lancez-la :
 
-```bash
+```bash docker-quickstart
 docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init
 $EDITOR nestor/.env
 docker run -d --name nestor --restart unless-stopped -v ./nestor:/data -p 8470:8470 -p 8471:8471 ghcr.io/nestor-home/nestor

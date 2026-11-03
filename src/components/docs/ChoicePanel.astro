@@ -1,0 +1,15 @@
+---
+/**
+ * One choice's content, under a row of tabs (Tabs.astro) or a provider mosaic (Providers.astro): the
+ * tab `id` labels it, and only the shown one is visible before a choice is made.
+ */
+interface Props {
+  id: string;
+  shown: boolean;
+}
+const { id, shown } = Astro.props;
+---
+
+<div role="tabpanel" id={`${id}-panel`} aria-labelledby={id} tabindex="0" class="doc-panel" hidden={!shown}>
+  <slot />
+</div>

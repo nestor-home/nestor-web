@@ -20,20 +20,20 @@ const outputs = ["episode", "facts"] as const;
 <Figure t={t} n={n} caption="dg-consolidation-caption">
   <div class="cons">
     <div class="cons-time">
-      <div class="cons-span">
+      <div class="dg-node cons-span">
         <span class="dg-label">{t("dg-consolidation-talk")}</span>
         <div class="cons-turns">
           {
             turns.map((time) => (
               <span class="cons-turn">
                 <span class="cons-tick" aria-hidden="true" />
-                <span class="cons-at">{time}</span>
+                <span class="dg-data">{time}</span>
               </span>
             ))
           }
         </div>
       </div>
-      <div class="cons-span cons-silence">
+      <div class="dg-node is-quiet cons-span cons-silence">
         <Dither shape="ramp-right" from={0} to={0.45} dot={2} class="absolute inset-y-0 right-0 w-1/2 text-ink/20" />
         <span class="dg-label">{t("dg-consolidation-silence")}</span>
         <span class="dg-note">{t("dg-consolidation-silence-note")}</span>
@@ -72,27 +72,16 @@ const outputs = ["episode", "facts"] as const;
     grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
   }
-  .cons > .dg-arrow {
-    justify-self: center;
-  }
   .cons-time {
     display: grid;
     gap: 0.5rem;
   }
+  /* the dither lies under the span's words */
   .cons-span {
-    position: relative;
     overflow: hidden;
-    padding: 0.75rem 0.85rem;
-    border: var(--hairline) solid var(--rule-strong);
-    border-radius: var(--radius);
-    background: var(--paper);
   }
-  .cons-span > :not(div[aria-hidden]) {
+  .cons-span > :is(span, .cons-turns) {
     position: relative;
-  }
-  .cons-silence {
-    border-style: dashed;
-    background: transparent;
   }
   .cons-silence .dg-label {
     color: var(--ink);
@@ -129,12 +118,6 @@ const outputs = ["episode", "facts"] as const;
     border-radius: 999px;
     background: var(--ink);
     box-shadow: 0 0 0 3px var(--paper);
-  }
-  .cons-at {
-    font-family: var(--font-data);
-    font-size: var(--text-2xs);
-    font-variant-numeric: tabular-nums;
-    color: var(--ink-muted);
   }
   .cons-outputs {
     display: grid;

@@ -55,7 +55,7 @@ const targets: { id: string; quiet?: boolean; items: { source: Source; id: strin
     <div class="memory-targets">
       {
         targets.map((target) => (
-          <div class:list={["dg-region is-framed memory-target", target.quiet && "is-quiet"]}>
+          <div class:list={["dg-region is-framed memory-target", { "is-quiet": target.quiet }]}>
             <span class="dg-label">{t(`dg-memory-into-${target.id}`)}</span>
             <ul class="memory-items">
               {target.items.map((item) => (
@@ -76,11 +76,7 @@ const targets: { id: string; quiet?: boolean; items: { source: Source; id: strin
   .memory {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    justify-items: stretch;
     gap: 0.6rem;
-  }
-  .memory > .dg-arrow {
-    justify-self: center;
   }
   .memory-sources,
   .memory-targets {
@@ -116,21 +112,14 @@ const targets: { id: string; quiet?: boolean; items: { source: Source; id: strin
     width: 0.7rem;
     background: var(--ink-muted);
   }
-  .memory-target.is-quiet {
-    border-style: dotted;
-  }
-  :global(.doc-prose) .memory-items {
+  .memory-items {
     display: grid;
     gap: 0.35rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
   }
-  :global(.doc-prose) .memory-item {
+  .memory-item {
     display: flex;
     align-items: baseline;
     gap: 0.55rem;
-    margin: 0;
     font-size: var(--text-sm);
     line-height: 1.4;
     color: var(--ink);
@@ -138,7 +127,7 @@ const targets: { id: string; quiet?: boolean; items: { source: Source; id: strin
   .memory-item .memory-mark {
     transform: translateY(-0.05rem);
   }
-  @container (min-width: 36rem) {
+  @container (min-width: 40rem) {
     .memory {
       grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.25fr);
       align-items: center;

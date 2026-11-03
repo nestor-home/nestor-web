@@ -56,5 +56,21 @@ export const TAB_SETS = {
 
 export type TabSet = keyof typeof TAB_SETS;
 
-/** A tab's id, which is also the address that opens it; its panel is `<id>-panel`. */
-export const tabId = (set: TabSet, choice: string): string => `${set}-${choice}`;
+/** A choice's tab id (`install-docker`, `model-ollama`), which is also the address that opens it; its
+ * panel (ChoicePanel.astro) is `<id>-panel`. */
+export const choiceId = (group: string, choice: string): string => `${group}-${choice}`;
+
+/**
+ * The commands of every `bash` block a page tags (` ```bash quickstart `), comments and blank lines
+ * dropped: the home page shows the documentation's own commands, wherever the page moves them.
+ */
+export function taggedCommands(markdown: string, tag: string): string[][] {
+  return [...markdown.matchAll(/^```bash ([^\n]*)\n([\s\S]*?)^```/gm)]
+    .filter((m) => (m[1] ?? "").split(" ").includes(tag))
+    .map((m) =>
+      (m[2] ?? "")
+        .split("\n")
+        .map((line) => line.replace(/(^|\s+)#.*$/, "").trim())
+        .filter(Boolean),
+    );
+}

@@ -77,7 +77,7 @@ voice, install `'nestor-home[voice]'`; to upgrade, add `-U`.
 The image keeps everything in `/data`. Mount a folder there, write a first configuration, fill the
 keys, then start it:
 
-```bash
+```bash docker-quickstart
 docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init
 $EDITOR nestor/.env
 docker run -d --name nestor --restart unless-stopped -v ./nestor:/data -p 8470:8470 -p 8471:8471 ghcr.io/nestor-home/nestor

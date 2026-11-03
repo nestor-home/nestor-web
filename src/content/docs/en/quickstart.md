@@ -17,13 +17,13 @@ You need:
 
 ### 1. Install Nestor
 
-```bash
+```bash quickstart
 uv tool install nestor-home
 ```
 
 ### 2. Write a first configuration
 
-```bash
+```bash quickstart
 mkdir nestor && cd nestor
 nestor init
 ```
@@ -46,7 +46,7 @@ Telegram is optional: leave `TELEGRAM_BOT_TOKEN` empty.
 
 ### 4. Check and start
 
-```bash
+```bash quickstart
 nestor check
 nestor run
 ```

@@ -40,7 +40,7 @@ const arrivals = ["spoken", "written", "followup"] as const;
     <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
 
     <div class="init-middle">
-      <div class="dg-node init-courier">
+      <div class="dg-node is-hot">
         <span class="dg-title">{t("dg-initiative-courier")}</span>
         <span class="dg-note">{t("dg-initiative-courier-note")}</span>
         <span class="dg-event mt-1.5">{"initiative.considered"}</span>
@@ -76,10 +76,6 @@ const arrivals = ["spoken", "written", "followup"] as const;
     grid-template-columns: minmax(0, 1fr);
     gap: 0.6rem;
   }
-  .init > .dg-arrow,
-  .init-middle > .dg-arrow {
-    justify-self: center;
-  }
   .init-stack,
   .init-middle {
     display: grid;
@@ -93,8 +89,5 @@ const arrivals = ["spoken", "written", "followup"] as const;
     .init-stack.is-three {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-  }
-  .init-courier {
-    border-color: var(--ember);
   }
 </style>

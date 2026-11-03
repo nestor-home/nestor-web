@@ -77,7 +77,7 @@ const plugged = ["models", "ha", "connectors", "executors"] as const;
 
     <span class="dg-arrow is-down" aria-hidden="true"></span>
 
-    <div class="map-journal">
+    <div class="dg-node map-journal">
       <Dither shape="ramp-left" from={0} to={0.5} dot={2} class="absolute inset-y-0 right-0 w-2/5 text-ink/20" />
       <span class="dg-title">{t("dg-map-journal")}</span>
       <span class="dg-note">{t("dg-map-journal-note")}</span>
@@ -99,13 +99,10 @@ const plugged = ["models", "ha", "connectors", "executors"] as const;
   .map-row.is-three {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* the record of everything, in ink, its dither under the words */
   .map-journal {
-    position: relative;
     overflow: hidden;
-    padding: 0.85rem 1rem;
-    border: var(--hairline) solid var(--ink);
-    border-radius: var(--radius);
-    background: var(--paper);
+    border-color: var(--ink);
   }
   .map-journal > span {
     position: relative;

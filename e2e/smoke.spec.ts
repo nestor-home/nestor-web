@@ -321,7 +321,6 @@ const BOXED = [
   "/fr/docs/install/",
   "/fr/docs/configuration/",
   "/docs/models/",
-  "/fr/docs/channels/",
   "/docs/connections/",
   "/docs/agent/",
   "/fr/docs/agent/memory/",

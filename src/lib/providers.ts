@@ -6,7 +6,6 @@
  * speech, the one `nestor init` writes). The messaging channels are the home page's own list
  * (`lib/integrations.ts`), so the two pages never disagree.
  */
-import type { BrandKey } from "@/lib/brands";
 import { INTEGRATIONS, type Integration } from "@/lib/integrations";
 
 export type ProviderKind = "model" | "speech" | "channel";
@@ -50,6 +49,3 @@ export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
     ...messaging.filter((c) => c.status === "planned"),
   ],
 };
-
-/** A provider's tile id, which is also the address that opens it; its setup is `<id>-setup`. */
-export const panelId = (kind: ProviderKind, brand: BrandKey): string => `${kind}-${brand}`;

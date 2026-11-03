@@ -15,8 +15,6 @@ interface Props {
 }
 const { locale, n } = Astro.props;
 const t = translator(locale);
-// the states' names are the protocol's own values, never translated
-const EXPIRED = "expired";
 ---
 
 <Figure t={t} n={n} caption="dg-states-caption">
@@ -25,7 +23,6 @@ const EXPIRED = "expired";
       <span class="dg-note">{t("dg-states-without")}</span>
     </div>
     <span class="dg-arrow is-flow is-hot ps-a1" aria-hidden="true"></span>
-
 
     <div class="dg-node ps-state ps-pending">
       <span class="dg-title ps-name">{"pending"}</span>
@@ -56,14 +53,14 @@ const EXPIRED = "expired";
     {
       (["pending", "approved"] as const).map((from) => (
         <div class={`ps-late ps-late-${from}`}>
-          <span class="dg-label ps-from">{t("dg-states-from-to", { from, to: EXPIRED })}</span>
+          <span class="dg-label ps-from">{t("dg-states-from-to", { from, to: "expired" })}</span>
           <span class="dg-arrow is-down" aria-hidden="true" />
           <span class="dg-note">{t(`dg-states-late-${from}`)}</span>
         </div>
       ))
     }
     <div class="dg-node is-quiet ps-state ps-expired">
-      <span class="dg-title ps-name">{EXPIRED}</span>
+      <span class="dg-title ps-name">{"expired"}</span>
       <span class="dg-note">{t("dg-states-expired")}</span>
     </div>
   </div>
@@ -105,52 +102,58 @@ const EXPIRED = "expired";
     margin-top: 0.25rem;
   }
 
-  /* wide: the happy path across, the enrollment code from above, expired below */
+  /* wide: the happy path across on row 2, the enrollment code above approved, expired below */
   @container (min-width: 40rem) {
     .ps {
       /* fluid only: whatever the board's width, nothing runs out of it */
       grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1fr);
-      grid-template-rows: auto auto auto auto;
       align-items: center;
       column-gap: 0.25rem;
       row-gap: 0;
+    }
+    .ps-state {
+      width: 100%;
     }
     .ps-plain {
       grid-area: 2 / 1;
     }
     .ps-a1 {
       grid-area: 2 / 2;
+      width: 100%;
     }
     .ps-pending {
       grid-area: 2 / 3;
+    }
+    .ps-a2 {
+      grid-area: 2 / 4;
     }
     .ps-enrolled {
       grid-area: 1 / 5;
       align-self: end;
       padding-bottom: 0.35rem;
     }
+    .ps-enrolled > .ps-or {
+      display: none;
+    }
     .ps-approved {
       grid-area: 2 / 5;
-    }
-    .ps-a2 {
-      grid-area: 2 / 4;
     }
     .ps-a3 {
       grid-area: 2 / 6;
     }
+    .ps-claimed {
+      grid-area: 2 / 7;
+    }
+    /* a transition's words sit above its arrow, which stays on the states' line like the first one */
     .ps-a2,
     .ps-a3 {
+      position: relative;
       justify-self: stretch;
       justify-items: stretch;
     }
     .ps-a2 .dg-arrow,
     .ps-a3 .dg-arrow {
       width: 100%;
-    }
-    /* a transition's words sit above its arrow, which stays on the states' line like the first one */
-    .ps-a2,
-    .ps-a3 {
-      position: relative;
     }
     .ps-a2 .dg-note,
     .ps-a3 .dg-note {
@@ -159,20 +162,13 @@ const EXPIRED = "expired";
       left: 0;
       right: 0;
     }
-    .ps-a1 {
-      width: 100%;
-    }
-    .ps-claimed {
-      grid-area: 2 / 7;
-    }
-    .ps-state {
-      width: 100%;
-    }
-
     .ps-late {
       align-self: start;
       margin: 0;
       padding-block: 0.35rem;
+    }
+    .ps-late .ps-from {
+      display: none;
     }
     .ps-late-pending {
       grid-area: 3 / 3;
@@ -180,15 +176,9 @@ const EXPIRED = "expired";
     .ps-late-approved {
       grid-area: 3 / 5;
     }
-    .ps-late .ps-from {
-      display: none;
-    }
     .ps-expired {
       grid-area: 4 / 3 / 5 / 6;
       justify-self: stretch;
-    }
-    .ps-enrolled > .ps-or {
-      display: none;
     }
   }
 </style>

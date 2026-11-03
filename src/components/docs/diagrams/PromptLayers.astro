@@ -17,23 +17,28 @@ const layers = [
   { id: "stable", cached: true },
   { id: "household", cached: true },
   { id: "turn", cached: false },
-  { id: "conversation", cached: false },
+  { id: "conversation", cached: false, quiet: true },
 ] as const;
 ---
 
 <Figure t={t} n={n} caption="dg-layers-caption">
   <div class="layers">
     {
-      layers.map((layer) => (
-        <div class:list={["layer", layer.cached && "is-cached"]}>
+      layers.map((layer, i) => (
+        <div
+          class:list={[
+            "dg-node layer",
+            { "is-cached": layer.cached, "is-quiet": "quiet" in layer, "is-last": i === layers.length - 1 },
+          ]}
+        >
           {layer.cached && <Dither shape="ramp-left" from={0} to={0.4} dot={2} class="absolute inset-y-0 right-0 w-1/4 text-ink/15" />}
           <div class="layer-text">
             <span class="dg-title">{t(`dg-layers-${layer.id}`)}</span>
             <span class="dg-note">{t(`dg-layers-${layer.id}-note`)}</span>
           </div>
-          <span class="layer-pace">{t(`dg-layers-${layer.id}-pace`)}</span>
+          <span class="dg-data layer-pace">{t(`dg-layers-${layer.id}-pace`)}</span>
           {layer.cached && (
-            <span class="layer-point">
+            <span class="dg-data layer-point">
               <span class="layer-point-mark" aria-hidden="true" />
               {t("dg-layers-point")}
             </span>
@@ -54,14 +59,12 @@ const layers = [
     display: grid;
     grid-template-columns: minmax(0, 1fr);
   }
+  /* the layers stack into one block: square inside, round outside */
   .layer {
-    position: relative;
     overflow: hidden;
     display: grid;
     gap: 0.4rem;
-    padding: 0.75rem 0.9rem 0.8rem;
-    border: var(--hairline) solid var(--rule-strong);
-    background: var(--paper);
+    border-radius: 0;
   }
   .layer + .layer {
     border-top: 0;
@@ -69,10 +72,8 @@ const layers = [
   .layer:first-child {
     border-radius: var(--radius) var(--radius) 0 0;
   }
-  .layer:nth-child(4) {
+  .layer.is-last {
     border-radius: 0 0 var(--radius) var(--radius);
-    border-style: dashed;
-    background: transparent;
   }
   .layer.is-cached {
     border-color: var(--ink);
@@ -85,18 +86,12 @@ const layers = [
   .layer-point {
     position: relative;
   }
-  .layer-pace {
-    font-family: var(--font-data);
-    font-size: var(--text-2xs);
-    color: var(--ink-faint);
-  }
+
   /* where the provider cuts its cache: after the stable layer, and after the household's */
   .layer-point {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-family: var(--font-data);
-    font-size: var(--text-2xs);
     color: var(--ember);
   }
   .layer-point-mark {

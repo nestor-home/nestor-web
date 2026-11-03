@@ -12,11 +12,16 @@ interface Props {
 }
 const { locale, n } = Astro.props;
 const t = translator(locale);
-const lanes = [
-  { id: "words", found: ["choir", "vegetarian"] },
-  { id: "meaning", found: ["vegetarian", "coriander"] },
+const BOTH = "vegetarian"; // the memory both searches find
+// the two searches side by side, then their fusion
+const rows = [
+  [
+    { id: "words", found: ["choir", BOTH] },
+    { id: "meaning", found: [BOTH, "coriander"] },
+  ],
+  [{ id: "fused", found: [BOTH, "choir", "coriander"] }],
 ] as const;
-const fused = ["vegetarian", "choir", "coriander"] as const;
+const ranked = (found: readonly string[]) => found.map((memory, i) => ({ memory, rank: i + 1, both: memory === BOTH }));
 ---
 
 <Figure t={t} n={n} caption="dg-search-caption">
@@ -26,41 +31,30 @@ const fused = ["vegetarian", "choir", "coriander"] as const;
       <span class="dg-title">{t("dg-search-question")}</span>
     </div>
 
-    <span class="dg-arrow is-flow is-hot" aria-hidden="true"></span>
+    <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
 
-    <div class="search-lanes">
-      {
-        lanes.map((lane) => (
-          <div class="dg-region">
-            <span class="dg-label">{t(`dg-search-${lane.id}`)}</span>
-            <ol class="search-list">
-              {lane.found.map((memory, i) => (
-                <li class:list={["search-item", memory === "vegetarian" && "is-both"]}>
-                  <span class="search-rank">{i + 1}</span>
-                  <span>{t(`dg-search-memory-${memory}`)}</span>
-                </li>
-              ))}
-            </ol>
+    {
+      rows.map((row, r) => (
+        <>
+          {r > 0 && <span class="dg-arrow is-down is-hot" aria-hidden="true" />}
+          <div class:list={["search-row", { "is-pair": row.length > 1 }]}>
+            {row.map((list) => (
+              <div class="dg-region">
+                <span class="dg-label">{t(`dg-search-${list.id}`)}</span>
+                <ol class="search-list">
+                  {ranked(list.found).map(({ memory, rank, both }) => (
+                    <li class:list={["dg-node search-item", { "is-hot": both }]}>
+                      <span class="dg-data search-rank">{rank}</span>
+                      <span>{t(`dg-search-memory-${memory}`)}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
           </div>
-        ))
-      }
-    </div>
-
-    <span class="dg-arrow is-flow is-hot" aria-hidden="true"></span>
-
-    <div class="dg-region search-fused">
-      <span class="dg-label">{t("dg-search-fused")}</span>
-      <ol class="search-list">
-        {
-          fused.map((memory, i) => (
-            <li class:list={["search-item", memory === "vegetarian" && "is-both"]}>
-              <span class="search-rank">{i + 1}</span>
-              <span>{t(`dg-search-memory-${memory}`)}</span>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
+        </>
+      ))
+    }
   </div>
 </Figure>
 
@@ -70,9 +64,6 @@ const fused = ["vegetarian", "choir", "coriander"] as const;
     grid-template-columns: minmax(0, 1fr);
     gap: 0.6rem;
   }
-  .search > .dg-arrow {
-    justify-self: center;
-  }
   .search-question .dg-title {
     margin-top: 0.15rem;
     font-family: var(--font-display);
@@ -80,46 +71,29 @@ const fused = ["vegetarian", "choir", "coriander"] as const;
     font-size: var(--text-base);
     font-weight: 500;
   }
-  .search-lanes {
+  .search-row {
     display: grid;
     gap: 1rem 0.75rem;
   }
-  @container (min-width: 28rem) {
-    .search-lanes {
+  @container (min-width: 40rem) {
+    .search-row.is-pair {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-  :global(.doc-prose) .search-list {
+  .search-list {
     display: grid;
     gap: 0.35rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
   }
-  :global(.doc-prose) .search-item {
+  .search-item {
     display: grid;
     grid-template-columns: 1.25rem minmax(0, 1fr);
     align-items: baseline;
     gap: 0.4rem;
-    margin: 0;
     padding: 0.35rem 0.5rem;
-    border: var(--hairline) solid var(--rule);
-    border-radius: var(--radius);
-    background: var(--paper);
-    font-size: var(--text-sm);
     line-height: 1.35;
     color: var(--ink);
   }
-  :global(.doc-prose) .search-item.is-both {
-    border-color: var(--ember);
-  }
-  .search-rank {
-    font-family: var(--font-data);
-    font-size: var(--text-xs);
-    font-variant-numeric: tabular-nums;
-    color: var(--ink-faint);
-  }
-  .is-both .search-rank {
+  .search-item.is-hot .search-rank {
     color: var(--ember);
   }
 </style>

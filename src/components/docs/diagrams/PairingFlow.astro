@@ -81,15 +81,15 @@ let phase = 0;
               </li>
             );
           }
-          const [a, b] = [centre(row.from), centre(row.to)].sort();
-          const left = centre(row.to) < centre(row.from);
+          const from = centre(row.from);
+          const to = centre(row.to);
           return (
             <li
-              class:list={["pf-msg", { "is-quiet": row.quiet }]}
-              style={`--a:${a};--b:${b};--row:${i + 1}`}
+              class:list={["dg-node pf-msg", { "is-quiet": row.quiet }]}
+              style={`--a:${Math.min(from, to)};--b:${Math.max(from, to)};--row:${i + 1}`}
             >
               <span class="pf-text">
-                <span class="pf-who">
+                <span class="dg-data pf-who">
                   {t("dg-pairing-from-to", { from: t(`dg-pairing-${row.from}`), to: t(`dg-pairing-${row.to}`) })}
                 </span>
                 <span class="dg-title">{t(`dg-pairing-${row.id}`)}</span>
@@ -115,7 +115,7 @@ let phase = 0;
               <span
                 class:list={[
                   "dg-arrow pf-line",
-                  left ? "is-left" : "is-right",
+                  to < from ? "is-left" : "is-right",
                   { "is-hot": !row.local && !row.quiet, "is-quiet": row.quiet },
                 ]}
                 aria-hidden="true"
@@ -139,15 +139,9 @@ let phase = 0;
   .pf-line {
     display: none;
   }
-  :global(.doc-prose) .pf-seq {
+  .pf-seq {
     display: grid;
     gap: 0.5rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  :global(.doc-prose) .pf-seq > li {
-    margin: 0;
   }
   .pf-phase:not(:first-of-type) {
     margin-top: 0.75rem;
@@ -159,26 +153,12 @@ let phase = 0;
   .pf-or .dg-label {
     color: var(--ember);
   }
-  .pf-msg {
-    min-width: 0;
-    padding: 0.6rem 0.75rem 0.65rem;
-    border: var(--hairline) solid var(--rule-strong);
-    border-radius: var(--radius);
-    background: var(--paper);
-  }
-  .pf-msg.is-quiet {
-    border-style: dashed;
-    background: transparent;
-  }
   .pf-text {
     display: block;
   }
   .pf-who {
     display: block;
     margin-bottom: 0.25rem;
-    font-family: var(--font-data);
-    font-size: var(--text-2xs);
-    color: var(--ink-muted);
   }
   /* a long endpoint wraps after a slash rather than losing its end or leaving its box */
   .pf-code {
@@ -197,22 +177,22 @@ let phase = 0;
       gap: 1.5rem;
       text-align: center;
     }
-    :global(.doc-prose) .pf-seq {
+    .pf-seq {
       position: relative;
       grid-template-columns: repeat(6, minmax(0, 1fr));
       column-gap: 0;
       row-gap: 0.85rem;
     }
     /* the lifelines, at the lanes' centres: a sixth, a half, five sixths */
-    :global(.doc-prose) .pf-seq::before,
-    :global(.doc-prose) .pf-seq::after {
+    .pf-seq::before,
+    .pf-seq::after {
       content: "";
       position: absolute;
       inset: 0 calc(100% / 6);
       border-inline: var(--hairline) dashed var(--rule-strong);
       pointer-events: none;
     }
-    :global(.doc-prose) .pf-seq::after {
+    .pf-seq::after {
       inset: 0 auto 0 50%;
       border-right: 0;
     }
@@ -224,7 +204,6 @@ let phase = 0;
     }
     .pf-phase,
     .pf-or {
-      position: relative;
       grid-column: 1 / -1;
       text-align: center;
     }
@@ -237,6 +216,7 @@ let phase = 0;
     .pf-phase:not(:first-of-type) {
       margin-top: 0.5rem;
     }
+    /* the message is an arrow now, not a box */
     .pf-msg {
       grid-column: var(--a) / var(--b);
       display: grid;
@@ -245,9 +225,6 @@ let phase = 0;
       border: 0;
       background: transparent;
       text-align: center;
-    }
-    .pf-msg.is-quiet {
-      border: 0;
     }
     .pf-who {
       display: none;

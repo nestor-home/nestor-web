@@ -4,7 +4,9 @@
  * for it. Only the default provider of its kind shows before a choice.
  */
 import type { BrandKey } from "@/lib/brands";
-import { PROVIDERS, type ProviderKind, panelId } from "@/lib/providers";
+import { choiceId } from "@/lib/docs";
+import { PROVIDERS, type ProviderKind } from "@/lib/providers";
+import ChoicePanel from "./ChoicePanel.astro";
 
 interface Props {
   kind: ProviderKind;
@@ -13,10 +15,8 @@ interface Props {
 const { kind, brand } = Astro.props;
 const known = PROVIDERS[kind].find((p) => p.brand === brand);
 if (known?.status !== "available") throw new Error(`[docs] no available ${kind} provider "${brand}"`);
-const id = panelId(kind, brand);
-const shown = PROVIDERS[kind][0]?.brand === brand;
 ---
 
-<div role="tabpanel" id={`${id}-setup`} aria-labelledby={id} tabindex="0" class="provider-panel" hidden={!shown}>
+<ChoicePanel id={choiceId(kind, brand)} shown={PROVIDERS[kind][0]?.brand === brand}>
   <slot />
-</div>
+</ChoicePanel>

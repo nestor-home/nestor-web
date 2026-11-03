@@ -87,8 +87,9 @@ to it), and SDK READMEs stay short and link to their page.
   available one's setup is a `<ProviderSetup>` in the page, and `tests/docs.test.ts` checks both
   languages give one to each. Choices shown one at a time (the ways to install) are `<Tabs set>` with
   a `<Tab>` each, their sets in `TAB_SETS`; a tab opens from the address (`#install-docker`).
-  The quickstart's commands are the home page's install box, and the Docker tab's first block its
-  Docker steps (`lib/site.ts`). A moved page keeps its old address in `redirects`
+  The home page shows the docs' own commands, found by the tag on their fence (`lib/site.ts`):
+  the quickstart's ` ```bash quickstart ` blocks are its install box, the install page's one
+  ` ```bash docker-quickstart ` block its Docker steps; tag the same blocks in every language. A moved page keeps its old address in `redirects`
   (`astro.config.mjs`). A page needs a `title` and a `description`; `tests/docs.test.ts` fails on a
   page missing in a locale, a file outside the reading order, a link to the other language's docs,
   or an em-dash.
@@ -99,11 +100,14 @@ to it), and SDK READMEs stay short and link to their page.
   tokens (no Mermaid, no images): every word a Fluent message in `diagrams.ftl`, the layout chosen
   by the board's own width (a container query), so a figure reads in the article's column and on a
   phone. Their shared pieces (board, node, region, arrow, event) are the `.dg-*` classes in
-  `global.css`, and every figure follows the same convention: a numbered `Figure` with a caption
+  `src/styles/diagrams.css`, which `Figure.astro` loads (only pages with a figure get it), and every
+  figure follows the same convention: a numbered `Figure` with a caption
   that says what to read; one ink node (`is-core`, what it is about); ember (`is-hot`) for the path
   it tells; dashed (`is-quiet`, on a node or an arrow) for what runs only when allowed, asked or
-  planned; arrows drawn only by `.dg-arrow` (`is-right`, `is-left`, `is-down`, `is-flow`); fluid
-  columns only, so nothing leaves the board at any width. Never an ASCII diagram in a code block:
+  planned; boxes are `.dg-node` (with `is-hot` for an ember border), small data `.dg-data`, lists
+  inside a figure need no reset; arrows drawn only by `.dg-arrow` (`is-right`, `is-left`,
+  `is-down`, `is-flow`), and a figure with `is-flow` arrows goes across at 40rem, where they turn;
+  fluid columns only, so nothing leaves the board at any width. Never an ASCII diagram in a code block:
   a `text` block holds real output (a URI, a command's lines), nothing drawn.
 - Code blocks are highlighted at build (Shiki's `css-variables` theme, coloured by `.doc-prose` in
   `global.css`) and get a copy button. Commands in the docs are run before they are written.
