@@ -78,10 +78,10 @@ test("the SDK pages show their code, highlighted, and copy it", async ({ page, c
     await expect(block).toContainText(text ?? "");
     expect(await block.locator("span[style*='--astro-code-token']").count()).toBeGreaterThan(5);
   }
-  await page.goto("/docs/");
+  await page.goto("/docs/quickstart/");
   const first = page.locator(".doc-prose .doc-code").first();
   await first.getByRole("button", { name: "Copy" }).click();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("uv tool install nestor-home\n");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("uv tool install nestor-home");
   await expect(first.getByRole("button", { name: "Copied" })).toBeVisible();
 });
 
@@ -113,7 +113,9 @@ test("the developers' page points to the documentation and shows its examples", 
 
 for (const path of [
   "/docs/",
-  "/docs/providers/",
+  "/docs/models/",
+  "/docs/agent/",
+  "/fr/docs/agent/memory/",
   "/fr/docs/install/",
   "/docs/satellites/protocol/",
   "/fr/docs/sdks/typescript/",
@@ -124,35 +126,59 @@ for (const path of [
   });
 }
 
-test("the providers' page shows one provider's setup at a time, chosen by click, keys or address", async ({ page }) => {
-  await page.goto("/docs/providers/");
+test("a provider mosaic shows one provider's setup at a time, chosen by click, keys or address", async ({ page }) => {
+  await page.goto("/docs/models/");
   const models = page.getByRole("tablist", { name: "Language models" });
   await expect(models.getByRole("tab", { name: "OpenRouter" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.locator("#model-openrouter-setup")).toContainText("MODEL_API_KEY=");
-  await expect(page.locator("#model-ollama-setup")).toBeHidden();
+  await expect(page.locator("#model-openrouter-panel")).toContainText("MODEL_API_KEY=");
+  await expect(page.locator("#model-ollama-panel")).toBeHidden();
 
   await models.getByRole("tab", { name: /Ollama/ }).click();
-  await expect(page.locator("#model-ollama-setup")).toContainText("http://localhost:11434/v1");
-  await expect(page.locator("#model-openrouter-setup")).toBeHidden();
+  await expect(page.locator("#model-ollama-panel")).toContainText("http://localhost:11434/v1");
+  await expect(page.locator("#model-openrouter-panel")).toBeHidden();
   await expect(page).toHaveURL(/#model-ollama$/);
 
   await page.keyboard.press("ArrowRight");
   await expect(models.getByRole("tab", { name: /LM Studio/ })).toBeFocused();
-  await expect(page.locator("#model-lm-studio-setup")).toBeVisible();
+  await expect(page.locator("#model-lm-studio-panel")).toBeVisible();
 
-  await page.goto("/fr/docs/providers/#speech-whisper");
+  await page.goto("/fr/docs/channels/#speech-whisper");
   const speech = page.getByRole("tablist", { name: "Fournisseurs de parole" });
   await expect(speech.getByRole("tab", { name: /Whisper/ })).toHaveAttribute("aria-selected", "true");
-  await expect(page.locator("#speech-whisper-setup")).toContainText("Whisper est prévu");
-  await expect(page.locator("#speech-elevenlabs-setup")).toBeHidden();
+  await expect(page.locator("#speech-whisper-panel")).toContainText("Whisper est prévu");
+  await expect(page.locator("#speech-elevenlabs-panel")).toBeHidden();
 });
 
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
-  test("the providers' page shows the default setups", async ({ page }) => {
-    await page.goto("/docs/providers/");
-    await expect(page.locator("#model-openrouter-setup")).toBeVisible();
-    await expect(page.locator("#speech-elevenlabs-setup")).toBeVisible();
-    await expect(page.locator("#model-openai-setup")).toBeHidden();
+  test("the provider mosaics show the default setups", async ({ page }) => {
+    await page.goto("/docs/models/");
+    await expect(page.locator("#model-openrouter-panel")).toBeVisible();
+    await expect(page.locator("#model-openai-panel")).toBeHidden();
+    await page.goto("/docs/channels/");
+    await expect(page.locator("#speech-elevenlabs-panel")).toBeVisible();
+    await expect(page.locator("#channel-telegram-panel")).toBeVisible();
   });
+});
+
+test("the former providers' page leads to the models", async ({ request }) => {
+  for (const [from, to] of [
+    ["/docs/providers/", "/docs/models/"],
+    ["/fr/docs/providers/", "/fr/docs/models/"],
+  ]) {
+    expect(await (await request.get(from ?? "")).text()).toContain(`url=${to}`);
+  }
+});
+
+test("the installation shows one way at a time, Docker opened by its address", async ({ page }) => {
+  await page.goto("/docs/install/");
+  await expect(page.locator("#install-uv-panel")).toContainText("uv tool install");
+  await expect(page.locator("#install-docker-panel")).toBeHidden();
+  await page.getByRole("tab", { name: "pip" }).click();
+  await expect(page.locator("#install-pip-panel")).toContainText("python3 -m venv");
+  await expect(page).toHaveURL(/#install-pip$/);
+  await page.goto("/fr/docs/install/#install-docker");
+  await expect(page.getByRole("tab", { name: "Docker" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#install-docker-panel")).toContainText("docker run -d");
+  await expect(page.locator("#install-uv-panel")).toBeHidden();
 });

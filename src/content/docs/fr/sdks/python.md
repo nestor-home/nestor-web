@@ -4,22 +4,20 @@ title: SDK Python
 description: Écrire un satellite en Python avec nestor-satellite, ou lancer sa commande sur n’importe quelle machine, à voix haute ou par écrit.
 ---
 
-[`nestor-satellite`](https://pypi.org/project/nestor-satellite/) s’occupe de l’appairage, du jeton,
-du manifeste, du lien WebSocket et du texte. L’audio en WebRTC est l’extra `voice` : un
-appareil qui ne fait qu’écrire n’en installe rien. Le paquet ne dépend pas du serveur Nestor. Python
-3.12 ou plus récent.
+[`nestor-satellite`](https://pypi.org/project/nestor-satellite/) gère l’appairage, le jeton, le
+manifeste, le lien et le texte, sous Python 3.12 ou plus récent. L’audio est l’extra `voice` ; un
+appareil qui ne fait qu’écrire s’en passe.
 
 ```bash
 pip install 'nestor-satellite[voice,sounddevice]'   # voice: WebRTC audio; sounddevice: the machine's microphone and speaker
 pip install nestor-satellite                        # a device that only writes
 ```
 
-L’extra `qr` ajoute la lecture des QR codes (ZXing-C++), pour un appareil qui a une caméra.
+L’extra `qr` lit les QR codes d’une caméra.
 
 ## Un pilote minimal
 
-Une enceinte avec un micro, une lumière et une sortie texte, appairée la première fois, connectée
-ensuite :
+Une enceinte avec un micro, une lumière et une sortie texte :
 
 ```python
 import asyncio
@@ -52,16 +50,14 @@ satellite = Satellite(
 asyncio.run(satellite.run())  # pairs the first time, then stays connected and reconnects
 ```
 
-Sans code d’enrôlement, il demande un code d’appareil et le dit sur son haut-parleur, chiffre par
-chiffre, deux fois, avec des enregistrements livrés dans le paquet (hors ligne, en anglais ou en
-français), et l’écrit dans son journal. Tapez-le dans l’administration. Avec `NESTOR_PAIRING_URI`,
-il s’appaire aussitôt.
+Sans code d’enrôlement, il dit un code d’appareil sur son haut-parleur et l’écrit dans son journal :
+tapez-le dans l’administration.
 
 ## Texte et audio
 
-Le manifeste décrit l’appareil et ce que font son corps et ses capteurs (`EXPRESSION`, `IDENTIFY`,
-`HEAD_MOTION`, `PERSON_DETECTION`, `SPEECH_ACTIVITY`). Les capacités de texte et d’audio découlent
-de ce que vous donnez au satellite. En déclarer une dans le manifeste lève `ValueError`.
+Le manifeste décrit le corps et les capteurs (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`,
+`PERSON_DETECTION`, `SPEECH_ACTIVITY`). Le texte et l’audio découlent des arguments ; les déclarer
+dans le manifeste lève `ValueError`.
 
 | Argument                                     | Déclare          |
 | -------------------------------------------- | ---------------- |
@@ -70,24 +66,16 @@ de ce que vous donnez au satellite. En déclarer une dans le manifeste lève `Va
 | `source=` un `AudioSource` (`Microphone()`)  | `audio.capture`  |
 | `sink=` un `AudioSink` (`Speaker()`)         | `audio.playback` |
 
-- `satellite.send_text("…")` envoie ce qu’une personne a tapé, de 1 à 4 000 caractères,
-  comme un tour de la conversation de la pièce. Il renvoie `False` quand le lien est coupé (rien
-  n’est mis en attente) et lève `CapabilityNotAllowed` si `text_input` n’a pas été donné ou si le
-  foyer ne l’a pas autorisé.
-- Une réponse peut arriver en plusieurs messages (l’assistant dit qu’il cherche, puis donne le
-  résultat) ; `final` marque le dernier d’un tour. Un tour tapé reçoit une réponse écrite si
-  l’appareil affiche du texte, à voix haute sinon.
-- `source` et `sink` demandent l’extra `voice`. Le satellite ne propose WebRTC qu’une fois l’audio
-  autorisé par le cœur ; d’ici là, et sur un appareil sans audio, tout passe par le lien.
-  `ice_servers=` (des URL STUN ou TURN) ne sert qu’au-delà du réseau local.
-- Quand un lien plus récent du même appareil le remplace (`4409`), `run` s’arrête. Un jeton refusé
-  (`4401`) est oublié et l’appareil s’appaire de nouveau ; toute autre fermeture mène à une
-  reconnexion, avec une attente qui s’allonge.
+- `satellite.send_text("…")` envoie de 1 à 4 000 caractères tapés. Il renvoie `False` quand le
+  lien est coupé et lève `CapabilityNotAllowed` si le foyer n’a pas autorisé `text.input`.
+- `final` marque le dernier message d’une réponse.
+- `ice_servers=` (des URL STUN ou TURN) ne sert qu’au-delà du réseau local.
+- `run` s’arrête quand un lien plus récent du même appareil le remplace. Sinon, il se reconnecte, ou
+  s’appaire de nouveau si son jeton est refusé.
 
 ## Options d’appairage
 
-Les méthodes d’appairage du manifeste découlent de ce que vous passez ; vous ne les listez
-jamais à la main.
+Les méthodes d’appairage découlent des arguments.
 
 | Argument                                                              | Déclare                   |
 | --------------------------------------------------------------------- | ------------------------- |
@@ -97,25 +85,17 @@ jamais à la main.
 | `enrolls_by=[PairingMethod.INPUT]`                                    | `enrollment.input`        |
 | `camera=AvCamera(…)`                                                  | `enrollment.qr`           |
 
-- `enrollment=` prend une URI d’appairage ou un code d’enrôlement ; par défaut, il est lu dans
-  `NESTOR_PAIRING_URI`, sinon `NESTOR_PAIRING_CODE`. Avec une URI d’appairage, l’adresse du cœur
-  peut être `None`.
-- Un appareil sans écran ni haut-parleur se contente d’écrire son code d’appareil dans le journal.
-- Un code tapé sur l’appareil pendant qu’il attend : `await satellite.enroll("K7QF-2M9X")` renvoie
-  `ACCEPTED`, `REFUSED` (plus jamais envoyé, même après un redémarrage), `NOT_PENDING` (le code
-  d’appareil l’a emporté) ou `INVALID`.
-- `locale="fr"` règle la langue dans laquelle il parle aux gens (par défaut, celle de
-  l’environnement).
-- Les échecs que l’attente ne réglera pas (un cœur qui parle une autre version du protocole, une
-  requête qu’il rejette) arrêtent `run` avec `PairingFailed`, annoncé sur toutes les sorties. Si le
-  cœur est injoignable, il réessaie.
-- `AvCamera("0", format="avfoundation")` lit la première caméra sous macOS,
-  `AvCamera("/dev/video0", format="v4l2")` sous Linux (extra `qr`).
+- `enrollment=` prend une URI d’appairage ou un code d’enrôlement. Par défaut, il lit
+  `NESTOR_PAIRING_URI`, puis `NESTOR_PAIRING_CODE`.
+- `await satellite.enroll("K7QF-2M9X")` envoie un code tapé sur l’appareil. Il renvoie `ACCEPTED`,
+  `REFUSED`, `NOT_PENDING` ou `INVALID`. Un code refusé n’est plus jamais envoyé.
+- `locale="fr"` règle la langue dans laquelle il parle.
+- `run` lève `PairingFailed` quand réessayer ne sert à rien, par exemple face à un cœur dans une
+  autre version du protocole.
 
 ## La commande
 
-Sans écrire une ligne de code, la commande fait du micro et du haut-parleur de cette machine un
-satellite (avec les extras `voice` et `sounddevice`) :
+`nestor-satellite run` fait de cette machine un satellite (extras `voice` et `sounddevice`) :
 
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
@@ -127,18 +107,17 @@ nestor-satellite run --core http://nestor.local:8471 --room salon --pairing-code
 nestor-satellite run --core http://nestor.local:8471 --room bureau --text --no-voice
 ```
 
-`--text` ajoute l’écrit à la voix, `--no-voice` retire le micro et le haut-parleur. Sans code,
-`nestor-satellite run --core http://nestor.local:8471 --room salon` dit un code d’appareil (avec
-`--no-voice`, il l’écrit seulement dans le journal). `--camera 0` lit les QR codes (avec l’extra
-`qr`), `--lang fr` parle français, `--id` fixe l’identifiant de l’appareil (par défaut, le nom de la
-machine), `--input-device` et `--output-device` choisissent la carte son. Le jeton est gardé dans
-`~/.config/nestor-satellite/<id>.json` (mode 600), avec les empreintes des codes refusés ; les
-lancements suivants se reconnectent avec. `nestor-satellite run --help` détaille les autres options.
+- `--no-voice` retire le micro et le haut-parleur ; `--text` ajoute l’écrit.
+- Sans code, elle dit un code d’appareil.
+- `--lang fr` parle français. `--camera 0` lit les QR codes (extra `qr`).
+
+Le jeton est gardé dans `~/.config/nestor-satellite/<id>.json`. `nestor-satellite run --help`
+détaille le reste.
 
 ## Pour aller plus loin
 
-- Le code, ses tests et la licence des enregistrements de voix (CC BY 4.0) :
+- Le code et la licence des enregistrements de voix :
   [nestor-satellite-python](https://github.com/nestor-home/nestor-satellite-python).
-- Un pilote complet qui s’appuie dessus : [nestor-reachy](https://github.com/nestor-home/nestor-reachy).
+- Un pilote complet : [nestor-reachy](https://github.com/nestor-home/nestor-reachy).
 - Les messages et les codes de fermeture : [Protocole](/fr/docs/satellites/protocol/).
 - Vérifier le vôtre : [Conformité](/fr/docs/satellites/conformance/).

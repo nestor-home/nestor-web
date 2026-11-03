@@ -1,12 +1,11 @@
 /**
- * What the documentation's pickers show (docs/providers): the language models the agent talks to,
+ * What the documentation's pickers show (docs/models, docs/channels): the language models the agent talks to,
  * the speech services of the satellites’ voice, and the channels people reach Nestor through.
  * `available` ones have a setup, written in the page's content; `planned` ones show the shared
  * badge and a one-line note. The first of a kind is shown without JavaScript (for models and
  * speech, the one `nestor init` writes). The messaging channels are the home page's own list
  * (`lib/integrations.ts`), so the two pages never disagree.
  */
-import type { BrandKey } from "@/lib/brands";
 import { INTEGRATIONS, type Integration } from "@/lib/integrations";
 
 export type ProviderKind = "model" | "speech" | "channel";
@@ -50,6 +49,3 @@ export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
     ...messaging.filter((c) => c.status === "planned"),
   ],
 };
-
-/** A provider's tile id, which is also the address that opens it; its setup is `<id>-setup`. */
-export const panelId = (kind: ProviderKind, brand: BrandKey): string => `${kind}-${brand}`;

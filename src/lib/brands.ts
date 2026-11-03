@@ -27,6 +27,7 @@ import {
   siAnthropic,
   siDeepgram,
   siDiscord,
+  siDocker,
   siGithub,
   siGmail,
   siGooglecalendar,
@@ -44,6 +45,7 @@ import {
   siNotion,
   siOpenrouter,
   siPhilipshue,
+  siPypi,
   siPython,
   siRaspberrypi,
   siRust,
@@ -55,6 +57,7 @@ import {
   siTelegram,
   siTodoist,
   siTypescript,
+  siUv,
   siVllm,
   siWhatsapp,
 } from "simple-icons";
@@ -139,7 +142,11 @@ export const BRANDS = {
   rust: mark("Rust", siRust),
   "raspberry-pi": mark("Raspberry Pi", siRaspberrypi),
   sqlite: mark("SQLite", siSqlite),
-  // model and speech providers (the documentation's providers page)
+  // the ways to install the server (the documentation's installation page)
+  uv: mark("uv", siUv),
+  pip: mark("pip", siPypi),
+  docker: mark("Docker", siDocker),
+  // model and speech providers (the documentation's models and channels pages)
   openrouter: lobe("OpenRouter", openrouterSvg, siOpenrouter),
   openai: lobe("OpenAI", openaiSvg),
   mistral: lobe("Mistral", mistralSvg, siMistralai),

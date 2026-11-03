@@ -1,0 +1,242 @@
+---
+title: Modèles
+description: Le modèle de langage avec lequel pense l’agent, hébergé ou local, un par rôle si vous voulez, et la recherche par le sens pour sa mémoire.
+---
+
+import Providers from "@/components/docs/Providers.astro";
+import ProviderSetup from "@/components/docs/ProviderSetup.astro";
+
+L’agent pense avec un modèle de langage de votre choix, hébergé ou local, par l’API Chat
+Completions d’OpenAI. Choisissez-en un qui gère les appels d’outils.
+
+## Choisir un fournisseur
+
+`nestor init` écrit un profil sous `models`, nommé `main`. Pour changer de fournisseur,
+remplacez-le par un bloc ci-dessous et lancez `nestor check`. La clé va dans `.env`, en
+`MODEL_API_KEY` ; les serveurs locaux n’en demandent pas.
+
+<Providers kind="model" locale="fr">
+<ProviderSetup kind="model" brand="openrouter">
+
+Une seule clé pour les modèles de nombreux éditeurs. Le choix par défaut, et le fournisseur testé.
+
+```ini
+MODEL_API_KEY=sk-or-...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="openai">
+
+```ini
+MODEL_API_KEY=sk-...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://api.openai.com/v1
+    api_key: ${MODEL_API_KEY}
+    model: gpt-5-mini
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="mistral">
+
+```ini
+MODEL_API_KEY=...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://api.mistral.ai/v1
+    api_key: ${MODEL_API_KEY}
+    model: mistral-small-latest
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="groq">
+
+```ini
+MODEL_API_KEY=gsk_...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://api.groq.com/openai/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/gpt-oss-120b
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="gemini">
+
+Le point d’accès compatible OpenAI de Google.
+
+```ini
+MODEL_API_KEY=...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+    api_key: ${MODEL_API_KEY}
+    model: gemini-flash-latest
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="anthropic">
+
+Anthropic réserve cette couche aux essais, pas à la production. OpenRouter est la voie testée vers Claude.
+
+```ini
+MODEL_API_KEY=sk-ant-...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://api.anthropic.com/v1/
+    api_key: ${MODEL_API_KEY}
+    model: claude-haiku-5-5
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="ollama">
+
+`model` est un modèle que le serveur a téléchargé.
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: http://localhost:11434/v1
+    model: qwen3
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="lm-studio">
+
+Démarrez le serveur de LM Studio. `model` est l’identifiant du modèle chargé.
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: http://localhost:1234/v1
+    model: qwen3-8b
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="vllm">
+
+Une clé seulement si vLLM tourne avec `--api-key`.
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: http://localhost:8000/v1
+    model: Qwen/Qwen3-8B
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="llama-cpp">
+
+`llama-server` sert le modèle qu’il a chargé, quoi que dise `model`.
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: http://localhost:8080/v1
+    model: local
+```
+
+</ProviderSetup>
+</Providers>
+
+Tout modèle qui gère les appels d’outils convient. Un modèle local répond plus lentement, et la
+voix le ressent en premier.
+
+Avec Docker, un serveur de modèle sur l’hôte est à `http://host.docker.internal:<port>/v1`. Sous
+Linux, faites-le écouter sur toutes les interfaces : `OLLAMA_HOST=0.0.0.0` pour Ollama,
+`--host 0.0.0.0` pour llama.cpp.
+
+## Rôles
+
+Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
+
+| Rôle                   | Ce qu’il fait                                                        | Sans réglage       |
+| ---------------------- | -------------------------------------------------------------------- | ------------------ |
+| `agent.spoken`         | répond à voix haute : les premiers mots doivent venir vite           | `agent.written`    |
+| `agent.written`        | répond par écrit, où quelques secondes ne gênent pas                 | `agent.spoken`     |
+| `agent.background`     | travaille sur un réveil qu’il a programmé, sans personne qui attend  | `agent.written`    |
+| `watches.model`        | trie le courrier entrant pour les veilles                            | `agent.written`    |
+| `memory.consolidation` | résume chaque conversation une fois terminée                         | `agent.background` |
+
+Un modèle rapide pour la voix, un plus solide pour le reste :
+
+```yaml
+models:
+  quick:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+  deep:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-sonnet-5.5
+
+agent:
+  spoken: quick
+  written: deep
+```
+
+## Recherche par le sens
+
+Un modèle d’embedding permet à Nestor de retrouver ses souvenirs par le sens : « que mange
+Léa ? » trouve « Léa est végétarienne ». Nommez un profil d’embedding dans `memory.embedder` :
+
+```yaml
+models:
+  vectors:
+    kind: openai-compatible-embeddings
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/text-embedding-3-small
+    dimensions: 1536
+
+memory:
+  embedder: vectors
+```
+
+Tout point `/embeddings` compatible OpenAI convient. `dimensions` est la taille des vecteurs.
+Pour un modèle qui attend un préfixe (`query: `), réglez `query_prefix` et `document_prefix`. Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/memory/).
+
+## Réglages
+
+Un profil de conversation accepte aussi :
+
+- `extra_body`, fusionné dans chaque requête (routage, raisonnement) ;
+- `read_timeout_s`, en secondes (30) ;
+- `cache_control`, pour le cache de prompt du fournisseur, actif par défaut pour OpenRouter et
+  Anthropic.

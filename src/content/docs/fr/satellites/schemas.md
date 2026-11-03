@@ -1,18 +1,16 @@
 ---
 
 title: Schémas
-description: Le schéma JSON de chaque message du protocole, où ils sont servis et comment un SDK tient sa copie à jour.
+description: Le schéma JSON de chaque message du protocole, et comment un SDK tient sa copie à jour.
 ---
 
-Chaque message de `nestor.satellite/1` a un schéma JSON (draft 2020-12). Le cœur les génère à
-partir de ses classes de messages, et chacun est servi là où pointe son `$id` :
+Chaque message de `nestor.satellite/1` a un schéma JSON (draft 2020-12), servi à son `$id` :
 
 ```text
 https://nestorhome.dev/schemas/satellite/1/<message>.json
 ```
 
-Le site est construit avec les schémas de la version du serveur qu’il épingle : la version dans
-l’adresse est celle que les schémas déclarent.
+Les schémas viennent de la version du serveur que le site épingle.
 
 ## Messages
 
@@ -45,12 +43,10 @@ Sur le lien, le WebSocket `/satellites/{device_id}/link` :
 
 ## Garder une copie dans un SDK
 
-Un SDK garde les schémas dans son dépôt et vérifie avec eux chaque message qu’il envoie. Pour
-rafraîchir la copie, écrivez les schémas d’une version du serveur dans le dossier du SDK :
+Un SDK vérifie chaque message qu’il envoie avec sa propre copie : `src/nestor_satellite/schemas/` en
+Python, `schemas/` en TypeScript et en Rust. Rafraîchissez-la depuis la version du serveur que vise
+le SDK, puis corrigez le code jusqu’à ce que les tests passent :
 
 ```bash
 uvx --from nestor-home==<version> nestor satellites schemas --out schemas/
 ```
-
-`<version>` est la version du serveur que vise le SDK. Adaptez ensuite le code jusqu’à ce que ses tests
-passent. Le SDK Python les garde dans `src/nestor_satellite/schemas/`, les SDK TypeScript et Rust dans `schemas/`.

@@ -1,0 +1,19 @@
+---
+/**
+ * One choice's content in a page's tabs (Tabs.astro). Only the set's first choice shows before a choice.
+ */
+import { choiceId, TAB_SETS, type TabSet } from "@/lib/docs";
+import ChoicePanel from "./ChoicePanel.astro";
+
+interface Props {
+  set: TabSet;
+  choice: string;
+}
+const { set, choice } = Astro.props;
+const choices: readonly string[] = TAB_SETS[set];
+if (!choices.includes(choice)) throw new Error(`[docs] no choice "${choice}" in the tabs "${set}"`);
+---
+
+<ChoicePanel id={choiceId(set, choice)} shown={choices[0] === choice}>
+  <slot />
+</ChoicePanel>

@@ -1,0 +1,239 @@
+---
+title: Models
+description: The language model the agent thinks with, hosted or local, one per role if you like, and search by meaning for its memory.
+---
+
+import Providers from "@/components/docs/Providers.astro";
+import ProviderSetup from "@/components/docs/ProviderSetup.astro";
+
+The agent thinks with a language model you choose, hosted or local, through the OpenAI Chat
+Completions API. Pick one that supports tool calls.
+
+## Choose a provider
+
+`nestor init` writes one profile under `models`, named `main`. To change provider, replace it with
+a block below and run `nestor check`. The key goes in `.env` as `MODEL_API_KEY`; local servers need
+none.
+
+<Providers kind="model" locale="en">
+<ProviderSetup kind="model" brand="openrouter">
+
+One key for many vendors’ models. The default, and the tested provider.
+
+```ini
+MODEL_API_KEY=sk-or-...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="openai">
+
+```ini
+MODEL_API_KEY=sk-...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://api.openai.com/v1
+    api_key: ${MODEL_API_KEY}
+    model: gpt-5-mini
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="mistral">
+
+```ini
+MODEL_API_KEY=...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://api.mistral.ai/v1
+    api_key: ${MODEL_API_KEY}
+    model: mistral-small-latest
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="groq">
+
+```ini
+MODEL_API_KEY=gsk_...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://api.groq.com/openai/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/gpt-oss-120b
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="gemini">
+
+Google’s OpenAI-compatible endpoint.
+
+```ini
+MODEL_API_KEY=...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+    api_key: ${MODEL_API_KEY}
+    model: gemini-flash-latest
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="anthropic">
+
+Anthropic meant this layer for testing, not production. OpenRouter is the tested route to Claude.
+
+```ini
+MODEL_API_KEY=sk-ant-...
+```
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: https://api.anthropic.com/v1/
+    api_key: ${MODEL_API_KEY}
+    model: claude-haiku-5-5
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="ollama">
+
+`model` is one the server has pulled.
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: http://localhost:11434/v1
+    model: qwen3
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="lm-studio">
+
+Start LM Studio’s server. `model` is the loaded model’s identifier.
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: http://localhost:1234/v1
+    model: qwen3-8b
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="vllm">
+
+Set a key only if vLLM runs with `--api-key`.
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: http://localhost:8000/v1
+    model: Qwen/Qwen3-8B
+```
+
+</ProviderSetup>
+<ProviderSetup kind="model" brand="llama-cpp">
+
+`llama-server` serves the model it loaded, whatever `model` says.
+
+```yaml
+models:
+  main:
+    kind: openai-compatible
+    base_url: http://localhost:8080/v1
+    model: local
+```
+
+</ProviderSetup>
+</Providers>
+
+Any model with tool calls works. A local model answers more slowly, and the voice feels it first.
+
+With Docker, reach a model server on the host at `http://host.docker.internal:<port>/v1`. On Linux,
+make it listen on all interfaces: `OLLAMA_HOST=0.0.0.0` for Ollama, `--host 0.0.0.0` for llama.cpp.
+
+## Roles
+
+With several profiles, each role names the one it uses:
+
+| Role                   | What it does                                         | When unset         |
+| ---------------------- | ---------------------------------------------------- | ------------------ |
+| `agent.spoken`         | answers aloud: the first words must come fast        | `agent.written`    |
+| `agent.written`        | answers in writing, where a few seconds are fine     | `agent.spoken`     |
+| `agent.background`     | works on a wake-up it scheduled, with no one waiting | `agent.written`    |
+| `watches.model`        | sorts incoming mail for the watches                  | `agent.written`    |
+| `memory.consolidation` | summarizes each conversation once it is over         | `agent.background` |
+
+A fast model for the voice, a stronger one for the rest:
+
+```yaml
+models:
+  quick:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+  deep:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-sonnet-5.5
+
+agent:
+  spoken: quick
+  written: deep
+```
+
+## Search by meaning
+
+An embedding model lets Nestor find memories by meaning: “what does Léa eat?” finds “Léa is
+vegetarian”. Name an embedding profile in `memory.embedder`:
+
+```yaml
+models:
+  vectors:
+    kind: openai-compatible-embeddings
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/text-embedding-3-small
+    dimensions: 1536
+
+memory:
+  embedder: vectors
+```
+
+Any OpenAI-compatible `/embeddings` endpoint works. `dimensions` is the vector size. For a model
+that expects a prefix (`query: `), set `query_prefix` and `document_prefix`. Changing the model reindexes in the background. See [Memory](/docs/agent/memory/).
+
+## Settings
+
+A chat profile also takes:
+
+- `extra_body`, merged into every request (routing, reasoning);
+- `read_timeout_s`, in seconds (30);
+- `cache_control`, for the provider’s prompt cache, on by default for OpenRouter and Anthropic.

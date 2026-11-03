@@ -1,58 +1,40 @@
 ---
 
-title: Start
-description: Run a Nestor server, choose its providers and open the admin.
+title: Introduction
+description: What Nestor does for a household, what it is made of, and where to start.
 ---
 
-Nestor is an open-source assistant for the whole household. One agent knows who is home, remembers
-each person, drives Home Assistant and speaks up when something matters. You run its server on a
-machine that stays on; speakers, tablets and robots pair with it as [satellites](/docs/satellites/).
+Nestor is an open-source assistant for the whole household. It runs on a machine at home, and
+everyone talks to it: aloud in the kitchen, in writing at the office, on Telegram when away. The
+project is young: expect changes between releases.
 
-Nestor is an early project: expect changes between releases.
+## What it does for you
 
-## The short way
+- **It knows who is asking**, and keeps each person’s conversations and memories.
+- **It remembers** what you told it, with dates, and recalls what matters at each turn.
+- **It drives the house** through Home Assistant, and knows who is home.
+- **It keeps watch** on your mail for a parcel or a reply.
+- **It speaks to the right person**, where they are, and keeps quiet at night.
+- **It keeps a journal** of everything it does and why, shown in the admin.
 
-On a computer with [uv](https://docs.astral.sh/uv/):
+## What it is made of
 
-```bash
-uv tool install nestor-home
-mkdir nestor && cd nestor
-nestor init
-```
+- **The server**, the Python package `nestor-home`: the agent, its memory, its journal and the
+  admin.
+- **A language model**, hosted or local.
+- **Channels**: Telegram, and **satellites** you type on or talk to (a speaker, a wall tablet, a
+  Reachy Mini robot).
+- **Integrations**: Home Assistant, MCP servers, mail, agents for longer tasks.
 
-`nestor init` asks for the assistant’s name, your first name, the household’s language (`en` or
-`fr`), its time zone (this machine’s by default), the model server and the model, then a login and a
-password (10 characters or more). It writes `nestor.yaml`, its secrets in `.env` (readable by you
-only) and `state/`, which holds the owner account. It never overwrites a file.
+## Where to start
 
-This is Nestor in text, on Telegram, with any OpenAI-compatible model: the admin and the connectors
-come with it, and so do satellites you type on. To talk to them aloud, install their voice with it:
-`uv tool install 'nestor-home[voice]'`. `nestor init` then asks whether you want it; without the
-extra, the voice block of `nestor.yaml` stays commented out.
-
-Fill the keys `nestor init` left empty in `.env`: `MODEL_API_KEY` for the model (empty for a local
-server such as Ollama), and `TELEGRAM_BOT_TOKEN`, or `ELEVENLABS_API_KEY` for the satellites’ voice.
-[Providers](/docs/providers/) says where to get each one. Then:
-
-```bash
-nestor check   # validates the configuration and builds the adapters
-nestor run
-```
-
-`nestor check` names any key still empty. There is nothing to source: `nestor` reads the `.env`
-next to its configuration at each start. pip and Docker work too, see [Install](/docs/install/).
-
-## Open the admin
-
-The admin listens on port 8470: open `http://localhost:8470` on the machine itself, or
-`http://<its address>:8470` from another device, and sign in with the owner’s login. The admin
-holds the configuration, the household, the satellites and the journal of everything Nestor did.
-`admin.port` in `nestor.yaml` changes the port.
-
-## Next
-
-- Install with pip or Docker, upgrade, where everything is kept: [Install](/docs/install/).
-- Another model, a local one, Telegram or satellites, Nestor in French: [Providers](/docs/providers/).
-- Pair a first device: [Satellites](/docs/satellites/).
-- Write your own: the SDKs for [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/)
-  and [Rust](/docs/sdks/rust/).
+| You want to…                                    | Read                                                                                                   |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| try Nestor on your computer in ten minutes      | [Quickstart](/docs/quickstart/)                                                                        |
+| install it for good, on a server or with Docker | [Installation](/docs/install/)                                                                         |
+| know what it does during a conversation         | [How the agent works](/docs/agent/), [Memory](/docs/agent/memory/)                                     |
+| choose a model, local or hosted                 | [Models](/docs/models/)                                                                                |
+| talk to it aloud, or on Telegram                | [Channels and voice](/docs/channels/)                                                                  |
+| connect Home Assistant, your mail, MCP servers  | [Home and services](/docs/connections/)                                                                |
+| add a speaker or a screen in a room             | [Satellites](/docs/satellites/)                                                                        |
+| build your own device                           | the [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/) or [Rust](/docs/sdks/rust/) SDK |

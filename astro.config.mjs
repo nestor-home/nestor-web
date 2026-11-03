@@ -13,6 +13,11 @@ export default defineConfig({
   output: "static",
   trailingSlash: "always",
   build: { format: "directory", inlineStylesheets: "auto" },
+  // pages that moved, for the links already published
+  redirects: {
+    "/docs/providers/": "/docs/models/",
+    "/fr/docs/providers/": "/fr/docs/models/",
+  },
   integrations: [
     serverFiles(),
     react(),

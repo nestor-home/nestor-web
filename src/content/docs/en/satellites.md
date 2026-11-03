@@ -4,29 +4,19 @@ title: Satellites
 description: Devices that give Nestor a voice and a body, and how a person pairs them.
 ---
 
-A satellite is a device paired with the Nestor server: a Raspberry Pi with a speaker, a tab on a
-wall tablet, a Reachy Mini robot. People type on it, talk to it, or both: a keyboard and a screen
-are enough, and so are a microphone and a speaker. A camera or motors are optional capabilities
-too: the device declares them, a person allows them, and nothing in Nestor assumes they are there.
-
-Satellites connect to the server’s `satellites` channel, on port 8471 (its `port` in
-`nestor.yaml`). In writing they need nothing more; to talk aloud, give the channel a `voice`, with
-the `voice` extra (see [Providers](/docs/providers/)).
+A satellite is a device paired with the Nestor server: a Raspberry Pi with a speaker, a wall
+tablet, a Reachy Mini robot. People type on it, talk to it, or both. It connects to the
+`satellites` channel on port 8471, which needs a [voice](/docs/channels/#voice) to talk aloud.
 
 ## What a satellite does
 
-- It pairs once and keeps its token.
-- It declares in a manifest who it is and what it can do.
-- It holds a link to the server, a WebSocket that carries every message.
-- It talks with the assistant in writing, aloud or both: typed text and written answers on the
-  link, audio both ways over WebRTC.
-- It carries out the server’s intents and acknowledges each one.
-- It reports the observations it was allowed to (speech activity, a person detected).
-
-The server asks for intents, never for motions. With `intent.expression` and `joy`, a robot moves
-its head and antennas, a screen could draw a face, a plain speaker ignores it.
+It pairs once, declares its capabilities, then holds a WebSocket to the server; audio goes over
+WebRTC. The server sends intents, not motions: given `intent.expression` with `joy`, a robot moves
+its antennas and a plain speaker ignores it.
 
 ## Capabilities
+
+A camera or motors are optional: the device declares them and a person allows them.
 
 | Capability                | The device…                                             |
 | ------------------------- | ------------------------------------------------------- |
@@ -42,12 +32,11 @@ its head and antennas, a screen could draw a face, a plain speaker ignores it.
 
 ## Pairing
 
-Pairing needs a proof that a person meant it. The proof travels one of two ways, and the first one
-accepted wins:
+A person proves they meant it, in one of two ways:
 
-- a **device code**, six digits the device presents, which the person types in the admin;
-- an **enrollment code** made in the admin (`K7QF-2M9X`), which the person gives to the device,
-  usually as a pairing URI: `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
+- a **device code**: six digits the device shows, typed in the admin;
+- an **enrollment code** from the admin (`K7QF-2M9X`), given to the device, usually as a pairing
+  URI: `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
 
 | Method                    | The person…                                                                  |
 | ------------------------- | ---------------------------------------------------------------------------- |
@@ -57,17 +46,12 @@ accepted wins:
 | `enrollment.provisioning` | puts the pairing URI in the device’s configuration (flag, environment, file) |
 | `enrollment.qr`           | shows the pairing URI’s QR code to the device’s camera                       |
 
-Every device supports `enrollment.provisioning`; the others follow from what it has (a screen, a
-speaker, a keypad, a camera). The SDKs declare them for you.
+Every device supports `enrollment.provisioning`. The SDKs declare the others from the hardware.
 
 ### Add a satellite
 
-In the admin, open **Satellites**, then **Add**, and pick a method. You can name the device, put it
-in a room and narrow the capabilities it gets. With an enrollment method, the admin shows the code
-and its pairing URI; with a device code, it lists the devices waiting and you type the code of the
-right one (**Identify** makes a device blink or chime to tell them apart).
-
-The same from the server’s command line, while Nestor runs:
+In the admin, open **Satellites**, then **Add**, and pick a method. **Identify** makes a waiting
+device blink or chime. From the command line, while Nestor runs:
 
 ```bash
 nestor satellites add --room salon --name "Living room speaker"   # prints the code and the pairing URI
@@ -75,8 +59,8 @@ nestor satellites approve 042917                                  # the device c
 nestor satellites revoke enceinte-salon                           # unpairs a device
 ```
 
-`approve --only audio.capture,audio.playback` grants fewer capabilities than the device declared.
-Then, on the device, hand it the pairing URI:
+`approve --only audio.capture,audio.playback` grants fewer capabilities. Then give the device its
+URI:
 
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
@@ -84,12 +68,11 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satel
 
 ## Ready to run
 
-- `nestor-satellite run`: this machine’s microphone and speaker, from the
-  [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/) or [Rust](/docs/sdks/rust/) SDK.
-- [`nestor-reachy`](https://github.com/nestor-home/nestor-reachy): Reachy Mini, whose head and
-  antennas follow the conversation (its simulated twin for now).
+- `nestor-satellite run`, this machine’s microphone and speaker, in the
+  [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/) and [Rust](/docs/sdks/rust/) SDKs.
+- [`nestor-reachy`](https://github.com/nestor-home/nestor-reachy), for Reachy Mini (its simulated
+  twin for now).
 - A browser tab, with the TypeScript SDK.
 
-To write your own, the [protocol](/docs/satellites/protocol/) is the reference, the
-[schemas](/docs/satellites/schemas/) give each message’s shape and the
-[conformance suite](/docs/satellites/conformance/) checks a device against both.
+To write your own, read the [protocol](/docs/satellites/protocol/), the
+[schemas](/docs/satellites/schemas/) and the [conformance suite](/docs/satellites/conformance/).

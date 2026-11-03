@@ -1,0 +1,221 @@
+/*
+ * The documentation's diagrams (components/docs/diagrams), loaded by Figure.astro, so only on pages
+ * that have one: drawn in HTML, so every word is a Fluent message, wraps, and reads without
+ * JavaScript. A board lays out from its own width (a container), so the same figure reads in the
+ * article's column and on a phone. A figure whose arrows are `is-flow` goes across at 40rem, the
+ * width where those arrows turn: below it, the figure and its arrows run down.
+ */
+@layer properties,
+  theme,
+  base,
+  components,
+  utilities; /* Tailwind's order, as global.css sets it, whichever file comes first */
+
+@layer components {
+  .dg {
+    margin-block: 2.25rem 2.5rem;
+  }
+  .dg-board {
+    container-type: inline-size;
+    position: relative;
+    padding: 1.25rem;
+    border: var(--hairline) solid var(--rule);
+    border-radius: var(--radius);
+    background-color: var(--paper-raised);
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    line-height: 1.45;
+  }
+  @media (min-width: 40rem) {
+    .dg-board {
+      padding: 1.75rem;
+    }
+  }
+  .dg-caption {
+    margin-top: 0.75rem;
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+  .dg-caption-number {
+    margin-right: 0.5rem;
+    font-family: var(--font-data);
+    font-size: var(--text-xs);
+    color: var(--ink);
+  }
+
+  /* a part of the system */
+  .dg-node {
+    position: relative;
+    min-width: 0;
+    padding: 0.6rem 0.75rem 0.65rem;
+    border: var(--hairline) solid var(--rule-strong);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+  .dg-title {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .dg-note {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: var(--text-xs);
+    line-height: 1.45;
+    color: var(--ink-muted);
+  }
+  /* the one part a figure is about: ink, as the character */
+  .dg-node.is-core {
+    border-color: var(--ink);
+    background: var(--ink);
+  }
+  .dg-node.is-core .dg-title {
+    color: var(--paper);
+  }
+  .dg-node.is-core .dg-note {
+    color: color-mix(in oklab, var(--paper) 74%, var(--ink));
+  }
+  /* on the path the figure tells */
+  .dg-node.is-hot {
+    border-color: var(--ember);
+  }
+  /* what runs only when asked, or is planned */
+  .dg-node.is-quiet {
+    border-style: dashed;
+    background: transparent;
+  }
+  /* a list inside a figure is a layout, not prose: no markers, no indent, no gaps of its own */
+  .doc-prose .dg-board :where(ul, ol) {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .doc-prose .dg-board li {
+    margin: 0;
+  }
+  /* small data: times, ranks, numbers, who sends to whom */
+  .dg-data {
+    font-family: var(--font-data);
+    font-size: var(--text-2xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-muted);
+  }
+
+  /* a group of parts, named in small type at its top; framed when the group is a thing of its own */
+  .dg-region {
+    position: relative;
+    min-width: 0;
+  }
+  .dg-region.is-framed {
+    padding: 0.85rem;
+    border: var(--hairline) dashed var(--rule-strong);
+    border-radius: var(--radius);
+  }
+  /* a framed group reached only when asked (tools the agent calls): dotted, apart from the dashed ones */
+  .dg-region.is-framed.is-quiet {
+    border-style: dotted;
+  }
+  .dg-label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-family: var(--font-data);
+    font-size: var(--text-2xs);
+    line-height: 1.3;
+    color: var(--ink-faint);
+  }
+  /* on a node's paper the faint ink reads too light (WCAG AA): the muted one */
+  .dg-node:not(.is-core) .dg-label {
+    color: var(--ink-muted);
+  }
+
+  /* an event the journal records, by its name */
+  .dg-event {
+    display: inline-block;
+    padding: 0 0.4rem;
+    border: var(--hairline) solid var(--rule-strong);
+    border-radius: 999px;
+    font-family: var(--font-data);
+    font-size: var(--text-2xs);
+    line-height: 1.15rem;
+    white-space: nowrap;
+    color: var(--ink-muted);
+    background: var(--paper);
+  }
+
+  /* arrows: a hairline and a chevron; `is-hot` follows the path a figure tells. A direction only sets
+     the geometry's variables: across (`is-right`, `is-left` mirrored), down (`is-down`), or `is-flow`,
+     down on a narrow board and across from 40rem, like the figures' own layouts. */
+  .dg-arrow {
+    --arrow: var(--ink-faint);
+    position: relative;
+    flex: none;
+    align-self: center;
+    justify-self: center;
+    width: var(--arrow-w);
+    height: var(--arrow-h);
+  }
+  .dg-arrow:is(.is-down, .is-flow) {
+    --arrow-w: 9px;
+    --arrow-h: 1.75rem;
+    --line: 0 auto 1px 4px;
+    --line-w: 1px;
+    --line-h: auto;
+    --head: auto auto 1px 1px;
+    --turn: 135deg;
+    --dash: 180deg;
+  }
+  .dg-arrow:is(.is-right, .is-left) {
+    --arrow-w: 2.25rem;
+    --arrow-h: 9px;
+    --line: 4px 1px auto 0;
+    --line-w: auto;
+    --line-h: 1px;
+    --head: 1px 1px auto auto;
+    --turn: 45deg;
+    --dash: 90deg;
+  }
+  @container (min-width: 40rem) {
+    .dg-arrow.is-flow {
+      --arrow-w: 2.25rem;
+      --arrow-h: 9px;
+      --line: 4px 1px auto 0;
+      --line-w: auto;
+      --line-h: 1px;
+      --head: 1px 1px auto auto;
+      --turn: 45deg;
+      --dash: 90deg;
+    }
+  }
+  .dg-arrow.is-left {
+    transform: scaleX(-1);
+  }
+  .dg-arrow.is-hot {
+    --arrow: var(--ember);
+  }
+  .dg-arrow::before,
+  .dg-arrow::after {
+    content: "";
+    position: absolute;
+  }
+  .dg-arrow::before {
+    inset: var(--line);
+    width: var(--line-w);
+    height: var(--line-h);
+    background: var(--arrow);
+  }
+  /* what runs only when allowed or asked, as `.dg-node.is-quiet`: a dashed line */
+  .dg-arrow.is-quiet::before {
+    background: repeating-linear-gradient(var(--dash), var(--arrow) 0 4px, transparent 4px 7px);
+  }
+  .dg-arrow::after {
+    inset: var(--head);
+    width: 7px;
+    height: 7px;
+    border-top: 1.5px solid var(--arrow);
+    border-right: 1.5px solid var(--arrow);
+    transform: rotate(var(--turn));
+  }
+}

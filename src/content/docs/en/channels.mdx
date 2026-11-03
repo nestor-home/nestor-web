@@ -1,0 +1,100 @@
+---
+title: Channels and voice
+description: How people reach Nestor, on Telegram or through satellites, and how to give the satellites a voice.
+---
+
+import Providers from "@/components/docs/Providers.astro";
+import ProviderSetup from "@/components/docs/ProviderSetup.astro";
+
+People reach Nestor through `channels`. All share one agent and one memory: a question asked in the
+kitchen can go on over Telegram.
+
+## Choose channels
+
+<Providers kind="channel" locale="en">
+<ProviderSetup kind="channel" brand="telegram">
+
+Create a bot with [@BotFather](https://t.me/BotFather) and put its token in `.env`:
+
+```ini
+TELEGRAM_BOT_TOKEN=123456:ABC-...
+```
+
+```yaml
+channels:
+  - kind: telegram
+    token: ${TELEGRAM_BOT_TOKEN}
+```
+
+Add `"telegram:<your user id>"` to your `accounts` in `household`. To find the id, write to the bot:
+the server’s log prints the id of each stranger it ignores. The bot reads text only.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="satellites">
+
+Devices people type on, talk to, or both. In writing:
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+```
+
+Aloud, add a [voice](#voice):
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      speech:
+        api_key: ${ELEVENLABS_API_KEY}
+        voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`host: 0.0.0.0` opens port 8471 to your network. Then [pair them](/docs/satellites/) and add
+`"satellites:*"` to their user’s `accounts`.
+
+</ProviderSetup>
+</Providers>
+
+## Voice
+
+Talking aloud needs the `voice` extra, `nestor-home[voice]` ([Installation](/docs/install/)). The
+Docker image has it.
+
+<Providers kind="speech" locale="en">
+<ProviderSetup kind="speech" brand="elevenlabs">
+
+One key covers transcription (Scribe v2 Realtime) and speech (v4 Turbo).
+
+```ini
+ELEVENLABS_API_KEY=sk_...
+```
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      speech:
+        api_key: ${ELEVENLABS_API_KEY}
+        voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`voice_id` is any voice of your library. Transcription expects English unless `speech` sets
+`language`.
+
+</ProviderSetup>
+</Providers>
+
+The `voice` block also takes:
+
+- `style`: how the assistant writes for this voice, such as its expression tags;
+- `fallback_clips`: a folder with `stt.wav` and `tts.wav`, played when the speech service is down.
+
+## When a conversation ends
+
+After a silence, the next message starts a new conversation and the last one goes to
+[memory](/docs/agent/memory/). The silence is 5 minutes aloud, 4 hours in writing; set
+`conversation_ends_after_s` per channel to change it.

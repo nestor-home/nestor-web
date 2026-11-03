@@ -4,10 +4,13 @@
  * first one), served at `/docs/<slug>/` and `/fr/docs/<slug>/`.
  */
 import { type Locale, ROUTES } from "@/i18n";
+import type { BrandKey } from "@/lib/brands";
 
 /** Groups of the sidebar; their names are the Fluent messages `docs-group-<id>`. */
 export const DOC_GROUPS = [
-  { id: "start", pages: ["", "install", "providers"] },
+  { id: "start", pages: ["", "quickstart", "install"] },
+  { id: "agent", pages: ["agent", "agent/memory", "agent/initiative"] },
+  { id: "configure", pages: ["configuration", "models", "channels", "connections"] },
   { id: "satellites", pages: ["satellites", "satellites/protocol", "satellites/schemas", "satellites/conformance"] },
   { id: "sdks", pages: ["sdks/python", "sdks/typescript", "sdks/rust", "sdks/templates"] },
   { id: "project", pages: ["contributing"] },
@@ -43,4 +46,31 @@ export function neighbours(slug: string): { previous?: DocSlug; next?: DocSlug }
 export function firstCodeBlock(markdown: string, lang: string): string | undefined {
   const fence = new RegExp(`^\`\`\`${lang}[^\\n]*\\n([\\s\\S]*?)^\`\`\``, "m");
   return fence.exec(markdown)?.[1];
+}
+
+/** The tabs a page shows (`<Tabs set>` and its `<Tab>`s): each set's choices, the first shown before one is made.
+ * Their names are the brands' own; the list's label is the Fluent message `tabs-<set>`. */
+export const TAB_SETS = {
+  install: ["uv", "pip", "docker"],
+} as const satisfies Record<string, readonly BrandKey[]>;
+
+export type TabSet = keyof typeof TAB_SETS;
+
+/** A choice's tab id (`install-docker`, `model-ollama`), which is also the address that opens it; its
+ * panel (ChoicePanel.astro) is `<id>-panel`. */
+export const choiceId = (group: string, choice: string): string => `${group}-${choice}`;
+
+/**
+ * The commands of every `bash` block a page tags (` ```bash quickstart `), comments and blank lines
+ * dropped: the home page shows the documentation's own commands, wherever the page moves them.
+ */
+export function taggedCommands(markdown: string, tag: string): string[][] {
+  return [...markdown.matchAll(/^```bash ([^\n]*)\n([\s\S]*?)^```/gm)]
+    .filter((m) => (m[1] ?? "").split(" ").includes(tag))
+    .map((m) =>
+      (m[2] ?? "")
+        .split("\n")
+        .map((line) => line.replace(/(^|\s+)#.*$/, "").trim())
+        .filter(Boolean),
+    );
 }

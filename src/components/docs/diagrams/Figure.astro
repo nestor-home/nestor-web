@@ -1,0 +1,25 @@
+---
+/**
+ * A diagram of the documentation: its board (the parts, laid out by the figure inside) and a caption
+ * that says what to read in it. Its words are read in order, which each figure writes as a sentence
+ * would go. It brings the diagrams' shared styles, so only pages with a figure load them.
+ */
+import "@/styles/diagrams.css";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+  n: number;
+  caption: string;
+}
+const { t, n, caption } = Astro.props;
+---
+
+<figure class="dg">
+  <div class="dg-board corner-marks">
+    <slot />
+  </div>
+  <figcaption class="dg-caption">
+    <span class="dg-caption-number">{t("dg-figure", { n })}</span>{t(caption)}
+  </figcaption>
+</figure>

@@ -5,11 +5,8 @@ description: Write a satellite in Rust with the nestor-satellite crate, or insta
 ---
 
 The [`nestor-satellite`](https://crates.io/crates/nestor-satellite) crate handles pairing, the
-token, the manifest, the WebSocket link and text. Audio over WebRTC (webrtc-rs, Opus) is the
-`voice` feature: a device that only writes builds without it. The crate does not depend on the
-Nestor server. Building needs Rust 1.91 or later and a C compiler; the `voice` feature also needs
-`cmake` (libopus is built from source), and on Linux the `audio` feature needs ALSA
-(`apt install libasound2-dev pkg-config`).
+token, the manifest, the link and text. It builds with Rust 1.91 or later and a C compiler. Audio
+is the `voice` feature, which also needs `cmake`; a device that only writes skips it.
 
 ```bash
 cargo add nestor-satellite --features audio   # a speaker: WebRTC and the machine's sound card
@@ -24,9 +21,11 @@ cargo add tokio --features macros,rt-multi-thread
 | `audio` | `voice` with `devices::{Microphone, Speaker}`, through cpal                                                                |
 | `cli`   | the `nestor-satellite` command (implies `audio`)                                                                           |
 
+On Linux, `audio` needs ALSA (`apt install libasound2-dev pkg-config`).
+
 ## A minimal driver
 
-A speaker with a microphone and a light, paired once, connected from then on (`audio` feature):
+A speaker with a microphone and a light (`audio` feature):
 
 ```rust
 use nestor_satellite::devices::{Microphone, Speaker};
@@ -53,15 +52,12 @@ async fn main() -> nestor_satellite::Result<()> {
 }
 ```
 
-With no enrollment code, it asks for a device code and says it on its speaker, digit by digit,
-twice, with recorded clips (offline, English or French), and logs it. With `NESTOR_PAIRING_URI`
-set, it pairs at once.
+Without an enrollment code, it says a device code on its speaker and logs it: type it in the admin.
 
 ## A screen and a keyboard
 
-A kitchen screen that talks with the assistant in writing. It shows its device code, takes
-enrollment codes typed before it is paired, then sends what is typed and shows the answers. It
-builds without the `voice` feature:
+A kitchen screen that writes with the assistant, without the `voice` feature. A line typed before
+pairing is an enrollment code; after, a message:
 
 ```rust
 use nestor_satellite::{Device, Display, EnrollmentMethod, IDENTIFY, Manifest, Satellite, TokenStore};
@@ -110,10 +106,9 @@ async fn main() -> nestor_satellite::Result<()> {
 
 ## Text and audio
 
-The manifest lists the device and what its body and sensors do (`EXPRESSION`, `IDENTIFY`,
-`HEAD_MOTION`, `PERSON_DETECTION`, `SPEECH_ACTIVITY`). The text and audio capabilities follow from
-the builder. A manifest that declares one without what carries it out fails in `build` with
-`Error::NotProvided`.
+The manifest lists the body and sensors (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`,
+`PERSON_DETECTION`, `SPEECH_ACTIVITY`). Text and audio follow from the builder; declaring them in
+the manifest without it fails `build` with `Error::NotProvided`.
 
 | Builder                                                 | Declares                           |
 | ------------------------------------------------------- | ---------------------------------- |
@@ -123,21 +118,17 @@ the builder. A manifest that declares one without what carries it out fails in `
 | `.sink(…)`, an `AudioSink` (`voice`)                    | `audio.playback`                   |
 | `.null_audio()` (`voice`)                               | both, without a sound card (tests) |
 
-- `satellite.observer()` gives an `Observer` that sends typed text with `input_text` (1 to 4,000
-  characters) and reports observations. It returns `Ok(false)` while the link is down (nothing is
-  queued), and `Error::CapabilityNotAllowed` when the capability was not declared or the household
-  did not allow it.
-- An answer can come in several messages (the assistant says it is looking, then gives the result);
-  `last` marks the last one of a turn. A typed turn is answered in writing when the device shows
-  text, aloud otherwise.
-- With the `voice` feature, the satellite offers WebRTC only once the core has allowed audio; until
-  then, and on a device without audio, everything goes through the link. `.ice_servers(…)` is only
-  needed beyond the local network.
-- `run` returns `Error::Replaced` when a newer link of the same device takes over (`4409`). A refused
-  token (`4401`) is forgotten and the device pairs again; any other close reconnects, waiting longer
-  each time.
+- `satellite.observer().input_text(…)` sends 1 to 4,000 typed characters. It returns `Ok(false)`
+  while the link is down, and `Error::CapabilityNotAllowed` if the household did not allow
+  `text.input`.
+- `last` marks the last message of an answer.
+- `.ice_servers(…)` is needed only beyond the local network.
+- `run` returns `Error::Replaced` when a newer link of the same device takes over. Otherwise it
+  reconnects, or pairs again if its token is refused.
 
 ## Pairing options
+
+Pairing methods follow from the builder.
 
 | Builder                                                                                        | Declares                  |
 | ---------------------------------------------------------------------------------------------- | ------------------------- |
@@ -146,14 +137,15 @@ the builder. A manifest that declares one without what carries it out fails in `
 | a `.sink(…)` and no display, or `.voice(…)`                                                    | `device_code.speech`      |
 | `.accepts_enrollment(EnrollmentMethod::Input)`, codes handed to `satellite.enroller()`         | `enrollment.input`        |
 
-This SDK drives no camera: it never declares `enrollment.qr`. A device with neither a screen nor a
-speaker only logs its device code. A refused enrollment code is said once (log, display, voice) and
-never sent again, even after a restart: the `TokenStore` keeps its SHA-256, never the code.
-Messages to people are in English or French (`.language(…)`, else `LANG`).
+- A refused enrollment code is never sent again.
+- This SDK drives no camera, so no `enrollment.qr`.
+- `.language(…)` sets the language it speaks (default: `LANG`).
 
 ## The command
 
-To use this machine’s microphone and speaker as a satellite, or its terminal:
+`nestor-satellite run` turns this machine into a satellite, aloud or in its terminal. Each
+[release](https://github.com/nestor-home/nestor-satellite-rust/releases) also has binaries for macOS
+and Linux.
 
 ```bash
 cargo install nestor-satellite --features cli
@@ -164,17 +156,16 @@ nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471
 nestor-satellite run --core http://nestor.local:8471 --room bureau --text-only
 ```
 
-Prebuilt binaries for macOS and Linux are attached to each
-[release](https://github.com/nestor-home/nestor-satellite-rust/releases). `--text` adds writing to
-the voice, `--text-only` drops the microphone, the speaker and WebRTC. Without a code,
-`nestor-satellite run --core http://nestor.local:8471 --room salon` says a device code through the
-speaker and logs it. `nestor-satellite devices` lists the sound cards, `--language fr` speaks
-French, `--null-audio` runs without a sound card. `nestor-satellite run --help` lists the rest.
+- `--text-only` drops the microphone, the speaker and WebRTC; `--text` adds writing.
+- Without a code, it says a device code.
+- `--language fr` speaks French. `nestor-satellite devices` lists the sound cards.
+
+`nestor-satellite run --help` lists the rest.
 
 ## Going further
 
-- The source, its examples and the voice clips' licence (CC BY 4.0):
+- The source, its examples and the voice clips' licence:
   [nestor-satellite-rust](https://github.com/nestor-home/nestor-satellite-rust); the API on
   [docs.rs](https://docs.rs/nestor-satellite).
-- The messages and close codes: [Protocol](/docs/satellites/protocol/).
+- Messages and close codes: [Protocol](/docs/satellites/protocol/).
 - Check yours: [Conformance](/docs/satellites/conformance/).

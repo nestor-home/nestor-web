@@ -1,0 +1,137 @@
+---
+/**
+ * What a turn carries of the past: three sources (memories, episodes, the journal), each with its
+ * mark, and where their items go: the household layer, the turn layer, or a tool the agent calls.
+ */
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+const sources = ["memories", "episodes", "journal"] as const;
+type Source = (typeof sources)[number];
+const targets: { id: string; quiet?: boolean; items: { source: Source; id: string }[] }[] = [
+  { id: "household", items: [{ source: "memories", id: "latest" }] },
+  {
+    id: "turn",
+    items: [
+      { source: "memories", id: "found" },
+      { source: "episodes", id: "recent" },
+      { source: "episodes", id: "older" },
+    ],
+  },
+  {
+    id: "tools",
+    quiet: true,
+    items: [
+      { source: "memories", id: "recall" },
+      { source: "episodes", id: "recall" },
+      { source: "journal", id: "reread" },
+    ],
+  },
+];
+---
+
+<Figure t={t} n={n} caption="dg-memory-caption">
+  <div class="memory">
+    <div class="memory-sources">
+      {
+        sources.map((source) => (
+          <div class="dg-node memory-source">
+            <span class={`memory-mark is-${source}`} aria-hidden="true" />
+            <span class="dg-title">{t(`dg-memory-${source}`)}</span>
+            <span class="dg-note">{t(`dg-memory-${source}-note`)}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <span class="dg-arrow is-flow is-hot" aria-hidden="true"></span>
+
+    <div class="memory-targets">
+      {
+        targets.map((target) => (
+          <div class:list={["dg-region is-framed memory-target", { "is-quiet": target.quiet }]}>
+            <span class="dg-label">{t(`dg-memory-into-${target.id}`)}</span>
+            <ul class="memory-items">
+              {target.items.map((item) => (
+                <li class="memory-item">
+                  <span class={`memory-mark is-${item.source}`} aria-hidden="true" />
+                  <span>{t(`dg-memory-${item.source}-${item.id}`)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Figure>
+
+<style>
+  .memory {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+  .memory-sources,
+  .memory-targets {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+  }
+  .memory-source {
+    padding-left: 2rem;
+  }
+  .memory-source .memory-mark {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.8rem;
+  }
+  /* one mark per source: a disc for memories, a square for episodes, a bar for the journal */
+  .memory-mark {
+    display: inline-block;
+    flex: none;
+    width: 0.55rem;
+    height: 0.55rem;
+    background: var(--ink);
+  }
+  .memory-mark.is-memories {
+    border-radius: 999px;
+    background: var(--ember);
+  }
+  .memory-mark.is-episodes {
+    border-radius: 1px;
+  }
+  .memory-mark.is-journal {
+    height: 0.2rem;
+    width: 0.7rem;
+    background: var(--ink-muted);
+  }
+  .memory-items {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .memory-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .memory-item .memory-mark {
+    transform: translateY(-0.05rem);
+  }
+  @container (min-width: 40rem) {
+    .memory {
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.25fr);
+      align-items: center;
+      column-gap: 0.5rem;
+    }
+  }
+</style>

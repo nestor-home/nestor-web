@@ -1,0 +1,99 @@
+---
+/**
+ * Hybrid search on one example: the question's words and its meaning each rank the memories, and
+ * reciprocal rank fusion puts first the one both lists hold.
+ */
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+const BOTH = "vegetarian"; // the memory both searches find
+// the two searches side by side, then their fusion
+const rows = [
+  [
+    { id: "words", found: ["choir", BOTH] },
+    { id: "meaning", found: [BOTH, "coriander"] },
+  ],
+  [{ id: "fused", found: [BOTH, "choir", "coriander"] }],
+] as const;
+const ranked = (found: readonly string[]) => found.map((memory, i) => ({ memory, rank: i + 1, both: memory === BOTH }));
+---
+
+<Figure t={t} n={n} caption="dg-search-caption">
+  <div class="search">
+    <div class="dg-node is-core search-question">
+      <span class="dg-note">{t("dg-search-question-label")}</span>
+      <span class="dg-title">{t("dg-search-question")}</span>
+    </div>
+
+    <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
+
+    {
+      rows.map((row, r) => (
+        <>
+          {r > 0 && <span class="dg-arrow is-down is-hot" aria-hidden="true" />}
+          <div class:list={["search-row", { "is-pair": row.length > 1 }]}>
+            {row.map((list) => (
+              <div class="dg-region">
+                <span class="dg-label">{t(`dg-search-${list.id}`)}</span>
+                <ol class="search-list">
+                  {ranked(list.found).map(({ memory, rank, both }) => (
+                    <li class:list={["dg-node search-item", { "is-hot": both }]}>
+                      <span class="dg-data search-rank">{rank}</span>
+                      <span>{t(`dg-search-memory-${memory}`)}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </div>
+        </>
+      ))
+    }
+  </div>
+</Figure>
+
+<style>
+  .search {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+  .search-question .dg-title {
+    margin-top: 0.15rem;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-variation);
+    font-size: var(--text-base);
+    font-weight: 500;
+  }
+  .search-row {
+    display: grid;
+    gap: 1rem 0.75rem;
+  }
+  @container (min-width: 40rem) {
+    .search-row.is-pair {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .search-list {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .search-item {
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.35rem 0.5rem;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .search-item.is-hot .search-rank {
+    color: var(--ember);
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+title: Initiative
+description: When Nestor speaks without being asked. Wake-ups, watches, finished tasks, messages passed on, and the courier that delivers them.
+---
+
+import Initiative from "@/components/docs/diagrams/Initiative.astro";
+
+Nestor sometimes speaks first: a reminder you asked for, a mail it watched for, a finished task, a
+question from someone else. All of them take the same road.
+
+<Initiative locale="en" n={7} />
+
+## What calls for it
+
+**Wake-ups.** "Remind me tomorrow at 9 to call the plumber", "every weekday at 8, tell me the
+weather". The agent calls `schedule` with a self-contained instruction and a time, once or on chosen
+days. When due, it runs a background turn on the `agent.background` model. A wake-up missed while
+Nestor was stopped runs once at the next start.
+
+**Watches.** "Tell me when the bank writes" creates a watch. A small model reads each incoming mail
+once against all watches and announces a match to whoever asked.
+
+**Tasks.** An executor's result is announced once to whoever asked, even after a restart.
+
+**Messages.** "Tell Hugo dinner is at eight", "ask Léa if she needs the car": the agent calls
+`message_person`. A message that expects a reply opens a question, which both see until the answer
+comes back. Each person's `may_message` lists whom they may write to through the agent.
+
+## Where and how it arrives
+
+The **courier** decides first and journals its decision with the reason:
+
+- the person asked for writing, or is away: a message where they read (Telegram today);
+- they are home: spoken in their room, or by the main satellite when their room is unknown;
+- quiet hours: nothing spoken unless urgent, and the message still goes in writing;
+- no presence at all: the conversation the request came from, else a message.
+
+Presence comes from Home Assistant: a room when it knows, home or away otherwise.

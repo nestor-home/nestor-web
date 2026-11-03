@@ -4,31 +4,19 @@ title: Satellites
 description: Les appareils qui donnent à Nestor une voix et un corps, et comment on les appaire.
 ---
 
-Un satellite est un appareil appairé au serveur Nestor : un Raspberry Pi avec une enceinte, un
-onglet sur une tablette murale, un robot Reachy Mini. On tape dessus, on lui parle, ou les deux :
-un clavier et un écran suffisent, un micro et un haut-parleur aussi. Une caméra ou des moteurs sont
-aussi des capacités optionnelles : l’appareil les déclare, une personne les autorise, et rien dans
-Nestor ne suppose qu’elles sont là.
-
-Les satellites se connectent au canal `satellites` du serveur, sur le port 8471 (son `port` dans
-`nestor.yaml`). À l’écrit, il ne leur faut rien de plus ; pour parler à voix haute, donnez une
-`voice` au canal, avec l’extra `voice` (voir [Fournisseurs](/fr/docs/providers/)).
+Un satellite est un appareil appairé au serveur Nestor : un Raspberry Pi avec une enceinte, une
+tablette murale, un robot Reachy Mini. On tape dessus, on lui parle, ou les deux. Il se connecte au
+canal `satellites` sur le port 8471, auquel il faut une [voix](/fr/docs/channels/#voix) pour parler.
 
 ## Ce que fait un satellite
 
-- Il s’appaire une fois et garde son jeton.
-- Il déclare dans un manifeste qui il est et ce qu’il sait faire.
-- Il tient un lien avec le serveur, un WebSocket qui porte tous les messages.
-- Il parle avec l’assistant par écrit, à voix haute ou les deux : le texte tapé et les réponses
-  écrites passent par le lien, l’audio dans les deux sens en WebRTC.
-- Il exécute les intentions du serveur et accuse réception de chacune.
-- Il remonte les observations qu’on lui a permises (activité vocale, personne détectée).
-
-Le serveur demande des intentions, jamais des mouvements. Avec `intent.expression` et `joy`, un
-robot bouge la tête et les antennes, un écran pourrait dessiner un visage, une simple enceinte
-l’ignore.
+Il s’appaire une fois, déclare ses capacités, puis tient un WebSocket avec le serveur ; l’audio
+passe en WebRTC. Le serveur envoie des intentions, pas des mouvements : avec `intent.expression` et
+`joy`, un robot bouge ses antennes, une simple enceinte l’ignore.
 
 ## Capacités
+
+Une caméra ou des moteurs sont facultatifs : l’appareil les déclare, une personne les autorise.
 
 | Capacité                  | L’appareil…                                          |
 | ------------------------- | ---------------------------------------------------- |
@@ -44,14 +32,11 @@ l’ignore.
 
 ## Appairage
 
-Appairer demande une preuve qu’une personne le voulait. Elle circule dans un sens ou dans l’autre,
-et la première acceptée gagne :
+Une personne prouve qu’elle le veut, de l’une de deux façons :
 
-- un **code d’appareil**, six chiffres que l’appareil présente et que la personne tape dans
-  l’administration ;
-- un **code d’enrôlement** créé dans l’administration (`K7QF-2M9X`), que la personne donne à
-  l’appareil, le plus souvent sous forme d’URI d’appairage :
-  `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
+- un **code d’appareil** : six chiffres affichés par l’appareil, tapés dans l’administration ;
+- un **code d’enrôlement** créé dans l’administration (`K7QF-2M9X`), donné à l’appareil, le plus
+  souvent en URI d’appairage : `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
 
 | Méthode                   | La personne…                                                                               |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
@@ -61,18 +46,13 @@ et la première acceptée gagne :
 | `enrollment.provisioning` | met l’URI d’appairage dans la configuration de l’appareil (option, environnement, fichier) |
 | `enrollment.qr`           | montre le QR code de l’URI d’appairage à la caméra de l’appareil                           |
 
-Tout appareil accepte `enrollment.provisioning` ; les autres méthodes découlent de ce qu’il a (un
-écran, un haut-parleur, un clavier, une caméra). Les SDK les déclarent pour vous.
+Tout appareil accepte `enrollment.provisioning`. Les SDK déclarent les autres selon le matériel.
 
 ### Ajouter un satellite
 
-Dans l’administration, ouvrez **Satellites**, puis **Ajouter**, et choisissez une méthode. Vous
-pouvez nommer l’appareil, le placer dans une pièce et restreindre ses capacités. Avec une méthode
-d’enrôlement, l’administration affiche le code et son URI d’appairage ; avec un code d’appareil,
-elle liste les appareils en attente et vous tapez le code du bon (**Identifier** le fait clignoter
-ou sonner pour les distinguer).
-
-La même chose depuis la ligne de commande du serveur, pendant que Nestor tourne :
+Dans l’administration, ouvrez **Satellites**, puis **Ajouter**, et choisissez une méthode.
+**Identifier** fait clignoter ou sonner un appareil en attente. En ligne de commande, pendant que
+Nestor tourne :
 
 ```bash
 nestor satellites add --room salon --name "Enceinte du salon"   # affiche le code et l’URI d’appairage
@@ -80,8 +60,8 @@ nestor satellites approve 042917                                # le code prése
 nestor satellites revoke enceinte-salon                         # désappaire un appareil
 ```
 
-`approve --only audio.capture,audio.playback` accorde moins de capacités que l’appareil n’en a
-déclaré. Puis, sur l’appareil, donnez-lui l’URI d’appairage :
+`approve --only audio.capture,audio.playback` accorde moins de capacités. Donnez ensuite son URI à
+l’appareil :
 
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
@@ -89,13 +69,12 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satel
 
 ## Prêts à l’emploi
 
-- `nestor-satellite run` : le micro et le haut-parleur de cette machine, avec le SDK
-  [Python](/fr/docs/sdks/python/), [TypeScript](/fr/docs/sdks/typescript/) ou
+- `nestor-satellite run`, le micro et le haut-parleur de cette machine, dans les SDK
+  [Python](/fr/docs/sdks/python/), [TypeScript](/fr/docs/sdks/typescript/) et
   [Rust](/fr/docs/sdks/rust/).
-- [`nestor-reachy`](https://github.com/nestor-home/nestor-reachy) : Reachy Mini, dont la tête et
-  les antennes suivent la conversation (son jumeau simulé pour l’instant).
+- [`nestor-reachy`](https://github.com/nestor-home/nestor-reachy), pour Reachy Mini (son jumeau
+  simulé pour l’instant).
 - Un onglet de navigateur, avec le SDK TypeScript.
 
-Pour écrire le vôtre, le [protocole](/fr/docs/satellites/protocol/) fait foi, les
-[schémas](/fr/docs/satellites/schemas/) donnent la forme de chaque message et la
-[suite de conformité](/fr/docs/satellites/conformance/) vérifie un appareil sur les deux.
+Pour écrire le vôtre, lisez le [protocole](/fr/docs/satellites/protocol/), les
+[schémas](/fr/docs/satellites/schemas/) et la [suite de conformité](/fr/docs/satellites/conformance/).

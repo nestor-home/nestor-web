@@ -1,0 +1,75 @@
+---
+title: Memory
+description: What the agent remembers, what each turn carries, how it finds the rest, and how a finished conversation becomes an episode.
+---
+
+import Consolidation from "@/components/docs/diagrams/Consolidation.astro";
+import HybridSearch from "@/components/docs/diagrams/HybridSearch.astro";
+import MemoryTurn from "@/components/docs/diagrams/MemoryTurn.astro";
+
+Nestor keeps **memories**, lasting facts it was told ("Léa is vegetarian"), and **episodes**, what
+each past conversation was about. Both are rebuilt from the journal, which keeps every word.
+Memory is generous: a line the model skips costs little, a missing memory costs a wrong answer.
+
+## What a turn carries
+
+<MemoryTurn locale="en" n={4} />
+
+The **household layer** carries the latest 150 memories, dated so the model keeps the later of two
+that disagree. They stay the same from turn to turn, so the provider caches them. Beyond 150, the
+**turn layer** adds those the speaker's last three messages find.
+
+The turn layer also carries the speaker's **episodes**, which only their participants see. Tools
+reach the rest: `recall` searches between two dates when asked ("what did we say last week?"), and
+`read_conversation` rereads one conversation word for word.
+
+## Finding by words and by meaning
+
+<HybridSearch locale="en" n={5} />
+
+Every search runs twice:
+
+- **By words**, SQLite's full-text index ranks what shares words with the question, accents
+  ignored.
+- **By meaning**, an embedding model turns the question into a vector, and
+  [sqlite-vec](https://github.com/asg017/sqlite-vec) returns the nearest ones.
+
+Reciprocal rank fusion merges the lists: what is in both comes first.
+
+Search by meaning is optional. Name an embedding model in `models` and point `memory.embedder` at
+it:
+
+```yaml
+models:
+  embed:
+    kind: openai-compatible-embeddings
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/text-embedding-3-small
+memory:
+  embedder: embed
+```
+
+Any OpenAI-compatible embeddings server works, local ones included (llama.cpp's
+`llama-server --embeddings`). Vectors are computed in the background, and changing the model
+reindexes there too. A question not embedded within a second (`memory.query_timeout_s`) is searched
+by words only.
+
+## When a conversation is over
+
+<Consolidation locale="en" n={6} />
+
+A conversation is over once its silence outlasts every medium of its place. A small model then
+writes its **episode**, two or three sentences and a few topics, and saves the lasting facts the
+agent missed as memories. If Nestor was stopped, it catches up at the next start, never twice.
+
+## Settings
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `memory.recent` | 150 | memories in the household layer |
+| `memory.found` | 12 | memories the words may add beyond them |
+| `memory.recent_episodes` | 3 | latest conversations of whoever speaks |
+| `memory.found_episodes` | 4 | older conversations their words may add |
+| `memory.embedder` | none | the embedding model, for search by meaning |
+| `memory.consolidation` | `agent.background` | the model that writes episodes |

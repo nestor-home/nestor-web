@@ -1,0 +1,77 @@
+---
+title: Comment fonctionne l’agent
+description: Un seul agent pour tout le foyer. Ses parties, un tour pas à pas, et l’assemblage de ses consignes.
+---
+
+import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
+import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
+import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
+
+Parlez à Nestor dans la cuisine ou écrivez-lui du bureau : un seul agent répond, avec une seule
+mémoire. Voici ses parties, et un message suivi jusqu’à la réponse.
+
+## Les parties
+
+<SystemMap locale="fr" n={1} />
+
+Le **cœur** ne dépend d’aucun fournisseur. Modèles, Home Assistant, connecteurs, exécutants et canaux
+sont des **adaptateurs** derrière des contrats.
+
+Le **journal** fait foi. Chaque effet y est un événement, jusqu’à chaque décision de politique et
+sa raison. L’administration l’affiche en fils de conversation. Au redémarrage, Nestor y retrouve les
+conversations ouvertes, les tâches, les réveils et les messages non livrés.
+
+## Un tour
+
+<TurnFlow locale="fr" n={2} />
+
+Une **conversation** regroupe les tours proches dans le temps, comme Assist dans Home Assistant.
+Après cinq minutes de silence à voix haute, ou quatre heures par écrit, une nouvelle commence et le
+modèle ne relit plus les anciens tours. Chaque canal peut changer ce délai avec
+`conversation_ends_after_s`. Les souvenirs traversent les conversations.
+
+Rien de long ne se passe pendant un tour. Les actions courtes sont des outils directs : allumer
+une lampe, retenir un fait, programmer un réveil. Ce qui prend des minutes part chez un
+**exécutant**, en tâche durable, et son résultat est annoncé une fois, à qui l’a demandé.
+
+## Les consignes
+
+<PromptLayers locale="fr" n={3} />
+
+Chaque tour assemble ses consignes en couches, de la plus stable à la plus changeante. Un
+fournisseur qui met les prompts en cache y lit tout ce qui précède un point de cache, plus vite et
+moins cher. Un nouveau tour ne paie plein tarif que sa couche de tour et les nouveaux messages.
+
+Chaque module remplit ses sections : la mémoire, l’initiative (veilles, réveils), la messagerie
+(questions ouvertes).
+
+## Les modèles par rôle
+
+Nommez des profils de modèles dans `models` et faites pointer chaque rôle vers l’un d’eux. Un seul
+modèle ne demande rien de plus.
+
+```yaml
+models:
+  rapide:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+  soigne:
+    kind: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-sonnet-5.5
+
+agent:
+  spoken: rapide      # la voix : les premiers mots arrivent vite
+  written: soigne     # l’écrit laisse quelques secondes
+  background: rapide  # les réveils ; le modèle écrit par défaut
+watches:
+  model: rapide       # trie le courrier entrant selon les veilles
+memory:
+  consolidation: rapide  # résume chaque conversation une fois terminée
+```
+
+Un rôle omis emprunte un modèle : `spoken` et `written` se remplacent, `background` et les veilles
+prennent `written`, la consolidation prend `background`.

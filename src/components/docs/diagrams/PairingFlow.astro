@@ -1,0 +1,252 @@
+---
+/**
+ * A satellite's life with the core, as a sequence: three lanes (the device, the core, the person in
+ * the admin) and the messages between them, by phase: pairing with either proof, the link, then audio
+ * when it is allowed. As in every figure: ember is the path told (here, what crosses the network), a
+ * plain hairline what passes between a person and a device, dashed what runs only when allowed.
+ * On a narrow board the lanes fold away and each message says who sends it to whom.
+ */
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+
+type Lane = "device" | "core" | "person";
+const LANES: readonly Lane[] = ["device", "core", "person"];
+interface Message {
+  id: string;
+  from: Lane;
+  to: Lane;
+  code?: string;
+  /** between a person and a device, not over the network */
+  local?: boolean;
+  /** both ways */
+  both?: boolean;
+  /** only when allowed */
+  quiet?: boolean;
+}
+type Row = { phase: string } | { or: true } | Message;
+const rows: Row[] = [
+  { phase: "pair" },
+  { id: "request", from: "device", to: "core", code: "POST /satellites/pairings" },
+  { id: "present", from: "device", to: "person", local: true },
+  { id: "type", from: "person", to: "core" },
+  { or: true },
+  { id: "give", from: "person", to: "device", local: true },
+  { id: "enroll", from: "device", to: "core", code: "POST /satellites/pairings/{pairing_id}/enrollment" },
+  { id: "token", from: "core", to: "device", code: "GET /satellites/pairings/{pairing_id}" },
+  { phase: "link" },
+  { id: "hello", from: "device", to: "core", code: "WebSocket /satellites/{device_id}/link" },
+  { id: "exchange", from: "device", to: "core", both: true },
+  { phase: "audio" },
+  { id: "audio", from: "device", to: "core", code: "POST /satellites/{device_id}/audio", quiet: true },
+];
+/** a lane's centre, as a line of the six-column grid: 2, 4, 6 */
+const centre = (lane: Lane) => LANES.indexOf(lane) * 2 + 2;
+let phase = 0;
+---
+
+<Figure t={t} n={n} caption="dg-pairing-caption">
+  <div class="pf">
+    <div class="pf-lanes" aria-hidden="true">
+      {
+        LANES.map((lane) => (
+          <div class:list={["dg-node pf-lane", { "is-core": lane === "core" }]}>
+            <span class="dg-title">{t(`dg-pairing-${lane}`)}</span>
+            <span class="dg-note">{t(`dg-pairing-${lane}-note`)}</span>
+          </div>
+        ))
+      }
+    </div>
+    <ol class="pf-seq">
+      {
+        rows.map((row, i) => {
+          if ("phase" in row) {
+            phase += 1;
+            return (
+              <li class="pf-phase" style={`--row:${i + 1}`}>
+                <span class="dg-label">{t(`dg-pairing-phase-${row.phase}`, { n: phase })}</span>
+              </li>
+            );
+          }
+          if ("or" in row) {
+            return (
+              <li class="pf-or" style={`--row:${i + 1}`}>
+                <span class="dg-label">{t("dg-pairing-or")}</span>
+              </li>
+            );
+          }
+          const from = centre(row.from);
+          const to = centre(row.to);
+          return (
+            <li
+              class:list={["dg-node pf-msg", { "is-quiet": row.quiet }]}
+              style={`--a:${Math.min(from, to)};--b:${Math.max(from, to)};--row:${i + 1}`}
+            >
+              <span class="pf-text">
+                <span class="dg-data pf-who">
+                  {t("dg-pairing-from-to", { from: t(`dg-pairing-${row.from}`), to: t(`dg-pairing-${row.to}`) })}
+                </span>
+                <span class="dg-title">{t(`dg-pairing-${row.id}`)}</span>
+                <span class="dg-note">{t(`dg-pairing-${row.id}-note`)}</span>
+                {
+                  row.code && (
+                    <span class="dg-event pf-code">
+                      {row.code.split("/").map((part, k) => (
+                        <>
+                          {k > 0 && (
+                            <>
+                              {"/"}
+                              <wbr />
+                            </>
+                          )}
+                          {part}
+                        </>
+                      ))}
+                    </span>
+                  )
+                }
+              </span>
+              <span
+                class:list={[
+                  "dg-arrow pf-line",
+                  to < from ? "is-left" : "is-right",
+                  { "is-hot": !row.local && !row.quiet, "is-quiet": row.quiet },
+                ]}
+                aria-hidden="true"
+              />
+              {row.both && <span class="dg-arrow pf-line is-left is-hot" aria-hidden="true" />}
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</Figure>
+
+<style>
+  .pf {
+    display: grid;
+    gap: 1rem;
+  }
+  /* narrow: a list of steps, each saying who sends it to whom */
+  .pf-lanes,
+  .pf-line {
+    display: none;
+  }
+  .pf-seq {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .pf-phase:not(:first-of-type) {
+    margin-top: 0.75rem;
+  }
+  .pf-phase .dg-label,
+  .pf-or .dg-label {
+    margin: 0;
+  }
+  .pf-or .dg-label {
+    color: var(--ember);
+  }
+  .pf-text {
+    display: block;
+  }
+  .pf-who {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  /* a long endpoint wraps after a slash rather than losing its end or leaving its box */
+  .pf-code {
+    max-width: 100%;
+    margin-top: 0.4rem;
+    border-radius: var(--radius);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* wide: three lanes, their lifelines, and each message an arrow between two of them */
+  @container (min-width: 36rem) {
+    .pf-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.5rem;
+      text-align: center;
+    }
+    .pf-seq {
+      position: relative;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      column-gap: 0;
+      row-gap: 0.85rem;
+    }
+    /* the lifelines, at the lanes' centres: a sixth, a half, five sixths */
+    .pf-seq::before,
+    .pf-seq::after {
+      content: "";
+      position: absolute;
+      inset: 0 calc(100% / 6);
+      border-inline: var(--hairline) dashed var(--rule-strong);
+      pointer-events: none;
+    }
+    .pf-seq::after {
+      inset: 0 auto 0 50%;
+      border-right: 0;
+    }
+    /* one row each, in order: messages between different lanes never share a row */
+    .pf-seq > li {
+      position: relative;
+      z-index: 1;
+      grid-row: var(--row);
+    }
+    .pf-phase,
+    .pf-or {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+    .pf-phase .dg-label,
+    .pf-or .dg-label {
+      display: inline-block;
+      padding: 0.1rem 0.5rem;
+      background: var(--paper-raised);
+    }
+    .pf-phase:not(:first-of-type) {
+      margin-top: 0.5rem;
+    }
+    /* the message is an arrow now, not a box */
+    .pf-msg {
+      grid-column: var(--a) / var(--b);
+      display: grid;
+      justify-items: center;
+      padding: 0 0.75rem;
+      border: 0;
+      background: transparent;
+      text-align: center;
+    }
+    .pf-who {
+      display: none;
+    }
+    .pf-text {
+      display: grid;
+      justify-items: center;
+      padding: 0.15rem 0.5rem;
+      background: var(--paper-raised);
+    }
+    .pf-msg .dg-note {
+      max-width: 22rem;
+    }
+
+    .pf-line {
+      display: block;
+      justify-self: stretch;
+      width: auto;
+      margin: 0.4rem -0.75rem 0;
+    }
+    .pf-line + .pf-line {
+      margin-top: 0.15rem;
+    }
+  }
+</style>

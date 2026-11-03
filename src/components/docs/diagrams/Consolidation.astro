@@ -1,0 +1,142 @@
+---
+/**
+ * A conversation's life after its last word: turns close in time, then a silence long enough that
+ * no medium could follow it up, then a small model writes its episode and the facts worth keeping.
+ */
+import Dither from "@/components/Dither.astro";
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+const turns = ["18:02", "18:03", "18:09"] as const;
+const outputs = ["episode", "facts"] as const;
+---
+
+<Figure t={t} n={n} caption="dg-consolidation-caption">
+  <div class="cons">
+    <div class="cons-time">
+      <div class="dg-node cons-span">
+        <span class="dg-label">{t("dg-consolidation-talk")}</span>
+        <div class="cons-turns">
+          {
+            turns.map((time) => (
+              <span class="cons-turn">
+                <span class="cons-tick" aria-hidden="true" />
+                <span class="dg-data">{time}</span>
+              </span>
+            ))
+          }
+        </div>
+      </div>
+      <div class="dg-node is-quiet cons-span cons-silence">
+        <Dither shape="ramp-right" from={0} to={0.45} dot={2} class="absolute inset-y-0 right-0 w-1/2 text-ink/20" />
+        <span class="dg-label">{t("dg-consolidation-silence")}</span>
+        <span class="dg-note">{t("dg-consolidation-silence-note")}</span>
+      </div>
+    </div>
+
+    <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
+
+    <div class="dg-node is-core">
+      <span class="dg-title">{t("dg-consolidation-model")}</span>
+      <span class="dg-note">{t("dg-consolidation-model-note")}</span>
+    </div>
+
+    <span class="dg-arrow is-down" aria-hidden="true"></span>
+
+    <div class="cons-outputs">
+      {
+        outputs.map((output) => (
+          <div class="dg-node">
+            <span class="dg-title">{t(`dg-consolidation-${output}`)}</span>
+            <span class="dg-note">{t(`dg-consolidation-${output}-note`)}</span>
+          </div>
+        ))
+      }
+      <div class="dg-node is-quiet">
+        <span class="dg-title">{t("dg-consolidation-journal")}</span>
+        <span class="dg-event mt-1.5">{"memory.episode"}</span>
+      </div>
+    </div>
+  </div>
+</Figure>
+
+<style>
+  .cons {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+  .cons-time {
+    display: grid;
+    gap: 0.5rem;
+  }
+  /* the dither lies under the span's words */
+  .cons-span {
+    overflow: hidden;
+  }
+  .cons-span > :is(span, .cons-turns) {
+    position: relative;
+  }
+  .cons-silence .dg-label {
+    color: var(--ink);
+  }
+  .cons-silence .dg-note {
+    max-width: 70%;
+  }
+  .cons-turns {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+  /* the time axis the turns sit on */
+  .cons-turns::before {
+    content: "";
+    position: absolute;
+    top: 0.85rem;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: var(--rule-strong);
+  }
+  .cons-turn {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+  }
+  .cons-tick {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 999px;
+    background: var(--ink);
+    box-shadow: 0 0 0 3px var(--paper);
+  }
+  .cons-outputs {
+    display: grid;
+    gap: 0.5rem;
+  }
+  @container (min-width: 30rem) {
+    .cons-time {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      gap: 0;
+    }
+    .cons-time > :first-child {
+      border-right: 0;
+      border-radius: var(--radius) 0 0 var(--radius);
+    }
+    .cons-time > :last-child {
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .cons-outputs {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

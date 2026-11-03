@@ -1,0 +1,121 @@
+---
+/**
+ * The system at a glance: the ways people reach the agent, the core around it, what is plugged in, and
+ * the journal underneath that records every effect.
+ */
+import Dither from "@/components/Dither.astro";
+import Planned from "@/components/Planned.astro";
+import { type Locale, translator } from "@/i18n";
+import Figure from "./Figure.astro";
+
+interface Props {
+  locale: Locale;
+  n: number;
+}
+const { locale, n } = Astro.props;
+const t = translator(locale);
+const parts = ["memory", "initiative", "tasks", "home"] as const;
+const plugged = ["models", "ha", "connectors", "executors"] as const;
+---
+
+<Figure t={t} n={n} caption="dg-map-caption">
+  <div class="map">
+    <div class="dg-region">
+      <span class="dg-label">{t("dg-map-reach")}</span>
+      <div class="map-row is-three">
+        <div class="dg-node">
+          <span class="dg-title">{t("dg-map-satellites")}</span>
+          <span class="dg-note">{t("dg-map-satellites-note")}</span>
+        </div>
+        <div class="dg-node">
+          <span class="dg-title">{t("dg-map-telegram")}</span>
+          <span class="dg-note">{t("dg-map-telegram-note")}</span>
+        </div>
+        <div class="dg-node is-quiet">
+          <span class="dg-title">{t("dg-map-more")}</span>
+          <span class="dg-note">{t("dg-map-more-note")}</span>
+          <Planned t={t} class="mt-2" />
+        </div>
+      </div>
+    </div>
+
+    <span class="dg-arrow is-down is-hot" aria-hidden="true"></span>
+
+    <div class="dg-region is-framed">
+      <span class="dg-label">{t("dg-map-core")}</span>
+      <div class="dg-node is-core">
+        <span class="dg-title">{t("dg-map-agent")}</span>
+        <span class="dg-note">{t("dg-map-agent-note")}</span>
+      </div>
+      <div class="map-row is-four mt-2">
+        {
+          parts.map((part) => (
+            <div class="dg-node">
+              <span class="dg-title">{t(`dg-map-${part}`)}</span>
+              <span class="dg-note">{t(`dg-map-${part}-note`)}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <span class="dg-arrow is-down" aria-hidden="true"></span>
+
+    <div class="dg-region">
+      <span class="dg-label">{t("dg-map-plugged")}</span>
+      <div class="map-row is-four">
+        {
+          plugged.map((part) => (
+            <div class="dg-node">
+              <span class="dg-title">{t(`dg-map-${part}`)}</span>
+              <span class="dg-note">{t(`dg-map-${part}-note`)}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <span class="dg-arrow is-down" aria-hidden="true"></span>
+
+    <div class="dg-node map-journal">
+      <Dither shape="ramp-left" from={0} to={0.5} dot={2} class="absolute inset-y-0 right-0 w-2/5 text-ink/20" />
+      <span class="dg-title">{t("dg-map-journal")}</span>
+      <span class="dg-note">{t("dg-map-journal-note")}</span>
+    </div>
+  </div>
+</Figure>
+
+<style>
+  .map {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+  .map-row {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .map-row.is-three {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* the record of everything, in ink, its dither under the words */
+  .map-journal {
+    overflow: hidden;
+    border-color: var(--ink);
+  }
+  .map-journal > span {
+    position: relative;
+    max-width: 30rem;
+  }
+  @container (min-width: 30rem) {
+    .map-row.is-three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @container (min-width: 40rem) {
+    .map-row.is-four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

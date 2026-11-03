@@ -4,11 +4,10 @@ title: SDK TypeScript
 description: Écrire un satellite en TypeScript avec @nestor-home/satellite, dans un onglet de navigateur ou dans Node, à voix haute ou par écrit.
 ---
 
-[`@nestor-home/satellite`](https://www.npmjs.com/package/@nestor-home/satellite) s’occupe de
-l’appairage, du jeton, du manifeste, du lien WebSocket et du texte, dans les navigateurs et dans
-Node 22.12 ou plus récent. La voix (l’audio en WebRTC) a son propre point d’entrée :
-`@nestor-home/satellite/voice` dans les navigateurs, `@nestor-home/satellite/node` dans Node. Un
-appareil qui ne fait qu’écrire n’en charge rien. Le SDK ne dépend pas du serveur Nestor.
+[`@nestor-home/satellite`](https://www.npmjs.com/package/@nestor-home/satellite) gère
+l’appairage, le jeton, le manifeste, le lien et le texte, dans les navigateurs et Node 22.12 ou plus
+récent. L’audio a son propre point d’entrée (`/voice` dans les navigateurs, `/node` dans Node) ; un
+appareil qui ne fait qu’écrire s’en passe.
 
 ```bash
 pnpm add @nestor-home/satellite
@@ -17,8 +16,8 @@ pnpm add @roamhq/wrtc   # dans Node, pour parler : WebRTC (libwebrtc, précompil
 
 ## Un pilote minimal
 
-Un onglet sur une tablette murale, qui écrit avec l’assistant. Servi en `https:` ou sur
-`localhost`, depuis l’origine du serveur ou à travers un proxy :
+Un onglet sur une tablette murale, qui écrit avec l’assistant, servi en `https:` ou sur
+`localhost` :
 
 ```ts
 import { IDENTIFY, LocalStorageTokenStore, Manifest, Satellite } from "@nestor-home/satellite";
@@ -45,8 +44,7 @@ satellite.run();
 form.onsubmit = () => satellite.sendText(input.value); // a turn of the kitchen's conversation
 ```
 
-Pour qu’il parle aussi, donnez-lui une voix. Le micro ne s’ouvre qu’une fois l’audio autorisé par
-Nestor, jamais pendant l’appairage :
+Pour qu’il parle aussi, donnez-lui une voix. Le micro s’ouvre une fois l’audio autorisé par Nestor :
 
 ```ts
 import { browserVoice } from "@nestor-home/satellite/voice";
@@ -56,13 +54,12 @@ button.onclick = () => satellite.run(); // a click: browsers only play sound aft
 ```
 
 `browserVoice({ microphone: false })` n’a pas de micro, `browserVoice({ element: null })` pas de
-haut-parleur ; `iceServers` (des URL STUN ou TURN) ne sert qu’au-delà du réseau local.
+haut-parleur.
 
 ## Dans Node, sans écran
 
-Le SDK dit alors le code d’appareil sur le haut-parleur, avec sa voix enregistrée (hors ligne, en
-anglais ou en français), et l’écrit dans le journal, sauf si l’URI d’appairage est dans
-l’environnement.
+Sans écran ni URI d’appairage, il dit un code d’appareil sur son haut-parleur et l’écrit dans le
+journal :
 
 ```ts
 import { EXPRESSION, Manifest, Satellite } from "@nestor-home/satellite";
@@ -95,10 +92,9 @@ await satellite.run(stop.signal); // pairs the first time, then reconnects until
 
 ## Texte et audio
 
-Le manifeste décrit l’appareil et ce que font son corps et ses capteurs (`EXPRESSION`, `IDENTIFY`,
-`HEAD_MOTION`, `PERSON_DETECTION`, `SPEECH_ACTIVITY`). Les capacités de texte et d’audio découlent
-des options `text` et `voice`. En déclarer une dans le manifeste sans ce qui la réalise lève une
-`ProtocolError`.
+Le manifeste décrit le corps et les capteurs (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`,
+`PERSON_DETECTION`, `SPEECH_ACTIVITY`). Le texte et l’audio découlent des options `text` et
+`voice` ; les déclarer dans le manifeste sans elles lève une `ProtocolError`.
 
 | Option                                              | Déclare          |
 | --------------------------------------------------- | ---------------- |
@@ -107,23 +103,17 @@ des options `text` et `voice`. En déclarer une dans le manifeste sans ce qui la
 | une `voice` avec un micro (`source` dans Node)      | `audio.capture`  |
 | une `voice` avec un haut-parleur (`sink` dans Node) | `audio.playback` |
 
-- `satellite.sendText(text)` envoie ce qu’une personne a tapé, de 1 à 4 000 caractères. Il
-  renvoie `false` quand le lien est coupé (rien n’est mis en attente) et lève `CapabilityNotAllowed`
-  si `text.input` n’a pas été donné ou si le foyer ne l’a pas autorisé.
-- Une réponse peut arriver en plusieurs messages (l’assistant dit qu’il cherche, puis donne le
-  résultat) ; `final` marque le dernier d’un tour. Un tour tapé reçoit une réponse écrite si
-  l’appareil affiche du texte, à voix haute sinon.
-- La voix ne propose WebRTC qu’une fois l’audio autorisé par le cœur ; d’ici là, et sur un
-  appareil sans voix, tout passe par le lien.
-- `run` échoue avec `LinkReplaced` quand un lien plus récent du même appareil prend le relais
-  (`4409`), et avec `PairingError` quand le cœur ne l’appairera jamais. Un jeton refusé (`4401`) est
-  oublié et l’appareil s’appaire de nouveau ; toute autre fermeture mène à une reconnexion, avec
-  une attente qui s’allonge.
+- `satellite.sendText(text)` envoie de 1 à 4 000 caractères tapés. Il renvoie `false` quand le
+  lien est coupé et lève `CapabilityNotAllowed` si le foyer n’a pas autorisé `text.input`.
+- `final` marque le dernier message d’une réponse.
+- `iceServers` (des URL STUN ou TURN) ne sert qu’au-delà du réseau local.
+- `run` échoue avec `LinkReplaced` quand un lien plus récent du même appareil prend le relais, et
+  avec `PairingError` quand le cœur ne l’appairera jamais. Sinon, il se reconnecte, ou s’appaire de
+  nouveau si son jeton est refusé.
 
 ## Options d’appairage
 
-Les méthodes d’appairage du manifeste découlent des options `pairing` ; vous ne les listez
-jamais à la main.
+Les méthodes d’appairage découlent des options `pairing`.
 
 | Option                                                                       | Déclare                                             |
 | ---------------------------------------------------------------------------- | --------------------------------------------------- |
@@ -135,18 +125,16 @@ jamais à la main.
 | `scanner: cameraQrScanner({ wasmUrl })` (navigateurs)                        | `enrollment.qr`                                     |
 
 - `enrollment` prend une URI d’appairage ou un code d’enrôlement.
-- Un code tapé pendant que l’appareil attend : `await satellite.enroll(input.value)`. Un code
-  refusé n’est plus jamais envoyé, même après un redémarrage : son SHA-256 est gardé dans le
-  magasin de jetons, jamais le code.
-- QR codes : `cameraQrScanner` vient de `@nestor-home/satellite/qr` et a besoin de `zxing-wasm`
-  (environ 1 Mo de WebAssembly, chargé depuis jsDelivr sauf si `wasmUrl` dit où votre page le
-  sert). Node n’a pas de caméra : un satellite Node ne déclare jamais `enrollment.qr`.
-- `locale` règle la langue dans laquelle il parle aux gens (par défaut, celle de la plateforme).
+- `await satellite.enroll(input.value)` envoie un code tapé sur l’appareil. Un code refusé n’est
+  plus jamais envoyé.
+- `cameraQrScanner` vient de `@nestor-home/satellite/qr` et demande `zxing-wasm`. Node n’a pas de
+  caméra.
+- `locale` règle la langue dans laquelle il parle.
 
 ## La commande
 
-Dans Node, la commande fait du micro et du haut-parleur de cette machine un satellite (par défaut,
-`arecord` et `aplay` sous Linux, `rec` et `play` de SoX sous macOS) :
+Dans Node, `npx nestor-satellite run` fait de cette machine un satellite. Lancez-la depuis un
+projet où le SDK est installé, avec `@roamhq/wrtc` pour parler :
 
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' npx nestor-satellite run --room salon
@@ -156,17 +144,17 @@ npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:
 npx nestor-satellite run --core http://nestor.local:8471 --room bureau --text --no-voice
 ```
 
-Lancez-la depuis un projet où `@nestor-home/satellite` est installé, avec `@roamhq/wrtc` pour
-parler. `--text` ajoute l’écrit à la voix, `--no-voice` retire le micro et le haut-parleur. Avec un
-code seul, donnez le cœur avec `--core` (`--pairing-code K7QF-2M9X`). Sans l’un ni l’autre, elle
-dit un code d’appareil à taper dans Nestor (`--output none` : elle se contente de l’écrire dans
-le journal). `--input` et `--output` prennent toute commande qui enregistre ou joue du PCM brut
-48 kHz 16 bits mono, ou `none`. Le jeton est gardé dans `~/.config/nestor-satellite/<id>.json`
-(mode 600). `npx nestor-satellite --help` détaille les autres options.
+- `--no-voice` retire le micro et le haut-parleur ; `--text` ajoute l’écrit.
+- Sans code, elle dit un code d’appareil. Un code seul demande `--core` et `--pairing-code`.
+- `--input` et `--output` prennent une commande qui enregistre ou joue du PCM brut 48 kHz 16 bits
+  mono, ou `none`. Par défaut : `arecord` et `aplay` sous Linux, SoX sous macOS.
+
+Le jeton est gardé dans `~/.config/nestor-satellite/<id>.json`. `npx nestor-satellite --help`
+détaille le reste.
 
 ## Pour aller plus loin
 
-- Le code, un exemple pour navigateur et la licence des enregistrements de voix (CC BY 4.0) :
+- Le code, un exemple pour navigateur et la licence des enregistrements de voix :
   [nestor-satellite-typescript](https://github.com/nestor-home/nestor-satellite-typescript).
 - Les messages et les codes de fermeture : [Protocole](/fr/docs/satellites/protocol/).
 - Vérifier le vôtre : [Conformité](/fr/docs/satellites/conformance/).

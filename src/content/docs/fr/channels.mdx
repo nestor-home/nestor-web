@@ -1,0 +1,102 @@
+---
+title: Canaux et voix
+description: Comment on joint Nestor, sur Telegram ou par des satellites, et comment donner une voix aux satellites.
+---
+
+import Providers from "@/components/docs/Providers.astro";
+import ProviderSetup from "@/components/docs/ProviderSetup.astro";
+
+On joint Nestor par ses `channels`. Tous partagent un seul agent et une seule mémoire : une question
+posée dans la cuisine peut se poursuivre sur Telegram.
+
+## Choisir ses canaux
+
+<Providers kind="channel" locale="fr">
+<ProviderSetup kind="channel" brand="telegram">
+
+Créez un bot avec [@BotFather](https://t.me/BotFather) et mettez son jeton dans `.env` :
+
+```ini
+TELEGRAM_BOT_TOKEN=123456:ABC-...
+```
+
+```yaml
+channels:
+  - kind: telegram
+    token: ${TELEGRAM_BOT_TOKEN}
+```
+
+Ajoutez `"telegram:<votre identifiant>"` à vos `accounts` dans `household`. Pour le trouver,
+écrivez au bot : le journal du serveur affiche l’identifiant de chaque inconnu qu’il ignore. Le bot
+ne lit que le texte.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="satellites">
+
+Des appareils sur lesquels on tape, auxquels on parle, ou les deux. À l’écrit :
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+```
+
+À voix haute, ajoutez une [voix](#voix) :
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      speech:
+        api_key: ${ELEVENLABS_API_KEY}
+        voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`host: 0.0.0.0` ouvre le port 8471 à votre réseau. Ensuite, [appairez-les](/fr/docs/satellites/)
+et ajoutez `"satellites:*"` aux `accounts` de la personne qui s’en sert.
+
+</ProviderSetup>
+</Providers>
+
+## Voix
+
+Parler à voix haute demande l’extra `voice`, `nestor-home[voice]` ([Installer](/fr/docs/install/)).
+L’image Docker le contient.
+
+<Providers kind="speech" locale="fr">
+<ProviderSetup kind="speech" brand="elevenlabs">
+
+Une seule clé couvre la transcription (Scribe v2 Realtime) et la parole (v4 Turbo).
+
+```ini
+ELEVENLABS_API_KEY=sk_...
+```
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      speech:
+        api_key: ${ELEVENLABS_API_KEY}
+        voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`voice_id` est n’importe quelle voix de votre bibliothèque. La transcription attend de l’anglais,
+sauf si `speech` fixe `language`.
+
+</ProviderSetup>
+</Providers>
+
+Le bloc `voice` accepte aussi :
+
+- `style` : comment l’assistant écrit pour cette voix, par exemple ses balises d’expression ;
+- `fallback_clips` : un dossier avec `stt.wav` et `tts.wav`, joués quand le service de parole est
+  en panne.
+
+## Quand une conversation se termine
+
+Après un silence, le message suivant ouvre une nouvelle conversation et la précédente rejoint la
+[mémoire](/fr/docs/agent/memory/). Ce silence est de 5 minutes à voix haute, 4 heures à l’écrit ;
+`conversation_ends_after_s` le change pour un canal.

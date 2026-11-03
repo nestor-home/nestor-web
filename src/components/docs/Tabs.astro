@@ -1,0 +1,75 @@
+---
+/**
+ * Choices a page shows one at a time (the ways to install…): a row of tabs with each choice's mark,
+ * the page's own content for each in a `<Tab>`. Without JavaScript the first shows; with it,
+ * `#<set>-<choice>`, the tab's id, opens another (the shared tabs in scripts/site.ts).
+ */
+import Brand from "@/components/Brand.astro";
+import { type Locale, translator } from "@/i18n";
+import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
+import { choiceId, TAB_SETS, type TabSet } from "@/lib/docs";
+
+interface Props {
+  set: TabSet;
+  locale: Locale;
+}
+const { set, locale } = Astro.props;
+const t = translator(locale);
+---
+
+<div class="doc-tabs">
+  <div role="tablist" aria-label={t(`tabs-${set}`)} class="doc-tabs-list" data-tabs-hash>
+    {
+      TAB_SETS[set].map((choice, i) => {
+        const id = choiceId(set, choice);
+        const b = BRANDS[choice] as BrandInfo;
+        return (
+          <button
+            type="button"
+            role="tab"
+            id={id}
+            aria-controls={`${id}-panel`}
+            aria-selected={i === 0 ? "true" : "false"}
+            tabindex={i === 0 ? 0 : -1}
+            class="doc-tab"
+            style={b.hex ? `--brand:${b.hex}` : undefined}
+          >
+            <Brand brand={choice} class="choice-mark size-4" decorative />
+            {b.name}
+          </button>
+        );
+      })
+    }
+  </div>
+  <slot />
+</div>
+
+<style>
+  .doc-tabs {
+    margin-top: 1.5rem;
+  }
+  .doc-tabs-list {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--rule);
+  }
+  .doc-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 0;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: color var(--duration) var(--ease);
+  }
+  .doc-tab:hover,
+  .doc-tab[aria-selected="true"] {
+    color: var(--ink);
+  }
+  .doc-tab[aria-selected="true"] {
+    box-shadow: inset 0 -2px 0 var(--ember);
+  }
+</style>
