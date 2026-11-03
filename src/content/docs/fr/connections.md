@@ -4,26 +4,20 @@ title: Maison et services
 description: Brancher Home Assistant pour la présence et les appareils, des serveurs MCP pour d’autres outils, des boîtes mail pour les veilles, et des agents pour les tâches longues.
 ---
 
-Seul, Nestor parle et se souvient. Ce qu’il peut voir et faire vient de ce que vous branchez :
-Home Assistant pour la maison, des serveurs MCP pour d’autres outils, des boîtes mail pour les
-veilles, et d’autres agents pour les tâches plus longues qu’une conversation. Chacun est facultatif.
+Nestor voit et agit par ce que vous branchez ici. Chaque branchement est facultatif.
 
 ## Home Assistant
 
-Home Assistant apporte deux choses à Nestor, réglées séparément :
+Home Assistant apporte à Nestor **la présence** (qui est là, et dans quelle pièce quand il le sait)
+et **les appareils** (ce qu’il expose aux assistants, par son serveur MCP).
 
-- **la présence** : qui est là, et dans quelle pièce quand Home Assistant le sait. Nestor s’en sert
-  pour choisir où parler et savoir à qui il parle ;
-- **les appareils** : lumières, volets, chauffage, capteurs, par le serveur MCP de Home Assistant.
-  Nestor peut alors lire et changer ce que Home Assistant expose aux assistants.
-
-D’abord, dans Home Assistant :
+Dans Home Assistant :
 
 1. créez un jeton d’accès longue durée (votre profil, **Sécurité**) ;
-2. pour les appareils, ajoutez l’intégration **Model Context Protocol Server**, et choisissez dans
-   **Paramètres › Assistants vocaux › Exposer** les entités que les assistants peuvent voir.
+2. pour les appareils, ajoutez l’intégration **Model Context Protocol Server** et choisissez les
+   entités dans **Paramètres › Assistants vocaux › Exposer**.
 
-Mettez ensuite les adresses et le jeton dans `.env` :
+Dans `.env` :
 
 ```ini
 HOME_ASSISTANT_URL=http://homeassistant.local:8123
@@ -31,7 +25,7 @@ HOME_ASSISTANT_MCP_URL=http://homeassistant.local:8123/api/mcp
 HOME_ASSISTANT_TOKEN=eyJ...
 ```
 
-et ajoutez, dans `nestor.yaml` (`nestor init` a écrit ces lignes, en commentaire) :
+Dans `nestor.yaml` (`nestor init` l’a écrit, en commentaire) :
 
 ```yaml
 presence:
@@ -48,15 +42,12 @@ tools:
     token: ${HOME_ASSISTANT_TOKEN}
 ```
 
-`presence` accepte aussi `rooms`, un capteur par personne qui donne sa pièce (Bermuda, ESPresense),
-et `occupancy_sensors`, qui remplace les capteurs de mouvement et de présence trouvés dans les
-pièces de Home Assistant. Nestor suit la présence par l’API WebSocket de Home Assistant et se
-reconnecte seul.
+`presence` accepte aussi `rooms`, un capteur par personne qui donne sa pièce (Bermuda, ESPresense).
 
 ## Serveurs MCP
 
-Tout serveur qui parle le [Model Context Protocol](https://modelcontextprotocol.io) ajoute ses
-outils à l’agent. Chacun est une entrée de `tools` :
+Chaque serveur [Model Context Protocol](https://modelcontextprotocol.io) de `tools` ajoute ses
+outils à l’agent :
 
 ```yaml
 tools:
@@ -67,32 +58,24 @@ tools:
     include: [search_issues, create_issue]
 ```
 
-- `include` et `exclude` choisissent les outils du serveur que voit l’agent ; tous par défaut.
-- `risks` fixe le risque d’un outil par son nom (`read`, `write` ou `sensitive`), par-dessus ce que
-  déclare le serveur.
-- `headers` ajoute des en-têtes HTTP, gardés secrets comme le jeton ; `timeout_s` (10) borne chaque
-  appel.
+- `include` ou `exclude` filtre ses outils.
+- `risks` remplace le risque d’un outil : `read`, `write` ou `sensitive`.
+- `headers` ajoute des en-têtes HTTP, gardés secrets comme le jeton.
 
 ## Courrier et veilles
 
-Les boîtes mail se branchent depuis l’administration, pas dans le fichier : ouvrez **Connexions**.
+Branchez les boîtes mail dans l’administration, sous **Connexions**, en lecture seule : Gmail, par
+votre propre application OAuth Google (l’administration vous guide), ou toute boîte IMAP avec un mot
+de passe d’application.
 
-- **Gmail**, en lecture seule. Chaque foyer déclare sa propre application OAuth chez Google :
-  l’administration affiche l’URI de redirection à déclarer chez Google, puis demande son identifiant
-  et son secret, une fois. Ensuite, brancher un compte revient à se connecter avec Google.
-- **Toute boîte IMAP**, en lecture seule, avec son serveur et un mot de passe d’application.
-
-Une fois une boîte branchée, l’agent peut y chercher et y lire, et vous pouvez demander une
-**veille** : « préviens-moi quand le plombier répond », « guette le colis de Lyon ». Chaque nouveau
-message est trié par un modèle face aux veilles ouvertes (`watches.model`, celui de l’écrit par
-défaut). Une correspondance est annoncée à la personne qui l’a demandée, là où elle est ; pendant
-les heures calmes, elle est écrite plutôt que dite, sauf si elle est urgente.
+Demandez ensuite une **veille** : « préviens-moi quand le plombier répond ». Un modèle
+(`watches.model`) trie chaque nouveau message face aux veilles ouvertes et prévient la personne qui
+l’a demandée, là où elle est. Pendant les heures calmes, il écrit, sauf urgence.
 
 ## Tâches longues
 
-L’agent reste rapide : ce qui prend des minutes est confié à un **exécutant**, un autre agent qui
-travaille en arrière-plan et rend compte. Nestor suit la tâche dans son journal et prévient la
-personne quand elle est faite. Hermes est l’exécutant disponible aujourd’hui :
+Ce qui prend des minutes va à un **exécutant**, un agent qui travaille en arrière-plan. Nestor suit
+la tâche et prévient la personne quand elle est faite. Hermes est disponible aujourd’hui :
 
 ```yaml
 executors:
@@ -103,5 +86,4 @@ executors:
     description: Searches the web and writes a short report. No access to the house.
 ```
 
-`model` est le profil d’agent de Hermes. `description` dit à l’agent ce que cet exécutant peut
-vraiment faire, pour qu’il ne lui confie que ce qui lui convient.
+`model` est le profil d’agent de Hermes. `description` dit à l’agent quoi lui confier.

@@ -5,20 +5,19 @@ description: Write a satellite in Python with nestor-satellite, or run its comma
 ---
 
 [`nestor-satellite`](https://pypi.org/project/nestor-satellite/) handles pairing, the token, the
-manifest, the WebSocket link and text. Audio over WebRTC is the `voice` extra: a device that only
-writes installs none of it. It does not depend on the Nestor server. Python 3.12 or later.
+manifest, the link and text, on Python 3.12 or later. Audio is the `voice` extra; a device that
+only writes skips it.
 
 ```bash
 pip install 'nestor-satellite[voice,sounddevice]'   # voice: WebRTC audio; sounddevice: the machine's microphone and speaker
 pip install nestor-satellite                        # a device that only writes
 ```
 
-The `qr` extra adds QR code reading (ZXing-C++), for a device with a camera.
+The `qr` extra reads QR codes from a camera.
 
 ## A minimal driver
 
-A speaker with a microphone, a light and a text output, paired the first time, connected from then
-on:
+A speaker with a microphone, a light and a text output:
 
 ```python
 import asyncio
@@ -51,15 +50,13 @@ satellite = Satellite(
 asyncio.run(satellite.run())  # pairs the first time, then stays connected and reconnects
 ```
 
-With no enrollment code, it asks for a device code and says it on its speaker, digit by digit,
-twice, with recorded clips shipped in the package (offline, English or French), and logs it. Type
-it in the admin. With `NESTOR_PAIRING_URI` set, it pairs at once.
+Without an enrollment code, it says a device code on its speaker and logs it: type it in the admin.
 
 ## Text and audio
 
-The manifest lists the device and what its body and sensors do (`EXPRESSION`, `IDENTIFY`,
-`HEAD_MOTION`, `PERSON_DETECTION`, `SPEECH_ACTIVITY`). The text and audio capabilities follow from
-what you give the satellite. Declaring one of them in the manifest raises `ValueError`.
+The manifest lists the body and sensors (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`,
+`PERSON_DETECTION`, `SPEECH_ACTIVITY`). Text and audio follow from the arguments; declaring them in
+the manifest raises `ValueError`.
 
 | Argument                                    | Declares         |
 | ------------------------------------------- | ---------------- |
@@ -68,22 +65,16 @@ what you give the satellite. Declaring one of them in the manifest raises `Value
 | `source=` an `AudioSource` (`Microphone()`) | `audio.capture`  |
 | `sink=` an `AudioSink` (`Speaker()`)        | `audio.playback` |
 
-- `satellite.send_text("…")` sends what a person typed, 1 to 4,000 characters, as a turn of the
-  room’s conversation. It returns `False` while the link is down (nothing is queued), and raises
-  `CapabilityNotAllowed` when `text.input` was not given or the household did not allow it.
-- An answer can come in several messages (the assistant says it is looking, then gives the result);
-  `final` marks the last one of a turn. A typed turn is answered in writing when the device shows
-  text, aloud otherwise.
-- `source` and `sink` need the `voice` extra. The satellite offers WebRTC only once the core has
-  allowed audio; until then, and on a device without audio, everything goes through the link.
-  `ice_servers=` (STUN or TURN URLs) is only needed beyond the local network.
-- The link closes for good when a newer link of the same device replaces it (`4409`): `run` returns.
-  A refused token (`4401`) is forgotten and the device pairs again; any other close reconnects,
-  waiting longer each time.
+- `satellite.send_text("…")` sends 1 to 4,000 typed characters. It returns `False` while the link
+  is down, and raises `CapabilityNotAllowed` if the household did not allow `text.input`.
+- `final` marks the last message of an answer.
+- `ice_servers=` (STUN or TURN URLs) is needed only beyond the local network.
+- `run` returns when a newer link of the same device replaces this one. Otherwise it reconnects,
+  or pairs again if its token is refused.
 
 ## Pairing options
 
-The manifest’s pairing methods follow from what you pass; you never list them by hand.
+Pairing methods follow from the arguments.
 
 | Argument                                                                  | Declares                  |
 | ------------------------------------------------------------------------- | ------------------------- |
@@ -93,23 +84,17 @@ The manifest’s pairing methods follow from what you pass; you never list them 
 | `enrolls_by=[PairingMethod.INPUT]`                                        | `enrollment.input`        |
 | `camera=AvCamera(…)`                                                      | `enrollment.qr`           |
 
-- `enrollment=` takes a pairing URI or an enrollment code; by default it is read from
-  `NESTOR_PAIRING_URI`, else `NESTOR_PAIRING_CODE`. With a pairing URI, the core’s address may be
-  `None`.
-- A device with neither a screen nor a speaker only logs its device code.
-- A code typed on the device while it waits: `await satellite.enroll("K7QF-2M9X")` returns
-  `ACCEPTED`, `REFUSED` (never sent again, even after a restart), `NOT_PENDING` (the device code
-  won) or `INVALID`.
-- `locale="fr"` sets the language it speaks to people (default: the environment’s).
-- Failures that waiting cannot fix (a core speaking another protocol version, a request it
-  rejects) stop `run` with `PairingFailed`, said on every output. A core that is down is retried.
-- `AvCamera("0", format="avfoundation")` reads the first camera on macOS,
-  `AvCamera("/dev/video0", format="v4l2")` on Linux (`qr` extra).
+- `enrollment=` takes a pairing URI or an enrollment code. The default reads `NESTOR_PAIRING_URI`,
+  then `NESTOR_PAIRING_CODE`.
+- `await satellite.enroll("K7QF-2M9X")` sends a code typed on the device. It returns `ACCEPTED`,
+  `REFUSED`, `NOT_PENDING` or `INVALID`. A refused code is never sent again.
+- `locale="fr"` sets the language it speaks.
+- `run` raises `PairingFailed` when retrying cannot help, such as a core on another protocol
+  version.
 
 ## The command
 
-To use this machine’s microphone and speaker as a satellite without writing code (with the `voice`
-and `sounddevice` extras):
+`nestor-satellite run` turns this machine into a satellite (`voice` and `sounddevice` extras):
 
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
@@ -121,18 +106,17 @@ nestor-satellite run --core http://nestor.local:8471 --room salon --pairing-code
 nestor-satellite run --core http://nestor.local:8471 --room bureau --text --no-voice
 ```
 
-`--text` adds writing to the voice, `--no-voice` drops the microphone and the speaker. Without a
-code, `nestor-satellite run --core http://nestor.local:8471 --room salon` says a device code (with
-`--no-voice`, it only logs it). `--camera 0` reads QR codes (with the `qr` extra), `--lang fr`
-speaks French, `--id` sets the device id (default: the host name), `--input-device` and
-`--output-device` pick the sound card. The token is kept in `~/.config/nestor-satellite/<id>.json`
-(mode 600), with the hashes of refused codes; later runs reconnect with it.
-`nestor-satellite run --help` lists the rest.
+- `--no-voice` drops the microphone and the speaker; `--text` adds writing.
+- Without a code, it says a device code.
+- `--lang fr` speaks French. `--camera 0` reads QR codes (`qr` extra).
+
+The token is kept in `~/.config/nestor-satellite/<id>.json`. `nestor-satellite run --help` lists
+the rest.
 
 ## Going further
 
-- The source, its tests and the voice clips' licence (CC BY 4.0):
+- The source and the voice clips' licence:
   [nestor-satellite-python](https://github.com/nestor-home/nestor-satellite-python).
-- A complete driver built on it: [nestor-reachy](https://github.com/nestor-home/nestor-reachy).
-- The messages and close codes: [Protocol](/docs/satellites/protocol/).
+- A complete driver: [nestor-reachy](https://github.com/nestor-home/nestor-reachy).
+- Messages and close codes: [Protocol](/docs/satellites/protocol/).
 - Check yours: [Conformance](/docs/satellites/conformance/).

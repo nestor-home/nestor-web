@@ -1,30 +1,24 @@
 ---
 title: Modèles
-description: Le modèle de langage avec lequel pense l’agent, hébergé ou local ; plusieurs modèles pour des rôles différents ; et la recherche par le sens pour sa mémoire.
+description: Le modèle de langage avec lequel pense l’agent, hébergé ou local, un par rôle si vous voulez, et la recherche par le sens pour sa mémoire.
 ---
 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-L’agent pense avec un modèle de langage que vous choisissez. Nestor parle à tout serveur qui expose
-l’API Chat Completions d’OpenAI, en streaming : un fournisseur hébergé, ou un serveur sur votre
-propre machine. Choisissez un modèle qui gère les appels d’outils : c’est par eux que l’agent agit.
+L’agent pense avec un modèle de langage de votre choix, hébergé ou local, par l’API Chat
+Completions d’OpenAI. Choisissez-en un qui gère les appels d’outils.
 
 ## Choisir un fournisseur
 
-Chaque modèle est un profil sous `models`, avec un nom que vous choisissez. `nestor init` en écrit
-un, `main`. Pour changer de fournisseur, remplacez son bloc par l’un de ceux ci-dessous, puis lancez
-`nestor check`.
-
-La clé va dans `.env`, en `MODEL_API_KEY`, quel que soit le fournisseur. Les serveurs locaux n’en
-demandent pas : laissez-la vide. L’adaptateur est testé avec OpenRouter ; les autres parlent la même
-API et devraient fonctionner.
+`nestor init` écrit un profil sous `models`, nommé `main`. Pour changer de fournisseur,
+remplacez-le par un bloc ci-dessous et lancez `nestor check`. La clé va dans `.env`, en
+`MODEL_API_KEY` ; les serveurs locaux n’en demandent pas.
 
 <Providers kind="model" locale="fr">
 <ProviderSetup kind="model" brand="openrouter">
 
-Une seule clé pour les modèles de nombreux éditeurs, Claude et Gemini compris. C’est le choix par
-défaut, et celui avec lequel l’adaptateur est testé.
+Une seule clé pour les modèles de nombreux éditeurs. Le choix par défaut, et le fournisseur testé.
 
 ```ini
 MODEL_API_KEY=sk-or-...
@@ -90,7 +84,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="gemini">
 
-Par le point d’accès compatible OpenAI de Google.
+Le point d’accès compatible OpenAI de Google.
 
 ```ini
 MODEL_API_KEY=...
@@ -108,8 +102,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-Par la couche de compatibilité OpenAI d’Anthropic, réservée par Anthropic aux essais, pas à la
-production. OpenRouter est la voie testée vers Claude.
+Anthropic réserve cette couche aux essais, pas à la production. OpenRouter est la voie testée vers Claude.
 
 ```ini
 MODEL_API_KEY=sk-ant-...
@@ -127,7 +120,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="ollama">
 
-Pas de clé : laissez `MODEL_API_KEY` vide. `model` est un modèle que le serveur a téléchargé.
+`model` est un modèle que le serveur a téléchargé.
 
 ```yaml
 models:
@@ -140,8 +133,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="lm-studio">
 
-Démarrez le serveur de LM Studio. Pas de clé : laissez `MODEL_API_KEY` vide. `model` est l’identifiant que LM Studio affiche
-pour le modèle chargé.
+Démarrez le serveur de LM Studio. `model` est l’identifiant du modèle chargé.
 
 ```yaml
 models:
@@ -154,8 +146,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="vllm">
 
-Laissez `MODEL_API_KEY` vide, sauf si vous avez lancé vLLM avec `--api-key`. `model` est le nom
-que vLLM sert.
+Une clé seulement si vLLM tourne avec `--api-key`.
 
 ```yaml
 models:
@@ -168,7 +159,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="llama-cpp">
 
-Pas de clé : laissez `MODEL_API_KEY` vide. `llama-server` sert le seul modèle qu’il a chargé, quoi que dise `model`.
+`llama-server` sert le modèle qu’il a chargé, quoi que dise `model`.
 
 ```yaml
 models:
@@ -181,31 +172,26 @@ models:
 </ProviderSetup>
 </Providers>
 
-Les noms de modèles sont des exemples : tout modèle du catalogue du fournisseur qui gère les appels
-d’outils convient, et tout autre hébergeur compatible OpenAI se règle de la même façon. Sur la
-plupart des machines domestiques, un modèle local répond plus lentement qu’un modèle hébergé, et
-c’est la voix qui le ressent en premier.
+Tout modèle qui gère les appels d’outils convient. Un modèle local répond plus lentement, et la
+voix le ressent en premier.
 
-Avec Docker, `localhost` désigne le conteneur lui-même. Un serveur de modèle qui tourne sur l’hôte
-est à l’adresse `http://host.docker.internal:<port>/v1` : `http://host.docker.internal:11434/v1`
-pour Ollama, `http://host.docker.internal:1234/v1` pour LM Studio. Sous Linux, cette adresse n’est
-pas la boucle locale de l’hôte : le serveur de modèle doit donc écouter au-delà
-(`OLLAMA_HOST=0.0.0.0` pour Ollama, `--host 0.0.0.0` pour llama.cpp).
+Avec Docker, un serveur de modèle sur l’hôte est à `http://host.docker.internal:<port>/v1`. Sous
+Linux, faites-le écouter sur toutes les interfaces : `OLLAMA_HOST=0.0.0.0` pour Ollama,
+`--host 0.0.0.0` pour llama.cpp.
 
 ## Rôles
 
-Avec un seul modèle, il fait tout. Avec plusieurs, chaque rôle dit lequel utiliser, par son nom dans
-`models` :
+Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
 
-| Rôle                   | Ce qu’il fait                                                   | Sans réglage           |
-| ---------------------- | --------------------------------------------------------------- | ---------------------- |
-| `agent.spoken`         | répond à voix haute : les premiers mots doivent venir vite       | `agent.written`        |
-| `agent.written`        | répond par écrit, où quelques secondes ne gênent pas             | `agent.spoken`         |
-| `agent.background`     | travaille sur un réveil qu’il a programmé, sans personne qui attend | `agent.written`     |
-| `watches.model`        | trie le courrier entrant pour les veilles                        | `agent.written`        |
-| `memory.consolidation` | résume chaque conversation une fois terminée                     | `agent.background`     |
+| Rôle                   | Ce qu’il fait                                                        | Sans réglage       |
+| ---------------------- | -------------------------------------------------------------------- | ------------------ |
+| `agent.spoken`         | répond à voix haute : les premiers mots doivent venir vite           | `agent.written`    |
+| `agent.written`        | répond par écrit, où quelques secondes ne gênent pas                 | `agent.spoken`     |
+| `agent.background`     | travaille sur un réveil qu’il a programmé, sans personne qui attend  | `agent.written`    |
+| `watches.model`        | trie le courrier entrant pour les veilles                            | `agent.written`    |
+| `memory.consolidation` | résume chaque conversation une fois terminée                         | `agent.background` |
 
-Par exemple, un modèle rapide pour la voix et un plus solide pour tout le reste :
+Un modèle rapide pour la voix, un plus solide pour le reste :
 
 ```yaml
 models:
@@ -225,13 +211,10 @@ agent:
   written: deep
 ```
 
-Les profils peuvent viser des fournisseurs différents, chacun avec sa clé dans `.env`.
-
 ## Recherche par le sens
 
-Nestor retrouve souvenirs et conversations passées par leurs mots. Avec un modèle d’embedding, il
-les retrouve aussi par le sens : « que mange Léa ? » trouve alors « Léa est végétarienne ». Ajoutez
-un profil d’embedding et nommez-le dans `memory.embedder` :
+Un modèle d’embedding permet à Nestor de retrouver ses souvenirs par le sens : « que mange
+Léa ? » trouve « Léa est végétarienne ». Nommez un profil d’embedding dans `memory.embedder` :
 
 ```yaml
 models:
@@ -246,17 +229,14 @@ memory:
   embedder: vectors
 ```
 
-Tout serveur qui expose un point `/embeddings` compatible OpenAI convient, `llama-server
---embeddings` de llama.cpp compris. `dimensions` est la taille des vecteurs qu’il renvoie.
-`query_prefix` et `document_prefix` ajoutent le texte que certains modèles attendent devant une
-question ou un document. Changer de modèle plus tard réindexe tout, en tâche de fond.
-[Mémoire](/fr/docs/agent/memory/) montre comment les deux recherches se combinent.
+Tout point `/embeddings` compatible OpenAI convient. `dimensions` est la taille des vecteurs.
+Pour un modèle qui attend un préfixe (`query: `), réglez `query_prefix` et `document_prefix`. Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/memory/).
 
 ## Réglages
 
 Un profil de conversation accepte aussi :
 
-- `extra_body`, fusionné dans chaque requête : routage d’OpenRouter, réglages de raisonnement… ;
-- `connect_timeout_s` (5) et `read_timeout_s` (30), en secondes ;
-- `cache_control`, qui marque la partie stable des consignes pour le cache de prompt du
-  fournisseur. Actif par défaut pour OpenRouter et Anthropic.
+- `extra_body`, fusionné dans chaque requête (routage, raisonnement) ;
+- `read_timeout_s`, en secondes (30) ;
+- `cache_control`, pour le cache de prompt du fournisseur, actif par défaut pour OpenRouter et
+  Anthropic.

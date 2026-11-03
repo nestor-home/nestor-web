@@ -6,17 +6,15 @@ description: How people reach Nestor, on Telegram or through satellites, and how
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-People reach Nestor through channels. Each channel is an entry of `channels`; several run side by
-side, and they share one agent and one memory: a question asked aloud in the kitchen can be
-followed up on Telegram. `nestor init` writes the satellites, with their voice when the `voice`
-extra is installed, and Telegram otherwise.
+People reach Nestor through `channels`. All share one agent and one memory: a question asked in the
+kitchen can go on over Telegram.
 
 ## Choose channels
 
 <Providers kind="channel" locale="en">
 <ProviderSetup kind="channel" brand="telegram">
 
-Create a bot with Telegram’s [@BotFather](https://t.me/BotFather) and put its token in `.env`:
+Create a bot with [@BotFather](https://t.me/BotFather) and put its token in `.env`:
 
 ```ini
 TELEGRAM_BOT_TOKEN=123456:ABC-...
@@ -28,14 +26,13 @@ channels:
     token: ${TELEGRAM_BOT_TOKEN}
 ```
 
-Then add `"telegram:<your user id>"` to your `accounts` in `household` so the bot knows you. To
-find your id, write to the bot: it ignores strangers, and the server’s log prints the id of the
-message it ignored. The bot reads text messages; voice notes and pictures are ignored.
+Add `"telegram:<your user id>"` to your `accounts` in `household`. To find the id, write to the bot:
+the server’s log prints the id of each stranger it ignores. The bot reads text only.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
 
-Devices people type on, talk to, or both. In writing, nothing more is needed:
+Devices people type on, talk to, or both. In writing:
 
 ```yaml
 channels:
@@ -43,7 +40,7 @@ channels:
     host: 0.0.0.0
 ```
 
-To talk to them too, add a `voice` (see [Voice](#voice) below):
+Aloud, add a [voice](#voice):
 
 ```yaml
 channels:
@@ -55,24 +52,21 @@ channels:
         voice_id: GPAQQPp9dazaB2bl4zg9
 ```
 
-`host: 0.0.0.0` lets satellites on your network reach the server, on port 8471 (set by `port`);
-then pair them as [Satellites](/docs/satellites/) explains. Each satellite talks in the room it was
-paired in. Add `"satellites:*"` to the `accounts` of the person who uses them.
+`host: 0.0.0.0` opens port 8471 to your network. Then [pair them](/docs/satellites/) and add
+`"satellites:*"` to their user’s `accounts`.
 
 </ProviderSetup>
 </Providers>
 
 ## Voice
 
-A satellite with a microphone and a speaker can talk with Nestor aloud. The server then transcribes
-what the person says and speaks the answer. This needs the `voice` extra: `nestor-home[voice]` (see
-[Installation](/docs/install/)); the Docker image has it. A configuration with a voice but without
-the extra stops at start and names the command to run.
+Talking aloud needs the `voice` extra, `nestor-home[voice]` ([Installation](/docs/install/)). The
+Docker image has it.
 
 <Providers kind="speech" locale="en">
 <ProviderSetup kind="speech" brand="elevenlabs">
 
-Scribe v2 Realtime transcribes, v4 Turbo speaks; one key covers both.
+One key covers transcription (Scribe v2 Realtime) and speech (v4 Turbo).
 
 ```ini
 ELEVENLABS_API_KEY=sk_...
@@ -88,24 +82,19 @@ channels:
         voice_id: GPAQQPp9dazaB2bl4zg9
 ```
 
-`voice_id` is any voice of your ElevenLabs library. The voice follows the language of the text;
-the transcription listens for English unless `speech` sets another `language`.
+`voice_id` is any voice of your library. Transcription expects English unless `speech` sets
+`language`.
 
 </ProviderSetup>
 </Providers>
 
-A new speech provider ships once it holds up on reproducible measurements: latency, the end of a
-turn, interruptions.
-
 The `voice` block also takes:
 
-- `style`: how the assistant writes for this voice, for instance the expression tags it performs;
-- `quiet_s` (0.5): the silence, in seconds, before an unprompted message is spoken;
+- `style`: how the assistant writes for this voice, such as its expression tags;
 - `fallback_clips`: a folder with `stt.wav` and `tts.wav`, played when the speech service is down.
 
 ## When a conversation ends
 
-Each turn belongs to a conversation. Past a silence, the conversation is over: the next message
-starts a new one, and the finished one is summarized into the
-[memory](/docs/agent/memory/). The silence depends on the medium: 5 minutes aloud, 4 hours in
-writing. Each channel can set its own with `conversation_ends_after_s`.
+After a silence, the next message starts a new conversation and the last one goes to
+[memory](/docs/agent/memory/). The silence is 5 minutes aloud, 4 hours in writing; set
+`conversation_ends_after_s` per channel to change it.

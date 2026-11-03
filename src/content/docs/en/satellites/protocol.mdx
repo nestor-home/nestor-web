@@ -7,45 +7,35 @@ description: The standard every satellite implements, whatever its language.
 import PairingFlow from "@/components/docs/diagrams/PairingFlow.astro";
 import PairingStates from "@/components/docs/diagrams/PairingStates.astro";
 
-A **satellite** is a device that pairs with a Nestor server (the **core**), declares what it can
-do, talks with the assistant in writing, aloud or both, reports observations and carries out the
-core’s intents. This page is the
-standard: SDKs and drivers in any language implement it, and the core’s black-box
-[conformance suite](/docs/satellites/conformance/) checks them against it. This is version 1
-(see the [changelog](#12-changelog)).
+This is the standard every satellite implements, version 1 ([changelog](#12-changelog)). The core’s
+black-box [conformance suite](/docs/satellites/conformance/) checks SDKs and drivers against it.
 
-The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in
-[RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
+A **satellite** is a device paired with a Nestor server (the **core**). It talks with the assistant
+in writing, aloud or both, reports observations and carries out the core’s intents.
 
-The core’s message classes (`nestor.modules.satellites.wire`) define the shapes of the messages.
-The JSON Schemas they generate are served at
-`https://nestorhome.dev/schemas/satellite/1/<message>.json` (see [Schemas](/docs/satellites/schemas/));
-SDKs keep a copy and test what they send against it.
+MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are read as in
+[RFC 2119](https://www.rfc-editor.org/rfc/rfc2119). The core’s message classes
+(`nestor.modules.satellites.wire`) define each message; their JSON Schemas are served at
+`https://nestorhome.dev/schemas/satellite/1/<message>.json` ([Schemas](/docs/satellites/schemas/)).
 
 ## 1. Overview
 
 A satellite goes through three phases, in this order:
 
-1. **Pairing**, once. The device asks to pair, and a person proves they meant it: with a device code
-   the device presents, or an enrollment code given to it ([section 2](#2-pairing-methods)). The
-   core then gives the device its token, once ([section 3](#3-pairing)).
-2. **The link**, for as long as the device runs: a WebSocket opened with the token, which carries
-   every message: text, intents and their acknowledgements, observations ([section 7](#7-link)).
-3. **Audio**, only for a device allowed it: a WebRTC connection tied to the link, which carries
-   audio and nothing else ([section 9](#9-audio)).
+1. **Pairing**, once: a person proves they meant to pair the device
+   ([section 2](#2-pairing-methods)), and the core hands it a token ([section 3](#3-pairing)).
+2. **The link**, while the device runs: a WebSocket opened with the token, carrying every message
+   ([section 7](#7-link)).
+3. **Audio**, only for a device allowed it: a WebRTC connection tied to the link, carrying audio
+   only ([section 9](#9-audio)).
 
 <PairingFlow locale="en" n={1} />
 
-A device with a screen and a keyboard needs no WebRTC, no codec and no microphone.
-
 ## 2. Pairing methods
 
-The proof that a person meant to pair a device travels in either direction:
-
-- a **device code** goes from the device to the person, who types it in the admin;
-- an **enrollment code** goes from the admin to the device, which presents it to the core.
-
-The device declares the methods it supports; the person picks one. The methods are:
+The device declares the methods it supports and the person picks one. A **device code** goes from
+the device to the person, who types it in the admin. An **enrollment code** goes from the admin to
+the device, which presents it to the core.
 
 | Method                    | Proof           | The person…                                                                          |
 | ------------------------- | --------------- | ------------------------------------------------------------------------------------ |
@@ -55,17 +45,16 @@ The device declares the methods it supports; the person picks one. The methods a
 | `enrollment.provisioning` | enrollment code | sets the pairing URI or code in the device’s configuration (flag, environment, file) |
 | `enrollment.qr`           | enrollment code | shows the pairing URI’s QR code to the device’s camera                               |
 
-Identify (section 6) is not a method: it helps tell devices apart and is declared as the capability
-`device.identify`.
+Identify ([section 6](#6-identify)) is a capability, not a method.
 
 ### 2.1 Negotiation
 
 - **N1.** A manifest MUST list the methods the device supports in `pairing_methods`, at least one,
   without repetition. A device MUST NOT declare a method it cannot carry out.
-- **N2.** The core recommends one method, the first the device supports in this order:
+- **N2.** The core recommends the first method the device supports in this order:
   `device_code.display`, `device_code.speech`, `enrollment.qr`, `enrollment.input`,
   `enrollment.provisioning`. For a device that has not contacted the core yet, every method is
-  offered. The admin highlights the recommended method and keeps the others available.
+  offered. The admin highlights the recommended one and keeps the others available.
 - **N3.** The device never imposes a method. Whatever the person picks, the device MUST accept both
   proofs until one is accepted (section 3.3).
 
@@ -109,8 +98,8 @@ Errors answer `pairing.error`: `{"error": code, "detail": text, "reason"?: …, 
 | `enrollment_refused`   | 403    | the enrollment code pairs nothing; `reason` is `unknown`, `expired`, `used` or `cancelled` |
 | `not_pending`          | 409    | the pairing no longer waits for a proof: the other proof won, or it expired                |
 
-`detail` is English for logs. A device that shows or says an error to people MUST translate it from
-`error` and `reason`, never show `detail`.
+`detail` is English, for logs. A device that shows or says an error MUST translate it from `error`
+and `reason`, never show `detail`.
 
 ### 3.2 States of a pairing
 
@@ -118,47 +107,43 @@ Errors answer `pairing.error`: `{"error": code, "detail": text, "reason"?: …, 
 
 - A pending pairing lasts 10 minutes. An unknown, superseded or forgotten `pairing_id` reads as
   `expired`, so polling reveals nothing.
-- The token is handed out with the first `approved` answer only; later polls read `claimed`.
+- Only the first `approved` answer carries the token; later polls read `claimed`.
 
 ### 3.3 Device rules
 
-- **P1.** A device MUST support `enrollment.provisioning`: it reads a pairing URI from the environment
-  variable `NESTOR_PAIRING_URI`, or an enrollment code from `NESTOR_PAIRING_CODE` with the core’s
-  address given separately, and SHOULD accept both from a command-line flag and its configuration
-  file.
-- **P2.** With no enrollment code, a device MUST request a pairing and present its device code through
-  every output it has: on a screen (`device_code.display`), aloud (`device_code.speech`: a short
-  sentence, then the digits one by one with a pause between them, the whole said twice, in the
-  device’s language, without needing the network), and always in its log. A device with neither screen
-  nor voice MUST log the device code and say, in the log, that an enrollment code is the way to pair
-  it. It then polls the pairing about once a second until it is approved or expires; when it
-  expires, it requests again.
-- **P3.** A device with an enrollment code MUST send it with its request, with the method it received
-  it by, and MUST NOT present a device code unless that code is refused.
+- **P1.** A device MUST support `enrollment.provisioning`: it reads a pairing URI from
+  `NESTOR_PAIRING_URI`, or an enrollment code from `NESTOR_PAIRING_CODE` with the core’s address
+  given separately. It SHOULD also accept both from a command-line flag and its configuration file.
+- **P2.** With no enrollment code, a device MUST request a pairing and present its device code on
+  every output it has: on a screen (`device_code.display`), aloud, and always in its log. Aloud
+  (`device_code.speech`) is a short sentence, then the digits one by one with a pause between them,
+  the whole said twice, in the device’s language, without the network. A device with neither
+  screen nor voice MUST log the device code and that an enrollment code pairs it. The device polls
+  about once a second until the pairing is approved or expires, and requests again on expiry.
+- **P3.** A device with an enrollment code MUST send it in its request, with the method it received
+  it by. It MUST NOT present a device code unless that code is refused.
 - **P4.** A pending device MUST accept an enrollment code at any time (typed, scanned, configured) and
-  send it to `POST …/{pairing_id}/enrollment`. Whichever proof is accepted first wins:
+  send it to `POST …/{pairing_id}/enrollment`. The first proof accepted wins:
   - if the device code was typed first, the enrollment answers `not_pending` and the enrollment code
     is **not** spent: the device keeps polling and gets its token;
   - if the enrollment code was accepted first, the device code typed afterwards is refused.
     On `approved`, the device stops presenting its device code at once (a voice falls silent).
 - **P5.** An enrollment code refused with `enrollment_refused` MUST NOT be presented again, even after
-  the device restarts: it keeps the refused codes with its token (a hash of each is enough). The device
-  MUST say so in its log (and on its outputs, translated), then fall back to a device code (P2) so a
-  person can still pair it.
+  a restart: the device keeps the refused codes with its token (a hash of each is enough). It MUST
+  say so in its log (and on its outputs, translated), then fall back to a device code (P2).
 - **P6.** On `429`, a device MUST wait at least `Retry-After` seconds before trying again.
-- **P7.** Enrollment codes MUST be normalised before they are sent (section 4.2); a device MAY send
-  them as typed, the core normalises too.
-- **P8.** A device MUST keep its token secret (readable by its owner only on a file system) and forget
-  it when the core refuses it (the link closed with `4401`, or `401` on an audio offer), then pair
-  again.
+- **P7.** Enrollment codes MUST be normalised before they are sent (section 4.2). A device MAY send
+  them as typed: the core normalises too.
+- **P8.** A device MUST keep its token secret (readable by its owner only on a file system), forget
+  it when the core refuses it (link closed with `4401`, or `401` on an audio offer), then pair again.
 
 ### 3.4 Core rules
 
 - **C1.** The core accepts only `nestor.satellite/1`. A manifest naming another
   `nestor.satellite/<n>` is refused with `protocol_unsupported`.
-- **C2.** An enrollment code pairs one device: it is spent as soon as it is accepted, before anything
-  else can observe it, so two devices racing with it get one approval and one `enrollment_refused`
-  (`used`).
+- **C2.** An enrollment code pairs one device. It is spent as soon as it is accepted, before anything
+  else can observe it: of two devices racing with it, one is approved and one gets
+  `enrollment_refused` (`used`).
 - **C3.** A proof is accepted only while its pairing is `pending`; the first one accepted moves it to
   `approved` at once. An enrollment code refused because the pairing is no longer pending is not
   spent.
@@ -171,28 +156,24 @@ Errors answer `pairing.error`: `{"error": code, "detail": text, "reason"?: …, 
 
 ### 3.5 Additions
 
-A person adds a satellite from the admin by starting an **addition**: the method chosen, and
-optionally a name, a room and the capabilities to allow at most. It lasts 15 minutes by default (1
-minute to 7 days).
+An **addition** is how a person adds a satellite from the admin: a method, and optionally a name, a
+room and the most capabilities to allow. It lasts 15 minutes by default (1 minute to 7 days).
 
 - With an enrollment method, the addition makes the enrollment code, returned once with its pairing
-  URI. The device that presents it is paired at once, with the addition’s name and room, and the
-  capabilities it declared are narrowed to the addition’s.
-- With a device code method, the addition waits for a device: the admin lists the pending devices,
-  the person tells them apart (identify), types the code the right one presents, and the addition’s
-  name, room and capabilities apply.
+  URI. The device that presents it is paired at once, with the addition’s name and room, its
+  declared capabilities narrowed to the addition’s.
+- With a device code method, the admin lists the pending devices. The person tells them apart
+  (identify) and types the right one’s code; the addition’s name, room and capabilities apply.
 
-An addition ends when its device is paired (`completed`), when a person cancels it, or when it
-expires. At most 32 are in progress at once. An addition pairs one device: the core claims it in one
-step, so two people typing codes for it at the same instant pair one device, and the other is told
-the addition is over.
+An addition ends when its device is paired (`completed`), is cancelled, or expires. At most 32 run at
+once. The core claims an addition in one step: if two people type codes for it at the same instant,
+one device pairs and the other person is told the addition is over.
 
 ## 4. Codes and URI
 
 ### 4.1 Device code
 
-Six decimal digits (`042917`), random, unique among pending pairings. Digits are easy to read aloud and on
-any screen.
+Six random decimal digits (`042917`), unique among pending pairings.
 
 ### 4.2 Enrollment code
 
@@ -209,12 +190,9 @@ nestor+http://nestor.local:8471/?code=K7QF2M9X
 nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 ```
 
-- The scheme is `nestor+` followed by the scheme of the core’s base URL (`http` or `https`); host,
-  port and path are the core’s base URL. Removing `nestor+` and the query gives the base URL.
+- The scheme is `nestor+` followed by the scheme of the core’s base URL (`http` or `https`). Removing
+  `nestor+` and the query gives the base URL.
 - `code` is the enrollment code, canonical form.
-- Why this form: the core’s address and the code travel together, so a headless device needs nothing
-  else; the transport (TLS or not) is explicit; any URL parser reads it; the prefix tells a scanner or
-  a configuration loader what it holds, as `git+https` does.
 - The admin returns the URI; a front renders its QR code itself.
 
 ## 5. Manifest
@@ -230,8 +208,7 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 ```
 
 `id` and `room` are lowercase slugs (`^[a-z0-9][a-z0-9_-]{0,63}$`). Capabilities are `family.feature`
-names, at most 32, each declared once. The manifest is sent when pairing and in `hello`. Known
-capabilities:
+names, at most 32, each declared once. The manifest is sent when pairing and in `hello`.
 
 | Capability                | The device…                                    |
 | ------------------------- | ---------------------------------------------- |
@@ -245,9 +222,8 @@ capabilities:
 | `motion.head`             | moves with the assistant’s speech              |
 | `device.identify`         | makes itself noticed on request (section 6)    |
 
-A device talks with the assistant in writing (`text.*`), aloud (`audio.*`) or both: it declares what
-it has, and the household allows what it wants. A device with neither is a sensor or a body: it
-reports observations and carries out intents.
+A device with neither `text.*` nor `audio.*` is a sensor or a body: it only reports observations and
+carries out intents.
 
 ## 6. Identify
 
@@ -258,19 +234,17 @@ reports observations and carries out intents.
   intent, and make itself noticed the same way.
 - **I3.** The core sends identify only to a device that declared it (pending) or was allowed it
   (paired). The admin refuses it otherwise, and for a paired device that is not connected.
-- Identify only helps a person tell devices apart. It proves nothing: any device can blink when told
-  to, so it never replaces a code.
+- Identify only helps a person tell devices apart. It proves nothing and never replaces a code.
 
 ## 7. Link
 
 - **L1.** With its token, the device opens a WebSocket on `/satellites/{device_id}/link`, under the
   core’s base URL (`ws://` for `http`, `wss://` for `https`). Its first message MUST be `hello`: its
   manifest, with the paired device id, and its token. The core answers `welcome`: the paired room
-  and the capabilities allowed. The token travels in `hello` rather than in a header because
-  browsers cannot set headers on a WebSocket.
+  and the capabilities allowed.
 - **L2.** The core closes the link without a `welcome` when `hello` is late (10 s), off-contract or
-  for another device (`4400`), or when the token is refused (`4401`). A device whose link closes with
-  `4401` MUST forget its token and pair again (P8).
+  for another device (`4400`), or when the token is refused (`4401`). On `4401` the device MUST
+  forget its token and pair again (P8).
 - **L3.** Every message is `{"type", "id", "at", "payload"}`, one per WebSocket text frame. The device
   MUST acknowledge each `intent.*` with `ack` within a second, and MUST only send what it was
   allowed: observations, `input.text` (section 8). Unknown message types from the core are ignored.
@@ -291,16 +265,16 @@ reports observations and carries out intents.
 ## 8. Text
 
 - **T1.** A device allowed `text.input` sends what a person typed as `input.text`. Each one is a turn
-  of the conversation of the device’s room.
-- **T2.** A device allowed `text.display` receives the assistant’s words as `intent.text`, one
-  message each, in order, and shows them. An answer may come in several messages (the assistant
-  says it is looking something up, then gives the result); `final` marks the last one of a turn. An
-  unprompted message (a reminder, an announcement) is one `intent.text`, `final` set.
+  in the conversation of the device’s room.
+- **T2.** A device allowed `text.display` receives the assistant’s words as `intent.text`, in order,
+  and shows them. An answer may take several messages (a progress note, then the result); `final`
+  marks the last one of a turn. An unprompted message (a reminder, an announcement) is one
+  `intent.text` with `final` set.
 - **T3.** A typed turn is answered in writing when the device was allowed `text.display`, otherwise
   aloud. A spoken turn is answered aloud; a device also allowed `text.display` shows the same words
   as they are said.
-- **T4.** `input.text` holds 1 to 4,000 characters, `intent.text` up to 16,000. Text is plain: no
-  Markdown, which a written answer for a screen avoids.
+- **T4.** `input.text` holds 1 to 4,000 characters, `intent.text` up to 16,000. Text is plain, without
+  Markdown.
 
 ## 9. Audio
 
@@ -314,38 +288,31 @@ reports observations and carries out intents.
 - **A3.** The audio lives with the link: when the link closes, the core hangs up the audio. While the
   link is up, a device whose audio fails offers again, waiting longer between attempts.
 - **A4.** A device opens its microphone only for this connection. Pairing and the link never wait for
-  it: a browser may be waiting for a person to allow the microphone.
+  it, since a browser may be waiting for a person to allow the microphone.
 
 ## 10. Security considerations
 
-- **Entropy.** An enrollment code has 40 bits (about 1.1 × 10¹² values). With at most 32 codes in
-  progress and at most 5 wrong codes per minute and address (20 from all addresses), the 300 guesses
-  that fit in a 15-minute lifetime hit one about once in 10⁸; finding one takes about 1,600 years of
-  guessing on average. A device code has 20 bits but is only typed by a signed-in person, on a pending
-  pairing they picked (`pairing_id`), within 10 minutes.
+- **Entropy.** An enrollment code has 40 bits. With at most 32 codes in progress and 5 wrong codes
+  per minute and address (20 from all addresses), the 300 guesses of a 15-minute lifetime hit a
+  code about once in 10⁸. A device code has 20 bits, but only a signed-in person types it, on a
+  pending pairing they picked, within 10 minutes.
 - **Lifetime.** Enrollment codes last 15 minutes by default, 7 days at most; device codes 10 minutes.
-- **Single use.** An accepted enrollment code is spent before the answer is written (C2).
-- **Rate limits.** Wrong enrollment codes are counted per client address and overall over a sliding
-  minute. Past either limit, every attempt, right or wrong, is refused with `429` until the window
-  frees a slot, so a limited client learns nothing.
-- **Hashing.** Only SHA-256 hashes of codes and tokens are stored, and journaled. A presented code is
-  compared with every known hash in constant time. 40 bits can be brute-forced offline from a leaked
-  hash, so a hash protects a code only while it is valid: keep lifetimes short.
+  An accepted enrollment code is spent at once (C2).
+- **Rate limits.** Wrong enrollment codes are counted per client address and overall, over a sliding
+  minute. Past either limit, every attempt, right or wrong, gets `429` until the window frees a
+  slot: a limited client learns nothing.
+- **Hashing.** Only SHA-256 hashes of codes and tokens are stored and journaled, and compared in
+  constant time. A leaked hash of a 40-bit code can be brute-forced offline: keep lifetimes short.
 - **Transport.** Codes and tokens cross the network in clear over `http` and `ws`; use `https` (a
   `nestor+https` URI, hence `wss`) outside a trusted home network. The core never logs `hello`’s
   token.
-- **What identify does not prove.** Identify shows which device answers, not that it is the one the
-  person holds: never pair on identify alone.
-- **Consent.** Pairing gives a device only the capabilities a person allowed, never more than it
-  declared.
+- **Identify** shows which device answers, not that it is the one the person holds: never pair on
+  identify alone.
+- **Consent.** A device gets only the capabilities a person allowed, never more than it declared.
 
 ## 11. Conformance
 
-`check_satellite(driver)` launches the driver once per scenario: a Python coroutine function taking a
-`Launch`, or a command where `{url}` is the core’s URL and `{state}` a fresh folder for its token. The
-enrollment code is given in `NESTOR_PAIRING_URI` (removed from the environment of the other
-scenarios). A driver in any language runs the suite from the command line: see
-[Conformance](/docs/satellites/conformance/).
+The [conformance suite](/docs/satellites/conformance/) checks the device rules:
 
 | Check                                                                                      | Rules  |
 | ------------------------------------------------------------------------------------------ | ------ |
@@ -365,9 +332,9 @@ scenarios). A driver in any language runs the suite from the command line: see
 | presents a refused enrollment code only once (wrong, expired, used)                        | P5     |
 | waits for Retry-After when rate-limited; pairs once the limit lifts                        | P6     |
 
-The core’s own rules (C1 to C6, the race of P4, I3, the limits) are proven by its tests
-([`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
-[`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/satellites/test_gateway.py)).
+The core’s own rules (C1 to C6, the race of P4, I3, the limits) are proven by its tests:
+[`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
+[`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/satellites/test_gateway.py).
 
 ## 12. Changelog
 

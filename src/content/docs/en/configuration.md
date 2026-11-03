@@ -4,9 +4,9 @@ title: Configuration
 description: The files Nestor reads, what each section of nestor.yaml sets, where keys go, and how a change takes effect.
 ---
 
-Everything Nestor does is set in one file, `nestor.yaml`, with its keys in a `.env` next to it.
-`nestor init` writes both; this page explains what is in them. The next pages set each part:
-[Models](/docs/models/), [Channels and voice](/docs/channels/), [Home and services](/docs/connections/).
+Nestor is set in `nestor.yaml`, with its keys in a `.env` next to it; `nestor init` writes both.
+Each part has its own page: [Models](/docs/models/), [Channels and voice](/docs/channels/),
+[Home and services](/docs/connections/).
 
 ## The files
 
@@ -16,15 +16,13 @@ Everything Nestor does is set in one file, `nestor.yaml`, with its keys in a `.e
 | `.env`        | the keys the configuration calls with `${NAME}`, readable by you only           | `nestor init`, then you          |
 | `state/`      | the database: journal, memories, accounts, paired devices, the vault of secrets | Nestor (its `data_dir`)          |
 
-`nestor` reads `nestor.yaml` in the current folder, or the file `nestor -c <file>` names, and the
-`.env` next to it at each start. A variable already set in the environment (the shell, a service
-manager, Docker) wins over the file. Back up `state/` and `.env` together: one holds the secrets,
-the other the key that opens them.
+`nestor` reads both at each start, from the current folder or the file `nestor -c <file>` names. A
+variable set in the environment wins over `.env`. Back up `state/` and `.env` together: one holds
+the secrets, the other their key.
 
 ## A first configuration
 
-This is what `nestor init` writes, without its comments, for a household of one with the
-satellites’ voice:
+`nestor init` writes this for one person with the satellites’ voice (comments removed):
 
 ```yaml
 data_dir: /home/alex/nestor/state
@@ -63,8 +61,8 @@ admin:
   port: 8470
 ```
 
-Without the voice, the `voice` block stays commented out and a `telegram` channel is added. The
-file also carries Home Assistant, commented out, ready to fill in.
+Without the voice, the `voice` block is commented out and a `telegram` channel is added. Home
+Assistant is there too, commented out.
 
 ## The sections
 
@@ -87,8 +85,7 @@ Only `persona`, `household`, `models` and `channels` are required.
 
 ## The household
 
-Each person has an `id` (used everywhere else in the file), a `name`, and the `accounts` that
-identify them on each channel:
+Each person has an `id`, a `name`, and the `accounts` that identify them:
 
 ```yaml
 household:
@@ -101,19 +98,16 @@ household:
     may_message: [alex]
 ```
 
-- `telegram:<id>` is their Telegram user id. A message from an unknown account is ignored, and the
-  server’s log prints its id.
-- `satellites:*` means anything said or typed on a satellite is taken as theirs. In a household of
-  several, give it to one person only.
-- `reach`, an address such as `telegram:123456789`, is where to write to them when speaking is not
-  right: they are away, or it is quiet hours.
-- `may_message` lists whom they may have the assistant write to: person ids, or `"*"` for everyone,
-  the default.
+- `telegram:<id>`: their Telegram user id. Messages from unknown accounts are ignored, and the
+  server’s log prints their id.
+- `satellites:*`: whatever is said or typed on a satellite is theirs. Give it to one person only.
+- `reach`: where to write to them when they are away or it is quiet hours, such as
+  `telegram:123456789`.
+- `may_message`: the person ids they may have the assistant write to; `"*"`, everyone, by default.
 
 ## Language and time
 
-Without these settings, Nestor speaks English and keeps UTC. `nestor init` sets them from your
-answers. To switch an existing configuration to French:
+By default, Nestor speaks English and keeps UTC. To switch to French:
 
 ```yaml
 persona:
@@ -130,34 +124,32 @@ channels:
 
 ## Keys and secrets
 
-A value written `${NAME}` comes from `.env` or the environment. A value written `${secret:name}`
-comes from the vault: encrypted in `state/`, set with `nestor secrets set <name>` (typed without
-echo) or from the admin, listed with `nestor secrets list`.
+`${NAME}` reads `.env` or the environment. `${secret:name}` reads the vault, encrypted in
+`state/`. Store a secret from the admin or with `nestor secrets set` (typed without echo):
 
 ```bash
 nestor secrets set openrouter   # then, in nestor.yaml: api_key: ${secret:openrouter}
 ```
 
-`.env` is simpler to start with. The vault keeps no key in clear on disk, and the admin can change
-them. `NESTOR_SECRET_KEY`, in `.env`, opens the vault: `nestor init` generates it. Never change it,
-or the secrets already stored can no longer be read.
+`.env` is simpler to start with; the vault keeps no key in clear on disk. `NESTOR_SECRET_KEY`, in
+`.env`, opens the vault: never change it, or the stored secrets become unreadable.
 
 ## The admin
 
-The admin listens on port 8470. `host: 0.0.0.0` lets other devices of the network open it at
-`http://<the machine’s address>:8470`; `127.0.0.1` keeps it to the machine itself. `public_url` is
-its address as the household’s browsers reach it, behind a reverse proxy for instance
-(`https://nestor.example.org`). Who may sign in is not in the file: accounts live in `state/`
-(`nestor init`, or `nestor accounts create-owner`).
+- `host`: `0.0.0.0` opens it to the network at `http://<the machine’s address>:8470`,
+  `127.0.0.1` keeps it to the machine.
+- `public_url`: its address behind a reverse proxy, such as `https://nestor.example.org`.
+
+Accounts live in `state/`, not in the file.
 
 ## Applying a change
 
-Nestor reads its configuration when it starts. After editing `nestor.yaml` or `.env`:
+Nestor reads its configuration at start. After a change, check it, then restart Nestor:
 
 ```bash
 nestor check   # validates the file and builds every part, without starting them
 ```
 
-Then restart Nestor. The admin’s **Configuration** page edits the same file: it checks a change
-before writing it, keeps the previous version in `state/config-history/`, sends the keys you type
-to the vault, and shows when a restart is needed.
+The admin’s **Configuration** page edits the same file. It validates each change, keeps the
+previous version in `state/config-history/`, stores typed keys in the vault, and says when to
+restart.

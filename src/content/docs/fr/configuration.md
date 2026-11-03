@@ -4,9 +4,8 @@ title: Configuration
 description: Les fichiers que lit Nestor, ce que règle chaque section de nestor.yaml, où vont les clés, et comment un changement prend effet.
 ---
 
-Tout ce que fait Nestor se règle dans un fichier, `nestor.yaml`, avec ses clés dans un `.env` posé
-à côté. `nestor init` écrit les deux ; cette page explique ce qu’ils contiennent. Les pages
-suivantes règlent chaque partie : [Modèles](/fr/docs/models/), [Canaux et voix](/fr/docs/channels/),
+Nestor se règle dans `nestor.yaml`, avec ses clés dans un `.env` posé à côté ; `nestor init` écrit
+les deux. Chaque partie a sa page : [Modèles](/fr/docs/models/), [Canaux et voix](/fr/docs/channels/),
 [Maison et services](/fr/docs/connections/).
 
 ## Les fichiers
@@ -17,15 +16,14 @@ suivantes règlent chaque partie : [Modèles](/fr/docs/models/), [Canaux et vo
 | `.env`        | les clés que la configuration appelle par `${NOM}`, lisible par vous seul                | `nestor init`, puis vous                 |
 | `state/`      | la base de données : journal, souvenirs, comptes, appareils appairés, coffre des secrets | Nestor (son `data_dir`)                  |
 
-`nestor` lit le `nestor.yaml` du dossier courant, ou le fichier que nomme `nestor -c <fichier>`,
-et le `.env` posé à côté à chaque démarrage. Une variable déjà définie dans l’environnement (le
-shell, un gestionnaire de services, Docker) l’emporte sur le fichier. Sauvegardez `state/` et
-`.env` ensemble : l’un garde les secrets, l’autre la clé qui les ouvre.
+`nestor` lit les deux à chaque démarrage, dans le dossier courant ou dans le fichier que nomme
+`nestor -c <fichier>`. Une variable définie dans l’environnement l’emporte sur `.env`. Sauvegardez
+`state/` et `.env` ensemble : l’un garde les secrets, l’autre leur clé.
 
 ## Une première configuration
 
-Voici ce qu’écrit `nestor init`, sans ses commentaires, pour un foyer d’une personne avec la voix
-des satellites :
+Voici ce qu’écrit `nestor init` pour une personne avec la voix des satellites (sans les
+commentaires) :
 
 ```yaml
 data_dir: /home/alex/nestor/state
@@ -64,8 +62,8 @@ admin:
   port: 8470
 ```
 
-Sans la voix, le bloc `voice` reste en commentaire et un canal `telegram` s’ajoute. Le fichier
-porte aussi Home Assistant, en commentaire, prêt à remplir.
+Sans la voix, le bloc `voice` est en commentaire et un canal `telegram` s’ajoute. Home Assistant y
+figure aussi, en commentaire.
 
 ## Les sections
 
@@ -88,8 +86,7 @@ Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 
 ## Le foyer
 
-Chaque personne a un `id` (repris partout ailleurs dans le fichier), un `name`, et les `accounts`
-qui l’identifient sur chaque canal :
+Chaque personne a un `id`, un `name`, et les `accounts` qui l’identifient :
 
 ```yaml
 household:
@@ -102,19 +99,18 @@ household:
     may_message: [alex]
 ```
 
-- `telegram:<id>` est son identifiant d’utilisateur Telegram. Un message d’un compte inconnu est
-  ignoré, et le journal du serveur affiche son identifiant.
-- `satellites:*` attribue à cette personne tout ce qui est dit ou tapé sur un satellite. Dans un
-  foyer de plusieurs, ne le donnez qu’à une seule.
-- `reach`, une adresse comme `telegram:123456789`, est l’endroit où lui écrire quand parler ne
-  convient pas : elle est absente, ou ce sont les heures calmes.
-- `may_message` liste les personnes à qui elle peut faire écrire l’assistant : des identifiants, ou
-  `"*"` pour tout le monde, la valeur par défaut.
+- `telegram:<id>` : son identifiant Telegram. Les messages d’un compte inconnu sont ignorés, et le
+  journal du serveur affiche leur identifiant.
+- `satellites:*` : ce qui est dit ou tapé sur un satellite lui revient. Ne le donnez qu’à une
+  personne.
+- `reach` : où lui écrire quand elle est absente ou pendant les heures calmes, par exemple
+  `telegram:123456789`.
+- `may_message` : les personnes à qui elle peut faire écrire l’assistant ; `"*"`, tout le monde,
+  par défaut.
 
 ## Langue et heure
 
-Sans ces réglages, Nestor parle anglais et vit en UTC. `nestor init` les règle d’après vos
-réponses. Pour passer une configuration existante en français :
+Par défaut, Nestor parle anglais et vit en UTC. Pour passer en français :
 
 ```yaml
 persona:
@@ -131,34 +127,34 @@ channels:
 
 ## Clés et secrets
 
-Une valeur écrite `${NOM}` vient de `.env` ou de l’environnement. Une valeur écrite
-`${secret:nom}` vient du coffre : chiffré dans `state/`, réglé avec `nestor secrets set <nom>`
-(saisi sans écho) ou depuis l’administration, listé avec `nestor secrets list`.
+`${NOM}` lit `.env` ou l’environnement. `${secret:nom}` lit le coffre, chiffré dans `state/`.
+Rangez un secret depuis l’administration ou avec `nestor secrets set` (saisi sans écho) :
 
 ```bash
 nestor secrets set openrouter   # puis, dans nestor.yaml : api_key: ${secret:openrouter}
 ```
 
-`.env` est plus simple pour commencer. Le coffre ne laisse aucune clé en clair sur le disque, et
-l’administration peut les changer. `NESTOR_SECRET_KEY`, dans `.env`, ouvre le coffre : `nestor init`
-le génère. Ne le changez jamais, sinon les secrets déjà rangés deviennent illisibles.
+`.env` est plus simple pour commencer ; le coffre ne laisse aucune clé en clair sur le disque.
+`NESTOR_SECRET_KEY`, dans `.env`, ouvre le coffre : ne le changez jamais, sinon les secrets rangés
+deviennent illisibles.
 
 ## Administration
 
-L’administration écoute sur le port 8470. `host: 0.0.0.0` permet aux autres appareils du réseau de
-l’ouvrir à `http://<adresse de la machine>:8470` ; `127.0.0.1` la réserve à la machine elle-même.
-`public_url` est son adresse telle que la joignent les navigateurs du foyer, derrière un proxy
-inverse par exemple (`https://nestor.example.org`). Qui peut se connecter n’est pas dans le fichier :
-les comptes vivent dans `state/` (`nestor init`, ou `nestor accounts create-owner`).
+- `host` : `0.0.0.0` l’ouvre au réseau à `http://<adresse de la machine>:8470`, `127.0.0.1` la
+  réserve à la machine.
+- `public_url` : son adresse derrière un proxy inverse, par exemple `https://nestor.example.org`.
+
+Les comptes vivent dans `state/`, pas dans le fichier.
 
 ## Appliquer un changement
 
-Nestor lit sa configuration au démarrage. Après avoir modifié `nestor.yaml` ou `.env` :
+Nestor lit sa configuration au démarrage. Après un changement, vérifiez-la, puis redémarrez
+Nestor :
 
 ```bash
 nestor check   # valide le fichier et construit chaque partie, sans la démarrer
 ```
 
-Puis redémarrez Nestor. La page **Configuration** de l’administration modifie le même fichier : elle
-vérifie un changement avant de l’écrire, garde la version précédente dans `state/config-history/`,
-range dans le coffre les clés que vous tapez, et signale quand un redémarrage est nécessaire.
+La page **Configuration** de l’administration modifie le même fichier. Elle valide chaque
+changement, garde la version précédente dans `state/config-history/`, range dans le coffre les
+clés tapées, et signale quand redémarrer.

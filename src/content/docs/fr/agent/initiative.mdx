@@ -1,49 +1,43 @@
 ---
 title: Initiative
-description: Quand Nestor parle sans qu’on le lui demande. Réveils, veilles, messages transmis, et le coursier qui décide où et comment chacun arrive.
+description: Quand Nestor parle sans qu’on le lui demande. Réveils, veilles, tâches terminées, messages transmis, et le coursier qui les livre.
 ---
 
 import Initiative from "@/components/docs/diagrams/Initiative.astro";
 
-La plupart du temps, Nestor répond. Parfois, il parle le premier : un rappel qu’on lui a demandé, un
-courrier qu’il devait guetter, une tâche terminée, une question à transmettre à quelqu’un d’autre.
-Tous prennent le même chemin.
+Nestor parle parfois le premier : un rappel demandé, un courrier qu’il guettait, une tâche terminée,
+une question de quelqu’un d’autre. Tous prennent le même chemin.
 
 <Initiative locale="fr" n={7} />
 
 ## Ce qui l’appelle
 
 **Les réveils.** « Rappelle-moi demain à 9 h d’appeler le plombier », « chaque jour de la semaine à
-8 h, donne-moi la météo » : l’agent appelle `schedule` avec une consigne assez complète pour agir
-seul, et une heure unique ou des heures certains jours, à l’heure du foyer. À l’échéance, l’agent se
-réveille pour un tour en tâche de fond avec ses outils, sur le modèle `agent.background`. Un réveil
-manqué pendant que Nestor était arrêté s’exécute une fois au démarrage suivant.
+8 h, donne-moi la météo ». L’agent appelle `schedule` avec une consigne qui se suffit et une
+heure, unique ou certains jours. À l’échéance, il fait un tour en tâche de fond
+sur le modèle `agent.background`. Un réveil manqué pendant un arrêt de Nestor s’exécute une fois au
+démarrage suivant.
 
-**Les veilles.** « Préviens-moi quand la banque écrit » : une veille se crée depuis la conversation.
-Chaque courrier entrant est lu une fois par un petit modèle face à toutes les veilles à la fois, et
-ce qui correspond est annoncé à qui l’a demandé, urgent ou non.
+**Les veilles.** « Préviens-moi quand la banque écrit » crée une veille. Un petit modèle lit chaque
+courrier entrant une fois, face à toutes les veilles, et annonce ce qui correspond à qui l’a demandé.
 
-**Les tâches.** Quand un exécutant termine une tâche, son résultat est annoncé une fois à qui l’a
-demandé, même après un redémarrage.
+**Les tâches.** Le résultat d’un exécutant est annoncé une fois à qui l’a demandé, même après un
+redémarrage.
 
 **Les messages.** « Dis à Hugo que le dîner est à 20 h », « demande à Léa si elle a besoin de la
 voiture » : l’agent appelle `message_person`. Un message qui attend une réponse ouvre une question,
-que les deux voient dans leurs tours jusqu’à ce que la réponse revienne et que l’agent la transmette.
-Le réglage `may_message` de chaque personne dit à qui elle peut faire écrire l’agent.
+que les deux voient jusqu’au retour de la réponse. Le réglage `may_message` de chaque personne dit à
+qui elle peut écrire par l’agent.
 
 ## Où et comment il arrive
 
-Le **coursier** décide d’abord, et écrit sa décision et sa raison dans le journal :
+Le **coursier** décide d’abord, et journalise sa décision avec sa raison :
 
 - la personne a demandé l’écrit, ou elle est absente : un message là où elle lit (Telegram
   aujourd’hui) ;
-- elle est à la maison : dit par le satellite de la pièce où elle se trouve, ou par le satellite
-  principal du foyer quand la maison sait seulement qu’elle est là ;
+- elle est à la maison : dit dans sa pièce, ou par le satellite principal si sa pièce est
+  inconnue ;
 - heures calmes : rien n’est dit sauf urgence, et le message part quand même par écrit ;
 - aucune information de présence : la conversation d’où vient la demande, sinon un message.
 
-L’agent formule ensuite le message pour ce lieu et ce médium, en sachant ce qui s’y est dit dans la
-conversation ouverte. Quand personne ne réagit à un message dit, le coursier relance par écrit.
-
-La présence vient de Home Assistant, à la granularité que la maison connaît : une pièce quand elle la
-sait, seulement présent ou absent sinon.
+La présence vient de Home Assistant : la pièce quand elle la connaît, présent ou absent sinon.

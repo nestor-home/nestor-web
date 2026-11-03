@@ -1,61 +1,54 @@
 ---
 title: Comment fonctionne l’agent
-description: Un seul agent pour tout le foyer. Ses parties, ce qui se passe pendant un tour, et comment ses consignes sont assemblées.
+description: Un seul agent pour tout le foyer. Ses parties, un tour pas à pas, et l’assemblage de ses consignes.
 ---
 
 import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
 import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
 import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 
-Nestor fait tourner un seul agent pour le foyer. Parlez-lui dans la cuisine, écrivez-lui depuis le
-bureau : c’est le même agent, avec la même mémoire. Cette page montre ses parties et suit un message
-de son arrivée à la réponse. [Mémoire](/fr/docs/agent/memory/) et
-[Initiative](/fr/docs/agent/initiative/) détaillent ce qu’il retient et quand il prend la parole.
+Parlez à Nestor dans la cuisine ou écrivez-lui du bureau : un seul agent répond, avec une seule
+mémoire. Voici ses parties, et un message suivi jusqu’à la réponse.
 
 ## Les parties
 
 <SystemMap locale="fr" n={1} />
 
-Le **cœur** contient l’agent de conversation et les modules autour de lui : la mémoire, l’initiative,
-les tâches déléguées, le foyer. Il ne dépend d’aucun fournisseur. Tout le reste est un **adaptateur**
-derrière un contrat : les modèles, Home Assistant, les connecteurs, les exécutants et les canaux.
+Le **cœur** ne dépend d’aucun fournisseur. Modèles, Home Assistant, connecteurs, exécutants et canaux
+sont des **adaptateurs** derrière des contrats.
 
-Le **journal** fait foi. Chaque effet y est ajouté comme un événement : un tour, un appel d’outil,
-un souvenir, une livraison, une décision de politique avec sa raison. L’administration l’affiche en
-fils de conversation, et un redémarrage y retrouve tout l’état en cours : conversations ouvertes,
-tâches à suivre, réveils à venir, messages pas encore livrés.
+Le **journal** fait foi. Chaque effet y est un événement, jusqu’à chaque décision de politique et
+sa raison. L’administration l’affiche en fils de conversation. Au redémarrage, Nestor y retrouve les
+conversations ouvertes, les tâches, les réveils et les messages non livrés.
 
 ## Un tour
 
 <TurnFlow locale="fr" n={2} />
 
 Une **conversation** regroupe les tours proches dans le temps, comme Assist dans Home Assistant.
-Après cinq minutes de silence à voix haute, ou quatre heures par écrit, le tour suivant en ouvre une
-nouvelle et le modèle ne relit plus les tours précédents. Chaque canal peut fixer sa propre durée
-avec `conversation_ends_after_s`. Les souvenirs, eux, traversent toutes les conversations.
+Après cinq minutes de silence à voix haute, ou quatre heures par écrit, une nouvelle commence et le
+modèle ne relit plus les anciens tours. Chaque canal peut changer ce délai avec
+`conversation_ends_after_s`. Les souvenirs traversent les conversations.
 
-L’agent reste rapide parce que rien de long ne se passe pendant un tour. Ce qui est fréquent et court
-est un outil direct (allumer une lampe, retenir un fait, programmer un réveil). Ce qui prend des
-minutes part chez un **exécutant** sous forme de tâche durable : l’agent dit qu’il s’en occupe, la
-tâche tourne en arrière-plan, et le résultat est annoncé une fois, à qui l’a demandé.
+Rien de long ne se passe pendant un tour. Les actions courtes sont des outils directs : allumer
+une lampe, retenir un fait, programmer un réveil. Ce qui prend des minutes part chez un
+**exécutant**, en tâche durable, et son résultat est annoncé une fois, à qui l’a demandé.
 
 ## Les consignes
 
 <PromptLayers locale="fr" n={3} />
 
-Les consignes sont assemblées à chaque tour, en couches rangées de la plus stable à la plus
-changeante. Un fournisseur qui met les prompts en cache lit dans son cache tout ce qui précède un
-point de cache, plus vite et pour une fraction du prix. Un nouveau tour dans le même foyer ne paie
-plein tarif que sa couche de tour et les nouveaux messages.
+Chaque tour assemble ses consignes en couches, de la plus stable à la plus changeante. Un
+fournisseur qui met les prompts en cache y lit tout ce qui précède un point de cache, plus vite et
+moins cher. Un nouveau tour ne paie plein tarif que sa couche de tour et les nouveaux messages.
 
-Chaque module ajoute ses sections à une couche : la mémoire met ce qui est retenu dans la couche du
-foyer, et les conversations passées de la personne qui parle dans celle du tour ; l’initiative ajoute
-les veilles et les réveils ; la messagerie, les questions qui attendent encore leur réponse.
+Chaque module remplit ses sections : la mémoire, l’initiative (veilles, réveils), la messagerie
+(questions ouvertes).
 
 ## Les modèles par rôle
 
-Les modèles sont des profils que vous nommez dans `models`, et chaque rôle désigne l’un d’eux. Avec
-un seul modèle, il n’y a rien d’autre à écrire.
+Nommez des profils de modèles dans `models` et faites pointer chaque rôle vers l’un d’eux. Un seul
+modèle ne demande rien de plus.
 
 ```yaml
 models:
@@ -80,5 +73,5 @@ memory:
   consolidation: rapide  # résume chaque conversation une fois terminée
 ```
 
-Un rôle omis prend le modèle d’un autre : `spoken` et `written` se remplacent l’un l’autre,
-`background` et les veilles prennent `written`, et la consolidation prend `background`.
+Un rôle omis emprunte un modèle : `spoken` et `written` se remplacent, `background` et les veilles
+prennent `written`, la consolidation prend `background`.

@@ -1,18 +1,16 @@
 ---
 
 title: Schemas
-description: The JSON Schema of every message of the protocol, where they are served and how an SDK keeps its copy up to date.
+description: The JSON Schema of every protocol message, and how an SDK keeps its copy current.
 ---
 
-Every message of `nestor.satellite/1` has a JSON Schema (draft 2020-12). The core generates them
-from its message classes, and each one is served where its `$id` points:
+Every message of `nestor.satellite/1` has a JSON Schema (draft 2020-12), served at its `$id`:
 
 ```text
 https://nestorhome.dev/schemas/satellite/1/<message>.json
 ```
 
-The site is built with the schemas of the server release it pins, so the version in the address is
-the one the schemas declare.
+The schemas come from the server release the site pins.
 
 ## Messages
 
@@ -45,12 +43,10 @@ On the link, the WebSocket `/satellites/{device_id}/link`:
 
 ## Keeping a copy in an SDK
 
-An SDK keeps the schemas in its repository and tests every message it sends against them. To
-refresh the copy, write the schemas of a server release into the SDK’s folder:
+An SDK tests every message it sends against its own copy: `src/nestor_satellite/schemas/` in Python,
+`schemas/` in TypeScript and Rust. Refresh it from the server release the SDK targets, then fix the
+code until the tests pass:
 
 ```bash
 uvx --from nestor-home==<version> nestor satellites schemas --out schemas/
 ```
-
-`<version>` is the server release the SDK targets. Then adapt the code until its tests pass. The
-Python SDK keeps them in `src/nestor_satellite/schemas/`, the TypeScript and Rust SDKs in `schemas/`.

@@ -6,15 +6,14 @@ description: Install the server with uv, pip or Docker, keep it running, and upg
 import Tab from "@/components/docs/Tab.astro";
 import Tabs from "@/components/docs/Tabs.astro";
 
-Install Nestor on the machine that will run it for the household: a computer, a mini PC or a
-Raspberry Pi that stays on. The [Quickstart](/docs/quickstart/) is the same uv install with a first
-conversation; this page covers every way, and what changes between them.
+Install Nestor on a machine that stays on: a computer, a mini PC or a Raspberry Pi. The
+[Quickstart](/docs/quickstart/) walks through the uv way step by step.
 
 ## Choose a way
 
 The server is the Python package [`nestor-home`](https://pypi.org/project/nestor-home/) (Python
-3.12 or later), also published as the image `ghcr.io/nestor-home/nestor` (amd64, arm64). The three
-ways run the same server:
+3.12 or later) and the image `ghcr.io/nestor-home/nestor` (amd64, arm64). All three ways run the
+same server:
 
 | Install with                 | uv                                                       | pip                                          | Docker                                  |
 | ---------------------------- | -------------------------------------------------------- | -------------------------------------------- | --------------------------------------- |
@@ -24,18 +23,16 @@ ways run the same server:
 | Upgrade                      | `uv tool upgrade nestor-home`                            | `pip install -U nestor-home`                 | `docker pull`, then a new container     |
 | Good for                     | a development machine, trying it out, writing satellites | an environment you already run               | a server at home that stays on          |
 
-The package alone runs Nestor in text: the admin, Telegram, connectors, any OpenAI-compatible
-model, and satellites in writing. Their realtime voice is the `voice` extra: install
-`'nestor-home[voice]'` to add it. The image has every extra. A configuration that gives satellites a
-voice without the extra fails at start and names the command to run.
+The package runs everything in text. The satellites’ realtime voice is the `voice` extra,
+`'nestor-home[voice]'`; the image includes it. Without it, a configuration with a voice fails at
+start and names the command to run.
 
 ## Install and run
 
 <Tabs set="install" locale="en">
 <Tab set="install" choice="uv">
 
-[uv](https://docs.astral.sh/uv/) installs `nestor` as a tool: an isolated environment, the command
-on your `PATH`, nothing to activate. The [Quickstart](/docs/quickstart/) follows these steps one by one.
+[uv](https://docs.astral.sh/uv/) installs `nestor` in its own environment, on your `PATH`:
 
 ```bash
 uv tool install 'nestor-home[voice]'   # or nestor-home, without the satellites' voice
@@ -43,17 +40,15 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-`nestor init` asks whether to use the voice when the extra is installed. Fill the keys it left
-empty in `.env` (each page of [Configure](/docs/configuration/) names its own), then:
+Fill the keys left empty in `.env`, then:
 
 ```bash
 nestor check
 nestor run
 ```
 
-`nestor` reads `nestor.yaml` in the current folder; `nestor -c <file>` reads another, from
-anywhere. It also reads the `.env` next to that file at each start, so there is nothing to source. A variable
-already set in the environment (the shell, a service manager) wins over the file.
+`nestor` reads `nestor.yaml` and `.env` in the current folder, or another file with `-c <file>`
+([The files](/docs/configuration/#the-files)).
 
 To upgrade, extras included:
 
@@ -64,7 +59,7 @@ uv tool upgrade nestor-home
 </Tab>
 <Tab set="install" choice="pip">
 
-In a virtual environment you create and keep:
+In a virtual environment you keep:
 
 ```bash
 python3 -m venv ~/.venvs/nestor
@@ -73,15 +68,14 @@ mkdir nestor && cd nestor
 ~/.venvs/nestor/bin/nestor init
 ```
 
-Fill the keys left empty in `.env`, then `nestor check` and `nestor run` from the environment (activate it, or call
-`~/.venvs/nestor/bin/nestor`). For the satellites’ voice, install `'nestor-home[voice]'` instead. Upgrade
-with the same command and `-U`.
+Fill the keys in `.env`, then run `nestor check` and `nestor run` from the environment. For the
+voice, install `'nestor-home[voice]'`; to upgrade, add `-U`.
 
 </Tab>
 <Tab set="install" choice="docker">
 
-The image `ghcr.io/nestor-home/nestor` keeps everything in `/data`. Mount a folder there, write a
-first configuration, fill the keys, then start it:
+The image keeps everything in `/data`. Mount a folder there, write a first configuration, fill the
+keys, then start it:
 
 ```bash
 docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init
@@ -89,29 +83,24 @@ $EDITOR nestor/.env
 docker run -d --name nestor --restart unless-stopped -v ./nestor:/data -p 8470:8470 -p 8471:8471 ghcr.io/nestor-home/nestor
 ```
 
-`nestor/` holds `nestor.yaml`, its `.env` and `state/`. The container starts as root only to give
-`/data` to its user (uid 1000), then runs as that user. It publishes two ports: 8470 for the admin
-(`http://<the machine’s address>:8470`) and 8471 for satellites, which pair and talk there.
-To change them, set `admin.port` and the satellites channel’s `port` in `nestor.yaml`, and the
-matching `-p` options.
+The container runs as uid 1000. Port 8470 is the admin, 8471 the satellites. To change them, set
+`admin.port` and the satellites channel’s `port` in `nestor.yaml`, and the `-p` options.
 
-Every `nestor` command runs through the image, which reads `/data/nestor.yaml`:
+Run other `nestor` commands through the image:
 
 ```bash
 docker run --rm -v ./nestor:/data ghcr.io/nestor-home/nestor check
 docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor secrets list
 ```
 
-Nestor reads `nestor/.env` itself, at each start: after editing it, `docker restart nestor`. A model
-server on the same machine (Ollama, LM Studio) is `http://host.docker.internal:<port>/v1` from the
-container; on Linux, add `--add-host host.docker.internal:host-gateway` to `docker run`.
+After editing `nestor/.env`, run `docker restart nestor`. A model server on the same machine
+(Ollama, LM Studio) is at `http://host.docker.internal:<port>/v1`; on Linux, add
+`--add-host host.docker.internal:host-gateway` to `docker run`.
 
 ### With Compose
 
-For an installation that stays, the repository’s
-[`compose.yaml`](https://github.com/nestor-home/nestor/blob/main/compose.yaml) holds the same
-settings (the `host.docker.internal` line included) and an optional Litestream replica. It keeps
-everything in `./data`:
+The repository’s [`compose.yaml`](https://github.com/nestor-home/nestor/blob/main/compose.yaml)
+holds the same settings plus an optional Litestream replica, and keeps everything in `./data`:
 
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml
@@ -126,21 +115,21 @@ docker compose pull
 docker compose up -d
 ```
 
-`compose.yaml` follows `latest`. To stay on a release line, set the tag in it, for example
-`ghcr.io/nestor-home/nestor:0.6` (or `0.6.0` for one exact release).
+It follows `latest`. To stay on a release line, set the tag, such as
+`ghcr.io/nestor-home/nestor:0.6`.
 
 </Tab>
 </Tabs>
 
 ## The owner account
 
-`nestor init` creates it. For an installation that has none yet (a configuration written by hand,
-a `state/` from elsewhere):
+`nestor init` creates it. For an installation without one (a hand-written configuration, a `state/`
+from elsewhere):
 
 ```bash
 nestor accounts create-owner --login alex
 ```
 
-It asks for the password. `--person` names the household member it belongs to (by default the
-first one of the configuration). Restart Nestor if it is running. With Docker, the same command
-runs as `docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor accounts create-owner --login alex`.
+It asks for the password; `--person` picks the household member, the first by default. Restart
+Nestor if it is running. With Docker:
+`docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor accounts create-owner --login alex`.

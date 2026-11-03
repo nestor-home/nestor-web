@@ -4,15 +4,14 @@ title: Démarrage rapide
 description: De rien à une première conversation avec Nestor sur votre ordinateur, par écrit, en une dizaine de minutes.
 ---
 
-Cette page lance Nestor sur votre ordinateur et tient une première conversation avec lui depuis un
-terminal. Elle prend le plus court : uv, un modèle hébergé, l’écrit seul.
-[Installer](/fr/docs/install/) couvre pip, Docker et un serveur qui reste allumé.
+Obtenez une première réponse de Nestor dans votre terminal, par le plus court : uv, un modèle
+hébergé, l’écrit seul. Les autres voies sont dans [Installer](/fr/docs/install/).
 
 Il vous faut :
 
 - macOS ou Linux avec [uv](https://docs.astral.sh/uv/getting-started/installation/) ;
-- une clé chez un fournisseur de modèle. Par défaut [OpenRouter](https://openrouter.ai/keys) ; tout
-  serveur compatible OpenAI convient, local compris (voir [Modèles](/fr/docs/models/)).
+- une clé de fournisseur de modèle : [OpenRouter](https://openrouter.ai/keys) par défaut, ou tout
+  serveur compatible OpenAI, local compris ([Modèles](/fr/docs/models/)).
 
 ## Lancer le serveur
 
@@ -29,25 +28,22 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-`nestor init` demande le nom de l’assistant, votre prénom, la langue du foyer (`en` ou `fr`), son
-fuseau horaire, le serveur de modèle et le modèle. Entrée garde chaque valeur proposée. Il demande
-ensuite un identifiant et un mot de passe pour l’administration (10 caractères au moins).
+`nestor init` demande les noms, la langue, le fuseau horaire et le modèle ; Entrée garde chaque
+valeur proposée. Il crée ensuite votre identifiant d’administration (mot de passe de 10 caractères
+au moins).
 
-Il écrit trois choses dans le dossier, sans jamais écraser ce qui existe :
-
-- `nestor.yaml`, la configuration ;
-- `.env`, les clés, lisible par vous seul ;
-- `state/`, la base de données, qui contient déjà votre compte propriétaire.
+Il écrit `nestor.yaml` (la configuration), `.env` (les clés) et `state/` (la base de données), sans
+jamais écraser l’existant.
 
 ### 3. Ajouter la clé du modèle
 
-Ouvrez `.env` et remplissez `MODEL_API_KEY` :
+Remplissez `MODEL_API_KEY` dans `.env` :
 
 ```ini
 MODEL_API_KEY=sk-or-...
 ```
 
-Laissez `TELEGRAM_BOT_TOKEN` vide pour l’instant : Telegram est facultatif.
+Telegram est facultatif : laissez `TELEGRAM_BOT_TOKEN` vide.
 
 ### 4. Vérifier et démarrer
 
@@ -56,37 +52,34 @@ nestor check
 nestor run
 ```
 
-`nestor check` lit la configuration et construit chaque partie sans la démarrer. Il nomme ce qui
-manque, une clé vide par exemple. `nestor run` démarre le serveur ; laissez-le tourner.
+`nestor check` nomme ce qui manque, une clé vide par exemple. `nestor run` démarre le serveur :
+laissez-le tourner.
 
 ## Ouvrir l’administration
 
 Ouvrez [http://localhost:8470](http://localhost:8470) et connectez-vous avec l’identifiant de
-l’étape 2. L’administration montre le foyer, la configuration, les appareils et le journal de ce
-que fait Nestor.
+l’étape 2.
 
 ## Lui parler
 
-On joint Nestor par des canaux. Le plus rapide est un satellite dans votre terminal : un appareil
-qui envoie ce que vous tapez et affiche les réponses.
-
-Dans un second terminal, dans le même dossier, créez-lui un code d’appairage :
+Dans un second terminal, dans le même dossier, créez un code d’appairage pour un satellite en
+terminal :
 
 ```bash
 nestor satellites add --room bureau --name Terminal
 ```
 
-La commande affiche une URI d’appairage, `nestor+http://…:8471/?code=…`. Donnez-la au satellite :
+Passez l’URI affichée (`nestor+http://…:8471/?code=…`) au satellite :
 
 ```bash
 uvx nestor-satellite run --room bureau --text --no-voice --pairing-uri 'nestor+http://…'
 ```
 
-Tapez un message, puis Entrée. La réponse revient dans le terminal, et le tour apparaît dans le
+Tapez un message, puis Entrée. La réponse s’affiche dans le terminal et le tour apparaît dans le
 journal de l’administration. Les lancements suivants se reconnectent sans code.
 
 ## Ensuite
 
-- Lui donner une voix, ou le joindre sur Telegram : [Canaux et voix](/fr/docs/channels/).
+- Lui parler à voix haute, ou sur Telegram : [Canaux et voix](/fr/docs/channels/).
 - Lui faire voir qui est là et piloter la maison : [Maison et services](/fr/docs/connections/).
-- Ce qui se passe pendant ce tour : [Comment fonctionne l’agent](/fr/docs/agent/).
+- Ce qui s’est passé pendant ce tour : [Comment fonctionne l’agent](/fr/docs/agent/).

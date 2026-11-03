@@ -4,13 +4,10 @@ title: SDK Rust
 description: Écrire un satellite en Rust avec la crate nestor-satellite, ou installer sa commande, à voix haute ou par écrit.
 ---
 
-La crate [`nestor-satellite`](https://crates.io/crates/nestor-satellite) s’occupe de l’appairage,
-du jeton, du manifeste, du lien WebSocket et du texte. L’audio en WebRTC (webrtc-rs, Opus) est la
-fonctionnalité `voice` : un appareil qui ne fait qu’écrire se construit sans elle. La crate ne
-dépend pas du serveur Nestor. Il faut Rust 1.91 ou plus récent et un compilateur C pour la
-construire ; la fonctionnalité `voice` demande aussi `cmake` (libopus est compilée depuis ses
-sources), et sous Linux la fonctionnalité `audio` demande ALSA
-(`apt install libasound2-dev pkg-config`).
+La crate [`nestor-satellite`](https://crates.io/crates/nestor-satellite) gère l’appairage, le
+jeton, le manifeste, le lien et le texte. Elle se construit avec Rust 1.91 ou plus récent et un
+compilateur C. L’audio est la fonctionnalité `voice`, qui demande aussi `cmake` ; un appareil qui
+ne fait qu’écrire s’en passe.
 
 ```bash
 cargo add nestor-satellite --features audio   # une enceinte : WebRTC et la carte son de la machine
@@ -25,10 +22,11 @@ cargo add tokio --features macros,rt-multi-thread
 | `audio`        | `voice` avec `devices::{Microphone, Speaker}`, par cpal                                                                                                |
 | `cli`          | la commande `nestor-satellite` (inclut `audio`)                                                                                                        |
 
+Sous Linux, `audio` demande ALSA (`apt install libasound2-dev pkg-config`).
+
 ## Un pilote minimal
 
-Une enceinte avec un micro et une lumière, appairée une fois, connectée ensuite (fonctionnalité
-`audio`) :
+Une enceinte avec un micro et une lumière (fonctionnalité `audio`) :
 
 ```rust
 use nestor_satellite::devices::{Microphone, Speaker};
@@ -55,15 +53,13 @@ async fn main() -> nestor_satellite::Result<()> {
 }
 ```
 
-Sans code d’enrôlement, il demande un code d’appareil et le dit sur son haut-parleur, chiffre par
-chiffre, deux fois, avec des enregistrements (hors ligne, en anglais ou en français), et l’écrit
-dans son journal. Avec `NESTOR_PAIRING_URI`, il s’appaire aussitôt.
+Sans code d’enrôlement, il dit un code d’appareil sur son haut-parleur et l’écrit dans son journal :
+tapez-le dans l’administration.
 
 ## Un écran et un clavier
 
-Un écran de cuisine qui échange par écrit avec l’assistant. Il affiche son code d’appareil, accepte
-les codes d’enrôlement tapés avant l’appairage, puis envoie ce qui est tapé et affiche les réponses.
-Il se construit sans la fonctionnalité `voice` :
+Un écran de cuisine qui écrit avec l’assistant, sans la fonctionnalité `voice`. Une ligne tapée
+avant l’appairage est un code d’enrôlement ; après, un message :
 
 ```rust
 use nestor_satellite::{Device, Display, EnrollmentMethod, IDENTIFY, Manifest, Satellite, TokenStore};
@@ -112,10 +108,9 @@ async fn main() -> nestor_satellite::Result<()> {
 
 ## Texte et audio
 
-Le manifeste décrit l’appareil et ce que font son corps et ses capteurs (`EXPRESSION`, `IDENTIFY`,
-`HEAD_MOTION`, `PERSON_DETECTION`, `SPEECH_ACTIVITY`). Les capacités de texte et d’audio découlent
-du constructeur. Un manifeste qui en déclare une sans ce qui la réalise échoue dans `build` avec
-`Error::NotProvided`.
+Le manifeste décrit le corps et les capteurs (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`,
+`PERSON_DETECTION`, `SPEECH_ACTIVITY`). Le texte et l’audio découlent du constructeur ; les
+déclarer dans le manifeste sans lui fait échouer `build` avec `Error::NotProvided`.
 
 | Constructeur                                                | Déclare                                   |
 | ----------------------------------------------------------- | ----------------------------------------- |
@@ -125,21 +120,17 @@ du constructeur. Un manifeste qui en déclare une sans ce qui la réalise échou
 | `.sink(…)`, un `AudioSink` (`voice`)                        | `audio.playback`                          |
 | `.null_audio()` (`voice`)                                   | les deux, sans carte son (pour les tests) |
 
-- `satellite.observer()` donne un `Observer` qui envoie le texte tapé avec `input_text` (de 1 à
-  4 000 caractères) et signale les observations. Il renvoie `Ok(false)` quand le lien est coupé
-  (rien n’est mis en attente) et `Error::CapabilityNotAllowed` si la capacité n’a pas été déclarée
-  ou si le foyer ne l’a pas autorisée.
-- Une réponse peut arriver en plusieurs messages (l’assistant dit qu’il cherche, puis donne le
-  résultat) ; `last` marque le dernier d’un tour. Un tour tapé reçoit une réponse écrite si
-  l’appareil affiche du texte, à voix haute sinon.
-- Avec la fonctionnalité `voice`, le satellite ne propose WebRTC qu’une fois l’audio autorisé par le
-  cœur ; d’ici là, et sur un appareil sans audio, tout passe par le lien. `.ice_servers(…)` ne
-  sert qu’au-delà du réseau local.
-- `run` renvoie `Error::Replaced` quand un lien plus récent du même appareil prend le relais
-  (`4409`). Un jeton refusé (`4401`) est oublié et l’appareil s’appaire de nouveau ; toute autre
-  fermeture mène à une reconnexion, avec une attente qui s’allonge.
+- `satellite.observer().input_text(…)` envoie de 1 à 4 000 caractères tapés. Il renvoie
+  `Ok(false)` quand le lien est coupé, et `Error::CapabilityNotAllowed` si le foyer n’a pas autorisé
+  `text.input`.
+- `last` marque le dernier message d’une réponse.
+- `.ice_servers(…)` ne sert qu’au-delà du réseau local.
+- `run` renvoie `Error::Replaced` quand un lien plus récent du même appareil prend le relais.
+  Sinon, il se reconnecte, ou s’appaire de nouveau si son jeton est refusé.
 
 ## Options d’appairage
+
+Les méthodes d’appairage découlent du constructeur.
 
 | Constructeur                                                                                     | Déclare                   |
 | ------------------------------------------------------------------------------------------------ | ------------------------- |
@@ -148,16 +139,15 @@ du constructeur. Un manifeste qui en déclare une sans ce qui la réalise échou
 | un `.sink(…)` sans écran, ou `.voice(…)`                                                         | `device_code.speech`      |
 | `.accepts_enrollment(EnrollmentMethod::Input)`, avec les codes passés à `satellite.enroller()`   | `enrollment.input`        |
 
-Ce SDK ne pilote aucune caméra : il ne déclare jamais `enrollment.qr`. Un appareil sans écran ni
-haut-parleur se contente d’écrire son code d’appareil dans le journal. Un code d’enrôlement refusé
-est dit une fois (journal, écran, voix) et n’est plus jamais envoyé, même après un
-redémarrage : le `TokenStore` garde son SHA-256, jamais le code. Les messages aux gens sont en
-anglais ou en français (`.language(…)`, sinon `LANG`).
+- Un code d’enrôlement refusé n’est plus jamais envoyé.
+- Ce SDK ne pilote aucune caméra : pas d’`enrollment.qr`.
+- `.language(…)` règle la langue dans laquelle il parle (par défaut, `LANG`).
 
 ## La commande
 
-Pour faire de cette machine un satellite, avec son micro et son haut-parleur, ou avec son
-terminal :
+`nestor-satellite run` fait de cette machine un satellite, à voix haute ou dans son terminal.
+Chaque [version](https://github.com/nestor-home/nestor-satellite-rust/releases) a aussi des
+binaires pour macOS et Linux.
 
 ```bash
 cargo install nestor-satellite --features cli
@@ -168,17 +158,15 @@ nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471
 nestor-satellite run --core http://nestor.local:8471 --room bureau --text-only
 ```
 
-Des binaires précompilés pour macOS et Linux sont joints à chaque
-[version](https://github.com/nestor-home/nestor-satellite-rust/releases). `--text` ajoute l’écrit à
-la voix, `--text-only` retire le micro, le haut-parleur et WebRTC. Sans code,
-`nestor-satellite run --core http://nestor.local:8471 --room salon` dit un code d’appareil sur le
-haut-parleur et l’écrit dans le journal. `nestor-satellite devices` liste les cartes son,
-`--language fr` parle français, `--null-audio` tourne sans carte son. `nestor-satellite run --help`
-détaille les autres options.
+- `--text-only` retire le micro, le haut-parleur et WebRTC ; `--text` ajoute l’écrit.
+- Sans code, elle dit un code d’appareil.
+- `--language fr` parle français. `nestor-satellite devices` liste les cartes son.
+
+`nestor-satellite run --help` détaille le reste.
 
 ## Pour aller plus loin
 
-- Le code, ses exemples et la licence des enregistrements de voix (CC BY 4.0) :
+- Le code, ses exemples et la licence des enregistrements de voix :
   [nestor-satellite-rust](https://github.com/nestor-home/nestor-satellite-rust) ; l’API sur
   [docs.rs](https://docs.rs/nestor-satellite).
 - Les messages et les codes de fermeture : [Protocole](/fr/docs/satellites/protocol/).
