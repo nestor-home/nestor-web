@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.3](https://github.com/nestor-home/nestor-web/compare/v0.6.2...v0.6.3) (2026-11-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @lobehub/icons-static-svg to v1.102.0 ([#40](https://github.com/nestor-home/nestor-web/issues/40)) ([cd34a57](https://github.com/nestor-home/nestor-web/commit/cd34a57bd53dcb3e23fb0c8b96bba594ee334c78))
+* **deps:** update dependency nestor-home to v0.7.0 ([#41](https://github.com/nestor-home/nestor-web/issues/41)) ([7557e21](https://github.com/nestor-home/nestor-web/commit/7557e21c232ee6f582fa49d9b6fe5306d30cfef3))
+
 ## [0.6.2](https://github.com/nestor-home/nestor-web/compare/v0.6.1...v0.6.2) (2026-11-03)
 
 
