@@ -116,12 +116,14 @@ the rest.
 ## Software and updates
 
 The manifest names the software the device runs: `nestor-satellite` and its version, unless the
-driver passes `software=Software("my-satellite", "0.2.0")`, the package it is published as.
+driver's manifest passes `software=Software.of("my-satellite")`, the package it is published as
+(its version is read from the installed metadata).
 
 `updater=` an `Updater` lets the household update the device from the admin, and declares
 `device.update`. An `Updater` says which newer version its source has (`newer`) and installs one
-(`install`); the SDK ships one for packages installed from PyPI, with uv or pip. Without it, the
-admin only shows the version.
+(`install`), and may give the address of that version's release notes (`notes`); the SDK ships one
+for packages installed from PyPI, with uv or pip, which gives the project's changelog. Without it,
+the admin only shows the version.
 
 `nestor-satellite run --managed` uses it on itself. When a person asks for the update, the command
 installs the new version in its own environment, then starts its own command line again in place,

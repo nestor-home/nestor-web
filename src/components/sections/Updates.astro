@@ -1,4 +1,5 @@
 ---
+import Facts from "@/components/Facts.astro";
 import type { Translator } from "@/i18n";
 import { docHref } from "@/lib/docs";
 import { highlight } from "@/lib/highlight";
@@ -7,7 +8,6 @@ interface Props {
   t: Translator;
 }
 const { t } = Astro.props;
-const items = Array.from({ length: 4 }, (_, i) => `upd-${i + 1}`);
 
 /** One satellite's update on its link: what it found, a person's request, then the install. */
 const status = (state: string) => JSON.stringify({ type: "update.status", payload: { state, version: "0.5.1" } });
@@ -28,16 +28,7 @@ const exchangeHtml = await highlight(EXCHANGE, "json");
       <h2 id="upd-title" data-reveal class="display-2 text-ink">{t("upd-title")}</h2>
       <p data-reveal class="lede mt-6">{t("upd-lede")}</p>
     </div>
-    <dl class="mt-14 grid border-t border-rule md:grid-cols-2 md:gap-x-12">
-      {
-        items.map((id, i) => (
-          <div data-reveal style={`--i:${i % 2}`} class="grid gap-2 border-b border-rule py-6 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-6">
-            <dt class="font-serif text-lg leading-snug text-ink">{t(id)}</dt>
-            <dd class="text-base leading-relaxed text-ink-muted" set:html={t.html(`${id}-text`)} />
-          </div>
-        ))
-      }
-    </dl>
+    <Facts t={t} prefix="upd" count={4} />
     <div class="mt-16 grid gap-10 lg:grid-cols-12">
       <div data-reveal class="lg:col-span-5">
         <h3 class="display-3 text-ink">{t("upd-satellite-title")}</h3>

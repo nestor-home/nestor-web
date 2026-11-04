@@ -1,4 +1,5 @@
 ---
+import Facts from "@/components/Facts.astro";
 import Shot from "@/components/Shot.astro";
 import type { Translator } from "@/i18n";
 
@@ -6,7 +7,6 @@ interface Props {
   t: Translator;
 }
 const { t } = Astro.props;
-const items = Array.from({ length: 8 }, (_, i) => `ctl-${i + 1}`);
 ---
 
 <section class="section border-t border-rule" aria-labelledby="ctl-title" data-mood="concerned">
@@ -15,16 +15,7 @@ const items = Array.from({ length: 8 }, (_, i) => `ctl-${i + 1}`);
       <h2 id="ctl-title" data-reveal class="display-2 text-ink">{t("ctl-title")}</h2>
       <p data-reveal class="lede mt-6">{t("ctl-lede")}</p>
     </div>
-    <dl class="mt-14 grid border-t border-rule md:grid-cols-2 md:gap-x-12">
-      {
-        items.map((id, i) => (
-          <div data-reveal style={`--i:${i % 2}`} class="grid gap-2 border-b border-rule py-6 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-6">
-            <dt class="font-serif text-lg leading-snug text-ink">{t(id)}</dt>
-            <dd class="text-base leading-relaxed text-ink-muted">{t(`${id}-text`)}</dd>
-          </div>
-        ))
-      }
-    </dl>
+    <Facts t={t} prefix="ctl" count={8} />
     <figure data-reveal class="mt-16">
       <div class="plate corner-marks">
         <div class="plate-inner">

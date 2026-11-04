@@ -70,12 +70,8 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satel
 
 ### Mettre à jour un satellite
 
-Chaque satellite dit quel logiciel il fait tourner et sa version, affichés sur sa page dans
-l’administration. Un satellite autorisé à `device.update` cherche aussi une version plus récente là
-où il a été installé, une fois par jour : l’administration affiche alors **Mettre à jour**.
-L’appareil installe cette version et redémarre dessus, ou revient à celle qu’il avait si la
-nouvelle ne se connecte pas dans la minute. Le serveur ne lui envoie jamais un fichier ni une
-adresse ([Mises à jour](/fr/docs/satellites/protocol/#10-mises-à-jour) dans le protocole).
+Un satellite autorisé à `device.update` se met à jour depuis sa page dans l’administration : voir
+[Mises à jour](/fr/docs/updates/#mettre-à-jour-un-satellite).
 
 ## Prêts à l’emploi
 

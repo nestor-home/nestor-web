@@ -69,11 +69,8 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satel
 
 ### Update a satellite
 
-Each satellite says which software it runs and its version, shown on its page in the admin. One
-allowed `device.update` also looks for a newer version where it was installed from, once a day:
-the admin then shows **Update**. The device installs that version and starts again on it, or goes
-back to the one it ran if the new one does not connect within a minute. The server never sends it
-a file or an address ([Updates](/docs/satellites/protocol/#10-updates) in the protocol).
+A satellite allowed `device.update` can be updated from its page in the admin: see
+[Updates](/docs/updates/#update-a-satellite).
 
 ## Ready to run
 

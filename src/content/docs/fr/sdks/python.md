@@ -117,13 +117,14 @@ détaille le reste.
 ## Logiciel et mises à jour
 
 Le manifeste nomme le logiciel que fait tourner l’appareil : `nestor-satellite` et sa version, sauf
-si le pilote passe `software=Software("mon-satellite", "0.2.0")`, le paquet sous lequel il est
-publié.
+si le manifeste du pilote passe `software=Software.of("mon-satellite")`, le paquet sous lequel il
+est publié (sa version est lue dans les métadonnées installées).
 
 `updater=` un `Updater` permet au foyer de mettre l’appareil à jour depuis l’administration, et
 déclare `device.update`. Un `Updater` dit quelle version plus récente sa source propose (`newer`) et
-en installe une (`install`) ; le SDK en fournit un pour les paquets installés depuis PyPI, avec uv
-ou pip. Sans lui, l’administration montre seulement la version.
+en installe une (`install`), et peut donner l’adresse des notes de cette version (`notes`) ; le SDK
+en fournit un pour les paquets installés depuis PyPI, avec uv ou pip, qui donne le journal des
+changements du projet. Sans lui, l’administration montre seulement la version.
 
 `nestor-satellite run --managed` s’en sert sur lui-même. Quand une personne demande la mise à jour,
 la commande installe la nouvelle version dans son propre environnement, puis relance sa propre

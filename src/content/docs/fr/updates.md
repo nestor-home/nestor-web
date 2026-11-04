@@ -25,56 +25,39 @@ pointer vers une copie pour mettre à jour depuis un miroir.
 ## Ce que montre l’administration
 
 Quand une version plus récente sort, **Nouvelle version** apparaît en bas de la barre latérale,
-avec son numéro. Elle ouvre :
-
-- les notes de chaque version depuis la vôtre, ruptures d’abord ;
-- un avertissement quand une version change les données ou la configuration ;
-- les satellites que la nouvelle version ne sait plus servir, s’il y en a ;
-- comment mettre à jour, selon la façon dont Nestor est installé.
+avec son numéro. Elle ouvre les notes de chaque version depuis la vôtre (ruptures d’abord, avec les
+satellites que la nouvelle version ne sait plus servir), puis comment mettre à jour cette
+installation.
 
 ## Mettre à jour le serveur
 
-### Installé avec uv ou pip
+Installé avec `uv tool` ou pip, Nestor se met à jour lui-même : cliquez sur **Installer**, puis
+confirmez. Il installe la version depuis PyPI dans son propre environnement avec les extras que vous
+utilisez, la vérifie avec `nestor check`, puis redémarre dessus. Si une étape échoue, il remet la
+version précédente et le dit. Le redémarrage coupe une conversation en cours.
 
-Cliquez sur **Mettre à jour** dans la fenêtre. Nestor installe la nouvelle version depuis PyPI dans
-son propre environnement, vérifie qu’elle s’importe et qu’elle accepte votre configuration
-(`nestor check`), et remet la version précédente sinon. Il vous attend ensuite : cliquez sur
-**Redémarrer** quand la maison peut se passer de lui une minute. Une conversation en cours est
-coupée.
-
-À la main, c’est la même chose :
-
-```bash
-uv tool upgrade nestor-home   # ou : pip install -U nestor-home, dans son environnement
-nestor check
-```
-
-puis un redémarrage.
-
-### Installé avec Docker
+Sinon, la fenêtre donne les commandes adaptées à l’installation. Avec Docker :
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
 
-Un conteneur ne peut pas remplacer sa propre image. Il lui faudrait le socket Docker, et ce socket
-donne à qui le tient les droits root sur la machine : l’administration ne le demande pas.
-
-### Versions qui cassent
+Un conteneur ne peut pas remplacer sa propre image. Il lui faudrait le socket Docker, qui donne à
+qui le tient les droits root sur la machine : l’administration ne le demande jamais. Une copie de
+développement se met à jour avec git.
 
 Jusqu’à la première version stable, une version peut changer les données en place : ses notes
-demandent alors de recréer `state/` (et d’appairer de nouveau les satellites). Lisez-les avant de
-mettre à jour.
+demandent alors de recréer `state/` et d’appairer de nouveau les satellites.
 
 ## Mettre à jour un satellite
 
-Chaque satellite dit quel logiciel il fait tourner et en quelle version, ce que montre sa page. Un
-satellite autorisé à `device.update` cherche aussi une version plus récente là où il a été installé,
-une fois par jour ; sa page propose alors **Mettre à jour vers** cette version.
+Un satellite autorisé à `device.update` cherche une version plus récente là où il a été installé,
+une fois par jour. Sa page affiche alors **Mise à jour disponible** en haut. Le bouton ouvre ce que
+change cette version (les notes que l’appareil a trouvées, s’il en a trouvé) et ce qui va se passer.
 
-- L’appareil va chercher la version lui-même, à sa propre source. Nestor ne lui envoie jamais de
-  fichier ni d’adresse, seulement la version que l’appareil a signalée.
+- L’appareil va chercher la version lui-même. Nestor ne lui envoie que la version qu’il a signalée,
+  jamais de fichier ni d’adresse, et n’ouvre jamais lui-même l’adresse des notes.
 - Il l’installe et redémarre dessus. Si la nouvelle version ne se connecte pas en une minute, il
   revient à celle qu’il avait et le signale.
 - Il n’installe jamais une version plus ancienne, ni une version qu’il n’a pas trouvée.
