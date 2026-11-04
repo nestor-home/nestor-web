@@ -164,6 +164,14 @@ nestor-satellite run --core http://nestor.local:8471 --room bureau --text-only
 
 `nestor-satellite run --help` détaille le reste.
 
+## Logiciel et mises à jour
+
+Le manifeste nomme le logiciel que fait tourner l’appareil : la crate `nestor-satellite` et sa
+version, sauf si le builder nomme le paquet sous lequel un pilote est publié. Un `Updater`
+facultatif (`newer` trouve une version plus récente à sa source, `install` l’installe) déclare
+`device.update` et suit les [règles de mise à jour](/fr/docs/satellites/protocol/#10-mises-à-jour)
+du protocole. Sans lui, l’administration montre seulement la version.
+
 ## Pour aller plus loin
 
 - Le code, ses exemples et la licence des enregistrements de voix :

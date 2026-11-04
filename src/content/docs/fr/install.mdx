@@ -122,6 +122,25 @@ Il suit `latest`. Pour rester sur une ligne de versions, fixez l’étiquette, p
 </Tab>
 </Tabs>
 
+## Mises à jour
+
+Une fois par jour, Nestor lit la liste de ses versions. Quand une version plus récente sort,
+l’administration le signale en bas de sa barre latérale : les notes de chaque version depuis la
+vôtre, ce qui casse, et les satellites que la nouvelle version ne sait plus servir. Rien ne
+s’installe tout seul ([`updates`](/fr/docs/configuration/#mises-à-jour) coupe la vérification).
+
+Mettez à jour comme vous avez installé, puis redémarrez Nestor :
+
+| Installé avec  | Mettre à jour                                      |
+| -------------- | -------------------------------------------------- |
+| uv             | `uv tool upgrade nestor-home`                      |
+| pip            | `pip install -U nestor-home`, dans son environnement |
+| Docker Compose | `docker compose pull`, puis `docker compose up -d` |
+
+Lisez d’abord les notes quand une version casse quelque chose : jusqu’à la première version
+stable, une telle version peut demander de recréer `state/`. Les satellites se mettent à jour
+depuis l’administration ([Mettre à jour un satellite](/fr/docs/satellites/#mettre-à-jour-un-satellite)).
+
 ## Le compte propriétaire
 
 `nestor init` le crée. Pour une installation qui n’en a pas (configuration écrite à la main,

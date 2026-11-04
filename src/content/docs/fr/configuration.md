@@ -83,6 +83,7 @@ Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 | `initiative` | les heures calmes, et la pièce où parler quand il sait seulement que quelqu’un est là                 | [Initiative](/fr/docs/agent/initiative/)                                             |
 | `watches`    | le modèle qui trie le courrier entrant pour les veilles                                               | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
 | `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration                            | [plus bas](#administration)                                                          |
+| `updates`    | si l’administration signale une version plus récente                                                  | [plus bas](#mises-à-jour)                                                            |
 
 ## Le foyer
 
@@ -145,6 +146,17 @@ deviennent illisibles.
 - `public_url` : son adresse derrière un proxy inverse, par exemple `https://nestor.example.org`.
 
 Les comptes vivent dans `state/`, pas dans le fichier.
+
+## Mises à jour
+
+```yaml
+updates:
+  check: true # lire la liste des versions une fois par jour ; false : jamais
+```
+
+`feed` est l’adresse de la liste des versions, celle de GitHub par défaut. Nestor ne fait que la
+lire : rien n’est installé, et rien n’est envoyé que la requête. Pour mettre à jour, voyez
+[Installation](/fr/docs/install/#mises-à-jour).
 
 ## Appliquer un changement
 

@@ -36,10 +36,12 @@ Sur le lien, le WebSocket `/satellites/{device_id}/link` :
 | [`intent.beat`](/schemas/satellite/1/intent.beat.json)                                 | cœur       | un mot est joué : un léger accent de la parole     |
 | [`intent.identify`](/schemas/satellite/1/intent.identify.json)                         | cœur       | se faire remarquer                                 |
 | [`intent.text`](/schemas/satellite/1/intent.text.json)                                 | cœur       | les mots de l’assistant, à afficher                |
+| [`intent.update`](/schemas/satellite/1/intent.update.json)                             | cœur       | installer cette version plus récente du logiciel   |
 | [`input.text`](/schemas/satellite/1/input.text.json)                                   | appareil   | ce qu’une personne a tapé                          |
 | [`ack`](/schemas/satellite/1/ack.json)                                                 | appareil   | une intention a été reçue                          |
 | [`observation.speech.activity`](/schemas/satellite/1/observation.speech.activity.json) | appareil   | quelqu’un commence ou arrête de parler             |
 | [`observation.person.detected`](/schemas/satellite/1/observation.person.detected.json) | appareil   | une personne est vue                               |
+| [`update.status`](/schemas/satellite/1/update.status.json)                             | appareil   | où en est son logiciel                             |
 
 ## Garder une copie dans un SDK
 

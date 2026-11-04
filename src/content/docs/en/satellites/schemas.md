@@ -36,10 +36,12 @@ On the link, the WebSocket `/satellites/{device_id}/link`:
 | [`intent.beat`](/schemas/satellite/1/intent.beat.json)                                 | core    | a word is played: a light accent of speech  |
 | [`intent.identify`](/schemas/satellite/1/intent.identify.json)                         | core    | make yourself noticed                       |
 | [`intent.text`](/schemas/satellite/1/intent.text.json)                                 | core    | the assistant’s words, to show              |
+| [`intent.update`](/schemas/satellite/1/intent.update.json)                             | core    | install this newer version of your software |
 | [`input.text`](/schemas/satellite/1/input.text.json)                                   | device  | what a person typed                         |
 | [`ack`](/schemas/satellite/1/ack.json)                                                 | device  | an intent was received                      |
 | [`observation.speech.activity`](/schemas/satellite/1/observation.speech.activity.json) | device  | someone starts or stops speaking            |
 | [`observation.person.detected`](/schemas/satellite/1/observation.person.detected.json) | device  | a person is seen                            |
+| [`update.status`](/schemas/satellite/1/update.status.json)                             | device  | where its software stands                   |
 
 ## Keeping a copy in an SDK
 

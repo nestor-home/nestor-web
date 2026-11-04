@@ -162,6 +162,14 @@ nestor-satellite run --core http://nestor.local:8471 --room bureau --text-only
 
 `nestor-satellite run --help` lists the rest.
 
+## Software and updates
+
+The manifest names the software the device runs: the `nestor-satellite` crate and its version,
+unless the builder names the package a driver is published as. An optional `Updater` (`newer` finds
+a newer version at its source, `install` installs it) declares `device.update` and follows the
+protocol’s [update rules](/docs/satellites/protocol/#10-updates). Without it, the admin only shows
+the version.
+
 ## Going further
 
 - The source, its examples and the voice clips' licence:
