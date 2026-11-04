@@ -23,7 +23,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       # the build takes the protocol's JSON Schemas and the OAuth relay from the server package with uvx (scripts/server.mjs)
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v10.3.3
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
