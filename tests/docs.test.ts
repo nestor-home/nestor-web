@@ -112,7 +112,8 @@ describe("the provider mosaics", () => {
 describe("the reading order", () => {
   it("leads from one page to the next, with nothing before the first or after the last", () => {
     expect(neighbours("")).toEqual({ next: "quickstart" });
-    expect(neighbours("agent/initiative")).toEqual({ previous: "agent/memory", next: "configuration" });
+    expect(neighbours("agent/initiative")).toEqual({ previous: "agent/memory", next: "agent/speakers" });
+    expect(neighbours("agent/speakers")).toEqual({ previous: "agent/initiative", next: "configuration" });
     expect(neighbours("satellites/protocol")).toEqual({ previous: "satellites", next: "satellites/schemas" });
     expect(neighbours(DOC_SLUGS.at(-1) ?? "")).toEqual({ previous: DOC_SLUGS.at(-2) });
     expect(neighbours("no/such/page")).toEqual({});
