@@ -150,9 +150,7 @@ updates:
   check: true # read the release feed once a day; false: never
 ```
 
-`feed` is the address of the release feed, GitHub’s by default. Nestor only reads it: nothing is
-installed, and nothing is sent but the request. To update, see
-[Installation](/docs/install/#updates).
+`feed` is the feed’s address. See [Updates](/docs/updates/).
 
 ## Applying a change
 

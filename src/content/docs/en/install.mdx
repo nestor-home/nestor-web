@@ -123,22 +123,7 @@ It follows `latest`. To stay on a release line, set the tag, such as
 
 ## Updates
 
-Once a day, Nestor reads its release feed. When a newer release is out, the admin says so at the
-bottom of its sidebar: the notes of each release since yours, what breaks, and which satellites the
-new release no longer speaks to. Nothing is installed by itself
-([`updates`](/docs/configuration/#updates) turns the check off).
-
-Update the way you installed it, then restart Nestor:
-
-| Installed with | Update                                           |
-| -------------- | ------------------------------------------------ |
-| uv             | `uv tool upgrade nestor-home`                    |
-| pip            | `pip install -U nestor-home`, in its environment |
-| Docker Compose | `docker compose pull`, then `docker compose up -d` |
-
-Read the notes first when a release breaks something: until the first stable release, such a
-release may ask to recreate `state/`. Satellites are updated from the admin
-([Update a satellite](/docs/satellites/#update-a-satellite)).
+The admin says when a newer release is out; [Updates](/docs/updates/) tells how to update.
 
 ## The owner account
 

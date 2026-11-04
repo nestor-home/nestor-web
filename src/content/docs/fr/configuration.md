@@ -154,9 +154,7 @@ updates:
   check: true # lire la liste des versions une fois par jour ; false : jamais
 ```
 
-`feed` est l’adresse de la liste des versions, celle de GitHub par défaut. Nestor ne fait que la
-lire : rien n’est installé, et rien n’est envoyé que la requête. Pour mettre à jour, voyez
-[Installation](/fr/docs/install/#mises-à-jour).
+`feed` est l’adresse de cette liste. Voyez [Mises à jour](/fr/docs/updates/).
 
 ## Appliquer un changement
 

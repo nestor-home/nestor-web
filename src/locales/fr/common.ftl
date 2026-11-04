@@ -9,6 +9,7 @@ nav-developers = Développeurs
 nav-home = Retour à l’accueil
 nav-system = Architecture
 nav-satellites = Satellites
+nav-updates = Mises à jour
 nav-connectors = Connecteurs
 nav-start = Auto-hébergement
 nav-github = GitHub
