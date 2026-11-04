@@ -1,4 +1,5 @@
 ---
+
 title: Who is speaking
 description: Satellites are rooms anyone talks to. How Nestor knows who speaks, asks when it matters, recognises voices it was taught, and keeps sensitive actions for the person who asks.
 ---
@@ -10,12 +11,12 @@ grandson when he visits. Nestor answers whoever speaks, and works out who it is 
 
 Each turn says who spoke and how anyone knows:
 
-| Who        | From                                         | What it allows                                              |
-| ---------- | -------------------------------------------- | ----------------------------------------------------------- |
-| an account | Telegram, the admin: the channel vouches     | everything the person may do                                |
-| a voice    | a voice Nestor was taught, recognised        | a personal answer, and what is theirs, said in the room     |
-| a name     | they said who they are                       | a personal answer; what is theirs is written to them        |
-| nobody     | a satellite, no voice recognised             | what anyone at home may do                                  |
+| Who        | From                                     | What it allows                                          |
+| ---------- | ---------------------------------------- | ------------------------------------------------------- |
+| an account | Telegram, the admin: the channel vouches | everything the person may do                            |
+| a voice    | a voice Nestor was taught, recognised    | a personal answer, and what is theirs, said in the room |
+| a name     | they said who they are                   | a personal answer; what is theirs is written to them    |
+| nobody     | a satellite, no voice recognised         | what anyone at home may do                              |
 
 Someone nobody knows can turn on the lights, set a timer, add to the shopping list, ask a question,
 or have a message passed on ("tell Léa dinner is ready", signed with the room). What belongs to one
@@ -100,8 +101,10 @@ tools:
     token: ${HOME_ASSISTANT_TOKEN}
     sensitive:
       - tool: intent__HassTurnOn
-        arguments: &doors {domain: [lock, alarm_control_panel], device_class: [garage, gate, door],
-                           name: [lock, alarm, garage, gate, door]}
+        arguments: &doors
+          domain: [lock, alarm_control_panel]
+          device_class: [garage, gate, door]
+          name: [lock, alarm, garage, gate, door]
       - tool: intent__HassTurnOff
         arguments: *doors
 ```

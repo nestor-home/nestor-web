@@ -1,4 +1,5 @@
 ---
+
 title: Qui parle
 description: Les satellites sont des pièces auxquelles tout le monde parle. Comment Nestor sait qui parle, demande quand ça compte, reconnaît les voix qu’on lui a apprises et réserve les actions sensibles à qui les demande.
 ---
@@ -10,12 +11,12 @@ petit-fils aussi quand il passe. Nestor répond à qui parle, et cherche qui c�
 
 Chaque tour dit qui a parlé, et comment on le sait :
 
-| Qui          | D’où                                                | Ce que ça permet                                                |
-| ------------ | --------------------------------------------------- | --------------------------------------------------------------- |
-| un compte    | Telegram, l’admin : le canal s’en porte garant      | tout ce que la personne peut faire                              |
-| une voix     | une voix apprise à Nestor, reconnue                 | une réponse personnelle, et ce qui est à elle, dit dans la pièce |
-| un prénom    | la personne a dit qui elle est                      | une réponse personnelle ; ce qui est à elle lui est écrit       |
-| personne     | un satellite, aucune voix reconnue                  | ce que tout le monde à la maison peut faire                     |
+| Qui       | D’où                                           | Ce que ça permet                                                 |
+| --------- | ---------------------------------------------- | ---------------------------------------------------------------- |
+| un compte | Telegram, l’admin : le canal s’en porte garant | tout ce que la personne peut faire                               |
+| une voix  | une voix apprise à Nestor, reconnue            | une réponse personnelle, et ce qui est à elle, dit dans la pièce |
+| un prénom | la personne a dit qui elle est                 | une réponse personnelle ; ce qui est à elle lui est écrit        |
+| personne  | un satellite, aucune voix reconnue             | ce que tout le monde à la maison peut faire                      |
 
 Quelqu’un qu’on ne connaît pas peut allumer la lumière, lancer un minuteur, compléter la liste de
 courses, poser une question, ou faire passer un message (« dis à Léa que le dîner est prêt », signé
@@ -104,8 +105,10 @@ tools:
     token: ${HOME_ASSISTANT_TOKEN}
     sensitive:
       - tool: intent__HassTurnOn
-        arguments: &doors {domain: [lock, alarm_control_panel], device_class: [garage, gate, door],
-                           name: [serrure, alarme, garage, portail, porte]}
+        arguments: &doors
+          domain: [lock, alarm_control_panel]
+          device_class: [garage, gate, door]
+          name: [serrure, alarme, garage, portail, porte]
       - tool: intent__HassTurnOff
         arguments: *doors
 ```
