@@ -31,7 +31,7 @@ src/
 │   │                     you see why), same agent in any body, everyday requests and
 │   │                     integrations, trust and the journal, install
 │   ├── Developers.astro  the developers' page: runtime principles, architecture, the journal's
-│   │                     events, extension points, satellites and SDKs, connectors, Home
+│   │                     events, extension points, satellites and SDKs, updates, connectors, Home
 │   │                     Assistant, security, self-hosting, i18n
 │   ├── Nestor.astro      the character (one drawing, six states, a gaze)
 │   ├── Device.astro      its bodies: speaker, robot, tablet, laptop, phone, browser tab

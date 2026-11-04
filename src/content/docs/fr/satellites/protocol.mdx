@@ -7,7 +7,7 @@ description: Le standard que tout satellite implémente, quel que soit son langa
 import PairingFlow from "@/components/docs/diagrams/PairingFlow.astro";
 import PairingStates from "@/components/docs/diagrams/PairingStates.astro";
 
-Voici le standard que tout satellite implémente, en version 1 ([historique](#12-historique)). La
+Voici le standard que tout satellite implémente, en version 1 ([historique](#13-historique)). La
 [suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur y confronte les SDK et
 les pilotes.
 
@@ -79,6 +79,7 @@ Tous les corps sont en JSON (`Content-Type: application/json`).
 POST /satellites/pairings
 {"manifest": {"protocol": "nestor.satellite/1",
               "device": {"id": "capteur-entree", "model": "esp32", "room": "entree"},
+              "software": {"name": "nestor-satellite", "version": "0.5.0"},
               "capabilities": [{"name": "device.identify"}],
               "pairing_methods": ["enrollment.provisioning", "enrollment.qr"]},
  "enrollment_code": "K7QF2M9X", "method": "enrollment.provisioning"}
@@ -150,8 +151,10 @@ traduire à partir de `error` et `reason`, jamais afficher `detail`.
 
 ### 3.4 Règles du cœur
 
-- **C1.** Le cœur n’accepte que `nestor.satellite/1`. Un manifeste qui nomme un autre
-  `nestor.satellite/<n>` est refusé avec `protocol_unsupported`.
+- **C1.** Le cœur accepte les versions du protocole qu’il parle, aujourd’hui seulement
+  `nestor.satellite/1`. Un manifeste qui nomme un autre `nestor.satellite/<n>` est refusé avec
+  `protocol_unsupported`. Un cœur plus récent pourra accepter aussi la version précédant la sienne,
+  pour que les appareils se mettent à jour après lui.
 - **C2.** Un code d’enrôlement appaire un seul appareil. Il est consommé dès qu’il est accepté,
   avant que quoi que ce soit puisse l’observer : de deux appareils qui l’utilisent en même temps,
   l’un est approuvé, l’autre reçoit `enrollment_refused` (`used`).
@@ -163,8 +166,9 @@ traduire à partir de `error` et `reason`, jamais afficher `detail`.
 - **C6.** Le journal enregistre chaque étape : `satellite.pairing.requested` (avec les méthodes
   déclarées), `satellite.addition.started|completed|cancelled|expired`,
   `satellite.enrollment.refused` (avec sa raison et l’adresse), `satellite.paired` (avec la preuve,
-  la méthode et l’ajout), `satellite.identify.requested`, `satellite.revoked`. Jamais un code ni un
-  jeton en clair.
+  la méthode et l’ajout), `satellite.identify.requested`, `satellite.revoked`, puis
+  `satellite.connected` (avec le logiciel et le protocole de chaque `hello`) et les mises à jour
+  (section 10). Jamais un code ni un jeton en clair.
 
 ### 3.5 Ajouts
 
@@ -218,7 +222,7 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 {
   "protocol": "nestor.satellite/1",
   "device": { "id": "salon", "model": "reachy-mini", "room": "salon", "brand": "pollen-robotics" },
-  "sdk": { "name": "nestor-satellite-python", "version": "0.1.0" },
+  "software": { "name": "nestor-reachy", "version": "0.4.0" },
   "capabilities": [{ "name": "audio.capture" }, { "name": "audio.playback" }, { "name": "device.identify" }],
   "pairing_methods": ["device_code.speech", "enrollment.provisioning"]
 }
@@ -227,6 +231,11 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 `id` et `room` sont des identifiants en minuscules (`^[a-z0-9][a-z0-9_-]{0,63}$`). Les capacités
 sont des noms `famille.fonction`, 32 au plus, chacune déclarée une fois. Le manifeste est envoyé à
 l’appairage et dans `hello`.
+
+`software` est obligatoire : le paquet que l’appareil fait tourner, nommé comme il est installé
+(`nestor-reachy` depuis PyPI, `@nestor-home/satellite` depuis npm), et sa version, de 1 à
+64 caractères chacun. L’administration l’affiche, et un appareil qui se met à jour lui-même
+(section 10) installe les versions plus récentes de ce paquet.
 
 | Capacité                  | L’appareil…                                         |
 | ------------------------- | --------------------------------------------------- |
@@ -239,6 +248,7 @@ l’appairage et dans `hello`.
 | `expression.emotion`      | montre les émotions de l’assistant                  |
 | `motion.head`             | bouge avec la parole de l’assistant                 |
 | `device.identify`         | se fait remarquer sur demande (section 6)           |
+| `device.update`           | installe une version plus récente de son logiciel sur demande (section 10) |
 
 Un appareil sans `text.*` ni `audio.*` est un capteur ou un corps : il ne fait que remonter des
 observations et exécuter des intentions.
@@ -267,7 +277,7 @@ observations et exécuter des intentions.
   oublier son jeton et s’appairer à nouveau (P8).
 - **L3.** Chaque message est `{"type", "id", "at", "payload"}`, un par trame texte du WebSocket.
   L’appareil DOIT accuser réception de chaque `intent.*` avec `ack` en moins d’une seconde, et NE
-  DOIT envoyer que ce qu’on lui a autorisé : observations, `input.text` (section 8). Les types de
+  DOIT envoyer que ce qu’on lui a autorisé : observations, `input.text` (section 8), `update.status` (section 10). Les types de
   message inconnus venant du cœur sont ignorés.
 - **L4.** Un appareil tient un seul lien. Un nouveau lien du même appareil remplace le précédent, que
   le cœur ferme avec `4409`. Le cœur envoie un ping toutes les 20 s (pings WebSocket). Un appareil qui
@@ -312,7 +322,45 @@ observations et exécuter des intentions.
 - **A4.** Un appareil n’ouvre son micro que pour cette connexion. Ni l’appairage ni le lien ne
   l’attendent, car un navigateur peut attendre qu’une personne autorise le micro.
 
-## 10. Sécurité
+## 10. Mises à jour
+
+Un appareil autorisé à `device.update` installe une version plus récente de son propre logiciel
+quand une personne le demande depuis l’administration. Le cœur ne nomme jamais une source ni un
+fichier : il transmet seulement la version que l’appareil a trouvée lui-même. Un cœur compromis peut
+au plus demander à un appareil une version à laquelle il fait déjà confiance.
+
+```json
+{"type": "update.status", "id": "…", "at": "…", "payload": {"state": "available", "version": "0.5.1", "notes": "https://github.com/…/releases/tag/v0.5.1"}}
+{"type": "intent.update", "id": "…", "at": "…", "payload": {"version": "0.5.1"}}
+```
+
+| `state`      | Sens                                                                                    | `version`     |
+| ------------ | --------------------------------------------------------------------------------------- | ------------- |
+| `current`    | il n’a rien trouvé de plus récent                                                       | absente       |
+| `available`  | une version plus récente peut être installée                                            | cette version |
+| `installing` | il installe cette version, puis redémarre dessus                                        | cette version |
+| `failed`     | la version ne s’est pas installée ou n’a pas démarré : il est revenu à celle qu’il avait | cette version |
+
+- **U1.** Un appareil ne déclare `device.update` que s’il sait installer son logiciel lui-même. Une
+  fois accueilli et autorisé, il cherche une version plus récente de `software.name` à sa propre
+  source (l’index d’où il a été installé, jamais une adresse donnée par le cœur), et envoie
+  `update.status` au début de chaque lien. Il cherche à nouveau au plus une fois par jour.
+- **U2.** Il accuse réception de `intent.update` comme de toute intention, et n’installe que la
+  version plus récente qu’il a trouvée et signalée. Une version plus ancienne, ou qu’il n’a jamais
+  signalée, est acquittée et pas installée.
+- **U3.** Il signale `installing`, installe la version, puis redémarre dessus. La nouvelle version
+  DOIT être accueillie en moins de 60 s ; sinon l’appareil revient à la version qu’il avait et
+  signale `failed` avec la version essayée. Une installation qui échoue signale `failed` aussi.
+- **U4.** Le cœur n’envoie `intent.update` que quand une personne le demande dans l’administration,
+  qu’à un appareil connecté autorisé à `device.update`, et qu’avec la version que cet appareil a
+  signalée comme `available`. Le journal garde `satellite.update.requested` et chaque état signalé
+  par l’appareil (`satellite.update.reported`) ; la nouvelle version apparaît dans le
+  `satellite.connected` suivant.
+- **U5.** Avec tout état sauf `current`, un appareil PEUT ajouter `notes` : une adresse https (512
+  caractères au plus) de ce que change cette version, trouvée à la même source. L’administration
+  l’affiche comme un lien que le navigateur de la personne ouvre ; le cœur ne la consulte jamais.
+
+## 11. Sécurité
 
 - **Entropie.** Un code d’enrôlement a 40 bits. Avec au plus 32 codes en cours et 5 codes faux par
   minute et par adresse (20 toutes adresses confondues), les 300 essais d’une durée de vie de
@@ -333,8 +381,11 @@ observations et exécuter des intentions.
   n’appairez jamais sur la seule identification.
 - **Consentement.** Un appareil ne reçoit que les capacités qu’une personne a autorisées, jamais
   plus que ce qu’il a déclaré.
+- **Mises à jour.** Un appareil récupère une nouvelle version à sa propre source, avec les
+  contrôles d’intégrité de celle-ci, et seulement la version qu’il a signalée (U1, U2). Un appareil
+  qui ne sait pas se mettre à jour sans risque ne déclare pas `device.update`.
 
-## 11. Conformité
+## 12. Conformité
 
 La [suite de conformité](/fr/docs/satellites/conformance/) vérifie les règles de l’appareil :
 
@@ -344,7 +395,9 @@ La [suite de conformité](/fr/docs/satellites/conformance/) vérifie les règles
 | demande à s’appairer ; réclame son jeton une fois son code d’appareil tapé                      | P2     |
 | continue d’interroger après une identification en attente (s’il déclare `device.identify`)      | I1     |
 | ouvre son lien avec son jeton ; envoie d’abord un hello ; se présente comme l’appareil appairé  | L1     |
-| accuse réception de chaque intention en moins d’1 s (`intent.identify` s’il y est autorisé)     | L3, I2 |
+| accuse réception de chaque intention en moins d’1 s (`intent.identify`, `intent.update` s’il y est autorisé) | L3, I2 |
+| dit où en est son logiciel (s’il déclare `device.update`)                                       | U1     |
+| n’installe jamais une version qu’il n’a pas signalée (s’il déclare `device.update`)             | U2     |
 | chaque message suit son schéma                                                                  | L3     |
 | oublie un jeton refusé et s’appaire à nouveau                                                   | L2, P8 |
 | se reconnecte avec le même jeton quand le cœur ferme le lien                                    | L5     |
@@ -356,10 +409,10 @@ La [suite de conformité](/fr/docs/satellites/conformance/) vérifie les règles
 | ne présente qu’une fois un code d’enrôlement refusé (faux, expiré, utilisé)                     | P5     |
 | attend Retry-After quand il est limité ; s’appaire une fois la limite levée                     | P6     |
 
-Les règles propres au cœur (C1 à C6, la course de P4, I3, les limites) sont vérifiées par ses
+Les règles propres au cœur (C1 à C6, la course de P4, I3, U4, les limites) sont vérifiées par ses
 tests : [`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
 [`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/satellites/test_gateway.py).
 
-## 12. Historique
+## 13. Historique
 
 - **1.** Première version.

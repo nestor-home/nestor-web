@@ -113,6 +113,23 @@ nestor-satellite run --core http://nestor.local:8471 --room bureau --text --no-v
 The token is kept in `~/.config/nestor-satellite/<id>.json`. `nestor-satellite run --help` lists
 the rest.
 
+## Software and updates
+
+The manifest names the software the device runs: `nestor-satellite` and its version, unless the
+driver's manifest passes `software=Software.of("my-satellite")`, the package it is published as
+(its version is read from the installed metadata).
+
+`updater=` an `Updater` lets the household update the device from the admin, and declares
+`device.update`. An `Updater` says which newer version its source has (`newer`) and installs one
+(`install`), and may give the address of that version's release notes (`notes`); the SDK ships one
+for packages installed from PyPI, with uv or pip, which gives the project's changelog. Without it,
+the admin only shows the version.
+
+`nestor-satellite run --managed` uses it on itself. When a person asks for the update, the command
+installs the new version in its own environment, then starts its own command line again in place,
+so it needs no service manager to come back. If the new version is not welcomed within 60 s, it
+installs the previous one again and reports the failure.
+
 ## Going further
 
 - The source and the voice clips' licence:

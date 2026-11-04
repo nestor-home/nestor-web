@@ -82,6 +82,7 @@ Only `persona`, `household`, `models` and `channels` are required.
 | `initiative` | quiet hours, and the room to speak in when it only knows someone is home        | [Initiative](/docs/agent/initiative/)                                    |
 | `watches`    | the model that sorts incoming mail for the watches                              | [Home and services](/docs/connections/#mail-and-watches)                 |
 | `admin`      | the admin’s address and port; without it, there is no admin                     | [below](#the-admin)                                                      |
+| `updates`    | whether the admin says when a newer release is out                              | [Updates](/docs/updates/)                                                |
 
 ## The household
 
@@ -141,6 +142,7 @@ nestor secrets set openrouter   # then, in nestor.yaml: api_key: ${secret:openro
 - `public_url`: its address behind a reverse proxy, such as `https://nestor.example.org`.
 
 Accounts live in `state/`, not in the file.
+
 
 ## Applying a change
 

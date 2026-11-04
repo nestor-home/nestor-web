@@ -6,7 +6,7 @@ description: Vérifier en ligne de commande qu’un satellite, quel que soit son
 
 La suite boîte noire du serveur lance votre satellite, quel que soit son langage, une fois par
 scénario face à un faux cœur fait du vrai service d’appairage et de la vraie passerelle. Chaque
-vérification nomme la [règle du protocole](/fr/docs/satellites/protocol/#11-conformité) qu’elle
+vérification nomme la [règle du protocole](/fr/docs/satellites/protocol/#12-conformité) qu’elle
 prouve.
 
 ## La lancer

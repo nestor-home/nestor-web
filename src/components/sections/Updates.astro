@@ -1,0 +1,44 @@
+---
+import Facts from "@/components/Facts.astro";
+import type { Translator } from "@/i18n";
+import { docHref } from "@/lib/docs";
+import { highlight } from "@/lib/highlight";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+/** One satellite's update on its link: what it found, a person's request, then the install. */
+const status = (state: string) => JSON.stringify({ type: "update.status", payload: { state, version: "0.5.1" } });
+const EXCHANGE = [
+  `// ${t("upd-code-found")}`,
+  status("available"),
+  `// ${t("upd-code-asked")}`,
+  JSON.stringify({ type: "intent.update", payload: { version: "0.5.1" } }),
+  `// ${t("upd-code-installs")}`,
+  status("installing"),
+].join("\n");
+const exchangeHtml = await highlight(EXCHANGE, "json");
+---
+
+<section id="updates" class="section border-t border-rule" aria-labelledby="upd-title" data-mood="working">
+  <div class="wrap">
+    <div class="max-w-3xl">
+      <h2 id="upd-title" data-reveal class="display-2 text-ink">{t("upd-title")}</h2>
+      <p data-reveal class="lede mt-6">{t("upd-lede")}</p>
+    </div>
+    <Facts t={t} prefix="upd" count={4} />
+    <div class="mt-16 grid gap-10 lg:grid-cols-12">
+      <div data-reveal class="lg:col-span-5">
+        <h3 class="display-3 text-ink">{t("upd-satellite-title")}</h3>
+        <p class="prose-copy mt-4" set:html={t.html("upd-satellite-text")} />
+      </div>
+      <div data-reveal class="code corner-marks self-center border border-rule bg-paper-raised lg:col-span-7" set:html={exchangeHtml} />
+    </div>
+    <p class="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-ink-muted">
+      <a class="link text-ink-muted" href={docHref(t.locale, "updates")}>{t("upd-docs")}</a>
+      <a class="link text-ink-muted" href={`${docHref(t.locale, "satellites/protocol")}#${t("upd-protocol-anchor")}`}>{t("upd-protocol")}</a>
+    </p>
+  </div>
+</section>

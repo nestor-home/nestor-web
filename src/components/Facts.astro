@@ -1,0 +1,23 @@
+---
+import type { Translator } from "@/i18n";
+
+/** A two-column list of facts: `<prefix>-1` … `<prefix>-<count>` and their `-text`, inline code allowed. */
+interface Props {
+  t: Translator;
+  prefix: string;
+  count: number;
+}
+const { t, prefix, count } = Astro.props;
+const ids = Array.from({ length: count }, (_, i) => `${prefix}-${i + 1}`);
+---
+
+<dl class="mt-14 grid border-t border-rule md:grid-cols-2 md:gap-x-12">
+  {
+    ids.map((id, i) => (
+      <div data-reveal style={`--i:${i % 2}`} class="grid gap-2 border-b border-rule py-6 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-6">
+        <dt class="font-serif text-lg leading-snug text-ink">{t(id)}</dt>
+        <dd class="text-base leading-relaxed text-ink-muted" set:html={t.html(`${id}-text`)} />
+      </div>
+    ))
+  }
+</dl>

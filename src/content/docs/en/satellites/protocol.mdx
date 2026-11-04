@@ -7,7 +7,7 @@ description: The standard every satellite implements, whatever its language.
 import PairingFlow from "@/components/docs/diagrams/PairingFlow.astro";
 import PairingStates from "@/components/docs/diagrams/PairingStates.astro";
 
-This is the standard every satellite implements, version 1 ([changelog](#12-changelog)). The core’s
+This is the standard every satellite implements, version 1 ([changelog](#13-changelog)). The core’s
 black-box [conformance suite](/docs/satellites/conformance/) checks SDKs and drivers against it.
 
 A **satellite** is a device paired with a Nestor server (the **core**). It talks with the assistant
@@ -74,6 +74,7 @@ All bodies are JSON (`Content-Type: application/json`).
 POST /satellites/pairings
 {"manifest": {"protocol": "nestor.satellite/1",
               "device": {"id": "capteur-entree", "model": "esp32", "room": "entree"},
+              "software": {"name": "nestor-satellite", "version": "0.5.0"},
               "capabilities": [{"name": "device.identify"}],
               "pairing_methods": ["enrollment.provisioning", "enrollment.qr"]},
  "enrollment_code": "K7QF2M9X", "method": "enrollment.provisioning"}
@@ -139,8 +140,9 @@ and `reason`, never show `detail`.
 
 ### 3.4 Core rules
 
-- **C1.** The core accepts only `nestor.satellite/1`. A manifest naming another
-  `nestor.satellite/<n>` is refused with `protocol_unsupported`.
+- **C1.** The core accepts the protocol versions it speaks, today only `nestor.satellite/1`. A
+  manifest naming another `nestor.satellite/<n>` is refused with `protocol_unsupported`. A later core
+  may also accept the version just before its own, so that devices can be updated after it.
 - **C2.** An enrollment code pairs one device. It is spent as soon as it is accepted, before anything
   else can observe it: of two devices racing with it, one is approved and one gets
   `enrollment_refused` (`used`).
@@ -152,7 +154,8 @@ and `reason`, never show `detail`.
 - **C6.** The journal records every step: `satellite.pairing.requested` (with the declared methods),
   `satellite.addition.started|completed|cancelled|expired`, `satellite.enrollment.refused` (with its
   reason and address), `satellite.paired` (with the proof, the method and the addition),
-  `satellite.identify.requested`, `satellite.revoked`. Never a code or a token in clear.
+  `satellite.identify.requested`, `satellite.revoked`, then `satellite.connected` (with the software
+  and protocol of each `hello`) and the updates (section 10). Never a code or a token in clear.
 
 ### 3.5 Additions
 
@@ -201,7 +204,7 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 {
   "protocol": "nestor.satellite/1",
   "device": { "id": "salon", "model": "reachy-mini", "room": "salon", "brand": "pollen-robotics" },
-  "sdk": { "name": "nestor-satellite-python", "version": "0.1.0" },
+  "software": { "name": "nestor-reachy", "version": "0.4.0" },
   "capabilities": [{ "name": "audio.capture" }, { "name": "audio.playback" }, { "name": "device.identify" }],
   "pairing_methods": ["device_code.speech", "enrollment.provisioning"]
 }
@@ -209,6 +212,10 @@ nestor+https://nestor.example.org/satellites-proxy/?code=K7QF2M9X
 
 `id` and `room` are lowercase slugs (`^[a-z0-9][a-z0-9_-]{0,63}$`). Capabilities are `family.feature`
 names, at most 32, each declared once. The manifest is sent when pairing and in `hello`.
+
+`software` is required: the package the device runs, named as it is installed (`nestor-reachy` from
+PyPI, `@nestor-home/satellite` from npm), and its version, each 1 to 64 characters. The admin shows
+it, and a device that updates itself (section 10) installs newer versions of this package.
 
 | Capability                | The device…                                    |
 | ------------------------- | ---------------------------------------------- |
@@ -221,6 +228,7 @@ names, at most 32, each declared once. The manifest is sent when pairing and in 
 | `expression.emotion`      | shows the assistant’s emotions                 |
 | `motion.head`             | moves with the assistant’s speech              |
 | `device.identify`         | makes itself noticed on request (section 6)    |
+| `device.update`           | installs a newer version of its software on request (section 10) |
 
 A device with neither `text.*` nor `audio.*` is a sensor or a body: it only reports observations and
 carries out intents.
@@ -247,7 +255,7 @@ carries out intents.
   forget its token and pair again (P8).
 - **L3.** Every message is `{"type", "id", "at", "payload"}`, one per WebSocket text frame. The device
   MUST acknowledge each `intent.*` with `ack` within a second, and MUST only send what it was
-  allowed: observations, `input.text` (section 8). Unknown message types from the core are ignored.
+  allowed: observations, `input.text` (section 8), `update.status` (section 10). Unknown message types from the core are ignored.
 - **L4.** A device holds one link. A new link of the same device replaces the earlier one, which the
   core closes with `4409`. The core pings every 20 s (WebSocket pings). A device that sees them
   SHOULD treat 60 s without any as a lost link; one that cannot (a browser’s WebSocket hides them)
@@ -290,7 +298,42 @@ carries out intents.
 - **A4.** A device opens its microphone only for this connection. Pairing and the link never wait for
   it, since a browser may be waiting for a person to allow the microphone.
 
-## 10. Security considerations
+## 10. Updates
+
+A device allowed `device.update` installs a newer version of its own software when a person asks
+for it in the admin. The core never names a source or a file: it only passes on the version the
+device found itself. A compromised core can at most ask a device for a version it already trusts.
+
+```json
+{"type": "update.status", "id": "…", "at": "…", "payload": {"state": "available", "version": "0.5.1", "notes": "https://github.com/…/releases/tag/v0.5.1"}}
+{"type": "intent.update", "id": "…", "at": "…", "payload": {"version": "0.5.1"}}
+```
+
+| `state`      | Means                                                                        | `version`    |
+| ------------ | ---------------------------------------------------------------------------- | ------------ |
+| `current`    | it found nothing newer                                                       | absent       |
+| `available`  | a newer version can be installed                                             | that version |
+| `installing` | it installs that version, then starts again on it                            | that version |
+| `failed`     | the version did not install or did not start: it went back to the one it ran | that version |
+
+- **U1.** A device declares `device.update` only if it can install its software itself. Once
+  welcomed and allowed it, the device looks for a newer version of `software.name` at its own source
+  (the index it was installed from, never an address given by the core), and reports `update.status`
+  at the start of each link. It looks again at most once a day.
+- **U2.** It acknowledges `intent.update` like any intent, and installs only the newer version it
+  found and reported. An older version, or one it never reported, is acknowledged and not installed.
+- **U3.** It reports `installing`, installs the version, then starts again on it. The new version
+  MUST be welcomed within 60 s; otherwise the device goes back to the version it ran and reports
+  `failed` with the version it tried. An install that fails reports `failed` too.
+- **U4.** The core sends `intent.update` only when a person asks in the admin, only to a connected
+  device allowed `device.update`, and only with the version that device reported as `available`.
+  The journal records `satellite.update.requested` and each state the device reports
+  (`satellite.update.reported`); the new version shows in the next `satellite.connected`.
+- **U5.** With any state but `current`, a device MAY add `notes`: an https address (at most 512
+  characters) of what that version changes, found at the same source. The admin shows it as a link
+  the person's browser opens; the core never fetches it.
+
+## 11. Security considerations
 
 - **Entropy.** An enrollment code has 40 bits. With at most 32 codes in progress and 5 wrong codes
   per minute and address (20 from all addresses), the 300 guesses of a 15-minute lifetime hit a
@@ -309,8 +352,11 @@ carries out intents.
 - **Identify** shows which device answers, not that it is the one the person holds: never pair on
   identify alone.
 - **Consent.** A device gets only the capabilities a person allowed, never more than it declared.
+- **Updates.** A device fetches a new version from its own source, with that source’s integrity
+  checks, and only the version it reported (U1, U2). A device that cannot update itself safely
+  declares no `device.update`.
 
-## 11. Conformance
+## 12. Conformance
 
 The [conformance suite](/docs/satellites/conformance/) checks the device rules:
 
@@ -320,7 +366,9 @@ The [conformance suite](/docs/satellites/conformance/) checks the device rules:
 | asks to pair; claims its token once its device code is typed                               | P2     |
 | keeps polling after a pending identify (when it declares `device.identify`)                | I1     |
 | opens its link with its token; sends a hello first; introduces itself as the paired device | L1     |
-| acknowledges each intent within 1 s (`intent.identify` when allowed)                       | L3, I2 |
+| acknowledges each intent within 1 s (`intent.identify`, `intent.update` when allowed)      | L3, I2 |
+| reports where its software stands (when it declares `device.update`)                       | U1     |
+| never installs a version it did not report (when it declares `device.update`)              | U2     |
 | every message follows the schema                                                           | L3     |
 | forgets a refused token and pairs again                                                    | L2, P8 |
 | reconnects with the same token after the core closes the link                              | L5     |
@@ -332,10 +380,10 @@ The [conformance suite](/docs/satellites/conformance/) checks the device rules:
 | presents a refused enrollment code only once (wrong, expired, used)                        | P5     |
 | waits for Retry-After when rate-limited; pairs once the limit lifts                        | P6     |
 
-The core’s own rules (C1 to C6, the race of P4, I3, the limits) are proven by its tests:
+The core’s own rules (C1 to C6, the race of P4, I3, U4, the limits) are proven by its tests:
 [`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
 [`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/satellites/test_gateway.py).
 
-## 12. Changelog
+## 13. Changelog
 
 - **1.** First version.

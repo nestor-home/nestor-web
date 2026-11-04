@@ -83,6 +83,7 @@ Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 | `initiative` | les heures calmes, et la pièce où parler quand il sait seulement que quelqu’un est là                 | [Initiative](/fr/docs/agent/initiative/)                                             |
 | `watches`    | le modèle qui trie le courrier entrant pour les veilles                                               | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
 | `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration                            | [plus bas](#administration)                                                          |
+| `updates`    | si l’administration signale une version plus récente                                                  | [Mises à jour](/fr/docs/updates/)                                                    |
 
 ## Le foyer
 
@@ -145,6 +146,7 @@ deviennent illisibles.
 - `public_url` : son adresse derrière un proxy inverse, par exemple `https://nestor.example.org`.
 
 Les comptes vivent dans `state/`, pas dans le fichier.
+
 
 ## Appliquer un changement
 

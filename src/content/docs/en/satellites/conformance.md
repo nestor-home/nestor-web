@@ -6,7 +6,7 @@ description: Check a satellite, written in any language, against the protocol fr
 
 The server’s black-box suite runs your satellite, in any language, once per scenario against a fake
 core made of the real pairing service and gateway. Each check names the
-[protocol rule](/docs/satellites/protocol/#11-conformance) it proves.
+[protocol rule](/docs/satellites/protocol/#12-conformance) it proves.
 
 ## Run it
 

@@ -29,6 +29,7 @@ A camera or motors are optional: the device declares them and a person allows th
 | `expression.emotion`      | shows an emotion (`intent.expression`)                  |
 | `motion.head`             | moves its head with the beats of speech (`intent.beat`) |
 | `device.identify`         | makes itself noticed when a person looks for it         |
+| `device.update`           | installs a newer version of its software when asked     |
 
 ## Pairing
 
@@ -65,6 +66,11 @@ URI:
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
 ```
+
+### Update a satellite
+
+A satellite allowed `device.update` can be updated from its page in the admin: see
+[Updates](/docs/updates/#update-a-satellite).
 
 ## Ready to run
 

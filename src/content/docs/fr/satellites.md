@@ -18,17 +18,18 @@ passe en WebRTC. Le serveur envoie des intentions, pas des mouvements : avec `
 
 Une caméra ou des moteurs sont facultatifs : l’appareil les déclare, une personne les autorise.
 
-| Capacité                  | L’appareil…                                          |
-| ------------------------- | ---------------------------------------------------- |
-| `text.input`              | envoie ce qu’une personne a tapé                     |
-| `text.display`            | affiche les réponses de l’assistant                  |
-| `audio.capture`           | envoie son micro au serveur                          |
-| `audio.playback`          | joue la voix du serveur                              |
-| `audio.speech_activity`   | signale quand quelqu’un commence et arrête de parler |
-| `vision.person_detection` | signale une personne qu’il voit                      |
-| `expression.emotion`      | montre une émotion (`intent.expression`)             |
-| `motion.head`             | bouge la tête au rythme de la parole (`intent.beat`) |
-| `device.identify`         | se fait remarquer quand quelqu’un le cherche         |
+| Capacité                  | L’appareil…                                                   |
+| ------------------------- | ------------------------------------------------------------- |
+| `text.input`              | envoie ce qu’une personne a tapé                              |
+| `text.display`            | affiche les réponses de l’assistant                           |
+| `audio.capture`           | envoie son micro au serveur                                   |
+| `audio.playback`          | joue la voix du serveur                                       |
+| `audio.speech_activity`   | signale quand quelqu’un commence et arrête de parler          |
+| `vision.person_detection` | signale une personne qu’il voit                               |
+| `expression.emotion`      | montre une émotion (`intent.expression`)                      |
+| `motion.head`             | bouge la tête au rythme de la parole (`intent.beat`)          |
+| `device.identify`         | se fait remarquer quand quelqu’un le cherche                  |
+| `device.update`           | installe une version plus récente de son logiciel sur demande |
 
 ## Appairage
 
@@ -66,6 +67,11 @@ l’appareil :
 ```bash
 NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
 ```
+
+### Mettre à jour un satellite
+
+Un satellite autorisé à `device.update` se met à jour depuis sa page dans l’administration : voir
+[Mises à jour](/fr/docs/updates/#mettre-à-jour-un-satellite).
 
 ## Prêts à l’emploi
 

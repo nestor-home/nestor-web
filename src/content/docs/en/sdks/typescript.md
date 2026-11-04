@@ -149,6 +149,14 @@ npx nestor-satellite run --core http://nestor.local:8471 --room bureau --text --
 The token is kept in `~/.config/nestor-satellite/<id>.json`. `npx nestor-satellite --help` lists
 the rest.
 
+## Software and updates
+
+The manifest names the software the device runs: `@nestor-home/satellite` and its version, unless
+the `software` option names the package a driver is published as. A browser tab gets new code by
+reloading, so it declares no update. Elsewhere, an optional `updater` (an `Updater`: `newer` finds a
+newer version at its source, `install` installs it) declares `device.update` and follows the
+protocol’s [update rules](/docs/satellites/protocol/#10-updates).
+
 ## Going further
 
 - The source, a browser example and the voice clips' licence:

@@ -11,6 +11,7 @@ import HomeAssistant from "@/components/sections/HomeAssistant.astro";
 import Quickstart from "@/components/sections/Quickstart.astro";
 import Runtime from "@/components/sections/Runtime.astro";
 import Satellites from "@/components/sections/Satellites.astro";
+import Updates from "@/components/sections/Updates.astro";
 import { type Locale, pageMeta, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
@@ -24,6 +25,7 @@ const sections = [
   { id: "journal", label: t("nav-journal") },
   { id: "extend", label: t("nav-extend") },
   { id: "satellites", label: t("nav-satellites") },
+  { id: "updates", label: t("nav-updates") },
   { id: "connectors", label: t("nav-connectors") },
   { id: "start", label: t("nav-start") },
 ];
@@ -37,6 +39,7 @@ const sections = [
   <Events t={t} />
   <Extend t={t} />
   <Satellites t={t} />
+  <Updates t={t} />
   <Connectors t={t} />
   <HomeAssistant t={t} />
   <Control t={t} />

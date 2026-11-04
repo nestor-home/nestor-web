@@ -152,6 +152,15 @@ npx nestor-satellite run --core http://nestor.local:8471 --room bureau --text --
 Le jeton est gardé dans `~/.config/nestor-satellite/<id>.json`. `npx nestor-satellite --help`
 détaille le reste.
 
+## Logiciel et mises à jour
+
+Le manifeste nomme le logiciel que fait tourner l’appareil : `@nestor-home/satellite` et sa
+version, sauf si l’option `software` nomme le paquet sous lequel un pilote est publié. Un onglet de
+navigateur reçoit le nouveau code en se rechargeant : il ne déclare pas de mise à jour. Ailleurs, un
+`updater` facultatif (un `Updater` : `newer` trouve une version plus récente à sa source, `install`
+l’installe) déclare `device.update` et suit les
+[règles de mise à jour](/fr/docs/satellites/protocol/#10-mises-à-jour) du protocole.
+
 ## Pour aller plus loin
 
 - Le code, un exemple pour navigateur et la licence des enregistrements de voix :
