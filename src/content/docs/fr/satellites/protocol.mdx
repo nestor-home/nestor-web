@@ -330,7 +330,7 @@ fichier : il transmet seulement la version que l’appareil a trouvée lui-mê
 au plus demander à un appareil une version à laquelle il fait déjà confiance.
 
 ```json
-{"type": "update.status", "id": "…", "at": "…", "payload": {"state": "available", "version": "0.5.1"}}
+{"type": "update.status", "id": "…", "at": "…", "payload": {"state": "available", "version": "0.5.1", "notes": "https://github.com/…/releases/tag/v0.5.1"}}
 {"type": "intent.update", "id": "…", "at": "…", "payload": {"version": "0.5.1"}}
 ```
 
@@ -356,6 +356,9 @@ au plus demander à un appareil une version à laquelle il fait déjà confiance
   signalée comme `available`. Le journal garde `satellite.update.requested` et chaque état signalé
   par l’appareil (`satellite.update.reported`) ; la nouvelle version apparaît dans le
   `satellite.connected` suivant.
+- **U5.** Avec tout état sauf `current`, un appareil PEUT ajouter `notes` : une adresse https (512
+  caractères au plus) de ce que change cette version, trouvée à la même source. L’administration
+  l’affiche comme un lien que le navigateur de la personne ouvre ; le cœur ne la consulte jamais.
 
 ## 11. Sécurité
 

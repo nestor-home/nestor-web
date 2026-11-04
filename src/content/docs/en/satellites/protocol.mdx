@@ -305,7 +305,7 @@ for it in the admin. The core never names a source or a file: it only passes on 
 device found itself. A compromised core can at most ask a device for a version it already trusts.
 
 ```json
-{"type": "update.status", "id": "…", "at": "…", "payload": {"state": "available", "version": "0.5.1"}}
+{"type": "update.status", "id": "…", "at": "…", "payload": {"state": "available", "version": "0.5.1", "notes": "https://github.com/…/releases/tag/v0.5.1"}}
 {"type": "intent.update", "id": "…", "at": "…", "payload": {"version": "0.5.1"}}
 ```
 
@@ -329,6 +329,9 @@ device found itself. A compromised core can at most ask a device for a version i
   device allowed `device.update`, and only with the version that device reported as `available`.
   The journal records `satellite.update.requested` and each state the device reports
   (`satellite.update.reported`); the new version shows in the next `satellite.connected`.
+- **U5.** With any state but `current`, a device MAY add `notes`: an https address (at most 512
+  characters) of what that version changes, found at the same source. The admin shows it as a link
+  the person's browser opens; the core never fetches it.
 
 ## 11. Security considerations
 
