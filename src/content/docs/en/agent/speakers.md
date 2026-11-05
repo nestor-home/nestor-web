@@ -39,7 +39,7 @@ voices:
 ```
 
 Install the extra with `pip install 'nestor-home[voice-id]'`. The model downloads on first start.
-Results of the `speaker-id` bench (36 French speakers, Mac, one thread):
+Measured with `nestor bench run speaker-id`, on one CPU thread:
 
 | `model`                    | false rejects at 1 % false accepts | per turn | size  |
 | -------------------------- | ---------------------------------- | -------- | ----- |
@@ -47,8 +47,7 @@ Results of the `speaker-id` bench (36 French speakers, Mac, one thread):
 | `3dspeaker-campplus-zh-en` | 4.3 %                              | 62 ms    | 28 MB |
 | `3dspeaker-eres2net`       | 4.1 %                              | 165 ms   | 26 MB |
 
-Each model has its own threshold; `voices.threshold` overrides it. Not yet measured: a Raspberry Pi,
-satellite microphones, voices from one family.
+Each model has its own threshold; `voices.threshold` overrides it.
 
 ### Enrolling a voice
 

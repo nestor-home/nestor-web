@@ -39,7 +39,7 @@ voices:
 ```
 
 Installez l’extra avec `pip install 'nestor-home[voice-id]'`. Le modèle se télécharge au premier
-démarrage. Résultats du banc `speaker-id` (36 voix françaises, Mac, un fil) :
+démarrage. Mesuré avec `nestor bench run speaker-id`, sur un fil de calcul :
 
 | `model`                    | refus à tort pour 1 % d’acceptations à tort | par tour | taille |
 | -------------------------- | ------------------------------------------- | -------- | ------ |
@@ -47,8 +47,7 @@ démarrage. Résultats du banc `speaker-id` (36 voix françaises, Mac, un fil)�
 | `3dspeaker-campplus-zh-en` | 4,3 %                                       | 62 ms    | 28 Mo  |
 | `3dspeaker-eres2net`       | 4,1 %                                       | 165 ms   | 26 Mo  |
 
-Chaque modèle a son seuil ; `voices.threshold` le remplace. Pas encore mesuré : un Raspberry Pi, les
-micros des satellites, les voix d’une même famille.
+Chaque modèle a son seuil ; `voices.threshold` le remplace.
 
 ### Enregistrer une voix
 
