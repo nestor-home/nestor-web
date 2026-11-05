@@ -60,6 +60,14 @@ const og = new URL(`/og/${card}-${locale}.png`, site).href;
     <meta property="og:image:alt" content={t("meta-og-alt")} />
     <meta property="og:locale" content={locale === "fr" ? "fr_FR" : "en_GB"} />
     <meta name="twitter:card" content="summary_large_image" />
+    <!-- audience (Umami, self-hosted, no cookie): counted on the public site only, never in dev or tests -->
+    <script
+      is:inline
+      defer
+      src="https://analytics.mathislambert.fr/script.js"
+      data-website-id="d8aef39e-1f8c-4c38-828b-cca77825438d"
+      data-domains="nestorhome.dev"
+    ></script>
     <link rel="preload" href={frauncesLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={instrumentLatin} as="font" type="font/woff2" crossorigin />
     <script is:inline>
