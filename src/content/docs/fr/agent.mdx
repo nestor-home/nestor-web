@@ -30,9 +30,30 @@ Après cinq minutes de silence à voix haute, ou quatre heures par écrit, une n
 modèle ne relit plus les anciens tours. Chaque canal peut changer ce délai avec
 `conversation_ends_after_s`. Les souvenirs traversent les conversations.
 
+Une conversation n’a qu’un tour à la fois. Deux messages envoyés ensemble reçoivent leurs
+réponses dans l’ordre, et un message que Nestor apporte de lui-même attend la fin de la réponse en
+cours. À l’oral, la personne peut toujours couper la parole.
+
+## Les outils
+
 Rien de long ne se passe pendant un tour. Les actions courtes sont des outils directs : allumer
-une lampe, retenir un fait, programmer un réveil. Ce qui prend des minutes part chez un
-**exécutant**, en tâche durable, et son résultat est annoncé une fois, à qui l’a demandé.
+une lampe, retenir un fait, programmer un réveil. Un tour attend un outil 3 secondes à l’oral et
+20 secondes à l’écrit. Au-delà, l’outil continue en arrière-plan et le modèle apprend que le
+résultat suivra. Le tour se termine et Nestor reste disponible. Quand l’outil répond, son résultat
+revient dans la conversation et Nestor le dit à la personne, comme pour une tâche.
+
+```yaml
+agent:
+  spoken_tool_wait_s: 3
+  written_tool_wait_s: 20
+  tool_result_chars: 8000
+```
+
+Un résultat plus long que `tool_result_chars` est mis de côté, jamais dans le journal. Le modèle en
+voit le début, la fin et la taille, et lit la suite avec `read_result` et `search_result`.
+
+Ce qui prend des minutes part chez un **exécutant**, en tâche durable, et son résultat est annoncé
+une fois, à qui l’a demandé.
 
 ## Les consignes
 
