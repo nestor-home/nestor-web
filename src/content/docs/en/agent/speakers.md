@@ -1,39 +1,32 @@
 ---
 
-title: Who is speaking
-description: Satellites are rooms anyone talks to. How Nestor knows who speaks, asks when it matters, recognises voices it was taught, and keeps sensitive actions for the person who asks.
+title: Speakers
+description: How Nestor tells who is speaking on a satellite, recognises enrolled voices, and confirms sensitive actions.
 ---
 
-A satellite is a room, not a person. The grandmother talks to the one in her bedroom, and so does her
-grandson when he visits. Nestor answers whoever speaks, and works out who it is turn by turn.
+A satellite belongs to a room, not to a person: anyone in the room can talk to it. Nestor identifies
+the speaker on each turn.
 
-## How it knows
+## How the speaker is identified
 
-Each turn says who spoke and how anyone knows:
+| Source  | When                                      | Allows                                              |
+| ------- | ----------------------------------------- | --------------------------------------------------- |
+| account | Telegram, the admin: the channel signs in | everything the person may do                        |
+| voice   | a satellite, and the voice is enrolled    | personal answers, their own data read aloud         |
+| name    | the person says who they are              | personal answers; their own data is sent in writing |
+| unknown | a satellite, no voice recognised          | what anyone in the household may do                 |
 
-| Who        | From                                     | What it allows                                          |
-| ---------- | ---------------------------------------- | ------------------------------------------------------- |
-| an account | Telegram, the admin: the channel vouches | everything the person may do                            |
-| a voice    | a voice Nestor was taught, recognised    | a personal answer, and what is theirs, said in the room |
-| a name     | they said who they are                   | a personal answer; what is theirs is written to them    |
-| nobody     | a satellite, no voice recognised         | what anyone at home may do                              |
+An unknown speaker can control the home, set timers, use shared lists and pass on messages. A
+message passed on this way is signed with the room it came from.
 
-Someone nobody knows can turn on the lights, set a timer, add to the shopping list, ask a question,
-or have a message passed on ("tell Léa dinner is ready", signed with the room). What belongs to one
-person needs to know who asks: their mail, their reminders, their agenda.
+When the answer depends on the person ("remind me", "my appointment"), the agent asks who is speaking
+and records the answer for the rest of the conversation. A different recognised voice cancels it.
 
-So the agent asks. "Remind me", "my appointment", "as usual": it asks who it is, in a few words, then
-records the answer. The name holds for the conversation, until another recognised voice speaks. It
-never asks to turn on a light.
+## Voice recognition
 
-On a satellite the conversation is the room's: several people may speak in it, and the agent sees
-who said what.
-
-## Recognising voices
-
-Voices are recognised on the server, from what every satellite already sends, while the speech is
-transcribed. A turn does not wait for it. Without a voice model, nothing changes but that nobody is
-recognised.
+Voices are recognised on the server, from the audio the satellites already send. Recognition runs
+while the speech is transcribed, so it adds no delay to the turn. Without a voice model, every
+satellite speaker is unknown.
 
 ```yaml
 models:
@@ -45,53 +38,49 @@ voices:
   embedder: ears
 ```
 
-The model runs with sherpa-onnx (`pip install 'nestor-home[voice-id]'`) and downloads once. Measured on
-the `speaker-id` bench (36 French LibriVox readers, Mac, one thread):
+Install the extra with `pip install 'nestor-home[voice-id]'`. The model downloads on first start.
+Results of the `speaker-id` bench (36 French speakers, Mac, one thread):
 
-| `model`                    | false rejects at 1 % false accepts | per turn | on disk |
-| -------------------------- | ---------------------------------- | -------- | ------- |
-| `titanet-small` (default)  | 4.8 %                              | 47 ms    | 40 MB   |
-| `3dspeaker-campplus-zh-en` | 4.3 %                              | 62 ms    | 28 MB   |
-| `3dspeaker-eres2net`       | 4.1 %                              | 165 ms   | 26 MB   |
+| `model`                    | false rejects at 1 % false accepts | per turn | size  |
+| -------------------------- | ---------------------------------- | -------- | ----- |
+| `titanet-small` (default)  | 4.8 %                              | 47 ms    | 40 MB |
+| `3dspeaker-campplus-zh-en` | 4.3 %                              | 62 ms    | 28 MB |
+| `3dspeaker-eres2net`       | 4.1 %                              | 165 ms   | 26 MB |
 
-Each comes with its threshold; `voices.threshold` overrides it. Not measured yet: a Raspberry Pi,
-real satellite microphones, voices of one family.
+Each model has its own threshold; `voices.threshold` overrides it. Not yet measured: a Raspberry Pi,
+satellite microphones, voices from one family.
 
-### Teaching Nestor a voice
+### Enrolling a voice
 
-Nobody is recognised without agreeing to it. Nestor keeps a voiceprint, never the recording, and
-anyone can erase theirs.
+- **In the admin**: on a person's page, **Record my voice**. The person reads five sentences. An
+  owner can record the voice of someone without an account. The browser needs a secure page: https,
+  or localhost.
+- **On a satellite**: say "learn to recognise my voice". The person confirms in writing on their own
+  account, then repeats five sentences aloud.
 
-- **In the admin**, on the person's page, **Record my voice**: say what is kept, check the
-  microphone, read five sentences, try it. A person records their own voice; an owner records it for
-  someone without an account (a child, a grandparent), who agrees in person. Browsers only open the
-  microphone on a secure page: reach the admin over https, or on the machine itself (localhost).
-- **On a satellite**: "learn to recognise my voice". Nestor asks who it is, has that person confirm
-  in writing on their own account, then asks them to repeat five sentences aloud. It is the best
-  place to do it: the microphone and the distance are the real ones.
+Nestor keeps a voiceprint, never the audio. Voiceprints are stored outside the journal, so deleting
+one removes it completely.
 
-### Getting better over time
+### Learning over time
 
-A voice recorded once drifts: a cold, a tired evening, another room. Each clear turn, recognised with
-a margin and long enough, adds to it, at most 50 voiceprints, at most 20 from one room. The recording
-keeps a fixed share of every score, so learning cannot wander away from it. A name said only teaches
-nothing, and saying who really spoke ("no, it's Léa") takes back what the mistaken turn taught.
+Each turn recognised with a clear margin is added to the person's voice, up to 50 samples (20 per
+room). The enrolled recording always keeps a fixed weight in the score. A name alone teaches nothing,
+and correcting the speaker removes what the wrong turn taught.
 
-The person's page shows what was learned, with a switch to stop learning, **Forget what was learned**
-(the recording stays) and **Forget my voice**.
+The person's page in the admin shows what was learned, with a switch to stop learning,
+**Forget what was learned** and **Forget my voice**.
 
 ## Sensitive actions
 
-A voice or a name tells who speaks; only an account vouches for them. Actions that matter are
-confirmed by the person who asks:
+A recognised voice or a name never authorises anything. Sensitive actions are confirmed by the
+person who asks:
 
-- on their account, in the conversation: the agent says exactly what it will do and waits for yes;
-- asked aloud on a satellite, in writing on their account ("Open the garage?"). Once they answer,
-  it runs in their name, in the room where it was asked, and the room hears it is done. Without an
-  answer within five minutes, nothing happens.
+- on their own account, in the conversation;
+- asked aloud on a satellite, in writing on their account. The action runs once they confirm, in the
+  room where it was asked. Without an answer within five minutes, nothing happens.
 
-It stays rare: lights, heating, messages and reminders are never confirmed. For Home Assistant, whose
-tools drive lights and locks alike, say which calls are sensitive by what they act on:
+Lights, heating, messages and reminders need no confirmation. For Home Assistant, list the calls that
+do:
 
 ```yaml
 tools:
@@ -109,5 +98,5 @@ tools:
         arguments: *doors
 ```
 
-A value matches when it appears in the argument, ignoring case. A call that names neither the class
-nor a matching device goes through unconfirmed: that is the limit of a rule on arguments.
+A call is sensitive when one of these values appears in the argument, ignoring case. A call that
+names neither the device class nor a matching device passes without confirmation.

@@ -1,40 +1,32 @@
 ---
 
-title: Qui parle
-description: Les satellites sont des pièces auxquelles tout le monde parle. Comment Nestor sait qui parle, demande quand ça compte, reconnaît les voix qu’on lui a apprises et réserve les actions sensibles à qui les demande.
+title: Locuteurs
+description: Comment Nestor sait qui parle à un satellite, reconnaît les voix enregistrées et fait confirmer les actions sensibles.
 ---
 
-Un satellite est une pièce, pas une personne. La grand-mère parle à celui de sa chambre, et son
-petit-fils aussi quand il passe. Nestor répond à qui parle, et cherche qui c’est, tour par tour.
+Un satellite appartient à une pièce, pas à une personne : tout le monde dans la pièce peut lui parler.
+Nestor identifie la personne qui parle à chaque tour.
 
-## Comment il le sait
+## Comment la personne est identifiée
 
-Chaque tour dit qui a parlé, et comment on le sait :
+| Source  | Quand                                    | Permet                                                              |
+| ------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| compte  | Telegram, l’admin : le canal authentifie | tout ce que la personne a le droit de faire                         |
+| voix    | un satellite, et la voix est enregistrée | des réponses personnelles, ses propres données lues à voix haute    |
+| prénom  | la personne dit qui elle est             | des réponses personnelles ; ses données lui sont envoyées par écrit |
+| inconnu | un satellite, aucune voix reconnue       | ce que tout le foyer peut faire                                     |
 
-| Qui       | D’où                                           | Ce que ça permet                                                 |
-| --------- | ---------------------------------------------- | ---------------------------------------------------------------- |
-| un compte | Telegram, l’admin : le canal s’en porte garant | tout ce que la personne peut faire                               |
-| une voix  | une voix apprise à Nestor, reconnue            | une réponse personnelle, et ce qui est à elle, dit dans la pièce |
-| un prénom | la personne a dit qui elle est                 | une réponse personnelle ; ce qui est à elle lui est écrit        |
-| personne  | un satellite, aucune voix reconnue             | ce que tout le monde à la maison peut faire                      |
+Une personne inconnue peut piloter la maison, lancer des minuteurs, utiliser les listes partagées et
+faire passer des messages. Un message transmis ainsi est signé de la pièce d’où il vient.
 
-Quelqu’un qu’on ne connaît pas peut allumer la lumière, lancer un minuteur, compléter la liste de
-courses, poser une question, ou faire passer un message (« dis à Léa que le dîner est prêt », signé
-de la pièce). Ce qui appartient à une personne demande de savoir qui demande : ses mails, ses
-rappels, son agenda.
+Quand la réponse dépend de la personne (« rappelle-moi », « mon rendez-vous »), l’agent demande qui
+parle et retient la réponse pour la suite de la conversation. Une autre voix reconnue l’annule.
 
-Alors l’agent demande. « Rappelle-moi », « mon rendez-vous », « comme d’habitude » : il demande qui
-parle, en quelques mots, puis note la réponse. Le prénom vaut pour la conversation, jusqu’à ce
-qu’une autre voix reconnue parle. Il ne demande jamais rien pour allumer une lampe.
+## Reconnaissance vocale
 
-Sur un satellite, la conversation est celle de la pièce : plusieurs personnes peuvent y parler, et
-l’agent voit qui a dit quoi.
-
-## Reconnaître les voix
-
-Les voix se reconnaissent sur le serveur, à partir de ce que chaque satellite envoie déjà, pendant
-la transcription. Un tour ne l’attend pas. Sans modèle de voix, rien ne change, sauf que personne
-n’est reconnu.
+Les voix sont reconnues sur le serveur, à partir de l’audio que les satellites envoient déjà. La
+reconnaissance se fait pendant la transcription et n’ajoute aucun délai au tour. Sans modèle de voix,
+toute personne qui parle à un satellite est inconnue.
 
 ```yaml
 models:
@@ -46,56 +38,49 @@ voices:
   embedder: ears
 ```
 
-Le modèle tourne avec sherpa-onnx (`pip install 'nestor-home[voice-id]'`) et se télécharge une fois.
-Mesuré sur le banc `speaker-id` (36 lecteurs LibriVox français, Mac, un fil) :
+Installez l’extra avec `pip install 'nestor-home[voice-id]'`. Le modèle se télécharge au premier
+démarrage. Résultats du banc `speaker-id` (36 voix françaises, Mac, un fil) :
 
-| `model`                    | refus à tort pour 1 % d’acceptations à tort | par tour | sur disque |
-| -------------------------- | ------------------------------------------- | -------- | ---------- |
-| `titanet-small` (défaut)   | 4,8 %                                       | 47 ms    | 40 Mo      |
-| `3dspeaker-campplus-zh-en` | 4,3 %                                       | 62 ms    | 28 Mo      |
-| `3dspeaker-eres2net`       | 4,1 %                                       | 165 ms   | 26 Mo      |
+| `model`                    | refus à tort pour 1 % d’acceptations à tort | par tour | taille |
+| -------------------------- | ------------------------------------------- | -------- | ------ |
+| `titanet-small` (défaut)   | 4,8 %                                       | 47 ms    | 40 Mo  |
+| `3dspeaker-campplus-zh-en` | 4,3 %                                       | 62 ms    | 28 Mo  |
+| `3dspeaker-eres2net`       | 4,1 %                                       | 165 ms   | 26 Mo  |
 
-Chacun vient avec son seuil ; `voices.threshold` le remplace. Pas encore mesuré : un Raspberry Pi, les
-vrais micros des satellites, les voix d’une même famille.
+Chaque modèle a son seuil ; `voices.threshold` le remplace. Pas encore mesuré : un Raspberry Pi, les
+micros des satellites, les voix d’une même famille.
 
-### Apprendre une voix à Nestor
+### Enregistrer une voix
 
-Personne n’est reconnu sans l’avoir accepté. Nestor garde une empreinte de la voix, jamais
-l’enregistrement, et chacun peut effacer la sienne.
+- **Dans l’admin** : sur la page d’une personne, **Enregistrer ma voix**. La personne lit cinq phrases.
+  Un propriétaire peut enregistrer la voix de quelqu’un sans compte. Le navigateur demande une page
+  sécurisée : https, ou localhost.
+- **Sur un satellite** : dites « apprends à reconnaître ma voix ». La personne confirme par écrit sur
+  son propre compte, puis répète cinq phrases à voix haute.
 
-- **Dans l’admin**, sur la page de la personne, **Enregistrer ma voix** : ce qui est gardé, le
-  micro, cinq phrases à lire, un essai. Chacun enregistre sa propre voix ; un propriétaire l’enregistre
-  pour quelqu’un sans compte (un enfant, un grand-parent), qui donne son accord de vive voix. Les
-  navigateurs n’ouvrent le micro que sur une page sécurisée : l’admin en https, ou sur la machine
-  elle-même (localhost).
-- **Sur un satellite** : « apprends à reconnaître ma voix ». Nestor demande qui parle, fait confirmer
-  par écrit sur le compte de cette personne, puis lui fait répéter cinq phrases à voix haute. C’est
-  le meilleur endroit : le micro et la distance sont les vrais.
+Nestor garde une empreinte de la voix, jamais l’audio. Les empreintes sont rangées hors du journal :
+en supprimer une l’efface complètement.
 
-### S’affiner avec le temps
+### Apprentissage au fil du temps
 
-Une voix enregistrée une fois s’éloigne : un rhume, un soir de fatigue, une autre pièce. Chaque tour
-net, reconnu avec de la marge et assez long, l’enrichit, 50 empreintes au plus, 20 au plus d’une même
-pièce. L’enregistrement garde une part fixe de chaque score, pour que l’apprentissage ne s’en
-éloigne pas. Un prénom seul n’apprend rien, et dire qui parlait vraiment (« non, c’est Léa ») retire
-ce que le tour mal reconnu avait appris.
+Chaque tour reconnu avec une marge nette enrichit la voix de la personne, jusqu’à 50 échantillons
+(20 par pièce). L’enregistrement de départ garde toujours un poids fixe dans le score. Un prénom seul
+n’apprend rien, et corriger la personne qui parlait retire ce que le tour mal reconnu avait appris.
 
-La page de la personne montre ce qui a été appris, avec un interrupteur pour arrêter, **Oublier ce
-qui a été appris** (l’enregistrement reste) et **Oublier ma voix**.
+La page de la personne dans l’admin montre ce qui a été appris, avec un interrupteur pour arrêter,
+**Oublier ce qui a été appris** et **Oublier ma voix**.
 
 ## Actions sensibles
 
-Une voix ou un prénom disent qui parle ; seul un compte s’en porte garant. Les actions qui comptent
-sont confirmées par la personne qui les demande :
+Une voix reconnue ou un prénom n’autorisent jamais rien. Les actions sensibles sont confirmées par la
+personne qui les demande :
 
-- sur son compte, dans la conversation : l’agent dit exactement ce qu’il va faire et attend son oui ;
-- demandées à voix haute sur un satellite, par écrit sur son compte (« Ouvrir le garage ? »). Une fois
-  sa réponse donnée, l’action se fait en son nom, dans la pièce où elle a été demandée, et la pièce
-  entend que c’est fait. Sans réponse en cinq minutes, rien ne se passe.
+- sur son propre compte, dans la conversation ;
+- demandées à voix haute sur un satellite, par écrit sur son compte. L’action se fait une fois
+  confirmée, dans la pièce où elle a été demandée. Sans réponse en cinq minutes, rien ne se passe.
 
-Ça reste rare : lumières, chauffage, messages et rappels ne sont jamais confirmés. Pour Home Assistant,
-dont les outils pilotent lampes et serrures pareil, dites quels appels sont sensibles selon ce sur
-quoi ils agissent :
+Lumières, chauffage, messages et rappels ne demandent aucune confirmation. Pour Home Assistant, listez
+les appels qui en demandent une :
 
 ```yaml
 tools:
@@ -113,6 +98,5 @@ tools:
         arguments: *doors
 ```
 
-Une valeur compte quand elle apparaît dans l’argument, sans tenir compte des majuscules. Un appel qui
-ne nomme ni la classe ni un appareil reconnu passe sans confirmation : c’est la limite d’une règle
-sur les arguments.
+Un appel est sensible quand l’une de ces valeurs apparaît dans l’argument, sans tenir compte des
+majuscules. Un appel qui ne nomme ni la classe ni un appareil correspondant passe sans confirmation.

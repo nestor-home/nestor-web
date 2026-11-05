@@ -23,6 +23,19 @@ PASS  claims its token once its device code is typed (P2)
 PASS  opens its link with its token, a hello first, as the paired device (L1)
 ...`;
 const intent = JSON.stringify({ type: "intent.expression", payload: { expression: "joy", intensity: 0.7 } });
+/** a turn said to a satellite, as the journal records it: the room, then who spoke and how it is known */
+const turn = JSON.stringify(
+  {
+    type: "conversation.turn.user",
+    payload: {
+      address: { channel: "satellites", conversation: "salon" },
+      text: t("sat-speaker-said"),
+      speaker: { person: "lea", by: "voice", confidence: 0.82 },
+    },
+  },
+  null,
+  2,
+);
 
 type Sdk = "python" | "typescript" | "rust";
 
@@ -43,6 +56,7 @@ const SDKS: { id: Sdk; lang: string; cli: string }[] = [
 ];
 const sdks = await Promise.all(SDKS.map(async (s) => ({ ...s, html: await driver(s.id, s.lang) })));
 const intentHtml = await highlight(intent, "json");
+const turnHtml = await highlight(turn, "json");
 const conformanceHtml = await highlight(CONFORMANCE_OUTPUT, "bash");
 ---
 
@@ -120,6 +134,18 @@ const conformanceHtml = await highlight(CONFORMANCE_OUTPUT, "bash");
         <p class="prose-copy mt-4" set:html={t.html("sat-intent-text")} />
       </div>
       <div data-reveal class="code corner-marks self-center border border-rule bg-paper-raised lg:col-span-7" set:html={intentHtml} />
+    </div>
+
+    <!-- speakers -->
+    <div class="mt-24 grid gap-10 lg:grid-cols-12">
+      <div data-reveal class="lg:col-span-5">
+        <h3 class="display-3 text-ink">{t("sat-speaker-title")}</h3>
+        <p class="prose-copy mt-4" set:html={t.html("sat-speaker-text")} />
+        <a class="link mt-4 inline-block font-mono text-xs text-ink-muted" href={docHref(t.locale, "agent/speakers")}
+          >{t("sat-speaker-docs")}</a
+        >
+      </div>
+      <div data-reveal class="code corner-marks self-center border border-rule bg-paper-raised lg:col-span-7" set:html={turnHtml} />
     </div>
 
     <!-- SDKs -->

@@ -12,4 +12,4 @@ tr-4-text = Avant d’envoyer un mail ou de modifier quoi que ce soit, il demand
 tr-5 = Chacun à sa place
 tr-5-text = Rôles et permissions par personne, par canal et par outil. Un nouvel appareil attend votre accord.
 tr-6 = La reconnaissance, si vous voulez
-tr-6-text = Des profils de voix ou de visage seulement pour qui accepte. Être reconnu ne débloque jamais rien à lui seul.
+tr-6-text = Seulement pour les personnes qui enregistrent leur voix. Nestor garde une empreinte, jamais l’audio, et vous pouvez la supprimer. Une voix reconnue n’ouvre jamais une porte : les actions sensibles se confirment par écrit.

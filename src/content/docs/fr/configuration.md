@@ -81,7 +81,7 @@ Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 | `tools`      | les serveurs MCP dont l’agent peut utiliser les outils : les appareils de Home Assistant, et d’autres | [Maison et services](/fr/docs/connections/#serveurs-mcp)                             |
 | `executors`  | des agents qui prennent les tâches longues                                                            | [Maison et services](/fr/docs/connections/#tâches-longues)                           |
 | `initiative` | les heures calmes, et la pièce où parler quand il sait seulement que quelqu’un est là                 | [Initiative](/fr/docs/agent/initiative/)                                             |
-| `voices`     | le modèle de voix qui reconnaît qui parle à un satellite                                              | [Qui parle](/fr/docs/agent/speakers/)                                                |
+| `voices`     | le modèle de voix qui reconnaît qui parle à un satellite                                              | [Locuteurs](/fr/docs/agent/speakers/)                                                |
 | `watches`    | le modèle qui trie le courrier entrant pour les veilles                                               | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
 | `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration                            | [plus bas](#administration)                                                          |
 | `updates`    | si l’administration signale une version plus récente                                                  | [Mises à jour](/fr/docs/updates/)                                                    |
@@ -103,8 +103,8 @@ household:
 
 - `telegram:<id>` : son identifiant Telegram. Les messages d’un compte inconnu sont ignorés, et le
   journal du serveur affiche leur identifiant.
-- Les satellites sont des pièces, pas des comptes : tout le monde à la maison peut leur parler.
-  Qui parle se sait par sa voix ou par ce qu’on dit, voir [Qui parle](/fr/docs/agent/speakers/).
+- Les satellites n’ont pas de compte : tout le monde dans la pièce peut leur parler. Voir
+  [Locuteurs](/fr/docs/agent/speakers/).
 - `reach` : où lui écrire quand elle est absente ou pendant les heures calmes, par exemple
   `telegram:123456789`.
 - `may_message` : les personnes à qui elle peut faire écrire l’assistant ; `"*"`, tout le monde,
