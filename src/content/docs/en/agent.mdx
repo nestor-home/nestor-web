@@ -29,9 +29,30 @@ A **conversation** groups turns close in time, as in Home Assistant's Assist. Af
 silence aloud, or four hours in writing, a new one starts and the model stops rereading the old
 turns. Each channel can change this with `conversation_ends_after_s`. Memories cross conversations.
 
+A conversation has one turn at a time. Two messages sent together are answered in order, and a
+message Nestor brings by itself waits for the answer being written. Aloud, the person can always
+cut in.
+
+## Tools
+
 Nothing long happens inside a turn. Short actions are direct tools: turn on a light, remember a
-fact, set a wake-up. Work that takes minutes goes to an **executor** as a durable task, and its
-result is announced once, to whoever asked.
+fact, set a wake-up. A turn waits for a tool 3 seconds aloud and 20 seconds in writing. Past
+that, the tool keeps running in the background and the model is told its result will follow. The
+turn ends and Nestor stays available. When the tool answers, its result comes back to the
+conversation and Nestor tells the person, as for a task.
+
+```yaml
+agent:
+  spoken_tool_wait_s: 3
+  written_tool_wait_s: 20
+  tool_result_chars: 8000
+```
+
+A result longer than `tool_result_chars` is stored aside, never in the journal. The model sees its
+start, its end and its size, and reads the rest with `read_result` and `search_result`.
+
+Work that takes minutes goes to an **executor** as a durable task, and its result is announced
+once, to whoever asked.
 
 ## The instructions
 
