@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.7.0](https://github.com/nestor-home/nestor-web/compare/v0.6.3...v0.7.0) (2026-11-05)
+
+
+### Features
+
+* count the site's audience with Umami ([#58](https://github.com/nestor-home/nestor-web/issues/58)) ([4c497aa](https://github.com/nestor-home/nestor-web/commit/4c497aae70fab061f6391dae82f6b2a0c3abdc4a))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @nestor-home/character to v0.3.0 ([#50](https://github.com/nestor-home/nestor-web/issues/50)) ([1ad0c85](https://github.com/nestor-home/nestor-web/commit/1ad0c85822beb883383e967e0c8068c1f0eb5df9))
+* **deps:** update dependency lucide-react to v1.67.0 ([#43](https://github.com/nestor-home/nestor-web/issues/43)) ([040db91](https://github.com/nestor-home/nestor-web/commit/040db91a063ab060432b84f7e2ed67b245d8f935))
+* **deps:** update dependency lucide-react to v1.68.0 ([#57](https://github.com/nestor-home/nestor-web/issues/57)) ([459845b](https://github.com/nestor-home/nestor-web/commit/459845bc6de78e18ed9bb94eb397f75c17e3661e))
+* **deps:** update dependency nestor-home to v0.8.1 ([#55](https://github.com/nestor-home/nestor-web/issues/55)) ([cc7ea34](https://github.com/nestor-home/nestor-web/commit/cc7ea341726f87d2003694411edd00c36b2d007a))
+
+
+### Documentation
+
+* one turn at a time, tools that answer later, large results aside ([#59](https://github.com/nestor-home/nestor-web/issues/59)) ([72c39b5](https://github.com/nestor-home/nestor-web/commit/72c39b5752d827209bcfdb9aba7a21ad360d0df3))
+* satellites name their software and update from the admin ([#49](https://github.com/nestor-home/nestor-web/issues/49)) ([ccecd39](https://github.com/nestor-home/nestor-web/commit/ccecd39849c0f15d27713289885036bfdd2378cf))
+* who is speaking, shared satellites and voice recognition ([#56](https://github.com/nestor-home/nestor-web/issues/56)) ([14b1b37](https://github.com/nestor-home/nestor-web/commit/14b1b371025181c9663f9271107bf10cfce56bfa))
+
 ## [0.6.3](https://github.com/nestor-home/nestor-web/compare/v0.6.2...v0.6.3) (2026-11-03)
 
 
