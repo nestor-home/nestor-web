@@ -33,6 +33,14 @@ The **courier** decides first and journals its decision with the reason:
 - the person asked for writing, or is away: a message where they read (Telegram today);
 - they are home: spoken in their room, or by the main satellite when their room is unknown;
 - quiet hours: nothing spoken unless urgent, and the message still goes in writing;
-- no presence at all: the conversation the request came from, else a message.
+- no presence at all: a message; said aloud only back into a spoken conversation still going on,
+  or to someone with nowhere to write;
+- something private (a mail for someone): the room only hears that something came, and the content
+  is written at once.
+
+A message spoken aloud is heard by everyone in the room. See [Speakers](/docs/agent/speakers/).
+
+A delivered message stays in the conversation's history together with what it was about (the task's
+result, the mail), so a reply to it has that context.
 
 Presence comes from Home Assistant: a room when it knows, home or away otherwise.

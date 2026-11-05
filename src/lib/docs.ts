@@ -9,7 +9,7 @@ import type { BrandKey } from "@/lib/brands";
 /** Groups of the sidebar; their names are the Fluent messages `docs-group-<id>`. */
 export const DOC_GROUPS = [
   { id: "start", pages: ["", "quickstart", "install"] },
-  { id: "agent", pages: ["agent", "agent/memory", "agent/initiative"] },
+  { id: "agent", pages: ["agent", "agent/memory", "agent/initiative", "agent/speakers"] },
   { id: "configure", pages: ["configuration", "models", "channels", "connections", "updates"] },
   { id: "satellites", pages: ["satellites", "satellites/protocol", "satellites/schemas", "satellites/conformance"] },
   { id: "sdks", pages: ["sdks/python", "sdks/typescript", "sdks/rust", "sdks/templates"] },

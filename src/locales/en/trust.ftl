@@ -12,4 +12,4 @@ tr-4-text = Before it sends a mail or changes anything, it asks. It reads mail f
 tr-5 = Everyone in their place
 tr-5-text = Roles and permissions for each person, channel and tool. A new device waits for your approval.
 tr-6 = Recognition, if you want it
-tr-6-text = Voice and face profiles only for people who agree. Being recognised never unlocks anything on its own.
+tr-6-text = Only for people who record their voice. Nestor keeps a voiceprint, never the audio, and you can delete it. A recognised voice never unlocks a door: sensitive actions are confirmed in writing.

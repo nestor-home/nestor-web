@@ -38,7 +38,7 @@ persona:
 household:
   - id: alex
     name: Alex
-    accounts: ["satellites:*"]
+    accounts: []
 
 models:
   main:
@@ -71,7 +71,7 @@ Only `persona`, `household`, `models` and `channels` are required.
 | Section      | Sets                                                                            | Explained in                                                             |
 | ------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `persona`    | the assistant’s name and character, the household’s language and time zone      | [below](#language-and-time)                                              |
-| `household`  | the people, and how each channel recognises them                                | [below](#the-household)                                                  |
+| `household`  | the people, and the accounts channels recognise them by                         | [below](#the-household)                                                  |
 | `models`     | the language models, under names you choose                                     | [Models](/docs/models/)                                                  |
 | `agent`      | which model answers aloud, in writing, and on wake-ups                          | [Models](/docs/models/#roles)                                            |
 | `memory`     | how much each turn recalls, the summaries’ model, search by meaning             | [Models](/docs/models/#search-by-meaning), [Memory](/docs/agent/memory/) |
@@ -80,6 +80,7 @@ Only `persona`, `household`, `models` and `channels` are required.
 | `tools`      | MCP servers whose tools the agent may use: Home Assistant’s devices, and others | [Home and services](/docs/connections/#mcp-servers)                      |
 | `executors`  | agents that take on longer tasks                                                | [Home and services](/docs/connections/#longer-tasks)                     |
 | `initiative` | quiet hours, and the room to speak in when it only knows someone is home        | [Initiative](/docs/agent/initiative/)                                    |
+| `voices`     | the voice model that recognises who speaks to a satellite                       | [Speakers](/docs/agent/speakers/)                                        |
 | `watches`    | the model that sorts incoming mail for the watches                              | [Home and services](/docs/connections/#mail-and-watches)                 |
 | `admin`      | the admin’s address and port; without it, there is no admin                     | [below](#the-admin)                                                      |
 | `updates`    | whether the admin says when a newer release is out                              | [Updates](/docs/updates/)                                                |
@@ -92,7 +93,7 @@ Each person has an `id`, a `name`, and the `accounts` that identify them:
 household:
   - id: alex
     name: Alex
-    accounts: ["telegram:123456789", "satellites:*"]
+    accounts: ["telegram:123456789"]
   - id: sam
     name: Sam
     accounts: ["telegram:987654321"]
@@ -101,7 +102,7 @@ household:
 
 - `telegram:<id>`: their Telegram user id. Messages from unknown accounts are ignored, and the
   server’s log prints their id.
-- `satellites:*`: whatever is said or typed on a satellite is theirs. Give it to one person only.
+- Satellites have no account: anyone in the room can talk to them. See [Speakers](/docs/agent/speakers/).
 - `reach`: where to write to them when they are away or it is quiet hours, such as
   `telegram:123456789`.
 - `may_message`: the person ids they may have the assistant write to; `"*"`, everyone, by default.
