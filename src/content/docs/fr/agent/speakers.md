@@ -25,7 +25,7 @@ parle et retient la réponse pour la suite de la conversation. Une autre voix re
 ## Reconnaissance vocale
 
 Les voix sont reconnues sur le serveur, à partir de l’audio que les satellites envoient déjà. La
-reconnaissance se fait pendant la transcription et n’ajoute aucun délai au tour. Sans modèle de voix,
+reconnaissance se fait pendant la transcription et n’ajoute aucun délai au tour. Sans modèle de locuteur,
 toute personne qui parle à un satellite est inconnue.
 
 ```yaml

@@ -25,7 +25,7 @@ and records the answer for the rest of the conversation. A different recognised 
 ## Voice recognition
 
 Voices are recognised on the server, from the audio the satellites already send. Recognition runs
-while the speech is transcribed, so it adds no delay to the turn. Without a voice model, every
+while the speech is transcribed, so it adds no delay to the turn. Without a speaker model, every
 satellite speaker is unknown.
 
 ```yaml

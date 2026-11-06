@@ -47,15 +47,21 @@ models:
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: anthropic/claude-haiku-5.5
+  ears:
+    kind: elevenlabs-transcription
+    api_key: ${ELEVENLABS_API_KEY}
+    language: fr
+  voice:
+    kind: elevenlabs-speech
+    api_key: ${ELEVENLABS_API_KEY}
+    voice_id: GPAQQPp9dazaB2bl4zg9
 
 channels:
   - kind: satellites
     host: 0.0.0.0
     voice:
-      speech:
-        api_key: ${ELEVENLABS_API_KEY}
-        voice_id: GPAQQPp9dazaB2bl4zg9
-        language: fr
+      transcription: ears
+      speech: voice
 
 admin:
   host: 0.0.0.0
@@ -120,11 +126,10 @@ persona:
   language: French # la langue dans laquelle écrit le modèle
   timezone: Europe/Paris # l'heure du foyer : heures calmes, rappels, dates des souvenirs
 
-channels:
-  - kind: satellites
-    voice:
-      speech:
-        language: fr # la langue que transcrit la voix
+models:
+  ears:
+    kind: elevenlabs-transcription
+    language: fr # la langue que transcrit la voix
 ```
 
 ## Clés et secrets

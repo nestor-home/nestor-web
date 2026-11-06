@@ -43,13 +43,21 @@ channels:
 Aloud, add a [voice](#voice):
 
 ```yaml
+models:
+  ears:
+    kind: elevenlabs-transcription
+    api_key: ${ELEVENLABS_API_KEY}
+  voice:
+    kind: elevenlabs-speech
+    api_key: ${ELEVENLABS_API_KEY}
+    voice_id: GPAQQPp9dazaB2bl4zg9
+
 channels:
   - kind: satellites
     host: 0.0.0.0
     voice:
-      speech:
-        api_key: ${ELEVENLABS_API_KEY}
-        voice_id: GPAQQPp9dazaB2bl4zg9
+      transcription: ears
+      speech: voice
 ```
 
 `host: 0.0.0.0` opens port 8471 to your network. Then [pair them](/docs/satellites/). Anyone in the
@@ -66,24 +74,33 @@ Docker image has it.
 <Providers kind="speech" locale="en">
 <ProviderSetup kind="speech" brand="elevenlabs">
 
-One key covers transcription (Scribe v2 Realtime) and speech (v4 Turbo).
+One key covers two models: one hears people (Scribe v2 Realtime), the other gives the assistant its
+voice (v4 Turbo). Both are [models](/docs/models/#hearing-and-speaking), named in the `voice` block.
 
 ```ini
 ELEVENLABS_API_KEY=sk_...
 ```
 
 ```yaml
+models:
+  ears:
+    kind: elevenlabs-transcription
+    api_key: ${ELEVENLABS_API_KEY}
+  voice:
+    kind: elevenlabs-speech
+    api_key: ${ELEVENLABS_API_KEY}
+    voice_id: GPAQQPp9dazaB2bl4zg9
+
 channels:
   - kind: satellites
     host: 0.0.0.0
     voice:
-      speech:
-        api_key: ${ELEVENLABS_API_KEY}
-        voice_id: GPAQQPp9dazaB2bl4zg9
+      transcription: ears
+      speech: voice
 ```
 
-`voice_id` is any voice of your library. Transcription expects English unless `speech` sets
-`language`.
+`voice_id` is any voice of your library. Transcription expects English unless its model sets
+`language` (`fr`, `de`…).
 
 </ProviderSetup>
 </Providers>

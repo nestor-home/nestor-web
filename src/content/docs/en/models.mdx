@@ -230,6 +230,21 @@ memory:
 Any OpenAI-compatible `/embeddings` endpoint works. `dimensions` is the vector size. For a model
 that expects a prefix (`query: `), set `query_prefix` and `document_prefix`. Changing the model reindexes in the background. See [Memory](/docs/agent/memory/).
 
+## Hearing and speaking
+
+`models` holds every model Nestor uses, each of one type, and a setting only offers the models of
+its type:
+
+| Type          | What it does                         | Named in                                              |
+| ------------- | ------------------------------------ | ----------------------------------------------------- |
+| language      | answers, aloud or in writing         | `agent` ([Roles](#roles))                             |
+| embedding     | finds memories by meaning            | `memory.embedder`                                     |
+| transcription | hears what people say to a satellite | a satellites channel's `voice.transcription`          |
+| speech        | gives the assistant its voice        | a satellites channel's `voice.speech`                 |
+| speaker       | knows who is speaking                | `voices.embedder` ([Speakers](/docs/agent/speakers/)) |
+
+Setting up the voice: [Channels and voice](/docs/channels/#voice).
+
 ## Settings
 
 A chat profile also takes:
