@@ -40,7 +40,7 @@
     "@fluent/syntax": "0.19.0",
     "@fontsource/fraunces": "5.3.0",
     "@fontsource/instrument-sans": "5.3.0",
-    "@playwright/test": "1.64.1",
+    "@playwright/test": "1.65.0",
     "@resvg/resvg-js": "2.6.2",
     "@tailwindcss/vite": "4.3.4",
     "@types/node": "26.6.6",
