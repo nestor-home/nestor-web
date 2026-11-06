@@ -45,10 +45,12 @@ Aloud, add a [voice](#voice):
 ```yaml
 models:
   ears:
-    kind: elevenlabs-transcription
+    type: transcription
+    provider: elevenlabs
     api_key: ${ELEVENLABS_API_KEY}
   voice:
-    kind: elevenlabs-speech
+    type: speech
+    provider: elevenlabs
     api_key: ${ELEVENLABS_API_KEY}
     voice_id: GPAQQPp9dazaB2bl4zg9
 
@@ -84,10 +86,12 @@ ELEVENLABS_API_KEY=sk_...
 ```yaml
 models:
   ears:
-    kind: elevenlabs-transcription
+    type: transcription
+    provider: elevenlabs
     api_key: ${ELEVENLABS_API_KEY}
   voice:
-    kind: elevenlabs-speech
+    type: speech
+    provider: elevenlabs
     api_key: ${ELEVENLABS_API_KEY}
     voice_id: GPAQQPp9dazaB2bl4zg9
 

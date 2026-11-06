@@ -31,7 +31,8 @@ toute personne qui parle à un satellite est inconnue.
 ```yaml
 models:
   ears:
-    kind: sherpa-onnx-voice
+    type: speaker
+    provider: sherpa-onnx
     model: titanet-small
 
 voices:

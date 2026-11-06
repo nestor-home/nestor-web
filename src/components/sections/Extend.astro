@@ -1,7 +1,7 @@
 ---
 /**
  * Extension points, with real code: an MCP server by configuration, an adapter as a Python plugin
- * declared under the `nestor.adapters` entry points (as nestor's own pyproject declares its eight),
+ * declared under the `nestor.adapters` entry points (as nestor's own pyproject declares its own),
  * and a satellite, checked by the conformance suite.
  */
 import CopyCommand from "@/components/CopyCommand.astro";
@@ -59,7 +59,20 @@ const CONFORMANCE =
   "uvx --from 'nestor-home[voice]' nestor satellites conformance -- nestor-satellite run --core {url} --room salon --null-audio --token-file {state}/token.json";
 
 /** the adapters nestor-home declares itself (its pyproject's `nestor.adapters`) */
-const BUILTINS = ["openai-compatible", "hermes", "telegram", "satellites", "home-assistant", "mcp", "google", "imap"];
+const BUILTINS = [
+  "openai-compatible-language",
+  "openai-compatible-embedding",
+  "elevenlabs-transcription",
+  "elevenlabs-speech",
+  "sherpa-onnx-speaker",
+  "hermes",
+  "telegram",
+  "satellites",
+  "home-assistant",
+  "mcp",
+  "google",
+  "imap",
+];
 
 const [mcp, entry, plugin, config] = await Promise.all([
   highlight(MCP, "yaml"),

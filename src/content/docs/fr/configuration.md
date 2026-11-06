@@ -43,16 +43,19 @@ household:
 
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: anthropic/claude-haiku-5.5
   ears:
-    kind: elevenlabs-transcription
+    type: transcription
+    provider: elevenlabs
     api_key: ${ELEVENLABS_API_KEY}
     language: fr
   voice:
-    kind: elevenlabs-speech
+    type: speech
+    provider: elevenlabs
     api_key: ${ELEVENLABS_API_KEY}
     voice_id: GPAQQPp9dazaB2bl4zg9
 
@@ -128,7 +131,8 @@ persona:
 
 models:
   ears:
-    kind: elevenlabs-transcription
+    type: transcription
+    provider: elevenlabs
     language: fr # la langue que transcrit la voix
 ```
 
