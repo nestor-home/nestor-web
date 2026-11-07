@@ -42,7 +42,8 @@ it:
 ```yaml
 models:
   embed:
-    kind: openai-compatible-embeddings
+    type: embedding
+    provider: openai-compatible
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: openai/text-embedding-3-small

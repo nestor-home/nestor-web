@@ -44,13 +44,23 @@ channels:
 À voix haute, ajoutez une [voix](#voix) :
 
 ```yaml
+models:
+  ears:
+    type: transcription
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+  voice:
+    type: speech
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+    voice_id: GPAQQPp9dazaB2bl4zg9
+
 channels:
   - kind: satellites
     host: 0.0.0.0
     voice:
-      speech:
-        api_key: ${ELEVENLABS_API_KEY}
-        voice_id: GPAQQPp9dazaB2bl4zg9
+      transcription: ears
+      speech: voice
 ```
 
 `host: 0.0.0.0` ouvre le port 8471 à votre réseau. Ensuite, [appairez-les](/fr/docs/satellites/).
@@ -67,24 +77,36 @@ L’image Docker le contient.
 <Providers kind="speech" locale="fr">
 <ProviderSetup kind="speech" brand="elevenlabs">
 
-Une seule clé couvre la transcription (Scribe v2 Realtime) et la parole (v4 Turbo).
+Une seule clé couvre deux modèles : l’un entend les gens (Scribe v2 Realtime), l’autre donne sa voix
+à l’assistant (v4 Turbo). Ce sont des [modèles](/fr/docs/models/#entendre-et-parler), nommés dans le
+bloc `voice`.
 
 ```ini
 ELEVENLABS_API_KEY=sk_...
 ```
 
 ```yaml
+models:
+  ears:
+    type: transcription
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+  voice:
+    type: speech
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+    voice_id: GPAQQPp9dazaB2bl4zg9
+
 channels:
   - kind: satellites
     host: 0.0.0.0
     voice:
-      speech:
-        api_key: ${ELEVENLABS_API_KEY}
-        voice_id: GPAQQPp9dazaB2bl4zg9
+      transcription: ears
+      speech: voice
 ```
 
 `voice_id` est n’importe quelle voix de votre bibliothèque. La transcription attend de l’anglais,
-sauf si `speech` fixe `language`.
+sauf si son modèle fixe `language` (`fr`, `de`…).
 
 </ProviderSetup>
 </Providers>

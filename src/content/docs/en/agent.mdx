@@ -72,12 +72,14 @@ Name model profiles in `models` and point each role to one. A single model needs
 ```yaml
 models:
   quick:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: anthropic/claude-haiku-5.5
   careful:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: anthropic/claude-sonnet-5.5
