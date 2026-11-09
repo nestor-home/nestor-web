@@ -9,7 +9,8 @@ Nestor voit et agit par ce que vous branchez ici. Chaque branchement est faculta
 ## Home Assistant
 
 Home Assistant apporte à Nestor **la présence** (qui est là, et dans quelle pièce quand il le sait)
-et **les appareils** (ce qu’il expose aux assistants, par son serveur MCP).
+et **les appareils** (ce qu’il expose aux assistants, par son serveur MCP), avec une adresse et un
+jeton.
 
 Dans Home Assistant :
 
@@ -21,28 +22,24 @@ Dans `.env` :
 
 ```ini
 HOME_ASSISTANT_URL=http://homeassistant.local:8123
-HOME_ASSISTANT_MCP_URL=http://homeassistant.local:8123/api/mcp
 HOME_ASSISTANT_TOKEN=eyJ...
 ```
 
 Dans `nestor.yaml` (`nestor init` l’a écrit, en commentaire) :
 
 ```yaml
-presence:
+home:
   kind: home-assistant
   url: ${HOME_ASSISTANT_URL}
   token: ${HOME_ASSISTANT_TOKEN}
   people:
     alex: person.alex # chaque identifiant du foyer, avec son entité personne
-
-tools:
-  - kind: mcp
-    name: home
-    url: ${HOME_ASSISTANT_MCP_URL}
-    token: ${HOME_ASSISTANT_TOKEN}
 ```
 
-`presence` accepte aussi `rooms`, un capteur par personne qui donne sa pièce (Bermuda, ESPresense).
+`home` accepte aussi `rooms`, un capteur par personne qui donne sa pièce (Bermuda, ESPresense), et
+`sensitive`, ce qui demande l’accord d’une personne (voir [Qui parle](/fr/docs/agent/speakers/)). La
+page **Maison** de l’admin montre qui est où, les pièces, les personnes que Home Assistant connaît et
+ses actions.
 
 ## Serveurs MCP
 

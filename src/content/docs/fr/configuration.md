@@ -78,22 +78,22 @@ figure aussi, en commentaire.
 
 Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 
-| Section      | Règle                                                                                                 | Expliqué dans                                                                        |
-| ------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `persona`    | le nom et le caractère de l’assistant, la langue et le fuseau du foyer                                | [plus bas](#langue-et-heure)                                                         |
-| `household`  | les personnes, et comment chaque canal les reconnaît                                                  | [plus bas](#le-foyer)                                                                |
-| `models`     | les modèles de langage, sous des noms que vous choisissez                                             | [Modèles](/fr/docs/models/)                                                          |
-| `agent`      | quel modèle répond à voix haute, par écrit, et aux réveils                                            | [Modèles](/fr/docs/models/#rôles)                                                    |
-| `memory`     | ce que chaque tour retrouve, le modèle des résumés, la recherche par le sens                          | [Modèles](/fr/docs/models/#recherche-par-le-sens), [Mémoire](/fr/docs/agent/memory/) |
-| `channels`   | Telegram, les satellites et leur voix                                                                 | [Canaux et voix](/fr/docs/channels/)                                                 |
-| `presence`   | qui est là et dans quelle pièce, depuis Home Assistant                                                | [Maison et services](/fr/docs/connections/#home-assistant)                           |
-| `tools`      | les serveurs MCP dont l’agent peut utiliser les outils : les appareils de Home Assistant, et d’autres | [Maison et services](/fr/docs/connections/#serveurs-mcp)                             |
-| `executors`  | des agents qui prennent les tâches longues                                                            | [Maison et services](/fr/docs/connections/#tâches-longues)                           |
-| `initiative` | les heures calmes, et la pièce où parler quand il sait seulement que quelqu’un est là                 | [Initiative](/fr/docs/agent/initiative/)                                             |
-| `voices`     | le modèle de voix qui reconnaît qui parle à un satellite                                              | [Locuteurs](/fr/docs/agent/speakers/)                                                |
-| `watches`    | le modèle qui trie le courrier entrant pour les veilles                                               | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
-| `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration                            | [plus bas](#administration)                                                          |
-| `updates`    | si l’administration signale une version plus récente                                                  | [Mises à jour](/fr/docs/updates/)                                                    |
+| Section      | Règle                                                                                 | Expliqué dans                                                                        |
+| ------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `persona`    | le nom et le caractère de l’assistant, la langue et le fuseau du foyer                | [plus bas](#langue-et-heure)                                                         |
+| `household`  | les personnes, et comment chaque canal les reconnaît                                  | [plus bas](#le-foyer)                                                                |
+| `models`     | les modèles de langage, sous des noms que vous choisissez                             | [Modèles](/fr/docs/models/)                                                          |
+| `agent`      | quel modèle répond à voix haute, par écrit, et aux réveils                            | [Modèles](/fr/docs/models/#rôles)                                                    |
+| `memory`     | ce que chaque tour retrouve, le modèle des résumés, la recherche par le sens          | [Modèles](/fr/docs/models/#recherche-par-le-sens), [Mémoire](/fr/docs/agent/memory/) |
+| `channels`   | Telegram, les satellites et leur voix                                                 | [Canaux et voix](/fr/docs/channels/)                                                 |
+| `home`       | Home Assistant : qui est là et dans quelle pièce, ses actions                         | [Maison et services](/fr/docs/connections/#home-assistant)                           |
+| `tools`      | d’autres serveurs MCP dont l’agent peut utiliser les outils                           | [Maison et services](/fr/docs/connections/#serveurs-mcp)                             |
+| `executors`  | des agents qui prennent les tâches longues                                            | [Maison et services](/fr/docs/connections/#tâches-longues)                           |
+| `initiative` | les heures calmes, et la pièce où parler quand il sait seulement que quelqu’un est là | [Initiative](/fr/docs/agent/initiative/)                                             |
+| `voices`     | le modèle de voix qui reconnaît qui parle à un satellite                              | [Locuteurs](/fr/docs/agent/speakers/)                                                |
+| `watches`    | le modèle qui trie le courrier entrant pour les veilles                               | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
+| `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration            | [plus bas](#administration)                                                          |
+| `updates`    | si l’administration signale une version plus récente                                  | [Mises à jour](/fr/docs/updates/)                                                    |
 
 ## Le foyer
 
