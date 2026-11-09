@@ -14,8 +14,9 @@ question from someone else. All of them take the same road.
 
 **Wake-ups.** "Remind me tomorrow at 9 to call the plumber", "every weekday at 8, tell me the
 weather". The agent calls `schedule` with a self-contained instruction and a time, once or on chosen
-days. When due, it runs a background turn on the `agent.background` model. A wake-up missed while
-Nestor was stopped runs once at the next start.
+days. When due, the agent does what it says, with its tools, and what it writes reaches whoever
+set it, where they are, like a task's result; when there is nothing to tell (a price that did not
+drop), nothing is sent. A wake-up missed while Nestor was stopped runs once at the next start.
 
 **Watches.** "Tell me when the bank writes" creates a watch. A small model reads each incoming mail
 once against all watches and announces a match to whoever asked.
@@ -24,7 +25,8 @@ once against all watches and announces a match to whoever asked.
 
 **Messages.** "Tell Hugo dinner is at eight", "ask Léa if she needs the car": the agent calls
 `message_person`. A message that expects a reply opens a question, which both see until the answer
-comes back. Each person's `may_message` lists whom they may write to through the agent.
+comes back. Each person's `may_message` lists whom else they may write to through the agent; anyone may write
+to themselves.
 
 ## Where and how it arrives
 

@@ -59,7 +59,8 @@ tools:
 ```
 
 - `include` or `exclude` filters its tools.
-- `risks` overrides a tool’s risk: `read`, `write` or `sensitive`.
+- `risks` sets a tool’s risk: `read`, `write` or `sensitive`. The server’s annotations only tell
+  reading from writing; nothing asks for a confirmation unless you mark it `sensitive`.
 - `headers` adds HTTP headers, kept secret like the token.
 
 ## Mail and watches

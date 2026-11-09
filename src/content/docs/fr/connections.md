@@ -59,7 +59,8 @@ tools:
 ```
 
 - `include` ou `exclude` filtre ses outils.
-- `risks` remplace le risque d’un outil : `read`, `write` ou `sensitive`.
+- `risks` fixe le risque d’un outil : `read`, `write` ou `sensitive`. Les annotations du serveur
+  disent seulement s’il lit ou s’il écrit ; rien ne demande de confirmation sans `sensitive`.
 - `headers` ajoute des en-têtes HTTP, gardés secrets comme le jeton.
 
 ## Courrier et veilles
