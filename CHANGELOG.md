@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.1](https://github.com/nestor-home/nestor-web/compare/v0.7.0...v0.7.1) (2026-11-09)
+
+
+### Bug Fixes
+
+* **deps:** update astro monorepo ([#65](https://github.com/nestor-home/nestor-web/issues/65)) ([3d5a368](https://github.com/nestor-home/nestor-web/commit/3d5a368656d481b74a7702d9812ed5773715e859))
+* **deps:** update astro monorepo ([#66](https://github.com/nestor-home/nestor-web/issues/66)) ([9c4c76a](https://github.com/nestor-home/nestor-web/commit/9c4c76aede90236297d69cd608abca346f7d951d))
+* **deps:** update dependency lucide-react to v1.69.0 ([#63](https://github.com/nestor-home/nestor-web/issues/63)) ([e5bfd67](https://github.com/nestor-home/nestor-web/commit/e5bfd6764cbde957c2c0595dd7bff3df2b3cb173))
+* **deps:** update dependency lucide-react to v1.70.0 ([#68](https://github.com/nestor-home/nestor-web/issues/68)) ([379eaf3](https://github.com/nestor-home/nestor-web/commit/379eaf3aaefcbb747f4e6270f4181dcbb72bf66f))
+* **deps:** update dependency nestor-home to v0.9.0 ([#60](https://github.com/nestor-home/nestor-web/issues/60)) ([e8f3ec4](https://github.com/nestor-home/nestor-web/commit/e8f3ec44e27d08a7af0a52dbf2f00c9239223bd6))
+* **deps:** update dependency simple-icons to v16.37.0 ([#70](https://github.com/nestor-home/nestor-web/issues/70)) ([ee00fc7](https://github.com/nestor-home/nestor-web/commit/ee00fc71eaf1e0ff240f2fe8eed26c4e0ddc5b22))
+
+
+### Documentation
+
+* transcription and speech as models ([#64](https://github.com/nestor-home/nestor-web/issues/64)) ([c4cd529](https://github.com/nestor-home/nestor-web/commit/c4cd52939a8db7fae6262563b65f63348413a865))
+
 ## [0.7.0](https://github.com/nestor-home/nestor-web/compare/v0.6.3...v0.7.0) (2026-11-05)
 
 
