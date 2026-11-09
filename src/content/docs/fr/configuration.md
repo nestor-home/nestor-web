@@ -148,7 +148,6 @@ deviennent illisibles.
 
 Les comptes vivent dans `state/`, pas dans le fichier.
 
-
 ## Appliquer un changement
 
 Nestor lit sa configuration au démarrage. Après un changement, vérifiez-la, puis redémarrez
