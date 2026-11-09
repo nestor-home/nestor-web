@@ -191,13 +191,12 @@ make it listen on all interfaces: `OLLAMA_HOST=0.0.0.0` for Ollama, `--host 0.0.
 
 With several profiles, each role names the one it uses:
 
-| Role                   | What it does                                         | When unset         |
-| ---------------------- | ---------------------------------------------------- | ------------------ |
-| `agent.spoken`         | answers aloud: the first words must come fast        | `agent.written`    |
-| `agent.written`        | answers in writing, where a few seconds are fine     | `agent.spoken`     |
-| `agent.background`     | works on a wake-up it scheduled, with no one waiting | `agent.written`    |
-| `watches.model`        | sorts incoming mail for the watches                  | `agent.written`    |
-| `memory.consolidation` | summarizes each conversation once it is over         | `agent.background` |
+| Role                   | What it does                                     | When unset      |
+| ---------------------- | ------------------------------------------------ | --------------- |
+| `agent.spoken`         | answers aloud: the first words must come fast    | `agent.written` |
+| `agent.written`        | answers in writing, where a few seconds are fine | `agent.spoken`  |
+| `watches.model`        | sorts incoming mail for the watches              | `agent.written` |
+| `memory.consolidation` | summarizes each conversation once it is over     | `agent.written` |
 
 A fast model for the voice, a stronger one for the rest:
 
