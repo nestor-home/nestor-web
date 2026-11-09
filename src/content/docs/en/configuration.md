@@ -144,7 +144,6 @@ nestor secrets set openrouter   # then, in nestor.yaml: api_key: ${secret:openro
 
 Accounts live in `state/`, not in the file.
 
-
 ## Applying a change
 
 Nestor reads its configuration at start. After a change, check it, then restart Nestor:
