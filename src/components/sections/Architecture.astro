@@ -9,7 +9,7 @@ const { t } = Astro.props;
 
 /** The contracts each part implements or uses, as named in nestor/src/nestor/modules. */
 const PORTS: Record<PartId, string[]> = {
-  agent: ["ConversationModel", "ToolProvider"],
+  agent: ["LanguageModel", "ToolProvider"],
   memory: ["MemoryStore"],
   initiative: ["InboundEventSource", "Channel.send"],
   journal: ["EventLog", "BlobStore"],
@@ -18,7 +18,7 @@ const PORTS: Record<PartId, string[]> = {
   home: ["PresenceSource", "ToolProvider"],
   connectors: ["Connector", "CredentialVault"],
   executors: ["Executor"],
-  providers: ["ConversationModel"],
+  providers: ["LanguageModel", "EmbeddingModel", "TranscriptionModel", "SpeechModel", "SpeakerModel"],
 };
 const ids = Object.keys(PORTS) as PartId[];
 const parts: Part[] = ids.map((id) => ({

@@ -27,7 +27,8 @@ MODEL_API_KEY=sk-or-...
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: anthropic/claude-haiku-5.5
@@ -43,7 +44,8 @@ MODEL_API_KEY=sk-...
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://api.openai.com/v1
     api_key: ${MODEL_API_KEY}
     model: gpt-5-mini
@@ -59,7 +61,8 @@ MODEL_API_KEY=...
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://api.mistral.ai/v1
     api_key: ${MODEL_API_KEY}
     model: mistral-small-latest
@@ -75,7 +78,8 @@ MODEL_API_KEY=gsk_...
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://api.groq.com/openai/v1
     api_key: ${MODEL_API_KEY}
     model: openai/gpt-oss-120b
@@ -93,7 +97,8 @@ MODEL_API_KEY=...
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://generativelanguage.googleapis.com/v1beta/openai/
     api_key: ${MODEL_API_KEY}
     model: gemini-flash-latest
@@ -111,7 +116,8 @@ MODEL_API_KEY=sk-ant-...
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://api.anthropic.com/v1/
     api_key: ${MODEL_API_KEY}
     model: claude-haiku-5-5
@@ -125,7 +131,8 @@ models:
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: http://localhost:11434/v1
     model: qwen3
 ```
@@ -138,7 +145,8 @@ Start LM Studio’s server. `model` is the loaded model’s identifier.
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: http://localhost:1234/v1
     model: qwen3-8b
 ```
@@ -151,7 +159,8 @@ Set a key only if vLLM runs with `--api-key`.
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: http://localhost:8000/v1
     model: Qwen/Qwen3-8B
 ```
@@ -164,7 +173,8 @@ models:
 ```yaml
 models:
   main:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: http://localhost:8080/v1
     model: local
 ```
@@ -194,12 +204,14 @@ A fast model for the voice, a stronger one for the rest:
 ```yaml
 models:
   quick:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: anthropic/claude-haiku-5.5
   deep:
-    kind: openai-compatible
+    type: language
+    provider: openai-compatible
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: anthropic/claude-sonnet-5.5
@@ -217,7 +229,8 @@ vegetarian”. Name an embedding profile in `memory.embedder`:
 ```yaml
 models:
   vectors:
-    kind: openai-compatible-embeddings
+    type: embedding
+    provider: openai-compatible
     base_url: https://openrouter.ai/api/v1
     api_key: ${MODEL_API_KEY}
     model: openai/text-embedding-3-small
@@ -229,6 +242,21 @@ memory:
 
 Any OpenAI-compatible `/embeddings` endpoint works. `dimensions` is the vector size. For a model
 that expects a prefix (`query: `), set `query_prefix` and `document_prefix`. Changing the model reindexes in the background. See [Memory](/docs/agent/memory/).
+
+## Hearing and speaking
+
+`models` holds every model Nestor uses. Each one says its `type` and its `provider`, the plugin
+that serves that type, and a setting only offers the models of its type:
+
+| Type          | What it does                         | Named in                                              |
+| ------------- | ------------------------------------ | ----------------------------------------------------- |
+| language      | answers, aloud or in writing         | `agent` ([Roles](#roles))                             |
+| embedding     | finds memories by meaning            | `memory.embedder`                                     |
+| transcription | hears what people say to a satellite | a satellites channel's `voice.transcription`          |
+| speech        | gives the assistant its voice        | a satellites channel's `voice.speech`                 |
+| speaker       | knows who is speaking                | `voices.embedder` ([Speakers](/docs/agent/speakers/)) |
+
+Setting up the voice: [Channels and voice](/docs/channels/#voice).
 
 ## Settings
 
