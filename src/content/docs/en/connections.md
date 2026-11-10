@@ -9,7 +9,7 @@ Nestor sees and acts through what you connect here. Each connection is optional.
 ## Home Assistant
 
 Home Assistant gives Nestor **presence** (who is home, and in which room when it knows) and
-**devices** (what it exposes to assistants, through its MCP server).
+**devices** (what it exposes to assistants, through its MCP server), with one address and one token.
 
 In Home Assistant:
 
@@ -21,28 +21,23 @@ In `.env`:
 
 ```ini
 HOME_ASSISTANT_URL=http://homeassistant.local:8123
-HOME_ASSISTANT_MCP_URL=http://homeassistant.local:8123/api/mcp
 HOME_ASSISTANT_TOKEN=eyJ...
 ```
 
 In `nestor.yaml` (`nestor init` wrote it, commented out):
 
 ```yaml
-presence:
+home:
   kind: home-assistant
   url: ${HOME_ASSISTANT_URL}
   token: ${HOME_ASSISTANT_TOKEN}
   people:
     alex: person.alex # each household id, with its person entity
-
-tools:
-  - kind: mcp
-    name: home
-    url: ${HOME_ASSISTANT_MCP_URL}
-    token: ${HOME_ASSISTANT_TOKEN}
 ```
 
-`presence` also takes `rooms`, a sensor per person that gives their room (Bermuda, ESPresense).
+`home` also takes `rooms`, a sensor per person that gives their room (Bermuda, ESPresense), and
+`sensitive`, what needs a person's go-ahead (see [Who is speaking](/docs/agent/speakers/)). The
+admin's **Home** page shows who is where, the rooms, the people Home Assistant knows and its actions.
 
 ## MCP servers
 

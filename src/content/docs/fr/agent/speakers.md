@@ -79,24 +79,21 @@ personne qui les demande :
 - demandées à voix haute sur un satellite, par écrit sur son compte. L’action se fait une fois
   confirmée, dans la pièce où elle a été demandée. Sans réponse en cinq minutes, rien ne se passe.
 
-Lumières, chauffage, messages et rappels ne demandent aucune confirmation. Pour Home Assistant, listez
-les appels qui en demandent une :
+Lumières, chauffage, messages et rappels ne demandent aucune confirmation. Pour Home Assistant,
+`sensitive` dit ce qui en demande une, quelle que soit l’action ; par défaut, serrures, alarme,
+garages, portails et portes :
 
 ```yaml
-tools:
-  - kind: mcp
-    name: home
-    url: ${HOME_ASSISTANT_MCP_URL}
-    token: ${HOME_ASSISTANT_TOKEN}
-    sensitive:
-      - tool: intent__HassTurnOn
-        arguments: &doors
-          domain: [lock, alarm_control_panel]
-          device_class: [garage, gate, door]
-          name: [serrure, alarme, garage, portail, porte]
-      - tool: intent__HassTurnOff
-        arguments: *doors
+home:
+  kind: home-assistant
+  url: ${HOME_ASSISTANT_URL}
+  token: ${HOME_ASSISTANT_TOKEN}
+  sensitive:
+    domains: [lock, alarm_control_panel]
+    device_classes: [garage, gate, door]
+    names: [serrure, alarme, garage, portail, porte]
 ```
 
-Un appel est sensible quand l’une de ces valeurs apparaît dans l’argument, sans tenir compte des
-majuscules. Un appel qui ne nomme ni la classe ni un appareil correspondant passe sans confirmation.
+Une action est sensible quand l’une de ces valeurs apparaît dans son domaine, sa classe ou son nom,
+sans tenir compte des majuscules. La personne répond dans la conversation, ou sur la page
+**Messages** de l’admin.

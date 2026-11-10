@@ -79,24 +79,19 @@ person who asks:
 - asked aloud on a satellite, in writing on their account. The action runs once they confirm, in the
   room where it was asked. Without an answer within five minutes, nothing happens.
 
-Lights, heating, messages and reminders need no confirmation. For Home Assistant, list the calls that
-do:
+Lights, heating, messages and reminders need no confirmation. For Home Assistant, `sensitive` says
+what does, whatever the action; by default, locks, the alarm, garages, gates and doors:
 
 ```yaml
-tools:
-  - kind: mcp
-    name: home
-    url: ${HOME_ASSISTANT_MCP_URL}
-    token: ${HOME_ASSISTANT_TOKEN}
-    sensitive:
-      - tool: intent__HassTurnOn
-        arguments: &doors
-          domain: [lock, alarm_control_panel]
-          device_class: [garage, gate, door]
-          name: [lock, alarm, garage, gate, door]
-      - tool: intent__HassTurnOff
-        arguments: *doors
+home:
+  kind: home-assistant
+  url: ${HOME_ASSISTANT_URL}
+  token: ${HOME_ASSISTANT_TOKEN}
+  sensitive:
+    domains: [lock, alarm_control_panel]
+    device_classes: [garage, gate, door]
+    names: [lock, alarm, garage, gate, door]
 ```
 
-A call is sensitive when one of these values appears in the argument, ignoring case. A call that
-names neither the device class nor a matching device passes without confirmation.
+An action is sensitive when one of these values appears in its domain, device class or name, ignoring
+case. The person answers in the conversation, or on the admin's **Messages** page.

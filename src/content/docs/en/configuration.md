@@ -77,22 +77,22 @@ Assistant is there too, commented out.
 
 Only `persona`, `household`, `models` and `channels` are required.
 
-| Section      | Sets                                                                            | Explained in                                                             |
-| ------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `persona`    | the assistant’s name and character, the household’s language and time zone      | [below](#language-and-time)                                              |
-| `household`  | the people, and the accounts channels recognise them by                         | [below](#the-household)                                                  |
-| `models`     | the language models, under names you choose                                     | [Models](/docs/models/)                                                  |
-| `agent`      | which model answers aloud, in writing, and on wake-ups                          | [Models](/docs/models/#roles)                                            |
-| `memory`     | how much each turn recalls, the summaries’ model, search by meaning             | [Models](/docs/models/#search-by-meaning), [Memory](/docs/agent/memory/) |
-| `channels`   | Telegram, the satellites and their voice                                        | [Channels and voice](/docs/channels/)                                    |
-| `presence`   | who is home and in which room, from Home Assistant                              | [Home and services](/docs/connections/#home-assistant)                   |
-| `tools`      | MCP servers whose tools the agent may use: Home Assistant’s devices, and others | [Home and services](/docs/connections/#mcp-servers)                      |
-| `executors`  | agents that take on longer tasks                                                | [Home and services](/docs/connections/#longer-tasks)                     |
-| `initiative` | quiet hours, and the room to speak in when it only knows someone is home        | [Initiative](/docs/agent/initiative/)                                    |
-| `voices`     | the voice model that recognises who speaks to a satellite                       | [Speakers](/docs/agent/speakers/)                                        |
-| `watches`    | the model that sorts incoming mail for the watches                              | [Home and services](/docs/connections/#mail-and-watches)                 |
-| `admin`      | the admin’s address and port; without it, there is no admin                     | [below](#the-admin)                                                      |
-| `updates`    | whether the admin says when a newer release is out                              | [Updates](/docs/updates/)                                                |
+| Section      | Sets                                                                       | Explained in                                                             |
+| ------------ | -------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `persona`    | the assistant’s name and character, the household’s language and time zone | [below](#language-and-time)                                              |
+| `household`  | the people, and the accounts channels recognise them by                    | [below](#the-household)                                                  |
+| `models`     | the language models, under names you choose                                | [Models](/docs/models/)                                                  |
+| `agent`      | which model answers aloud, in writing, and on wake-ups                     | [Models](/docs/models/#roles)                                            |
+| `memory`     | how much each turn recalls, the summaries’ model, search by meaning        | [Models](/docs/models/#search-by-meaning), [Memory](/docs/agent/memory/) |
+| `channels`   | Telegram, the satellites and their voice                                   | [Channels and voice](/docs/channels/)                                    |
+| `home`       | Home Assistant: who is home and in which room, its actions                 | [Home and services](/docs/connections/#home-assistant)                   |
+| `tools`      | other MCP servers whose tools the agent may use                            | [Home and services](/docs/connections/#mcp-servers)                      |
+| `executors`  | agents that take on longer tasks                                           | [Home and services](/docs/connections/#longer-tasks)                     |
+| `initiative` | quiet hours, and the room to speak in when it only knows someone is home   | [Initiative](/docs/agent/initiative/)                                    |
+| `voices`     | the voice model that recognises who speaks to a satellite                  | [Speakers](/docs/agent/speakers/)                                        |
+| `watches`    | the model that sorts incoming mail for the watches                         | [Home and services](/docs/connections/#mail-and-watches)                 |
+| `admin`      | the admin’s address and port; without it, there is no admin                | [below](#the-admin)                                                      |
+| `updates`    | whether the admin says when a newer release is out                         | [Updates](/docs/updates/)                                                |
 
 ## The household
 
