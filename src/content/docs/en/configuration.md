@@ -82,7 +82,7 @@ Only `persona`, `household`, `models` and `channels` are required.
 | `persona`    | the assistant’s name and character, the household’s language and time zone | [below](#language-and-time)                                              |
 | `household`  | the people, and the accounts channels recognise them by                    | [below](#the-household)                                                  |
 | `models`     | the language models, under names you choose                                | [Models](/docs/models/)                                                  |
-| `agent`      | which model answers aloud, in writing, and on wake-ups                     | [Models](/docs/models/#roles)                                            |
+| `agent`      | which model answers aloud and in writing                                   | [Models](/docs/models/#roles)                                            |
 | `memory`     | how much each turn recalls, the summaries’ model, search by meaning        | [Models](/docs/models/#search-by-meaning), [Memory](/docs/agent/memory/) |
 | `channels`   | Telegram, the satellites and their voice                                   | [Channels and voice](/docs/channels/)                                    |
 | `home`       | Home Assistant: who is home and in which room, its actions                 | [Home and services](/docs/connections/#home-assistant)                   |

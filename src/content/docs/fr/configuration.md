@@ -83,7 +83,7 @@ Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 | `persona`    | le nom et le caractère de l’assistant, la langue et le fuseau du foyer                | [plus bas](#langue-et-heure)                                                         |
 | `household`  | les personnes, et comment chaque canal les reconnaît                                  | [plus bas](#le-foyer)                                                                |
 | `models`     | les modèles de langage, sous des noms que vous choisissez                             | [Modèles](/fr/docs/models/)                                                          |
-| `agent`      | quel modèle répond à voix haute, par écrit, et aux réveils                            | [Modèles](/fr/docs/models/#rôles)                                                    |
+| `agent`      | quel modèle répond à voix haute et par écrit                                          | [Modèles](/fr/docs/models/#rôles)                                                    |
 | `memory`     | ce que chaque tour retrouve, le modèle des résumés, la recherche par le sens          | [Modèles](/fr/docs/models/#recherche-par-le-sens), [Mémoire](/fr/docs/agent/memory/) |
 | `channels`   | Telegram, les satellites et leur voix                                                 | [Canaux et voix](/fr/docs/channels/)                                                 |
 | `home`       | Home Assistant : qui est là et dans quelle pièce, ses actions                         | [Maison et services](/fr/docs/connections/#home-assistant)                           |
