@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.2](https://github.com/nestor-home/nestor-web/compare/v0.7.1...v0.7.2) (2026-11-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency nestor-home to v0.10.0 ([#73](https://github.com/nestor-home/nestor-web/issues/73)) ([bcd233b](https://github.com/nestor-home/nestor-web/commit/bcd233b86a105c7fe2b963dad3687d14df770145))
+
+
+### Documentation
+
+* one home block for Home Assistant ([#74](https://github.com/nestor-home/nestor-web/issues/74)) ([c0bfcc0](https://github.com/nestor-home/nestor-web/commit/c0bfcc057b7cae98dad59214dce8b47d9906eb2f))
+* wake-ups reach whoever set them, confirmations only where asked ([#71](https://github.com/nestor-home/nestor-web/issues/71)) ([8aab2e7](https://github.com/nestor-home/nestor-web/commit/8aab2e7366906024fca22a7110615a2c236ad025))
+* what Nestor says by itself ends passed on, nothing to tell, or not passed on ([#75](https://github.com/nestor-home/nestor-web/issues/75)) ([04b3fc8](https://github.com/nestor-home/nestor-web/commit/04b3fc89f02edbd789719fc1b49bfa5bbed9d463))
+
 ## [0.7.1](https://github.com/nestor-home/nestor-web/compare/v0.7.0...v0.7.1) (2026-11-09)
 
 
