@@ -197,6 +197,8 @@ With several profiles, each role names the one it uses:
 | `agent.written`        | answers in writing, where a few seconds are fine | `agent.spoken`  |
 | `watches.model`        | sorts incoming mail for the watches              | `agent.written` |
 | `memory.consolidation` | summarizes each conversation once it is over     | `agent.written` |
+| `agent.transcription`  | hears voice messages                             | the only transcription model |
+| `agent.speech`         | answers a voice message with one                 | the only speech model |
 
 A fast model for the voice, a stronger one for the rest:
 
@@ -251,8 +253,8 @@ that serves that type, and a setting only offers the models of its type:
 | ------------- | ------------------------------------ | ----------------------------------------------------- |
 | language      | answers, aloud or in writing         | `agent` ([Roles](#roles))                             |
 | embedding     | finds memories by meaning            | `memory.embedder`                                     |
-| transcription | hears what people say to a satellite | a satellites channel's `voice.transcription`          |
-| speech        | gives the assistant its voice        | a satellites channel's `voice.speech`                 |
+| transcription | hears what people say to a satellite, and voice messages | a satellites channel's `voice.transcription`, `agent.transcription` |
+| speech        | gives the assistant its voice        | a satellites channel's `voice.speech`, `agent.speech` |
 | speaker       | knows who is speaking                | `voices.embedder` ([Speakers](/docs/agent/speakers/)) |
 
 Setting up the voice: [Channels and voice](/docs/channels/#voice).
@@ -263,4 +265,5 @@ A chat profile also takes:
 
 - `extra_body`, merged into every request (routing, reasoning);
 - `read_timeout_s`, in seconds (30);
-- `cache_control`, for the provider’s prompt cache, on by default for OpenRouter and Anthropic.
+- `cache_control`, for the provider’s prompt cache, on by default for OpenRouter and Anthropic;
+- `vision: true` for a model that reads images: it then sees the photos people send.

@@ -27,8 +27,8 @@ channels:
 ```
 
 Ajoutez `"telegram:<votre identifiant>"` à vos `accounts` dans `household`. Pour le trouver,
-écrivez au bot : le journal du serveur affiche l’identifiant de chaque inconnu qu’il ignore. Le bot
-ne lit que le texte.
+écrivez au bot : le journal du serveur affiche l’identifiant de chaque inconnu qu’il ignore. Il lit
+aussi les photos et les messages vocaux : voir [plus bas](#photos-et-messages-vocaux).
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
@@ -106,7 +106,8 @@ channels:
 ```
 
 `voice_id` est n’importe quelle voix de votre bibliothèque. La transcription attend de l’anglais,
-sauf si son modèle fixe `language` (`fr`, `de`…).
+sauf si son modèle fixe `language` (`fr`, `de`…). Les messages vocaux passent par `file_model`
+(`scribe_v2`) : le modèle temps réel ne lit pas de fichiers.
 
 </ProviderSetup>
 </Providers>
@@ -116,6 +117,41 @@ Le bloc `voice` accepte aussi :
 - `style` : comment l’assistant écrit pour cette voix, par exemple ses balises d’expression ;
 - `fallback_clips` : un dossier avec `stt.wav` et `tts.wav`, joués quand le service de parole est
   en panne.
+
+## Photos et messages vocaux
+
+Ce qu’on envoie sur Telegram arrive à l’agent : photos, messages vocaux, fichiers audio et
+documents, avec leur légende. Nestor les garde avec son journal, où l’admin les montre.
+
+- Un message vocal est transcrit par un modèle `transcription`, et reçoit un vocal en réponse
+  quand un modèle `speech` est défini. Aucun des deux n’a besoin de l’extra `voice`.
+- Une photo va au modèle quand son profil voit les images (`vision: true`). Sinon, le modèle sait
+  qu’il ne la voit pas, et le dit.
+- Tout autre fichier est nommé au modèle, qui dit qu’il ne peut pas l’ouvrir.
+
+```yaml
+models:
+  chat:
+    type: language
+    provider: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+    vision: true
+  ears:
+    type: transcription
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+    language: fr
+  voice:
+    type: speech
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+    voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`agent.transcription` et `agent.speech` nomment ces modèles ; chacun prend par défaut le seul de
+son type ([Rôles](/fr/docs/models/#rôles)).
 
 ## Quand une conversation se termine
 

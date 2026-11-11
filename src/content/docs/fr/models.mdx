@@ -199,6 +199,8 @@ Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
 | `agent.written`        | répond par écrit, où quelques secondes ne gênent pas                 | `agent.spoken`     |
 | `watches.model`        | trie le courrier entrant pour les veilles                            | `agent.written`    |
 | `memory.consolidation` | résume chaque conversation une fois terminée                         | `agent.written`    |
+| `agent.transcription`  | écoute les messages vocaux                                           | le seul modèle de transcription |
+| `agent.speech`         | répond à un message vocal par un autre                               | le seul modèle de synthèse |
 
 Un modèle rapide pour la voix, un plus solide pour le reste :
 
@@ -253,8 +255,8 @@ plugin qui sert ce type, et un réglage ne propose que les modèles de son type�
 | ------------- | ---------------------------------- | --------------------------------------------------------- |
 | language      | répond, à voix haute ou à l’écrit  | `agent` ([Rôles](#rôles))                                 |
 | embedding     | retrouve les souvenirs par le sens | `memory.embedder`                                         |
-| transcription | entend ce qu’on dit à un satellite | `voice.transcription` d’un canal satellites               |
-| speech        | donne sa voix à l’assistant        | `voice.speech` d’un canal satellites                      |
+| transcription | entend ce qu’on dit à un satellite, et les messages vocaux | `voice.transcription` d’un canal satellites, `agent.transcription` |
+| speech        | donne sa voix à l’assistant        | `voice.speech` d’un canal satellites, `agent.speech` |
 | speaker       | reconnaît qui parle                | `voices.embedder` ([Locuteurs](/fr/docs/agent/speakers/)) |
 
 Configurer la voix : [Canaux et voix](/fr/docs/channels/#voix).
@@ -266,4 +268,5 @@ Un profil de conversation accepte aussi :
 - `extra_body`, fusionné dans chaque requête (routage, raisonnement) ;
 - `read_timeout_s`, en secondes (30) ;
 - `cache_control`, pour le cache de prompt du fournisseur, actif par défaut pour OpenRouter et
-  Anthropic.
+  Anthropic ;
+- `vision: true` pour un modèle qui lit les images : il voit alors les photos envoyées.
