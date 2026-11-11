@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.3](https://github.com/nestor-home/nestor-web/compare/v0.7.2...v0.7.3) (2026-11-11)
+
+
+### Bug Fixes
+
+* **deps:** update astro monorepo ([#77](https://github.com/nestor-home/nestor-web/issues/77)) ([f3e65b7](https://github.com/nestor-home/nestor-web/commit/f3e65b7c26bc14d61a0bb419e88f01f32d925783))
+* **deps:** update dependency lucide-react to v1.71.0 ([#79](https://github.com/nestor-home/nestor-web/issues/79)) ([1df7472](https://github.com/nestor-home/nestor-web/commit/1df7472d015610a72f5252d0f995cf5dc04a44f4))
+* **deps:** update dependency nestor-home to v0.11.1 ([#76](https://github.com/nestor-home/nestor-web/issues/76)) ([877abfb](https://github.com/nestor-home/nestor-web/commit/877abfb271ec8039863f3c10fe23684a736d654b))
+
 ## [0.7.2](https://github.com/nestor-home/nestor-web/compare/v0.7.1...v0.7.2) (2026-11-10)
 
 
