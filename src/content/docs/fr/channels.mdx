@@ -109,6 +109,81 @@ sauf si le modèle fixe `language` (`fr`, `de`…). Les messages vocaux passent 
 (`scribe_v2`) : le modèle temps réel ne lit pas de fichiers.
 
 </ProviderSetup>
+<ProviderSetup kind="speech" brand="openai">
+
+Toute API qui parle `/audio/transcriptions` et `/audio/speech` comme OpenAI : OpenAI, Groq et
+Mistral pour entendre, OpenAI pour parler.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: openai-compatible
+    base_url: https://api.groq.com/openai/v1
+    api_key: ${GROQ_API_KEY}
+    model: whisper-large-v3-turbo
+  voice:
+    type: speech
+    provider: openai-compatible
+    base_url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+    model: gpt-4o-mini-tts
+    voice: alloy
+```
+
+La transcription entend la langue du foyer, sauf si `language` en dit une autre. Les satellites
+entendent un tour une fois fini : les premiers mots l’attendent.
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="nvidia">
+
+Parakeet TDT v3 entend 25 langues européennes sur la machine de Nestor : pas de clé, rien de ce qui
+est dit ne sort de la maison. Il demande `nestor-home[voice,voice-id]`, télécharge un demi-gigaoctet
+une fois et prend environ 1 Go de mémoire.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: sherpa-onnx
+    model: parakeet-v3
+```
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="kokoro">
+
+Kokoro parle sur votre machine par un serveur qui parle l’API d’OpenAI, comme Kokoro-FastAPI ou
+speaches. Lancez-le à côté de Nestor, puis désignez-le dans un modèle de synthèse ; il ne demande pas
+de clé.
+
+```yaml
+models:
+  voice:
+    type: speech
+    provider: openai-compatible
+    base_url: http://localhost:8880/v1
+    model: kokoro
+    voice: ff_siwis
+```
+
+`ff_siwis` est la voix française de Kokoro ; `af_heart` et `bm_george` parlent anglais.
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="whisper">
+
+Whisper entend sur votre machine par un serveur qui parle l’API d’OpenAI, comme speaches ou le serveur
+de whisper.cpp. Désignez-le dans un modèle de transcription ; il ne demande pas de clé.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: openai-compatible
+    base_url: http://localhost:8000/v1
+    model: Systran/faster-whisper-small
+```
+
+</ProviderSetup>
 </Providers>
 
 Le bloc `voice` accepte aussi :
