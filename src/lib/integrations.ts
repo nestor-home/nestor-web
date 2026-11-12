@@ -43,6 +43,16 @@ export const INTEGRATIONS: { group: string; items: Integration[] }[] = [
     ],
   },
   {
+    group: "web",
+    items: [
+      { brand: "brave", status: "available" },
+      { brand: "searxng", status: "available" },
+      { brand: "tavily", status: "available" },
+      { brand: "open-meteo", status: "available" },
+      { brand: "openstreetmap", status: "available" },
+    ],
+  },
+  {
     group: "lists",
     items: [
       { brand: "todoist", status: "planned" },

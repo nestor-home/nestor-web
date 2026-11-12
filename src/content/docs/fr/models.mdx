@@ -201,6 +201,7 @@ Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
 | `agent.titles`         | titre chaque discussion de l’admin d’après son premier échange ; un petit modèle suffit | `agent.written`                 |
 | `agent.transcription`  | écoute les messages vocaux                                                     | le seul modèle de transcription |
 | `agent.speech`         | répond à un message vocal par un autre                                         | le seul modèle de synthèse      |
+| `agent.images`         | dessine les images qu’on lui demande                                           | le seul modèle d’images         |
 
 Un modèle rapide pour la voix, un plus solide pour le reste :
 
@@ -248,6 +249,27 @@ avec `send_dimensions: true`, un modèle qui sait raccourcir ses vecteurs les re
 Pour un modèle qui attend un préfixe (`query: `), réglez `query_prefix` et `document_prefix`.
 Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/memory/).
 
+## Images
+
+Avec un modèle d’images, Nestor dessine ce qu’on lui demande (« dessine un dragon pour la carte de
+Léa ») et l’envoie avec sa réponse, là où la conversation montre les images : la discussion de
+l’admin, Telegram. Une image demandée à voix haute dans une pièce reste dans le journal de l’admin.
+
+```yaml
+models:
+  painter:
+    type: image
+    provider: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: google/gemini-2.5-flash-image
+    endpoint: chat
+```
+
+`endpoint: images`, par défaut, parle à `/images/generations` (OpenAI, Gemini, serveurs locaux) ;
+`chat` parle à Chat Completions, comme les modèles d’images d’OpenRouter. `size` fixe la taille quand
+le modèle en prend une (`1024x1024`).
+
 ## Entendre et parler
 
 `models` contient tous les modèles qu’utilise Nestor. Chacun dit son `type` et son `provider`, le
@@ -260,6 +282,7 @@ plugin qui sert ce type, et un réglage ne propose que les modèles de son type�
 | transcription | entend ce qu’on dit à un satellite, et les messages vocaux | `voice.transcription` d’un canal satellites, `agent.transcription` |
 | speech        | donne sa voix à l’assistant                                | `voice.speech` d’un canal satellites, `agent.speech`               |
 | speaker       | reconnaît qui parle                                        | `voices.embedder` ([Locuteurs](/fr/docs/agent/speakers/))          |
+| image         | dessine les images qu’on lui demande                       | `agent.images` ([Images](#images))                                 |
 
 Configurer la voix : [Canaux et voix](/fr/docs/channels/#voix).
 

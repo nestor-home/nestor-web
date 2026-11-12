@@ -23,6 +23,7 @@ int-lede = Les logos indiquent les services auxquels Nestor se connecte ; ils 
 int-group-home = Maison
 int-group-messages = Messagerie
 int-group-mail = Mail et agenda
+int-group-web = Web, météo et cartes
 int-group-lists = Listes, notes et musique
 int-group-work = Travail et tâches longues
 int-planned = bientôt

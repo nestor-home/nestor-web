@@ -19,12 +19,14 @@ import mistralSvg from "@lobehub/icons-static-svg/icons/mistral.svg?raw";
 import ollamaSvg from "@lobehub/icons-static-svg/icons/ollama.svg?raw";
 import openaiSvg from "@lobehub/icons-static-svg/icons/openai.svg?raw";
 import openrouterSvg from "@lobehub/icons-static-svg/icons/openrouter.svg?raw";
+import tavilySvg from "@lobehub/icons-static-svg/icons/tavily.svg?raw";
 import vllmSvg from "@lobehub/icons-static-svg/icons/vllm.svg?raw";
 import type { LucideIcon } from "lucide-react";
 import { Mail, MessageCircle, RadioTower } from "lucide-react";
 import {
   type SimpleIcon,
   siAnthropic,
+  siBrave,
   siDeepgram,
   siDiscord,
   siDocker,
@@ -44,11 +46,13 @@ import {
   siNextcloud,
   siNotion,
   siOpenrouter,
+  siOpenstreetmap,
   siPhilipshue,
   siPypi,
   siPython,
   siRaspberrypi,
   siRust,
+  siSearxng,
   siSignal,
   siSonos,
   siSpotify,
@@ -133,6 +137,11 @@ export const BRANDS = {
   spotify: mark("Spotify", siSpotify),
   todoist: mark("Todoist", siTodoist),
   notion: mark("Notion", siNotion),
+  brave: mark("Brave Search", siBrave),
+  searxng: mark("SearXNG", siSearxng),
+  tavily: lobe("Tavily", tavilySvg),
+  "open-meteo": monogram("Open-Meteo", "OM"),
+  openstreetmap: mark("OpenStreetMap", siOpenstreetmap),
   mcp: mark("MCP", siModelcontextprotocol),
   linear: mark("Linear", siLinear),
   github: mark("GitHub", siGithub),

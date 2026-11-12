@@ -127,7 +127,11 @@ montre. La discussion accepte jusqu’à 10 fichiers de 20 Mo chacun par message
   et que le canal sait envoyer des vocaux, la réponse en est un aussi.
 - Une photo va au modèle quand son profil voit les images (`vision: true`). Sinon, le modèle dit
   qu’il ne la voit pas.
+- Un PDF ou un fichier texte est lu : le modèle en lit le texte par parties, là où il a été envoyé
+  ou pour qui l’a envoyé. Un scan n’a pas de texte à lire, et le modèle le dit.
 - Tout autre fichier est nommé au modèle, qui dit qu’il ne peut pas l’ouvrir.
+
+Les images que Nestor dessine partent avec sa réponse, sur les canaux qui montrent les images ([Images](/fr/docs/models/#images)).
 
 ```yaml
 models:

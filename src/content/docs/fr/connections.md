@@ -1,7 +1,7 @@
 ---
 
 title: Maison et services
-description: Brancher Home Assistant pour la présence et les appareils, des serveurs MCP pour d’autres outils, des boîtes mail pour les veilles, et des agents pour les tâches longues.
+description: Brancher Home Assistant pour la présence et les appareils, la recherche web, la météo et les cartes, des serveurs MCP pour d’autres outils, des boîtes mail pour les veilles, et des agents pour les tâches longues.
 ---
 
 Nestor voit et agit par ce que vous branchez ici. Chaque branchement est facultatif.
@@ -42,6 +42,32 @@ d’occupation, de présence ou de mouvement rattaché à une pièce), et `sensi
 l’accord d’une personne (voir [Locuteurs](/fr/docs/agent/speakers/)). La
 page **Maison** de l’admin montre qui est où, les pièces, les personnes que Home Assistant connaît et
 ses actions.
+
+## Web, météo et cartes
+
+Chacun de ces outils est une ligne de `tools`, et chacun est facultatif.
+
+```yaml
+tools:
+  - kind: searxng # ou brave, ou tavily : un seul moteur de recherche
+    url: http://searxng:8080
+  - kind: web-pages
+  - kind: open-meteo
+    home: Lyon
+  - kind: openstreetmap
+    home: 12 rue Mercière, Lyon
+```
+
+- **Recherche** : `searxng` est un moteur que vous hébergez, sans clé ; ses réglages doivent
+  autoriser le format JSON. `brave` et `tavily` prennent une `api_key`.
+- **Pages** : `web-pages` lit une page à partir de son adresse : son texte sans menus ni bandeaux,
+  ou celui d’un PDF. Seulement les adresses publiques : l’agent ne lit jamais une adresse de votre
+  réseau, même par un lien.
+- **Météo** : `open-meteo`, sans clé. `home` est la ville prise quand aucun lieu n’est demandé.
+- **Lieux et trajets** : `openstreetmap` trouve des lieux et calcule des trajets en voiture, à vélo
+  ou à pied, depuis `home` sauf si un autre départ est demandé, sans trafic ni transports en commun.
+  Il passe par les serveurs publics de la communauté OpenStreetMap, qui acceptent une recherche par
+  seconde ; `nominatim_url` et `routing_url` désignent les vôtres.
 
 ## Serveurs MCP
 
