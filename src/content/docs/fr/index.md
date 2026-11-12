@@ -23,8 +23,9 @@ projet est jeune : attendez-vous à des changements d’une version à l’aut
 - **Le serveur**, le paquet Python `nestor-home` : l’agent, sa mémoire, son journal et
   l’administration.
 - **Un modèle de langage**, hébergé ou local.
-- **Des canaux** : Telegram, et les **satellites**, sur lesquels on tape ou auxquels on parle (une
-  enceinte, une tablette au mur, un robot Reachy Mini).
+- **Des canaux** : la discussion de l’administration, des messageries comme Telegram, et les
+  **satellites**, sur lesquels on tape ou auxquels on parle (une enceinte, une tablette au mur, un
+  robot Reachy Mini).
 - **Des intégrations** : Home Assistant, des serveurs MCP, le courrier, des agents pour les tâches
   longues.
 
@@ -36,7 +37,7 @@ projet est jeune : attendez-vous à des changements d’une version à l’aut
 | l’installer pour de bon, sur un serveur ou avec Docker | [Installer](/fr/docs/install/)                                                                                 |
 | savoir ce qu’il fait pendant une conversation          | [Comment fonctionne l’agent](/fr/docs/agent/), [Mémoire](/fr/docs/agent/memory/)                               |
 | choisir un modèle, local ou hébergé                    | [Modèles](/fr/docs/models/)                                                                                    |
-| lui parler à voix haute, ou sur Telegram               | [Canaux et voix](/fr/docs/channels/)                                                                           |
+| lui parler à voix haute, ou depuis une messagerie      | [Canaux et voix](/fr/docs/channels/)                                                                           |
 | brancher Home Assistant, vos mails, des serveurs MCP   | [Maison et services](/fr/docs/connections/)                                                                    |
 | ajouter une enceinte ou un écran dans une pièce        | [Satellites](/fr/docs/satellites/)                                                                             |
 | construire votre propre appareil                       | le SDK [Python](/fr/docs/sdks/python/), [TypeScript](/fr/docs/sdks/typescript/) ou [Rust](/fr/docs/sdks/rust/) |

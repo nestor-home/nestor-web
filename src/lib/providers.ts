@@ -2,8 +2,8 @@
  * What the documentation's pickers show (docs/models, docs/channels): the language models the agent talks to,
  * the speech services of the satellites’ voice, and the channels people reach Nestor through.
  * `available` ones have a setup, written in the page's content; `planned` ones show the shared
- * badge and a one-line note. The first of a kind is shown without JavaScript (for models and
- * speech, the one `nestor init` writes). The messaging channels are the home page's own list
+ * badge and a one-line note. The first of a kind is shown without JavaScript (the one `nestor init`
+ * writes; for channels, the admin's chat). The messaging channels are the home page's own list
  * (`lib/integrations.ts`), so the two pages never disagree.
  */
 import { INTEGRATIONS, type Integration } from "@/lib/integrations";
@@ -14,7 +14,7 @@ export type ProviderKind = "model" | "speech" | "channel";
 export interface Provider extends Integration {
   /** runs on the household's own machine */
   local?: boolean;
-  /** a Fluent message naming the tile, for what is not a brand (the satellites channel) */
+  /** a Fluent message naming the tile, for what is not a brand (the admin's chat, the satellites) */
   label?: string;
 }
 
@@ -44,6 +44,7 @@ export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
     { brand: "piper", status: "planned", local: true },
   ],
   channel: [
+    { brand: "chat", status: "available", label: "providers-chat" },
     ...messaging.filter((c) => c.status === "available"),
     { brand: "satellites", status: "available", label: "providers-satellites" },
     ...messaging.filter((c) => c.status === "planned"),

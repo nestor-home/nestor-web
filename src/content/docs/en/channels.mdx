@@ -1,17 +1,36 @@
 ---
 title: Channels and voice
-description: How people reach Nestor, on Telegram or through satellites, and how to give the satellites a voice.
+description: How people reach Nestor, from the admin’s chat, a messaging app or satellites, what they can name with @, and how to give the satellites a voice.
 ---
 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
 People reach Nestor through `channels`. All share one agent and one memory: a question asked in the
-kitchen can go on over Telegram.
+kitchen can go on from the admin.
 
 ## Choose channels
 
 <Providers kind="channel" locale="en">
+<ProviderSetup kind="channel" brand="chat">
+
+Write to Nestor from the admin, under **Chat**. `nestor init` adds it:
+
+```yaml
+channels:
+  - kind: web
+```
+
+Each chat is its own thread, listed under its [title](/docs/models/#roles); the memory is the same
+in all. Answers appear as they are written, with the tools Nestor uses, and **Stop** ends one. An
+answer goes on when you leave the page and shows again when you come back. What Nestor brings by
+itself for a chat, such as a task’s result, lands in it.
+
+The chat is open to admin accounts linked to a person of the household; the owner `nestor init`
+creates is linked to the first one. It takes photos, files and voice messages recorded in the
+browser: see [below](#photos-and-voice-messages).
+
+</ProviderSetup>
 <ProviderSetup kind="channel" brand="telegram">
 
 Create a bot with [@BotFather](https://t.me/BotFather) and put its token in `.env`:
@@ -98,8 +117,9 @@ The `voice` block also takes:
 
 ## Photos and voice messages
 
-A messaging channel passes on photos, voice messages, audio files and documents, with their
-caption. Nestor keeps them with its journal, where the admin shows them.
+Messaging channels, the admin’s chat included, pass on photos, voice messages, audio files and
+documents, with their caption. Nestor keeps them with its journal, where the admin shows them. The
+chat takes up to 10 files of 20 MB each per message.
 
 - A voice message is transcribed by a `transcription` model. When a `speech` model is set and the
   channel can send voice messages, the answer is one too.
@@ -130,6 +150,30 @@ models:
 
 `agent.transcription` and `agent.speech` name these models; each defaults to the only one of its
 type ([Roles](/docs/models/#roles)).
+
+## Mentions
+
+On every channel, a message can name with `@` what it is about:
+
+| Written    | Names                                          | Nestor                                  |
+| ---------- | ---------------------------------------------- | --------------------------------------- |
+| `@sam`     | a person of the household                      | writes to them what is for them         |
+| `@kitchen` | a room of the home, from Home Assistant        | does what the message asks in that room |
+| `@hermes`  | an [executor](/docs/connections/#longer-tasks) | hands it that part of the work          |
+| `@gmail`   | a service of a connected account               | uses that account’s tools for it        |
+
+A person is named by their `id`, a room by its Home Assistant area, an executor by its name. A
+connector names the services of its accounts: `@gmail` for a Google account, `@mail` for an IMAP
+mailbox. With two accounts of one service, the start of the address tells them apart:
+`@gmail-alex`.
+
+Case and accents do not count, and names answer to aliases: a person’s or a room’s name
+(`@Léa`, `@living-room`), an account’s address or its start. A name that matches nothing, or an
+e-mail address, stays a word. Each person can name only what they may use: their own accounts and
+the household’s, never someone else’s.
+
+The admin’s chat suggests names as you type `@`. Each one is logged with the turn and told to the
+model in that turn’s instructions.
 
 ## When a conversation ends
 

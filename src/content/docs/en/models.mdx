@@ -191,14 +191,15 @@ make it listen on all interfaces: `OLLAMA_HOST=0.0.0.0` for Ollama, `--host 0.0.
 
 With several profiles, each role names the one it uses:
 
-| Role                   | What it does                                     | When unset      |
-| ---------------------- | ------------------------------------------------ | --------------- |
-| `agent.spoken`         | answers aloud: the first words must come fast    | `agent.written` |
-| `agent.written`        | answers in writing, where a few seconds are fine | `agent.spoken`  |
-| `watches.model`        | sorts incoming mail for the watches              | `agent.written` |
-| `memory.consolidation` | summarizes each conversation once it is over     | `agent.written` |
-| `agent.transcription`  | hears voice messages                             | the only transcription model |
-| `agent.speech`         | answers a voice message with one                 | the only speech model |
+| Role                   | What it does                                                              | When unset                   |
+| ---------------------- | ------------------------------------------------------------------------- | ---------------------------- |
+| `agent.spoken`         | answers aloud: the first words must come fast                             | `agent.written`              |
+| `agent.written`        | answers in writing, where a few seconds are fine                          | `agent.spoken`               |
+| `watches.model`        | sorts incoming mail for the watches                                       | `agent.written`              |
+| `memory.consolidation` | summarizes each conversation once it is over                              | `agent.written`              |
+| `agent.titles`         | titles each conversation from its first exchange; a small model is enough | `agent.written`              |
+| `agent.transcription`  | hears voice messages                                                      | the only transcription model |
+| `agent.speech`         | answers a voice message with one                                          | the only speech model        |
 
 A fast model for the voice, a stronger one for the rest:
 
@@ -251,13 +252,13 @@ reindexes in the background. See [Memory](/docs/agent/memory/).
 `models` holds every model Nestor uses. Each one says its `type` and its `provider`, the plugin
 that serves that type, and a setting only offers the models of its type:
 
-| Type          | What it does                         | Named in                                              |
-| ------------- | ------------------------------------ | ----------------------------------------------------- |
-| language      | answers, aloud or in writing         | `agent` ([Roles](#roles))                             |
-| embedding     | finds memories by meaning            | `memory.embedder`                                     |
+| Type          | What it does                                             | Named in                                                            |
+| ------------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
+| language      | answers, aloud or in writing                             | `agent` ([Roles](#roles))                                           |
+| embedding     | finds memories by meaning                                | `memory.embedder`                                                   |
 | transcription | hears what people say to a satellite, and voice messages | a satellites channel's `voice.transcription`, `agent.transcription` |
-| speech        | gives the assistant its voice        | a satellites channel's `voice.speech`, `agent.speech` |
-| speaker       | knows who is speaking                | `voices.embedder` ([Speakers](/docs/agent/speakers/)) |
+| speech        | gives the assistant its voice                            | a satellites channel's `voice.speech`, `agent.speech`               |
+| speaker       | knows who is speaking                                    | `voices.embedder` ([Speakers](/docs/agent/speakers/))               |
 
 Setting up the voice: [Channels and voice](/docs/channels/#voice).
 

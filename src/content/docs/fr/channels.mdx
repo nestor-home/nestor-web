@@ -1,17 +1,37 @@
 ---
 title: Canaux et voix
-description: Comment on joint Nestor, sur Telegram ou par des satellites, et comment donner une voix aux satellites.
+description: Comment on joint Nestor, depuis la discussion de l’admin, une messagerie ou des satellites, ce qu’on peut nommer avec @, et comment donner une voix aux satellites.
 ---
 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
 On joint Nestor par ses `channels`. Tous partagent un seul agent et une seule mémoire : une question
-posée dans la cuisine peut se poursuivre sur Telegram.
+posée dans la cuisine peut se poursuivre depuis l’admin.
 
 ## Choisir ses canaux
 
 <Providers kind="channel" locale="fr">
+<ProviderSetup kind="channel" brand="chat">
+
+Écrivez à Nestor depuis l’admin, dans **Discussion**. `nestor init` l’ajoute :
+
+```yaml
+channels:
+  - kind: web
+```
+
+Chaque discussion a son propre fil, listé sous son [titre](/fr/docs/models/#rôles) ; la mémoire est
+la même dans toutes. Les réponses s’affichent au fil de l’écriture, avec les outils que Nestor
+utilise, et **Arrêter** en interrompt une. Une réponse continue quand vous quittez la page et
+réapparaît quand vous revenez. Ce que Nestor apporte de lui-même pour une discussion, comme le
+résultat d’une tâche, y arrive.
+
+La discussion est ouverte aux comptes de l’admin liés à une personne du foyer ; le propriétaire
+que crée `nestor init` est lié à la première. Elle accepte les photos, les fichiers et les messages
+vocaux enregistrés dans le navigateur : voir [plus bas](#photos-et-messages-vocaux).
+
+</ProviderSetup>
 <ProviderSetup kind="channel" brand="telegram">
 
 Créez un bot avec [@BotFather](https://t.me/BotFather) et mettez son jeton dans `.env` :
@@ -99,8 +119,9 @@ Le bloc `voice` accepte aussi :
 
 ## Photos et messages vocaux
 
-Un canal de messagerie transmet les photos, messages vocaux, fichiers audio et documents, avec leur
-légende. Nestor les garde avec son journal, où l’admin les montre.
+Les canaux de messagerie, dont la discussion de l’admin, transmettent les photos, messages vocaux,
+fichiers audio et documents, avec leur légende. Nestor les garde avec son journal, où l’admin les
+montre. La discussion accepte jusqu’à 10 fichiers de 20 Mo chacun par message.
 
 - Un message vocal est transcrit par un modèle `transcription`. Quand un modèle `speech` est défini
   et que le canal sait envoyer des vocaux, la réponse en est un aussi.
@@ -131,6 +152,30 @@ models:
 
 `agent.transcription` et `agent.speech` nomment ces modèles ; chacun prend par défaut le seul de
 son type ([Rôles](/fr/docs/models/#rôles)).
+
+## Mentions
+
+Sur tous les canaux, un message peut nommer avec `@` ce dont il parle :
+
+| Écrit      | Nomme                                                | Nestor                                          |
+| ---------- | ---------------------------------------------------- | ----------------------------------------------- |
+| `@sam`     | une personne du foyer                                | lui écrit ce qui lui est destiné                |
+| `@cuisine` | une pièce de la maison, vue par Home Assistant       | fait dans cette pièce ce que demande le message |
+| `@hermes`  | un [exécutant](/fr/docs/connections/#tâches-longues) | lui confie cette partie du travail              |
+| `@gmail`   | un service d’un compte connecté                      | utilise pour cela les outils de ce compte       |
+
+Une personne se nomme par son `id`, une pièce par sa zone Home Assistant, un exécutant par son nom.
+Un connecteur nomme les services de ses comptes : `@gmail` pour un compte Google, `@mail` pour une
+boîte IMAP. Avec deux comptes d’un même service, le début de l’adresse les distingue :
+`@gmail-alex`.
+
+La casse et les accents ne comptent pas, et les noms répondent à des alias : le nom d’une personne
+ou d’une pièce (`@Léa`, `@salle-à-manger`), l’adresse d’un compte ou son début. Un nom qui ne
+correspond à rien, ou une adresse e-mail, reste un mot. Chacun ne peut nommer que ce qu’il a le
+droit d’utiliser : ses propres comptes et ceux du foyer, jamais ceux d’un autre.
+
+La discussion de l’admin propose les noms dès qu’on tape `@`. Chaque nom est journalisé avec le
+tour et indiqué au modèle dans les instructions de ce tour.
 
 ## Quand une conversation se termine
 

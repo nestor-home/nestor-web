@@ -87,13 +87,14 @@ models:
 agent:
   spoken: quick      # the voice: the first words come fast
   written: careful   # writing allows a few seconds
+  titles: quick      # titles each conversation
 watches:
   model: quick       # sorts incoming mail against the watches
 memory:
   consolidation: quick  # summarizes each conversation once it is over
 ```
 
-A role left out borrows a model: `spoken` and `written` stand in for each other, the watches and
-the consolidation take `written`. `agent.transcription` and `agent.speech` hear and record voice
-messages (see [Channels and voice](/docs/channels/)). Every role and its default is on
+A role left out borrows a model: `spoken` and `written` stand in for each other, the watches, the
+consolidation and the titles take `written`. `agent.transcription` and `agent.speech` hear and
+record voice messages (see [Channels and voice](/docs/channels/)). Every role and its default is on
 [Models](/docs/models/).

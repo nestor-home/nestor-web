@@ -157,7 +157,8 @@ test.describe("without JavaScript", () => {
     await expect(page.locator("#model-openai-panel")).toBeHidden();
     await page.goto("/docs/channels/");
     await expect(page.locator("#speech-elevenlabs-panel")).toBeVisible();
-    await expect(page.locator("#channel-telegram-panel")).toBeVisible();
+    await expect(page.locator("#channel-chat-panel")).toBeVisible();
+    await expect(page.locator("#channel-telegram-panel")).toBeHidden();
   });
 });
 

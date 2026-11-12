@@ -192,14 +192,15 @@ Linux, faites-le écouter sur toutes les interfaces : `OLLAMA_HOST=0.0.0.0` po
 
 Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
 
-| Rôle                   | Ce qu’il fait                                                        | Sans réglage       |
-| ---------------------- | -------------------------------------------------------------------- | ------------------ |
-| `agent.spoken`         | répond à voix haute : les premiers mots doivent venir vite           | `agent.written`    |
-| `agent.written`        | répond par écrit, où quelques secondes ne gênent pas                 | `agent.spoken`     |
-| `watches.model`        | trie le courrier entrant pour les veilles                            | `agent.written`    |
-| `memory.consolidation` | résume chaque conversation une fois terminée                         | `agent.written`    |
-| `agent.transcription`  | écoute les messages vocaux                                           | le seul modèle de transcription |
-| `agent.speech`         | répond à un message vocal par un autre                               | le seul modèle de synthèse |
+| Rôle                   | Ce qu’il fait                                                                  | Sans réglage                    |
+| ---------------------- | ------------------------------------------------------------------------------ | ------------------------------- |
+| `agent.spoken`         | répond à voix haute : les premiers mots doivent venir vite                     | `agent.written`                 |
+| `agent.written`        | répond par écrit, où quelques secondes ne gênent pas                           | `agent.spoken`                  |
+| `watches.model`        | trie le courrier entrant pour les veilles                                      | `agent.written`                 |
+| `memory.consolidation` | résume chaque conversation une fois terminée                                   | `agent.written`                 |
+| `agent.titles`         | titre chaque conversation d’après son premier échange ; un petit modèle suffit | `agent.written`                 |
+| `agent.transcription`  | écoute les messages vocaux                                                     | le seul modèle de transcription |
+| `agent.speech`         | répond à un message vocal par un autre                                         | le seul modèle de synthèse      |
 
 Un modèle rapide pour la voix, un plus solide pour le reste :
 
@@ -252,13 +253,13 @@ Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/m
 `models` contient tous les modèles qu’utilise Nestor. Chacun dit son `type` et son `provider`, le
 plugin qui sert ce type, et un réglage ne propose que les modèles de son type :
 
-| Type          | Ce qu’il fait                      | Nommé dans                                                |
-| ------------- | ---------------------------------- | --------------------------------------------------------- |
-| language      | répond, à voix haute ou à l’écrit  | `agent` ([Rôles](#rôles))                                 |
-| embedding     | retrouve les souvenirs par le sens | `memory.embedder`                                         |
+| Type          | Ce qu’il fait                                              | Nommé dans                                                         |
+| ------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| language      | répond, à voix haute ou à l’écrit                          | `agent` ([Rôles](#rôles))                                          |
+| embedding     | retrouve les souvenirs par le sens                         | `memory.embedder`                                                  |
 | transcription | entend ce qu’on dit à un satellite, et les messages vocaux | `voice.transcription` d’un canal satellites, `agent.transcription` |
-| speech        | donne sa voix à l’assistant        | `voice.speech` d’un canal satellites, `agent.speech` |
-| speaker       | reconnaît qui parle                | `voices.embedder` ([Locuteurs](/fr/docs/agent/speakers/)) |
+| speech        | donne sa voix à l’assistant                                | `voice.speech` d’un canal satellites, `agent.speech`               |
+| speaker       | reconnaît qui parle                                        | `voices.embedder` ([Locuteurs](/fr/docs/agent/speakers/))          |
 
 Configurer la voix : [Canaux et voix](/fr/docs/channels/#voix).
 

@@ -22,8 +22,8 @@ project is young: expect changes between releases.
 - **The server**, the Python package `nestor-home`: the agent, its memory, its journal and the
   admin.
 - **A language model**, hosted or local.
-- **Channels**: Telegram, and **satellites** you type on or talk to (a speaker, a wall tablet, a
-  Reachy Mini robot).
+- **Channels**: the admin’s chat, messaging apps such as Telegram, and **satellites** you type on or
+  talk to (a speaker, a wall tablet, a Reachy Mini robot).
 - **Integrations**: Home Assistant, MCP servers, mail, agents for longer tasks.
 
 ## Where to start
@@ -34,7 +34,7 @@ project is young: expect changes between releases.
 | install it for good, on a server or with Docker | [Installation](/docs/install/)                                                                         |
 | know what it does during a conversation         | [How the agent works](/docs/agent/), [Memory](/docs/agent/memory/)                                     |
 | choose a model, local or hosted                 | [Models](/docs/models/)                                                                                |
-| talk to it aloud, or on Telegram                | [Channels and voice](/docs/channels/)                                                                  |
+| talk to it aloud, or from a messaging app       | [Channels and voice](/docs/channels/)                                                                  |
 | connect Home Assistant, your mail, MCP servers  | [Home and services](/docs/connections/)                                                                |
 | add a speaker or a screen in a room             | [Satellites](/docs/satellites/)                                                                        |
 | build your own device                           | the [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/) or [Rust](/docs/sdks/rust/) SDK |

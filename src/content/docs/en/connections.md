@@ -67,7 +67,8 @@ tools:
 
 Connect mailboxes in the admin, under **Connections**, read only: Gmail, through your own Google
 OAuth application (the admin walks you through it), or any IMAP mailbox with an application
-password. The agent can then search and read that mail, for its owner only.
+password. The agent can then search and read that mail, for its owner only. In a message, `@gmail`
+or `@mail` points it to that mailbox ([Mentions](/docs/channels/#mentions)).
 
 Then ask for a **watch**: “tell me when the plumber replies”. A model (`watches.model`) sorts each
 new message against the open watches and tells the person who asked, where they are (see

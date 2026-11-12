@@ -90,13 +90,14 @@ models:
 agent:
   spoken: rapide      # la voix : les premiers mots arrivent vite
   written: soigne     # l’écrit laisse quelques secondes
+  titles: rapide      # titre chaque conversation
 watches:
   model: rapide       # trie le courrier entrant selon les veilles
 memory:
   consolidation: rapide  # résume chaque conversation une fois terminée
 ```
 
-Un rôle omis emprunte un modèle : `spoken` et `written` se remplacent, les veilles et la
-consolidation prennent `written`. `agent.transcription` et `agent.speech` écoutent et enregistrent
+Un rôle omis emprunte un modèle : `spoken` et `written` se remplacent, les veilles, la consolidation
+et les titres prennent `written`. `agent.transcription` et `agent.speech` écoutent et enregistrent
 les messages vocaux (voir [Canaux et voix](/fr/docs/channels/)). Chaque rôle et son défaut sont dans
 [Modèles](/fr/docs/models/).
