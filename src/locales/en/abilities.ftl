@@ -23,6 +23,7 @@ int-lede = Logos show the services Nestor connects to; they belong to their owne
 int-group-home = Home
 int-group-messages = Messages
 int-group-mail = Mail and calendar
+int-group-web = Web, weather and maps
 int-group-lists = Lists, notes and music
 int-group-work = Work and long tasks
 int-planned = planned

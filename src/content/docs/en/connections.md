@@ -1,7 +1,7 @@
 ---
 
 title: Home and services
-description: Connect Home Assistant for presence and devices, any MCP server for more tools, mailboxes for the watches, and agents for longer tasks.
+description: Connect Home Assistant for presence and devices, web search, weather and maps, any MCP server for more tools, mailboxes for the watches, and agents for longer tasks.
 ---
 
 Nestor sees and acts through what you connect here. Each connection is optional.
@@ -40,6 +40,31 @@ home:
 or motion sensor with an area), and `sensitive`, what needs a person's go-ahead (see
 [Speakers](/docs/agent/speakers/)). The
 admin's **Home** page shows who is where, the rooms, the people Home Assistant knows and its actions.
+
+## Web, weather and maps
+
+Each of these tools is one line in `tools`, and each is optional.
+
+```yaml
+tools:
+  - kind: searxng # or brave, or tavily: one search engine
+    url: http://searxng:8080
+  - kind: web-pages
+  - kind: open-meteo
+    home: Lyon
+  - kind: openstreetmap
+    home: 12 rue Mercière, Lyon
+```
+
+- **Search**: `searxng` is a search engine you host, without a key; its settings must allow the
+  JSON format. `brave` and `tavily` take an `api_key`.
+- **Pages**: `web-pages` reads a page from its address: its text without menus or banners, or a
+  PDF's. Only public addresses: the agent never reads one on your network, even through a link.
+- **Weather**: `open-meteo`, without a key. `home` is the town used when no place is asked.
+- **Places and journeys**: `openstreetmap` finds places and computes journeys by car, bike or on
+  foot, from `home` unless another start is asked, without traffic or public transport. It uses
+  the OpenStreetMap community's public servers, which accept one search a second; `nominatim_url`
+  and `routing_url` point to your own.
 
 ## MCP servers
 
