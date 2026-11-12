@@ -44,7 +44,7 @@ Measured with `nestor bench run speaker-id`, on one CPU thread:
 
 | `model`                    | false rejects at 1 % false accepts | per turn | size  |
 | -------------------------- | ---------------------------------- | -------- | ----- |
-| `titanet-small` (default)  | 4.8 %                              | 47 ms    | 40 MB |
+| `titanet-small`            | 4.8 %                              | 47 ms    | 40 MB |
 | `3dspeaker-campplus-zh-en` | 4.3 %                              | 62 ms    | 28 MB |
 | `3dspeaker-eres2net`       | 4.1 %                              | 165 ms   | 26 MB |
 
@@ -94,4 +94,5 @@ home:
 ```
 
 An action is sensitive when one of these values appears in its domain, device class or name, ignoring
-case. The person answers in the conversation, or on the admin's **Messages** page.
+case. Add to `names` the words your entity names use in your own language. The person answers in
+the conversation, or on the admin's **Messages** page.

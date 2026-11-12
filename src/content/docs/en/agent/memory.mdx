@@ -20,8 +20,9 @@ that disagree. They stay the same from turn to turn, so the provider caches them
 **turn layer** adds those the speaker's last three messages find.
 
 The turn layer also carries the speaker's **episodes**, which only their participants see. Tools
-reach the rest: `recall` searches between two dates when asked ("what did we say last week?"), and
-`read_conversation` rereads one conversation word for word.
+reach the rest: `recall` searches memories and past conversations, between two dates when asked
+("what did we say last week?"), and `read_conversation` rereads one conversation word for word.
+`remember`, `correct_memory` and `forget` keep, fix and drop a memory.
 
 ## Finding by words and by meaning
 
@@ -60,14 +61,15 @@ by words only.
 
 <Consolidation locale="en" n={6} />
 
-A conversation is over once its silence outlasts every medium of its place. A small model then
-writes its **episode**, two or three sentences and a few topics, and saves the lasting facts the
-agent missed as memories. If Nestor was stopped, it catches up at the next start, never twice.
+A conversation is over once its silence outlasts every medium of its place. The consolidation model
+then writes its **episode**, two or three sentences and a few topics, and saves the lasting facts
+the agent missed as memories. If Nestor was stopped, it catches up at the next start, never twice.
 
 ## Settings
 
 | Setting | Default | What it does |
 | --- | --- | --- |
+| `memory.strategy` | `both` | `recent`: the latest only; `search`: only what the words find |
 | `memory.recent` | 150 | memories in the household layer |
 | `memory.found` | 12 | memories the words may add beyond them |
 | `memory.recent_episodes` | 3 | latest conversations of whoever speaks |

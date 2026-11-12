@@ -107,7 +107,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-Anthropic réserve cette couche aux essais, pas à la production. OpenRouter est la voie testée vers Claude.
+Anthropic réserve sa couche compatible OpenAI aux essais. OpenRouter est la voie testée vers Claude.
 
 ```ini
 MODEL_API_KEY=sk-ant-...
@@ -182,8 +182,7 @@ models:
 </ProviderSetup>
 </Providers>
 
-Tout modèle qui gère les appels d’outils convient. Un modèle local répond plus lentement, et la
-voix le ressent en premier.
+Un modèle local répond plus lentement, et la voix le ressent en premier.
 
 Avec Docker, un serveur de modèle sur l’hôte est à `http://host.docker.internal:<port>/v1`. Sous
 Linux, faites-le écouter sur toutes les interfaces : `OLLAMA_HOST=0.0.0.0` pour Ollama,
@@ -199,6 +198,8 @@ Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
 | `agent.written`        | répond par écrit, où quelques secondes ne gênent pas                 | `agent.spoken`     |
 | `watches.model`        | trie le courrier entrant pour les veilles                            | `agent.written`    |
 | `memory.consolidation` | résume chaque conversation une fois terminée                         | `agent.written`    |
+| `agent.transcription`  | écoute les messages vocaux                                           | le seul modèle de transcription |
+| `agent.speech`         | répond à un message vocal par un autre                               | le seul modèle de synthèse |
 
 Un modèle rapide pour la voix, un plus solide pour le reste :
 
@@ -241,8 +242,10 @@ memory:
   embedder: vectors
 ```
 
-Tout point `/embeddings` compatible OpenAI convient. `dimensions` est la taille des vecteurs.
-Pour un modèle qui attend un préfixe (`query: `), réglez `query_prefix` et `document_prefix`. Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/memory/).
+Tout point `/embeddings` compatible OpenAI convient. `dimensions` est la taille des vecteurs ;
+avec `send_dimensions: true`, un modèle qui sait raccourcir ses vecteurs les rend à cette taille.
+Pour un modèle qui attend un préfixe (`query: `), réglez `query_prefix` et `document_prefix`.
+Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/memory/).
 
 ## Entendre et parler
 
@@ -253,17 +256,18 @@ plugin qui sert ce type, et un réglage ne propose que les modèles de son type�
 | ------------- | ---------------------------------- | --------------------------------------------------------- |
 | language      | répond, à voix haute ou à l’écrit  | `agent` ([Rôles](#rôles))                                 |
 | embedding     | retrouve les souvenirs par le sens | `memory.embedder`                                         |
-| transcription | entend ce qu’on dit à un satellite | `voice.transcription` d’un canal satellites               |
-| speech        | donne sa voix à l’assistant        | `voice.speech` d’un canal satellites                      |
+| transcription | entend ce qu’on dit à un satellite, et les messages vocaux | `voice.transcription` d’un canal satellites, `agent.transcription` |
+| speech        | donne sa voix à l’assistant        | `voice.speech` d’un canal satellites, `agent.speech` |
 | speaker       | reconnaît qui parle                | `voices.embedder` ([Locuteurs](/fr/docs/agent/speakers/)) |
 
 Configurer la voix : [Canaux et voix](/fr/docs/channels/#voix).
 
 ## Réglages
 
-Un profil de conversation accepte aussi :
+Un modèle de langage accepte aussi :
 
 - `extra_body`, fusionné dans chaque requête (routage, raisonnement) ;
 - `read_timeout_s`, en secondes (30) ;
 - `cache_control`, pour le cache de prompt du fournisseur, actif par défaut pour OpenRouter et
-  Anthropic.
+  Anthropic ;
+- `vision: true` pour un modèle qui lit les images : il voit alors les photos envoyées.

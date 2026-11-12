@@ -43,9 +43,9 @@ docker compose pull
 docker compose up -d
 ```
 
-Un conteneur ne peut pas remplacer sa propre image. Il lui faudrait le socket Docker, qui donne à
-qui le tient les droits root sur la machine : l’administration ne le demande jamais. Une copie de
-développement se met à jour avec git.
+Un conteneur ne peut pas remplacer sa propre image, et l’administration ne demande jamais le
+socket Docker, qui lui donnerait les droits root sur la machine. Une copie de développement se met à
+jour avec git.
 
 Jusqu’à la première version stable, une version peut changer les données en place : ses notes
 demandent alors de recréer `state/` et d’appairer de nouveau les satellites.
@@ -63,5 +63,11 @@ change cette version (les notes que l’appareil a trouvées, s’il en a trouv�
 - Il n’installe jamais une version plus ancienne, ni une version qu’il n’a pas trouvée.
 
 Les règles sont dans le protocole ([Mises à jour](/fr/docs/satellites/protocol/#10-mises-à-jour)).
-Mettez d’abord le serveur à jour : un satellite sur la version précédente du protocole continue de
-marcher tant qu’une version la parle encore.
+
+## Dans quel ordre
+
+Mettez d’abord le serveur à jour, puis les satellites depuis l’admin. Un satellite mis à jour avant
+le serveur parlerait une version que le serveur refuse, et reviendrait en arrière au bout d’une
+minute. Quand une version n’accepte plus la version du protocole d’un satellite, les notes le
+disent : ce satellite ne peut plus se connecter au nouveau serveur, mettez-le donc à jour sur
+l’appareil lui-même, après le serveur.

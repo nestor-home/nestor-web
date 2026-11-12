@@ -12,7 +12,7 @@ tablet, a Reachy Mini robot. People type on it, talk to it, or both. It connects
 
 It pairs once, declares its capabilities, then holds a WebSocket to the server; audio goes over
 WebRTC. The server sends intents, not motions: given `intent.expression` with `joy`, a robot moves
-its antennas and a plain speaker ignores it.
+its antennas. A plain speaker never gets it, since it did not declare `expression.emotion`.
 
 ## Capabilities
 
@@ -75,9 +75,10 @@ A satellite allowed `device.update` can be updated from its page in the admin: s
 ## Ready to run
 
 - `nestor-satellite run`, this machine’s microphone and speaker, in the
-  [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/) and [Rust](/docs/sdks/rust/) SDKs.
-- [`nestor-reachy`](https://github.com/nestor-home/nestor-reachy), for Reachy Mini (its simulated
-  twin for now).
+  [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/) and [Rust](/docs/sdks/rust/)
+  SDKs.
+- [`nestor-reachy`](https://github.com/nestor-home/nestor-reachy), for Reachy Mini in simulation:
+  it refuses a physical robot until its safety policy is validated on hardware.
 - A browser tab, with the TypeScript SDK.
 
 To write your own, read the [protocol](/docs/satellites/protocol/), the

@@ -61,6 +61,7 @@ CI runs the same on every pull request and ends with one `ci` job to require in 
 
 ## Release it
 
-release-please turns Conventional Commits titles into a release pull request. Publishing ships
-commented out: register a trusted publisher on PyPI, npm or crates.io, then enable the publish job.
-The README gives the steps.
+release-please turns Conventional Commits titles into a release pull request. Its job calls a
+shared nestor-home workflow that only runs in nestor-home: replace it with the commented job under
+it. Publishing is commented out too: register a trusted publisher on PyPI, npm or crates.io, then
+uncomment the publish job. The README gives the steps.

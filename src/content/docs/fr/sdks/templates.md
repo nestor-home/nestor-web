@@ -62,6 +62,8 @@ dans vos règles de branche.
 
 ## Le publier
 
-release-please tire des titres Conventional Commits une pull request de version. La publication
-est livrée en commentaire : déclarez un éditeur de confiance sur PyPI, npm ou crates.io, puis
-activez le job de publication. Le README donne les étapes.
+release-please tire des titres Conventional Commits une pull request de version. Son job appelle
+un workflow partagé de nestor-home qui ne tourne que dans nestor-home : remplacez-le par le job
+en commentaire juste dessous. La publication est aussi en commentaire : déclarez un éditeur de
+confiance sur PyPI, npm ou crates.io, puis décommentez le job de publication. Le README donne les
+étapes.

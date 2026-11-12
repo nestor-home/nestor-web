@@ -70,29 +70,31 @@ admin:
   port: 8470
 ```
 
-Without the voice, the `voice` block is commented out and a `telegram` channel is added. Home
-Assistant is there too, commented out.
+Without the voice, there are no `ears` and `voice` models and the `voice` block is commented out. A
+`telegram` channel is written only when you ask for it. Home Assistant and `voices` are there too,
+commented out.
 
 ## The sections
 
 Only `persona`, `household`, `models` and `channels` are required.
 
-| Section      | Sets                                                                       | Explained in                                                             |
-| ------------ | -------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `persona`    | the assistant’s name and character, the household’s language and time zone | [below](#language-and-time)                                              |
-| `household`  | the people, and the accounts channels recognise them by                    | [below](#the-household)                                                  |
-| `models`     | the language models, under names you choose                                | [Models](/docs/models/)                                                  |
-| `agent`      | which model answers aloud and in writing                                   | [Models](/docs/models/#roles)                                            |
-| `memory`     | how much each turn recalls, the summaries’ model, search by meaning        | [Models](/docs/models/#search-by-meaning), [Memory](/docs/agent/memory/) |
-| `channels`   | Telegram, the satellites and their voice                                   | [Channels and voice](/docs/channels/)                                    |
-| `home`       | Home Assistant: who is home and in which room, its actions                 | [Home and services](/docs/connections/#home-assistant)                   |
-| `tools`      | other MCP servers whose tools the agent may use                            | [Home and services](/docs/connections/#mcp-servers)                      |
-| `executors`  | agents that take on longer tasks                                           | [Home and services](/docs/connections/#longer-tasks)                     |
-| `initiative` | quiet hours, and the room to speak in when it only knows someone is home   | [Initiative](/docs/agent/initiative/)                                    |
-| `voices`     | the voice model that recognises who speaks to a satellite                  | [Speakers](/docs/agent/speakers/)                                        |
-| `watches`    | the model that sorts incoming mail for the watches                         | [Home and services](/docs/connections/#mail-and-watches)                 |
-| `admin`      | the admin’s address and port; without it, there is no admin                | [below](#the-admin)                                                      |
-| `updates`    | whether the admin says when a newer release is out                         | [Updates](/docs/updates/)                                                |
+| Section      | Sets                                                                        | Explained in                                                             |
+| ------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `persona`    | the assistant’s name and character, the household’s language and time zone  | [below](#language-and-time)                                              |
+| `household`  | the people, and the accounts channels recognise them by                     | [below](#the-household)                                                  |
+| `models`     | every model it uses, under names you choose                                 | [Models](/docs/models/)                                                  |
+| `agent`      | which models answer aloud and in writing, and hear voice messages           | [Models](/docs/models/#roles)                                            |
+| `memory`     | how much each turn recalls, the summaries’ model, search by meaning         | [Models](/docs/models/#search-by-meaning), [Memory](/docs/agent/memory/) |
+| `channels`   | Telegram, the satellites and their voice                                    | [Channels and voice](/docs/channels/)                                    |
+| `home`       | Home Assistant: who is home and in which room, its actions                  | [Home and services](/docs/connections/#home-assistant)                   |
+| `tools`      | other MCP servers whose tools the agent may use                             | [Home and services](/docs/connections/#mcp-servers)                      |
+| `executors`  | agents that take on longer tasks                                            | [Home and services](/docs/connections/#longer-tasks)                     |
+| `initiative` | quiet hours, and the room to speak in when it only knows someone is home    | [Initiative](/docs/agent/initiative/)                                    |
+| `voices`     | the speaker model that recognises who speaks to a satellite                 | [Speakers](/docs/agent/speakers/)                                        |
+| `watches`    | the model that sorts incoming mail for the watches                          | [Home and services](/docs/connections/#mail-and-watches)                 |
+| `connectors` | the services the admin connects accounts to; every installed one by default | [Home and services](/docs/connections/#mail-and-watches)                 |
+| `admin`      | the admin’s address and port; without it, there is no admin                 | [below](#the-admin)                                                      |
+| `updates`    | whether the admin says when a newer release is out                          | [Updates](/docs/updates/)                                                |
 
 ## The household
 
@@ -111,10 +113,12 @@ household:
 
 - `telegram:<id>`: their Telegram user id. Messages from unknown accounts are ignored, and the
   server’s log prints their id.
-- Satellites have no account: anyone in the room can talk to them. See [Speakers](/docs/agent/speakers/).
-- `reach`: where to write to them when they are away or it is quiet hours, such as
+- Satellites have no account: anyone in the room can talk to them. See
+  [Speakers](/docs/agent/speakers/).
+- `reach`: where Nestor writes to them when it does not say it aloud, such as
   `telegram:123456789`.
 - `may_message`: the person ids they may have the assistant write to; `"*"`, everyone, by default.
+  They can always write to themselves.
 
 ## Language and time
 
@@ -148,7 +152,7 @@ nestor secrets set openrouter   # then, in nestor.yaml: api_key: ${secret:openro
 ## The admin
 
 - `host`: `0.0.0.0` opens it to the network at `http://<the machine’s address>:8470`,
-  `127.0.0.1` keeps it to the machine.
+  `127.0.0.1`, the default, keeps it to the machine.
 - `public_url`: its address behind a reverse proxy, such as `https://nestor.example.org`.
 
 Accounts live in `state/`, not in the file.
@@ -158,7 +162,8 @@ Accounts live in `state/`, not in the file.
 Nestor reads its configuration at start. After a change, check it, then restart Nestor:
 
 ```bash
-nestor check   # validates the file and builds every part, without starting them
+nestor check     # validates the file and builds every part, without starting them
+nestor restart   # restarts the running instance
 ```
 
 The admin’s **Configuration** page edits the same file. It validates each change, keeps the

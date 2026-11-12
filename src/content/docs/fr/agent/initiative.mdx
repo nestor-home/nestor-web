@@ -13,11 +13,11 @@ une question de quelqu’un d’autre. Tous prennent le même chemin.
 ## Ce qui l’appelle
 
 **Les réveils.** « Rappelle-moi demain à 9 h d’appeler le plombier », « chaque jour de la semaine à
-8 h, donne-moi la météo ». L’agent appelle `schedule` avec une consigne qui se suffit et une
-heure, unique ou certains jours. À l’échéance, l’agent fait ce qu’elle dit, avec ses outils, et ce
-qu’il écrit arrive à qui l’a programmé, là où il se trouve, comme le résultat d’une tâche ; s’il
-n’y a rien à dire (un prix qui n’a pas baissé), rien n’est envoyé et le journal le note. Un réveil manqué pendant un arrêt
-de Nestor s’exécute une fois au démarrage suivant.
+8 h, donne-moi la météo ». L’agent appelle `schedule` avec une consigne qui se suffit et une heure,
+unique ou certains jours. À l’échéance, l’agent fait ce qu’elle dit, avec ses outils, et ce qu’il
+écrit arrive à qui l’a programmé, là où il se trouve, comme le résultat d’une tâche ; s’il n’y a
+rien à dire (un prix qui n’a pas baissé), rien n’est envoyé et le journal le note. Un réveil manqué
+pendant un arrêt de Nestor s’exécute une fois au démarrage suivant.
 
 **Les veilles.** « Préviens-moi quand la banque écrit » crée une veille. Un petit modèle lit chaque
 courrier entrant une fois, face à toutes les veilles, et annonce ce qui correspond à qui l’a demandé.
@@ -28,23 +28,28 @@ redémarrage.
 **Les messages.** « Dis à Hugo que le dîner est à 20 h », « demande à Léa si elle a besoin de la
 voiture » : l’agent appelle `message_person`. Un message qui attend une réponse ouvre une question,
 que les deux voient jusqu’au retour de la réponse. Le réglage `may_message` de chaque personne dit à
-qui d’autre elle peut écrire par l’agent ; chacun peut s’écrire à lui-même.
+qui d’autre elle peut écrire par l’agent, tout le monde par défaut (`"*"`) ; chacun peut s’écrire à
+lui-même.
 
 ## Où et comment il arrive
 
 Le **coursier** décide d’abord, et journalise sa décision avec sa raison :
 
-- la personne a demandé l’écrit, ou elle est absente : un message là où elle lit (Telegram
-  aujourd’hui) ;
-- elle est à la maison : dit dans sa pièce, ou par le satellite principal si sa pièce est
-  inconnue ;
-- heures calmes : rien n’est dit sauf urgence, et le message part quand même par écrit ;
+- la personne a demandé l’écrit, ou elle est absente : un message là où elle lit (son `reach`, sur
+  Telegram par exemple) ;
+- elle est dans une pièce avec un satellite : dit là ; à la maison sans pièce connue : par le
+  satellite de `initiative.main_room`. Si personne ne réagit en trois minutes
+  (`initiative.follow_up_after_s`), un message suit par écrit ;
+- elle est dans une pièce sans satellite : un message ;
+- heures calmes (`initiative.quiet_hours`) : rien n’est dit sauf urgence, et le message part quand
+  même par écrit ;
 - aucune information de présence : un message ; dit à voix haute seulement dans une conversation
   parlée encore en cours, ou à quelqu’un qui n’a nulle part où lire ;
 - quelque chose de privé (un mail pour quelqu’un) : la pièce entend seulement que quelque chose est
   arrivé, et le contenu part aussitôt par écrit.
 
-Un message dit à voix haute est entendu par toute la pièce. Voir [Locuteurs](/fr/docs/agent/speakers/).
+Un message dit à voix haute est entendu par toute la pièce. Voir
+[Locuteurs](/fr/docs/agent/speakers/).
 
 Seule la réponse finale de l’agent part, jamais ce qu’il écrit avant d’utiliser ses outils (« je
 regarde »). Chacune finit dans le journal de trois façons : transmise, rien à dire (seulement pour un

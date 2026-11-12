@@ -25,8 +25,8 @@ parle et retient la réponse pour la suite de la conversation. Une autre voix re
 ## Reconnaissance vocale
 
 Les voix sont reconnues sur le serveur, à partir de l’audio que les satellites envoient déjà. La
-reconnaissance se fait pendant la transcription et n’ajoute aucun délai au tour. Sans modèle de locuteur,
-toute personne qui parle à un satellite est inconnue.
+reconnaissance se fait pendant la transcription et n’ajoute aucun délai au tour. Sans modèle de
+locuteur, toute personne qui parle à un satellite est inconnue.
 
 ```yaml
 models:
@@ -40,11 +40,11 @@ voices:
 ```
 
 Installez l’extra avec `pip install 'nestor-home[voice-id]'`. Le modèle se télécharge au premier
-démarrage. Mesuré avec `nestor bench run speaker-id`, sur un fil de calcul :
+démarrage. Mesuré avec `nestor bench run speaker-id`, sur un thread CPU :
 
 | `model`                    | refus à tort pour 1 % d’acceptations à tort | par tour | taille |
 | -------------------------- | ------------------------------------------- | -------- | ------ |
-| `titanet-small` (défaut)   | 4,8 %                                       | 47 ms    | 40 Mo  |
+| `titanet-small`            | 4,8 %                                       | 47 ms    | 40 Mo  |
 | `3dspeaker-campplus-zh-en` | 4,3 %                                       | 62 ms    | 28 Mo  |
 | `3dspeaker-eres2net`       | 4,1 %                                       | 165 ms   | 26 Mo  |
 
@@ -52,9 +52,9 @@ Chaque modèle a son seuil ; `voices.threshold` le remplace.
 
 ### Enregistrer une voix
 
-- **Dans l’admin** : sur la page d’une personne, **Enregistrer ma voix**. La personne lit cinq phrases.
-  Un propriétaire peut enregistrer la voix de quelqu’un sans compte. Le navigateur demande une page
-  sécurisée : https, ou localhost.
+- **Dans l’admin** : sur la page d’une personne, **Enregistrer ma voix**. La personne lit cinq
+  phrases. Un propriétaire peut enregistrer la voix de quelqu’un sans compte. Le navigateur demande
+  une page sécurisée : https, ou localhost.
 - **Sur un satellite** : dites « apprends à reconnaître ma voix ». La personne confirme par écrit sur
   son propre compte, puis répète cinq phrases à voix haute.
 
@@ -91,9 +91,10 @@ home:
   sensitive:
     domains: [lock, alarm_control_panel]
     device_classes: [garage, gate, door]
-    names: [serrure, alarme, garage, portail, porte]
+    names: [lock, alarm, garage, gate, door]
 ```
 
 Une action est sensible quand l’une de ces valeurs apparaît dans son domaine, sa classe ou son nom,
-sans tenir compte des majuscules. La personne répond dans la conversation, ou sur la page
+sans tenir compte des majuscules. Ajoutez à `names` les mots des noms de vos entités en français
+(`serrure`, `portail`, `porte`). La personne répond dans la conversation, ou sur la page
 **Messages** de l’admin.

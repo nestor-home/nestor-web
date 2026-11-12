@@ -36,8 +36,10 @@ home:
     alex: person.alex # chaque identifiant du foyer, avec son entité personne
 ```
 
-`home` accepte aussi `rooms`, un capteur par personne qui donne sa pièce (Bermuda, ESPresense), et
-`sensitive`, ce qui demande l’accord d’une personne (voir [Qui parle](/fr/docs/agent/speakers/)). La
+`home` accepte aussi `rooms`, un capteur par personne qui donne sa pièce (Bermuda, ESPresense),
+`occupancy_sensors`, les capteurs qui disent qu’une pièce est occupée (par défaut tout capteur
+d’occupation, de présence ou de mouvement rattaché à une pièce), et `sensitive`, ce qui demande
+l’accord d’une personne (voir [Locuteurs](/fr/docs/agent/speakers/)). La
 page **Maison** de l’admin montre qui est où, les pièces, les personnes que Home Assistant connaît et
 ses actions.
 
@@ -57,23 +59,27 @@ tools:
 
 - `include` ou `exclude` filtre ses outils.
 - `risks` fixe le risque d’un outil : `read`, `write` ou `sensitive`. Les annotations du serveur
-  disent seulement s’il lit ou s’il écrit ; rien ne demande de confirmation sans `sensitive`.
+  disent seulement s’il lit ou s’il écrit.
+- `sensitive` demande une confirmation quand un argument contient l’une des valeurs données :
+  `{tool: delete_issue, arguments: {project: [billing]}}`. Sans `risks` ni `sensitive`, aucun outil
+  du serveur n’en demande.
 - `headers` ajoute des en-têtes HTTP, gardés secrets comme le jeton.
 
 ## Courrier et veilles
 
 Branchez les boîtes mail dans l’administration, sous **Connexions**, en lecture seule : Gmail, par
 votre propre application OAuth Google (l’administration vous guide), ou toute boîte IMAP avec un mot
-de passe d’application.
+de passe d’application. L’agent peut alors y chercher et lire le courrier, seulement pour la
+personne à qui la boîte appartient.
 
 Demandez ensuite une **veille** : « préviens-moi quand le plombier répond ». Un modèle
 (`watches.model`) trie chaque nouveau message face aux veilles ouvertes et prévient la personne qui
-l’a demandée, là où elle est. Pendant les heures calmes, il écrit, sauf urgence.
+l’a demandée, là où elle est (voir [Initiative](/fr/docs/agent/initiative/)).
 
 ## Tâches longues
 
 Ce qui prend des minutes va à un **exécutant**, un agent qui travaille en arrière-plan. Nestor suit
-la tâche et prévient la personne quand elle est faite. Hermes est disponible aujourd’hui :
+la tâche et prévient la personne quand elle est faite. Nestor fournit un exécutant Hermes :
 
 ```yaml
 executors:

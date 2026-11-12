@@ -167,10 +167,12 @@ nestor-satellite run --core http://nestor.local:8471 --room bureau --text-only
 ## Logiciel et mises à jour
 
 Le manifeste nomme le logiciel que fait tourner l’appareil : la crate `nestor-satellite` et sa
-version, sauf si le builder nomme le paquet sous lequel un pilote est publié. Un `Updater`
-facultatif (`newer` trouve une version plus récente à sa source, `install` l’installe) déclare
-`device.update` et suit les [règles de mise à jour](/fr/docs/satellites/protocol/#10-mises-à-jour)
-du protocole. Sans lui, l’administration montre seulement la version.
+version, sauf si `Manifest::with_software(Software::new(…)?)` nomme le paquet sous lequel un
+pilote est publié. Un `Updater` facultatif passé à `.updater(…)` (`newer` trouve une version plus
+récente à sa source, `install` l’installe) déclare `device.update` et suit les
+[règles de mise à jour](/fr/docs/satellites/protocol/#10-mises-à-jour) du protocole. Une fois une
+version installée, le même programme repart avec les mêmes arguments (Unix), sauf si `.restart(…)`
+en décide autrement. Sans updater, l’administration montre seulement la version.
 
 ## Pour aller plus loin
 

@@ -45,17 +45,19 @@ or French).
 PASS  asks to pair
 PASS  declares enrollment.provisioning (P1)
 PASS  claims its token once its device code is typed (P2)
-PASS  opens its link with its token (L1)
+PASS  opens its link with its token, a hello first, as the paired device (L1)
 FAIL  acknowledges intent.behavior within 1 s (no ack with this intent's id)
 ...
 1 check failed out of 32
 ```
 
-| Exit status | Means                                                                               |
-| ----------- | ----------------------------------------------------------------------------------- |
-| `0`         | the satellite conforms                                                              |
-| `1`         | a check failed                                                                      |
-| `2`         | the command cannot run: none given, program not found, or the `voice` extra missing |
+| Exit status | Means                                                    |
+| ----------- | -------------------------------------------------------- |
+| `0`         | the satellite conforms                                   |
+| `1`         | a check failed                                           |
+| `2`         | the command cannot run: none given, or program not found |
+
+Without the `voice` extra, the audio checks fail.
 
 ## In CI
 

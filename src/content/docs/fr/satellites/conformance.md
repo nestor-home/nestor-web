@@ -47,17 +47,19 @@ Une ligne par vérification, puis un bilan, dans la langue de `LC_ALL`, `LC_MESS
 OK     demande à être appairé
 OK     déclare enrollment.provisioning (P1)
 OK     récupère son jeton une fois son code d'appareil saisi (P2)
-OK     ouvre son lien avec son jeton (L1)
+OK     ouvre son lien avec son jeton, un hello d'abord, comme l'appareil appairé (L1)
 ÉCHEC  acquitte intent.behavior en 1 s au plus (aucun acquittement portant l'identifiant de cette intention)
 ...
 1 vérification échouée sur 32
 ```
 
-| Code de sortie | Sens                                                                                                     |
-| -------------- | -------------------------------------------------------------------------------------------------------- |
-| `0`            | le satellite est conforme                                                                                |
-| `1`            | une vérification a échoué                                                                                |
-| `2`            | la commande ne peut pas tourner : aucune commande donnée, programme introuvable, ou extra `voice` absent |
+| Code de sortie | Sens                                                                               |
+| -------------- | ---------------------------------------------------------------------------------- |
+| `0`            | le satellite est conforme                                                          |
+| `1`            | une vérification a échoué                                                          |
+| `2`            | la commande ne peut pas tourner : aucune commande donnée, ou programme introuvable |
+
+Sans l’extra `voice`, les vérifications audio échouent.
 
 ## En intégration continue
 

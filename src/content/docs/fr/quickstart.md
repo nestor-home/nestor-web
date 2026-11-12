@@ -28,8 +28,8 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-`nestor init` demande les noms, la langue, le fuseau horaire et le modèle ; Entrée garde chaque
-valeur proposée. Il crée ensuite votre identifiant d’administration (mot de passe de 10 caractères
+`nestor init` demande les noms, la langue, le fuseau horaire, le modèle et les canaux à installer ;
+Entrée garde chaque valeur proposée. Il crée ensuite votre identifiant d’administration (mot de passe de 10 caractères
 au moins).
 
 Il écrit `nestor.yaml` (la configuration), `.env` (les clés) et `state/` (la base de données), sans
@@ -42,8 +42,6 @@ Remplissez `MODEL_API_KEY` dans `.env` :
 ```ini
 MODEL_API_KEY=sk-or-...
 ```
-
-Telegram est facultatif : laissez `TELEGRAM_BOT_TOKEN` vide.
 
 ### 4. Vérifier et démarrer
 

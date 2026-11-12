@@ -27,8 +27,8 @@ channels:
 ```
 
 Ajoutez `"telegram:<votre identifiant>"` à vos `accounts` dans `household`. Pour le trouver,
-écrivez au bot : le journal du serveur affiche l’identifiant de chaque inconnu qu’il ignore. Le bot
-ne lit que le texte.
+écrivez au bot : le journal du serveur affiche l’identifiant de chaque inconnu qu’il ignore. Il lit
+aussi les photos et les messages vocaux : voir [plus bas](#photos-et-messages-vocaux).
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
@@ -41,30 +41,9 @@ channels:
     host: 0.0.0.0
 ```
 
-À voix haute, ajoutez une [voix](#voix) :
-
-```yaml
-models:
-  ears:
-    type: transcription
-    provider: elevenlabs
-    api_key: ${ELEVENLABS_API_KEY}
-  voice:
-    type: speech
-    provider: elevenlabs
-    api_key: ${ELEVENLABS_API_KEY}
-    voice_id: GPAQQPp9dazaB2bl4zg9
-
-channels:
-  - kind: satellites
-    host: 0.0.0.0
-    voice:
-      transcription: ears
-      speech: voice
-```
-
-`host: 0.0.0.0` ouvre le port 8471 à votre réseau. Ensuite, [appairez-les](/fr/docs/satellites/).
-Tout le monde dans la pièce peut parler à un satellite : voir [Locuteurs](/fr/docs/agent/speakers/).
+`host: 0.0.0.0` ouvre le port 8471 à votre réseau. À voix haute, ajoutez une [voix](#voix). Ensuite,
+[appairez-les](/fr/docs/satellites/). Tout le monde dans la pièce peut parler à un satellite : voir
+[Locuteurs](/fr/docs/agent/speakers/).
 
 </ProviderSetup>
 </Providers>
@@ -106,7 +85,8 @@ channels:
 ```
 
 `voice_id` est n’importe quelle voix de votre bibliothèque. La transcription attend de l’anglais,
-sauf si son modèle fixe `language` (`fr`, `de`…).
+sauf si le modèle fixe `language` (`fr`, `de`…). Les messages vocaux passent par `file_model`
+(`scribe_v2`) : le modèle temps réel ne lit pas de fichiers.
 
 </ProviderSetup>
 </Providers>
@@ -114,8 +94,43 @@ sauf si son modèle fixe `language` (`fr`, `de`…).
 Le bloc `voice` accepte aussi :
 
 - `style` : comment l’assistant écrit pour cette voix, par exemple ses balises d’expression ;
-- `fallback_clips` : un dossier avec `stt.wav` et `tts.wav`, joués quand le service de parole est
-  en panne.
+- `fallback_clips` : un dossier avec `stt.wav` et `tts.wav`, enregistrés dans la même voix, joués
+  quand le modèle de parole est en panne.
+
+## Photos et messages vocaux
+
+Un canal de messagerie transmet les photos, messages vocaux, fichiers audio et documents, avec leur
+légende. Nestor les garde avec son journal, où l’admin les montre.
+
+- Un message vocal est transcrit par un modèle `transcription`. Quand un modèle `speech` est défini
+  et que le canal sait envoyer des vocaux, la réponse en est un aussi.
+- Une photo va au modèle quand son profil voit les images (`vision: true`). Sinon, le modèle dit
+  qu’il ne la voit pas.
+- Tout autre fichier est nommé au modèle, qui dit qu’il ne peut pas l’ouvrir.
+
+```yaml
+models:
+  chat:
+    type: language
+    provider: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: anthropic/claude-haiku-5.5
+    vision: true
+  ears:
+    type: transcription
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+    language: fr
+  voice:
+    type: speech
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+    voice_id: GPAQQPp9dazaB2bl4zg9
+```
+
+`agent.transcription` et `agent.speech` nomment ces modèles ; chacun prend par défaut le seul de
+son type ([Rôles](/fr/docs/models/#rôles)).
 
 ## Quand une conversation se termine
 

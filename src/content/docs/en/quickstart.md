@@ -28,7 +28,8 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-`nestor init` asks for names, the language, the time zone and the model; Enter keeps each default.
+`nestor init` asks for names, the language, the time zone, the model and the channels to set up;
+Enter keeps each default.
 It then creates your admin login (a password of 10 characters or more).
 
 It writes `nestor.yaml` (the configuration), `.env` (the keys) and `state/` (the database), and
@@ -41,8 +42,6 @@ Fill in `MODEL_API_KEY` in `.env`:
 ```ini
 MODEL_API_KEY=sk-or-...
 ```
-
-Telegram is optional: leave `TELEGRAM_BOT_TOKEN` empty.
 
 ### 4. Check and start
 

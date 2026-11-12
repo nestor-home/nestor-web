@@ -103,7 +103,8 @@ declaring them in the manifest without those throws a `ProtocolError`.
 - `satellite.sendText(text)` sends 1 to 4,000 typed characters. It returns `false` while the link
   is down, and throws `CapabilityNotAllowed` if the household did not allow `text.input`.
 - `final` marks the last message of an answer.
-- `iceServers` (STUN or TURN URLs) is needed only beyond the local network.
+- The `iceServers` option of `browserVoice` or `nodeVoice` (STUN or TURN URLs) is needed only
+  beyond the local network.
 - `run` rejects with `LinkReplaced` when a newer link of the same device takes over, and with
   `PairingError` when the core will never pair it. Otherwise it reconnects, or pairs again if its
   token is refused.
@@ -152,10 +153,12 @@ the rest.
 ## Software and updates
 
 The manifest names the software the device runs: `@nestor-home/satellite` and its version, unless
-the `software` option names the package a driver is published as. A browser tab gets new code by
-reloading, so it declares no update. Elsewhere, an optional `updater` (an `Updater`: `newer` finds a
-newer version at its source, `install` installs it) declares `device.update` and follows the
-protocol’s [update rules](/docs/satellites/protocol/#10-updates).
+the manifest's `software` option (`new Manifest(device, capabilities, { software })`) names the
+package a driver is published as. A browser tab gets new code by reloading, so it declares no
+update. Elsewhere, an optional `updater` declares `device.update`; the SDK ships none. An `Updater`
+finds a newer version at its source (`newer`), installs it (`install`) and starts again on it
+(`restart`); going back to the previous version when the new one is not welcomed within 60 s is its
+job too. The SDK follows the protocol’s [update rules](/docs/satellites/protocol/#10-updates).
 
 ## Going further
 

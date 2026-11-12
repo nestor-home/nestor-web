@@ -71,29 +71,31 @@ admin:
   port: 8470
 ```
 
-Sans la voix, le bloc `voice` est en commentaire et un canal `telegram` s’ajoute. Home Assistant y
-figure aussi, en commentaire.
+Sans la voix, il n’y a pas de modèles `ears` et `voice` et le bloc `voice` est en commentaire. Un
+canal `telegram` n’est écrit que si vous le demandez. Home Assistant et `voices` y figurent aussi,
+en commentaire.
 
 ## Les sections
 
 Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 
-| Section      | Règle                                                                                 | Expliqué dans                                                                        |
-| ------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `persona`    | le nom et le caractère de l’assistant, la langue et le fuseau du foyer                | [plus bas](#langue-et-heure)                                                         |
-| `household`  | les personnes, et comment chaque canal les reconnaît                                  | [plus bas](#le-foyer)                                                                |
-| `models`     | les modèles de langage, sous des noms que vous choisissez                             | [Modèles](/fr/docs/models/)                                                          |
-| `agent`      | quel modèle répond à voix haute et par écrit                                          | [Modèles](/fr/docs/models/#rôles)                                                    |
-| `memory`     | ce que chaque tour retrouve, le modèle des résumés, la recherche par le sens          | [Modèles](/fr/docs/models/#recherche-par-le-sens), [Mémoire](/fr/docs/agent/memory/) |
-| `channels`   | Telegram, les satellites et leur voix                                                 | [Canaux et voix](/fr/docs/channels/)                                                 |
-| `home`       | Home Assistant : qui est là et dans quelle pièce, ses actions                         | [Maison et services](/fr/docs/connections/#home-assistant)                           |
-| `tools`      | d’autres serveurs MCP dont l’agent peut utiliser les outils                           | [Maison et services](/fr/docs/connections/#serveurs-mcp)                             |
-| `executors`  | des agents qui prennent les tâches longues                                            | [Maison et services](/fr/docs/connections/#tâches-longues)                           |
-| `initiative` | les heures calmes, et la pièce où parler quand il sait seulement que quelqu’un est là | [Initiative](/fr/docs/agent/initiative/)                                             |
-| `voices`     | le modèle de voix qui reconnaît qui parle à un satellite                              | [Locuteurs](/fr/docs/agent/speakers/)                                                |
-| `watches`    | le modèle qui trie le courrier entrant pour les veilles                               | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
-| `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration            | [plus bas](#administration)                                                          |
-| `updates`    | si l’administration signale une version plus récente                                  | [Mises à jour](/fr/docs/updates/)                                                    |
+| Section      | Règle                                                                                     | Expliqué dans                                                                        |
+| ------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `persona`    | le nom et le caractère de l’assistant, la langue et le fuseau du foyer                    | [plus bas](#langue-et-heure)                                                         |
+| `household`  | les personnes, et comment chaque canal les reconnaît                                      | [plus bas](#le-foyer)                                                                |
+| `models`     | tous les modèles qu’il utilise, sous des noms que vous choisissez                         | [Modèles](/fr/docs/models/)                                                          |
+| `agent`      | quels modèles répondent à voix haute et par écrit, et écoutent les messages vocaux        | [Modèles](/fr/docs/models/#rôles)                                                    |
+| `memory`     | ce que chaque tour retrouve, le modèle des résumés, la recherche par le sens              | [Modèles](/fr/docs/models/#recherche-par-le-sens), [Mémoire](/fr/docs/agent/memory/) |
+| `channels`   | Telegram, les satellites et leur voix                                                     | [Canaux et voix](/fr/docs/channels/)                                                 |
+| `home`       | Home Assistant : qui est là et dans quelle pièce, ses actions                             | [Maison et services](/fr/docs/connections/#home-assistant)                           |
+| `tools`      | d’autres serveurs MCP dont l’agent peut utiliser les outils                               | [Maison et services](/fr/docs/connections/#serveurs-mcp)                             |
+| `executors`  | des agents qui prennent les tâches longues                                                | [Maison et services](/fr/docs/connections/#tâches-longues)                           |
+| `initiative` | les heures calmes, et la pièce où parler quand il sait seulement que quelqu’un est là     | [Initiative](/fr/docs/agent/initiative/)                                             |
+| `voices`     | le modèle de locuteur qui reconnaît qui parle à un satellite                              | [Locuteurs](/fr/docs/agent/speakers/)                                                |
+| `watches`    | le modèle qui trie le courrier entrant pour les veilles                                   | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
+| `connectors` | les services auxquels l’administration relie des comptes ; tous ceux installés par défaut | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
+| `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration                | [plus bas](#administration)                                                          |
+| `updates`    | si l’administration signale une version plus récente                                      | [Mises à jour](/fr/docs/updates/)                                                    |
 
 ## Le foyer
 
@@ -114,10 +116,10 @@ household:
   journal du serveur affiche leur identifiant.
 - Les satellites n’ont pas de compte : tout le monde dans la pièce peut leur parler. Voir
   [Locuteurs](/fr/docs/agent/speakers/).
-- `reach` : où lui écrire quand elle est absente ou pendant les heures calmes, par exemple
+- `reach` : où Nestor lui écrit quand il ne le dit pas à voix haute, par exemple
   `telegram:123456789`.
 - `may_message` : les personnes à qui elle peut faire écrire l’assistant ; `"*"`, tout le monde,
-  par défaut.
+  par défaut. Elle peut toujours s’écrire à elle-même.
 
 ## Langue et heure
 
@@ -151,8 +153,8 @@ deviennent illisibles.
 
 ## Administration
 
-- `host` : `0.0.0.0` l’ouvre au réseau à `http://<adresse de la machine>:8470`, `127.0.0.1` la
-  réserve à la machine.
+- `host` : `0.0.0.0` l’ouvre au réseau à `http://<adresse de la machine>:8470`, `127.0.0.1`, la
+  valeur par défaut, la réserve à la machine.
 - `public_url` : son adresse derrière un proxy inverse, par exemple `https://nestor.example.org`.
 
 Les comptes vivent dans `state/`, pas dans le fichier.
@@ -163,7 +165,8 @@ Nestor lit sa configuration au démarrage. Après un changement, vérifiez-la, p
 Nestor :
 
 ```bash
-nestor check   # valide le fichier et construit chaque partie, sans la démarrer
+nestor check     # valide le fichier et construit chaque partie, sans la démarrer
+nestor restart   # redémarre l'instance en marche
 ```
 
 La page **Configuration** de l’administration modifie le même fichier. Elle valide chaque

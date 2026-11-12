@@ -93,7 +93,8 @@ GET /satellites/pairings/{pairing_id}
      "capabilities": ["device.identify"]}
 ```
 
-Une erreur renvoie un `pairing.error` : `{"error": code, "detail": texte, "reason"?: …, "retry_after_s"?: …}`.
+Une erreur renvoie un `pairing.error` : `{"error": code, "detail": texte, "reason"?: …,
+"retry_after_s"?: …}`.
 
 | `error`                | Statut | Sens                                                                                            |
 | ---------------------- | ------ | ----------------------------------------------------------------------------------------------- |
@@ -151,10 +152,10 @@ traduire à partir de `error` et `reason`, jamais afficher `detail`.
 
 ### 3.4 Règles du cœur
 
-- **C1.** Le cœur accepte les versions du protocole qu’il parle, aujourd’hui seulement
-  `nestor.satellite/1`. Un manifeste qui nomme un autre `nestor.satellite/<n>` est refusé avec
-  `protocol_unsupported`. Un cœur plus récent pourra accepter aussi la version précédant la sienne,
-  pour que les appareils se mettent à jour après lui.
+- **C1.** Le cœur accepte les versions du protocole qu’il parle : `nestor.satellite/1`. Un
+  manifeste qui nomme un autre `nestor.satellite/<n>` est refusé avec `protocol_unsupported`. Un
+  cœur PEUT accepter aussi la version précédant la sienne, pour que les appareils se mettent à jour
+  après lui.
 - **C2.** Un code d’enrôlement appaire un seul appareil. Il est consommé dès qu’il est accepté,
   avant que quoi que ce soit puisse l’observer : de deux appareils qui l’utilisent en même temps,
   l’un est approuvé, l’autre reçoit `enrollment_refused` (`used`).
@@ -277,8 +278,8 @@ observations et exécuter des intentions.
   oublier son jeton et s’appairer à nouveau (P8).
 - **L3.** Chaque message est `{"type", "id", "at", "payload"}`, un par trame texte du WebSocket.
   L’appareil DOIT accuser réception de chaque `intent.*` avec `ack` en moins d’une seconde, et NE
-  DOIT envoyer que ce qu’on lui a autorisé : observations, `input.text` (section 8), `update.status` (section 10). Les types de
-  message inconnus venant du cœur sont ignorés.
+  DOIT envoyer que ce qu’on lui a autorisé : observations, `input.text` (section 8), `update.status`
+  (section 10). Les types de message inconnus venant du cœur sont ignorés.
 - **L4.** Un appareil tient un seul lien. Un nouveau lien du même appareil remplace le précédent, que
   le cœur ferme avec `4409`. Le cœur envoie un ping toutes les 20 s (pings WebSocket). Un appareil qui
   les voit DEVRAIT tenir le lien pour perdu après 60 s sans aucun ; celui qui ne les voit pas (le
@@ -356,9 +357,9 @@ au plus demander à un appareil une version à laquelle il fait déjà confiance
   signalée comme `available`. Le journal garde `satellite.update.requested` et chaque état signalé
   par l’appareil (`satellite.update.reported`) ; la nouvelle version apparaît dans le
   `satellite.connected` suivant.
-- **U5.** Avec tout état sauf `current`, un appareil PEUT ajouter `notes` : une adresse https (512
+- **U5.** Avec tout état sauf `current`, un appareil PEUT ajouter `notes` : une adresse https (512
   caractères au plus) de ce que change cette version, trouvée à la même source. L’administration
-  l’affiche comme un lien que le navigateur de la personne ouvre ; le cœur ne la consulte jamais.
+  l’affiche comme un lien que le navigateur de la personne ouvre ; le cœur ne la consulte jamais.
 
 ## 11. Sécurité
 
@@ -404,13 +405,14 @@ La [suite de conformité](/fr/docs/satellites/conformance/) vérifie les règles
 | accuse réception de `intent.text` (s’il déclare `text.display`)                                 | L3, T2 |
 | reçoit l’audio du cœur ; envoie l’audio de son micro (s’il déclare `audio.*`)                   | A1, A2 |
 | ne propose pas d’audio quand l’audio n’est pas autorisé                                         | A1     |
-| s’appaire avec le code d’enrôlement de `NESTOR_PAIRING_URI`, sans code tapé                     | P1, P3 |
+| s’appaire avec le code d’enrôlement de `NESTOR_PAIRING_URI`, sans code tapé                     | P3, P4 |
 | se rabat sur un code d’appareil après le refus de son code d’enrôlement (faux, expiré, utilisé) | P5     |
 | ne présente qu’une fois un code d’enrôlement refusé (faux, expiré, utilisé)                     | P5     |
 | attend Retry-After quand il est limité ; s’appaire une fois la limite levée                     | P6     |
 
 Les règles propres au cœur (C1 à C6, la course de P4, I3, U4, les limites) sont vérifiées par ses
-tests : [`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
+tests :
+[`tests/modules/satellites/`](https://github.com/nestor-home/nestor/tree/main/tests/modules/satellites),
 [`test_gateway.py`](https://github.com/nestor-home/nestor/blob/main/tests/adapters/channels/satellites/test_gateway.py).
 
 ## 13. Historique

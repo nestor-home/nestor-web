@@ -7,8 +7,7 @@ import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
 import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
 import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 
-Speak to Nestor in the kitchen or write from the office: one agent answers, with one memory. Here
-are its parts, and a message followed to its answer.
+Speak to Nestor in the kitchen or write from the office: one agent answers, with one memory.
 
 ## The parts
 
@@ -62,8 +61,9 @@ Each turn builds its instructions in layers, from the most stable to the most va
 that caches prompts reads everything before a cache point from its cache, faster and cheaper. A new
 turn pays in full only for its turn layer and the new messages.
 
-Each module fills its own sections: memory, initiative (watches, wake-ups), messaging (open
-questions).
+Each module fills its own sections: memories, watches and wake-ups in the household layer; past
+conversations, running tasks, open questions and actions waiting for a confirmation in the turn
+layer.
 
 ## Models by role
 
@@ -94,4 +94,6 @@ memory:
 ```
 
 A role left out borrows a model: `spoken` and `written` stand in for each other, the watches and
-the consolidation take `written`.
+the consolidation take `written`. `agent.transcription` and `agent.speech` hear and record voice
+messages (see [Channels and voice](/docs/channels/)). Every role and its default is on
+[Models](/docs/models/).
