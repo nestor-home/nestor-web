@@ -70,8 +70,9 @@ admin:
   port: 8470
 ```
 
-Without the voice, there are no `ears` and `voice` models, the `voice` block is commented out and a
-`telegram` channel is added. Home Assistant and `voices` are there too, commented out.
+Without the voice, there are no `ears` and `voice` models and the `voice` block is commented out. A
+`telegram` channel is written only when you ask for it. Home Assistant and `voices` are there too,
+commented out.
 
 ## The sections
 

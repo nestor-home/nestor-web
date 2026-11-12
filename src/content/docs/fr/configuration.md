@@ -71,8 +71,9 @@ admin:
   port: 8470
 ```
 
-Sans la voix, il n’y a pas de modèles `ears` et `voice`, le bloc `voice` est en commentaire et un
-canal `telegram` s’ajoute. Home Assistant et `voices` y figurent aussi, en commentaire.
+Sans la voix, il n’y a pas de modèles `ears` et `voice` et le bloc `voice` est en commentaire. Un
+canal `telegram` n’est écrit que si vous le demandez. Home Assistant et `voices` y figurent aussi,
+en commentaire.
 
 ## Les sections
 

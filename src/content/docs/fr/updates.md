@@ -63,5 +63,11 @@ change cette version (les notes que l’appareil a trouvées, s’il en a trouv�
 - Il n’installe jamais une version plus ancienne, ni une version qu’il n’a pas trouvée.
 
 Les règles sont dans le protocole ([Mises à jour](/fr/docs/satellites/protocol/#10-mises-à-jour)).
-Mettez d’abord le serveur à jour : un satellite sur la version précédente du protocole continue de
-marcher tant qu’une version la parle encore.
+
+## Dans quel ordre
+
+Mettez d’abord le serveur à jour, puis les satellites depuis l’admin. Un satellite mis à jour avant
+le serveur parlerait une version que le serveur refuse, et reviendrait en arrière au bout d’une
+minute. Quand une version n’accepte plus la version du protocole d’un satellite, les notes le
+disent : ce satellite ne peut plus se connecter au nouveau serveur, mettez-le donc à jour sur
+l’appareil lui-même, après le serveur.

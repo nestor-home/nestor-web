@@ -59,5 +59,11 @@ changes (the release notes the device found, when it found some) and what happen
   goes back to the one it ran and says so.
 - It never installs an older version, or one it did not find.
 
-The rules are in the protocol ([Updates](/docs/satellites/protocol/#10-updates)). Update the server
-first: a satellite on the previous protocol version keeps working while a release still speaks it.
+The rules are in the protocol ([Updates](/docs/satellites/protocol/#10-updates)).
+
+## In which order
+
+Update the server first, then the satellites from the admin. A satellite updated before the server
+would speak a version the server refuses, and would go back after a minute. When a release no longer
+accepts a satellite's protocol version, the notes say so: that satellite cannot connect to the new
+server, so update it on the device itself, after the server.
