@@ -50,6 +50,69 @@ the server’s log prints the id of each stranger it ignores. It also reads phot
 see [below](#photos-and-voice-messages).
 
 </ProviderSetup>
+<ProviderSetup kind="channel" brand="discord">
+
+Create an application in the [Developer Portal](https://discord.com/developers/applications), add a
+bot, turn on its **Message Content** intent and invite it to your server. Then:
+
+```yaml
+channels:
+  - kind: discord
+    token: ${DISCORD_BOT_TOKEN}
+```
+
+It answers direct messages, and messages that mention it in a server's channels. Add
+`"discord:<your user id>"` to your `accounts`.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="slack">
+
+Create a Slack app with Socket Mode on, an app-level token (`connections:write`) and a bot token with
+`chat:write`, `files:read`, `files:write`, `im:history` and `app_mentions:read`, subscribed to the
+`message.im` and `app_mention` events. No public address is needed.
+
+```yaml
+channels:
+  - kind: slack
+    app_token: ${SLACK_APP_TOKEN}
+    bot_token: ${SLACK_BOT_TOKEN}
+```
+
+It answers direct messages and mentions. Add `"slack:<your member id>"` to your `accounts`.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="matrix">
+
+Create an account for the bot on a homeserver and take its access token. Invite it to a room: it
+joins and answers there.
+
+```yaml
+channels:
+  - kind: matrix
+    homeserver: https://matrix.org
+    token: ${MATRIX_TOKEN}
+```
+
+Add `"matrix:@you:matrix.org"` to your `accounts`. Encrypted rooms are not read: create the room
+without encryption.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="signal">
+
+Register a number with [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api), in its
+`normal` or `native` mode, then:
+
+```yaml
+channels:
+  - kind: signal
+    url: http://signal:8080
+    number: "+33612345678"
+```
+
+It answers direct messages and groups. Add `"signal:+33…"`, your number, to your `accounts`. A voice
+message is answered in writing.
+
+</ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
 
 Devices people type on, talk to, or both. In writing:
