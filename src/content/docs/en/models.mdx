@@ -200,6 +200,7 @@ With several profiles, each role names the one it uses:
 | `agent.titles`         | titles each chat of the admin from its first exchange; a small model is enough | `agent.written`              |
 | `agent.transcription`  | hears voice messages                                                      | the only transcription model |
 | `agent.speech`         | answers a voice message with one                                          | the only speech model        |
+| `agent.images`         | draws the pictures people ask for                                         | the only image model         |
 
 A fast model for the voice, a stronger one for the rest:
 
@@ -247,6 +248,27 @@ Any OpenAI-compatible `/embeddings` endpoint works. `dimensions` is the vector s
 that expects a prefix (`query: `), set `query_prefix` and `document_prefix`. Changing the model
 reindexes in the background. See [Memory](/docs/agent/memory/).
 
+## Pictures
+
+With an image model, Nestor draws what people ask for (“draw a dragon for Léa’s card”) and sends it
+with its answer, where the conversation shows pictures: the admin’s chat, Telegram. A picture asked
+for aloud in a room stays in the admin’s journal.
+
+```yaml
+models:
+  painter:
+    type: image
+    provider: openai-compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key: ${MODEL_API_KEY}
+    model: google/gemini-2.5-flash-image
+    endpoint: chat
+```
+
+`endpoint: images`, the default, speaks `/images/generations` (OpenAI, Gemini, local servers);
+`chat` speaks Chat Completions, as OpenRouter’s image models do. `size` sets the size when the
+model takes one (`1024x1024`).
+
 ## Hearing and speaking
 
 `models` holds every model Nestor uses. Each one says its `type` and its `provider`, the plugin
@@ -259,6 +281,7 @@ that serves that type, and a setting only offers the models of its type:
 | transcription | hears what people say to a satellite, and voice messages | a satellites channel's `voice.transcription`, `agent.transcription` |
 | speech        | gives the assistant its voice                            | a satellites channel's `voice.speech`, `agent.speech`               |
 | speaker       | knows who is speaking                                    | `voices.embedder` ([Speakers](/docs/agent/speakers/))               |
+| image         | draws the pictures people ask for                        | `agent.images` ([Pictures](#pictures))                              |
 
 Setting up the voice: [Channels and voice](/docs/channels/#voice).
 
