@@ -22,8 +22,10 @@ met en cache. Au-delà de 150, la **couche du tour** ajoute ceux que retrouvent 
 messages de qui parle.
 
 La couche du tour porte aussi les **épisodes** de qui parle, visibles de leurs seuls participants.
-Des outils atteignent le reste : `recall` cherche entre deux dates si on le demande (« qu’est-ce
-qu’on s’est dit la semaine dernière ? »), `read_conversation` relit une conversation mot pour mot.
+Des outils atteignent le reste : `recall` cherche dans les souvenirs et les conversations passées,
+entre deux dates si on le demande (« qu’est-ce qu’on s’est dit la semaine dernière ? »), et
+`read_conversation` relit une conversation mot pour mot. `remember`, `correct_memory` et `forget`
+retiennent, corrigent et effacent un souvenir.
 
 ## Retrouver par les mots et par le sens
 
@@ -62,14 +64,16 @@ mots seuls.
 
 <Consolidation locale="fr" n={6} />
 
-Une conversation est terminée quand son silence dépasse ce que permet chaque médium de son lieu. Un
-petit modèle écrit alors son **épisode**, deux ou trois phrases et quelques sujets, et garde comme
-souvenirs les faits durables que l’agent a manqués. Si Nestor était arrêté, il rattrape au démarrage suivant, jamais deux fois.
+Une conversation est terminée quand son silence dépasse ce que permet chaque médium de son lieu. Le
+modèle de consolidation écrit alors son **épisode**, deux ou trois phrases et quelques sujets, et
+garde comme souvenirs les faits durables que l’agent a manqués. Si Nestor était arrêté, il rattrape
+au démarrage suivant, jamais deux fois.
 
 ## Réglages
 
 | Réglage | Par défaut | Rôle |
 | --- | --- | --- |
+| `memory.strategy` | `both` | `recent` : les derniers seulement ; `search` : seulement ce que trouvent les mots |
 | `memory.recent` | 150 | souvenirs dans la couche du foyer |
 | `memory.found` | 12 | souvenirs que les mots peuvent ajouter au-delà |
 | `memory.recent_episodes` | 3 | dernières conversations de la personne qui parle |

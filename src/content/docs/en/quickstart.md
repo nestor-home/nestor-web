@@ -42,7 +42,8 @@ Fill in `MODEL_API_KEY` in `.env`:
 MODEL_API_KEY=sk-or-...
 ```
 
-Telegram is optional: leave `TELEGRAM_BOT_TOKEN` empty.
+Telegram is optional: fill in `TELEGRAM_BOT_TOKEN`, or remove the `telegram` channel from
+`nestor.yaml`.
 
 ### 4. Check and start
 

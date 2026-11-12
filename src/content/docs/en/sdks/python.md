@@ -121,14 +121,15 @@ driver's manifest passes `software=Software.of("my-satellite")`, the package it 
 
 `updater=` an `Updater` lets the household update the device from the admin, and declares
 `device.update`. An `Updater` says which newer version its source has (`newer`) and installs one
-(`install`), and may give the address of that version's release notes (`notes`); the SDK ships one
-for packages installed from PyPI, with uv or pip, which gives the project's changelog. Without it,
-the admin only shows the version.
+(`install`), and may give the address of that version's release notes (`notes`). The SDK ships
+`PypiUpdater` for packages installed from PyPI with uv or pip: its notes are the project's changelog
+or releases link, else the version's page on PyPI. Without an updater, the admin only shows the
+version.
 
 `nestor-satellite run --managed` uses it on itself. When a person asks for the update, the command
-installs the new version in its own environment, then starts its own command line again in place,
-so it needs no service manager to come back. If the new version is not welcomed within 60 s, it
-installs the previous one again and reports the failure.
+installs the new version in its own environment, then starts its own command line again in place.
+If the new version is not welcomed within 60 s, it installs the previous one again and reports the
+failure. Run it under a service manager all the same.
 
 ## Going further
 

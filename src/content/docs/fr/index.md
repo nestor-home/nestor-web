@@ -15,7 +15,7 @@ projet est jeune : attendez-vous à des changements d’une version à l’aut
   chaque tour.
 - **Il pilote la maison** par Home Assistant, et sait qui est là.
 - **Il guette** un colis ou une réponse dans vos mails.
-- **Il parle à la bonne personne**, là où elle est, et se tait la nuit.
+- **Il parle à la bonne personne**, là où elle est, et se tait aux heures que vous fixez.
 - **Il tient un journal** de tout ce qu’il fait et pourquoi, visible dans l’administration.
 
 ## De quoi il est fait

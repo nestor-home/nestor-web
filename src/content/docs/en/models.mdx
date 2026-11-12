@@ -107,7 +107,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-Anthropic meant this layer for testing, not production. OpenRouter is the tested route to Claude.
+Anthropic’s OpenAI-compatible layer is meant for testing. OpenRouter is the tested route to Claude.
 
 ```ini
 MODEL_API_KEY=sk-ant-...
@@ -182,7 +182,7 @@ models:
 </ProviderSetup>
 </Providers>
 
-Any model with tool calls works. A local model answers more slowly, and the voice feels it first.
+A local model answers more slowly, and the voice feels it first.
 
 With Docker, reach a model server on the host at `http://host.docker.internal:<port>/v1`. On Linux,
 make it listen on all interfaces: `OLLAMA_HOST=0.0.0.0` for Ollama, `--host 0.0.0.0` for llama.cpp.
@@ -241,8 +241,10 @@ memory:
   embedder: vectors
 ```
 
-Any OpenAI-compatible `/embeddings` endpoint works. `dimensions` is the vector size. For a model
-that expects a prefix (`query: `), set `query_prefix` and `document_prefix`. Changing the model reindexes in the background. See [Memory](/docs/agent/memory/).
+Any OpenAI-compatible `/embeddings` endpoint works. `dimensions` is the vector size; with
+`send_dimensions: true`, a model that can shorten its vectors is asked for that size. For a model
+that expects a prefix (`query: `), set `query_prefix` and `document_prefix`. Changing the model
+reindexes in the background. See [Memory](/docs/agent/memory/).
 
 ## Hearing and speaking
 
@@ -261,7 +263,7 @@ Setting up the voice: [Channels and voice](/docs/channels/#voice).
 
 ## Settings
 
-A chat profile also takes:
+A language model also takes:
 
 - `extra_body`, merged into every request (routing, reasoning);
 - `read_timeout_s`, in seconds (30);

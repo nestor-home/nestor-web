@@ -140,9 +140,9 @@ and `reason`, never show `detail`.
 
 ### 3.4 Core rules
 
-- **C1.** The core accepts the protocol versions it speaks, today only `nestor.satellite/1`. A
-  manifest naming another `nestor.satellite/<n>` is refused with `protocol_unsupported`. A later core
-  may also accept the version just before its own, so that devices can be updated after it.
+- **C1.** The core accepts the protocol versions it speaks: `nestor.satellite/1`. A manifest naming
+  another `nestor.satellite/<n>` is refused with `protocol_unsupported`. A core MAY also accept the
+  version just before its own, so that devices can be updated after it.
 - **C2.** An enrollment code pairs one device. It is spent as soon as it is accepted, before anything
   else can observe it: of two devices racing with it, one is approved and one gets
   `enrollment_refused` (`used`).
@@ -253,9 +253,10 @@ carries out intents.
 - **L2.** The core closes the link without a `welcome` when `hello` is late (10 s), off-contract or
   for another device (`4400`), or when the token is refused (`4401`). On `4401` the device MUST
   forget its token and pair again (P8).
-- **L3.** Every message is `{"type", "id", "at", "payload"}`, one per WebSocket text frame. The device
-  MUST acknowledge each `intent.*` with `ack` within a second, and MUST only send what it was
-  allowed: observations, `input.text` (section 8), `update.status` (section 10). Unknown message types from the core are ignored.
+- **L3.** Every message is `{"type", "id", "at", "payload"}`, one per WebSocket text frame. The
+  device MUST acknowledge each `intent.*` with `ack` within a second, and MUST only send what it was
+  allowed: observations, `input.text` (section 8), `update.status` (section 10). Unknown message
+  types from the core are ignored.
 - **L4.** A device holds one link. A new link of the same device replaces the earlier one, which the
   core closes with `4409`. The core pings every 20 s (WebSocket pings). A device that sees them
   SHOULD treat 60 s without any as a lost link; one that cannot (a browser’s WebSocket hides them)
@@ -375,7 +376,7 @@ The [conformance suite](/docs/satellites/conformance/) checks the device rules:
 | acknowledges `intent.text` (when it declares `text.display`)                               | L3, T2 |
 | receives the core’s audio; sends its microphone audio (when it declares `audio.*`)         | A1, A2 |
 | offers no audio when audio is not allowed                                                  | A1     |
-| pairs with the enrollment code of `NESTOR_PAIRING_URI`, no code typed                      | P1, P3 |
+| pairs with the enrollment code of `NESTOR_PAIRING_URI`, no code typed                      | P3, P4 |
 | falls back to a device code after its enrollment code is refused (wrong, expired, used)    | P5     |
 | presents a refused enrollment code only once (wrong, expired, used)                        | P5     |
 | waits for Retry-After when rate-limited; pairs once the limit lifts                        | P6     |

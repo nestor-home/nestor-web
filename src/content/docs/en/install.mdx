@@ -23,9 +23,9 @@ same server:
 | Upgrade                      | `uv tool upgrade nestor-home`                            | `pip install -U nestor-home`                 | `docker pull`, then a new container     |
 | Good for                     | a development machine, trying it out, writing satellites | an environment you already run               | a server at home that stays on          |
 
-The package runs everything in text. The satellites’ realtime voice is the `voice` extra,
-`'nestor-home[voice]'`; the image includes it. Without it, a configuration with a voice fails at
-start and names the command to run.
+The package runs everything in text. Two extras add the rest: `voice` for the satellites’ realtime
+voice, `voice-id` to [recognise who speaks](/docs/agent/speakers/). The image includes both. Without
+an extra it needs, a configuration fails at start and names the command to run.
 
 ## Install and run
 
@@ -115,8 +115,8 @@ docker compose pull
 docker compose up -d
 ```
 
-It follows `latest`. To stay on a release line, set the tag, such as
-`ghcr.io/nestor-home/nestor:0.6`.
+It follows `latest`. To stay on a release line, set its tag:
+`ghcr.io/nestor-home/nestor:<major>.<minor>`.
 
 </Tab>
 </Tabs>

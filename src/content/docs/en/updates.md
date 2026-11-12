@@ -41,8 +41,8 @@ docker compose pull
 docker compose up -d
 ```
 
-A container cannot replace its own image. It would need the Docker socket, which gives whoever
-holds it root on the host, so the admin never asks for it. A development checkout updates with git.
+A container cannot replace its own image, and the admin never asks for the Docker socket, which
+would give it root on the host. A development checkout updates with git.
 
 Until the first stable release, a breaking release can change the data in place: its notes then ask
 you to recreate `state/` and to pair the satellites again.

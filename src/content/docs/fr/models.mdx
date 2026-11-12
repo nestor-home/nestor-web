@@ -107,7 +107,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-Anthropic réserve cette couche aux essais, pas à la production. OpenRouter est la voie testée vers Claude.
+Anthropic réserve sa couche compatible OpenAI aux essais. OpenRouter est la voie testée vers Claude.
 
 ```ini
 MODEL_API_KEY=sk-ant-...
@@ -182,8 +182,7 @@ models:
 </ProviderSetup>
 </Providers>
 
-Tout modèle qui gère les appels d’outils convient. Un modèle local répond plus lentement, et la
-voix le ressent en premier.
+Un modèle local répond plus lentement, et la voix le ressent en premier.
 
 Avec Docker, un serveur de modèle sur l’hôte est à `http://host.docker.internal:<port>/v1`. Sous
 Linux, faites-le écouter sur toutes les interfaces : `OLLAMA_HOST=0.0.0.0` pour Ollama,
@@ -243,8 +242,10 @@ memory:
   embedder: vectors
 ```
 
-Tout point `/embeddings` compatible OpenAI convient. `dimensions` est la taille des vecteurs.
-Pour un modèle qui attend un préfixe (`query: `), réglez `query_prefix` et `document_prefix`. Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/memory/).
+Tout point `/embeddings` compatible OpenAI convient. `dimensions` est la taille des vecteurs ;
+avec `send_dimensions: true`, un modèle qui sait raccourcir ses vecteurs les rend à cette taille.
+Pour un modèle qui attend un préfixe (`query: `), réglez `query_prefix` et `document_prefix`.
+Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/memory/).
 
 ## Entendre et parler
 
@@ -263,7 +264,7 @@ Configurer la voix : [Canaux et voix](/fr/docs/channels/#voix).
 
 ## Réglages
 
-Un profil de conversation accepte aussi :
+Un modèle de langage accepte aussi :
 
 - `extra_body`, fusionné dans chaque requête (routage, raisonnement) ;
 - `read_timeout_s`, en secondes (30) ;

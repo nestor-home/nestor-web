@@ -14,7 +14,7 @@ project is young: expect changes between releases.
 - **It remembers** what you told it, with dates, and recalls what matters at each turn.
 - **It drives the house** through Home Assistant, and knows who is home.
 - **It keeps watch** on your mail for a parcel or a reply.
-- **It speaks to the right person**, where they are, and keeps quiet at night.
+- **It speaks to the right person**, where they are, and keeps quiet during the hours you set.
 - **It keeps a journal** of everything it does and why, shown in the admin.
 
 ## What it is made of

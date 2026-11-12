@@ -8,7 +8,7 @@ import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
 import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 
 Parlez à Nestor dans la cuisine ou écrivez-lui du bureau : un seul agent répond, avec une seule
-mémoire. Voici ses parties, et un message suivi jusqu’à la réponse.
+mémoire.
 
 ## Les parties
 
@@ -63,8 +63,9 @@ Chaque tour assemble ses consignes en couches, de la plus stable à la plus chan
 fournisseur qui met les prompts en cache y lit tout ce qui précède un point de cache, plus vite et
 moins cher. Un nouveau tour ne paie plein tarif que sa couche de tour et les nouveaux messages.
 
-Chaque module remplit ses sections : la mémoire, l’initiative (veilles, réveils), la messagerie
-(questions ouvertes).
+Chaque module remplit ses sections : souvenirs, veilles et réveils dans la couche du foyer ;
+conversations passées, tâches en cours, questions ouvertes et actions en attente de confirmation
+dans la couche du tour.
 
 ## Les modèles par rôle
 
@@ -96,4 +97,6 @@ memory:
 ```
 
 Un rôle omis emprunte un modèle : `spoken` et `written` se remplacent, les veilles et la
-consolidation prennent `written`.
+consolidation prennent `written`. `agent.transcription` et `agent.speech` écoutent et enregistrent
+les messages vocaux (voir [Canaux et voix](/fr/docs/channels/)). Chaque rôle et son défaut sont dans
+[Modèles](/fr/docs/models/).

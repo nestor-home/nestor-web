@@ -106,7 +106,8 @@ Le manifeste décrit le corps et les capteurs (`EXPRESSION`, `IDENTIFY`, `HEAD_M
 - `satellite.sendText(text)` envoie de 1 à 4 000 caractères tapés. Il renvoie `false` quand le
   lien est coupé et lève `CapabilityNotAllowed` si le foyer n’a pas autorisé `text.input`.
 - `final` marque le dernier message d’une réponse.
-- `iceServers` (des URL STUN ou TURN) ne sert qu’au-delà du réseau local.
+- L’option `iceServers` de `browserVoice` ou de `nodeVoice` (des URL STUN ou TURN) ne sert
+  qu’au-delà du réseau local.
 - `run` échoue avec `LinkReplaced` quand un lien plus récent du même appareil prend le relais, et
   avec `PairingError` quand le cœur ne l’appairera jamais. Sinon, il se reconnecte, ou s’appaire de
   nouveau si son jeton est refusé.
@@ -155,11 +156,13 @@ détaille le reste.
 ## Logiciel et mises à jour
 
 Le manifeste nomme le logiciel que fait tourner l’appareil : `@nestor-home/satellite` et sa
-version, sauf si l’option `software` nomme le paquet sous lequel un pilote est publié. Un onglet de
-navigateur reçoit le nouveau code en se rechargeant : il ne déclare pas de mise à jour. Ailleurs, un
-`updater` facultatif (un `Updater` : `newer` trouve une version plus récente à sa source, `install`
-l’installe) déclare `device.update` et suit les
-[règles de mise à jour](/fr/docs/satellites/protocol/#10-mises-à-jour) du protocole.
+version, sauf si l’option `software` du manifeste (`new Manifest(device, capabilities, { software })`)
+nomme le paquet sous lequel un pilote est publié. Un onglet de navigateur reçoit le nouveau code en
+se rechargeant : il ne déclare pas de mise à jour. Ailleurs, un `updater` facultatif déclare
+`device.update` ; le SDK n’en fournit aucun. Un `Updater` trouve une version plus récente à sa
+source (`newer`), l’installe (`install`) et relance l’appareil dessus (`restart`) ; revenir à la
+version précédente quand la nouvelle n’est pas accueillie dans les 60 s lui revient aussi. Le SDK
+suit les [règles de mise à jour](/fr/docs/satellites/protocol/#10-mises-à-jour) du protocole.
 
 ## Pour aller plus loin
 

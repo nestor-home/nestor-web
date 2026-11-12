@@ -23,9 +23,10 @@ lancent le même serveur :
 | Mise à jour                 | `uv tool upgrade nestor-home`                                 | `pip install -U nestor-home`                          | `docker pull`, puis un nouveau conteneur |
 | Pour                        | une machine de développement, un essai, écrire des satellites | un environnement que vous avez déjà                   | un serveur à la maison, toujours allumé  |
 
-Le paquet fait tout tourner à l’écrit. La voix temps réel des satellites est l’extra `voice`,
-`'nestor-home[voice]'` ; l’image le contient. Sans lui, une configuration avec une voix échoue au
-démarrage et donne la commande à lancer.
+Le paquet fait tout tourner à l’écrit. Deux extras ajoutent le reste : `voice` pour la voix temps
+réel des satellites, `voice-id` pour [reconnaître qui parle](/fr/docs/agent/speakers/). L’image
+contient les deux. Sans un extra dont elle a besoin, une configuration échoue au démarrage et donne
+la commande à lancer.
 
 ## Installer et lancer
 
@@ -116,15 +117,16 @@ docker compose pull
 docker compose up -d
 ```
 
-Il suit `latest`. Pour rester sur une ligne de versions, fixez l’étiquette, par exemple
-`ghcr.io/nestor-home/nestor:0.6`.
+Il suit `latest`. Pour rester sur une ligne de versions, fixez son étiquette :
+`ghcr.io/nestor-home/nestor:<majeure>.<mineure>`.
 
 </Tab>
 </Tabs>
 
 ## Mises à jour
 
-L’administration signale une version plus récente ; [Mises à jour](/fr/docs/updates/) dit comment mettre à jour.
+L’administration signale une version plus récente ; [Mises à jour](/fr/docs/updates/) dit comment
+mettre à jour.
 
 ## Le compte propriétaire
 

@@ -14,9 +14,10 @@ question from someone else. All of them take the same road.
 
 **Wake-ups.** "Remind me tomorrow at 9 to call the plumber", "every weekday at 8, tell me the
 weather". The agent calls `schedule` with a self-contained instruction and a time, once or on chosen
-days. When due, the agent does what it says, with its tools, and what it writes reaches whoever
-set it, where they are, like a task's result; when there is nothing to tell (a price that did not
-drop), nothing is sent and the journal says so. A wake-up missed while Nestor was stopped runs once at the next start.
+days. When due, the agent does what it says, with its tools, and what it writes reaches whoever set
+it, where they are, like a task's result; when there is nothing to tell (a price that did not drop),
+nothing is sent and the journal says so. A wake-up missed while Nestor was stopped runs once at the
+next start.
 
 **Watches.** "Tell me when the bank writes" creates a watch. A small model reads each incoming mail
 once against all watches and announces a match to whoever asked.
@@ -25,16 +26,21 @@ once against all watches and announces a match to whoever asked.
 
 **Messages.** "Tell Hugo dinner is at eight", "ask Léa if she needs the car": the agent calls
 `message_person`. A message that expects a reply opens a question, which both see until the answer
-comes back. Each person's `may_message` lists whom else they may write to through the agent; anyone may write
-to themselves.
+comes back. Each person's `may_message` lists whom else they may write to through the agent,
+everyone by default (`"*"`); anyone may write to themselves.
 
 ## Where and how it arrives
 
 The **courier** decides first and journals its decision with the reason:
 
-- the person asked for writing, or is away: a message where they read (Telegram today);
-- they are home: spoken in their room, or by the main satellite when their room is unknown;
-- quiet hours: nothing spoken unless urgent, and the message still goes in writing;
+- the person asked for writing, or is away: a message where they read (their `reach`, on Telegram
+  for instance);
+- they are in a room with a satellite: spoken there; home in no known room: by the satellite of
+  `initiative.main_room`. If nobody reacts within three minutes
+  (`initiative.follow_up_after_s`), it follows in writing;
+- they are in a room without a satellite: a message;
+- quiet hours (`initiative.quiet_hours`): nothing spoken unless urgent, and the message still goes
+  in writing;
 - no presence at all: a message; said aloud only back into a spoken conversation still going on,
   or to someone with nowhere to write;
 - something private (a mail for someone): the room only hears that something came, and the content

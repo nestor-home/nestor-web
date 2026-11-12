@@ -43,9 +43,9 @@ docker compose pull
 docker compose up -d
 ```
 
-Un conteneur ne peut pas remplacer sa propre image. Il lui faudrait le socket Docker, qui donne à
-qui le tient les droits root sur la machine : l’administration ne le demande jamais. Une copie de
-développement se met à jour avec git.
+Un conteneur ne peut pas remplacer sa propre image, et l’administration ne demande jamais le
+socket Docker, qui lui donnerait les droits root sur la machine. Une copie de développement se met à
+jour avec git.
 
 Jusqu’à la première version stable, une version peut changer les données en place : ses notes
 demandent alors de recréer `state/` et d’appairer de nouveau les satellites.

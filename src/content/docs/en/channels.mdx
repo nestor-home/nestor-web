@@ -41,30 +41,9 @@ channels:
     host: 0.0.0.0
 ```
 
-Aloud, add a [voice](#voice):
-
-```yaml
-models:
-  ears:
-    type: transcription
-    provider: elevenlabs
-    api_key: ${ELEVENLABS_API_KEY}
-  voice:
-    type: speech
-    provider: elevenlabs
-    api_key: ${ELEVENLABS_API_KEY}
-    voice_id: GPAQQPp9dazaB2bl4zg9
-
-channels:
-  - kind: satellites
-    host: 0.0.0.0
-    voice:
-      transcription: ears
-      speech: voice
-```
-
-`host: 0.0.0.0` opens port 8471 to your network. Then [pair them](/docs/satellites/). Anyone in the
-room can talk to a satellite: see [Speakers](/docs/agent/speakers/).
+`host: 0.0.0.0` opens port 8471 to your network. Aloud, add a [voice](#voice). Then [pair
+them](/docs/satellites/). Anyone in the room can talk to a satellite: see
+[Speakers](/docs/agent/speakers/).
 
 </ProviderSetup>
 </Providers>
@@ -104,7 +83,7 @@ channels:
       speech: voice
 ```
 
-`voice_id` is any voice of your library. Transcription expects English unless its model sets
+`voice_id` is any voice of your library. Transcription expects English unless the model sets
 `language` (`fr`, `de`…). Voice messages are read by `file_model` (`scribe_v2`), since the realtime
 model does not read files.
 
@@ -114,17 +93,18 @@ model does not read files.
 The `voice` block also takes:
 
 - `style`: how the assistant writes for this voice, such as its expression tags;
-- `fallback_clips`: a folder with `stt.wav` and `tts.wav`, played when the speech service is down.
+- `fallback_clips`: a folder with `stt.wav` and `tts.wav`, recorded in the same voice, played when
+  the speech model is down.
 
 ## Photos and voice messages
 
-What people send on Telegram reaches the agent: photos, voice messages, audio files and documents,
-with their caption. Nestor keeps them with its journal, where the admin shows them.
+A messaging channel passes on photos, voice messages, audio files and documents, with their
+caption. Nestor keeps them with its journal, where the admin shows them.
 
-- A voice message is transcribed by a `transcription` model, and answered with a voice message
-  when a `speech` model is set. Neither needs the `voice` extra.
-- A photo goes to the model when its profile sees images (`vision: true`). Otherwise the model is
-  told it cannot see it, and says so.
+- A voice message is transcribed by a `transcription` model. When a `speech` model is set and the
+  channel can send voice messages, the answer is one too.
+- A photo goes to the model when its profile sees images (`vision: true`). Otherwise the model says
+  it cannot see it.
 - Any other file is named to the model, which says it cannot open it.
 
 ```yaml

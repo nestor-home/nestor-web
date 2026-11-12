@@ -122,15 +122,15 @@ est publié (sa version est lue dans les métadonnées installées).
 
 `updater=` un `Updater` permet au foyer de mettre l’appareil à jour depuis l’administration, et
 déclare `device.update`. Un `Updater` dit quelle version plus récente sa source propose (`newer`) et
-en installe une (`install`), et peut donner l’adresse des notes de cette version (`notes`) ; le SDK
-en fournit un pour les paquets installés depuis PyPI, avec uv ou pip, qui donne le journal des
-changements du projet. Sans lui, l’administration montre seulement la version.
+en installe une (`install`), et peut donner l’adresse des notes de cette version (`notes`). Le SDK
+fournit `PypiUpdater` pour les paquets installés depuis PyPI avec uv ou pip : ses notes sont le lien
+du journal des changements ou des versions du projet, sinon la page de la version sur PyPI. Sans
+updater, l’administration montre seulement la version.
 
 `nestor-satellite run --managed` s’en sert sur lui-même. Quand une personne demande la mise à jour,
 la commande installe la nouvelle version dans son propre environnement, puis relance sa propre
-ligne de commande à sa place : aucun gestionnaire de services n’est nécessaire pour revenir. Si la
-nouvelle version n’est pas accueillie dans les 60 s, elle réinstalle la précédente et signale
-l’échec.
+ligne de commande à sa place. Si la nouvelle version n’est pas accueillie dans les 60 s, elle
+réinstalle la précédente et signale l’échec. Lancez-la quand même sous un gestionnaire de services.
 
 ## Pour aller plus loin
 

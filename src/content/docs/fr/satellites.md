@@ -12,7 +12,8 @@ canal `satellites` sur le port 8471, auquel il faut une [voix](/fr/docs/channels
 
 Il s’appaire une fois, déclare ses capacités, puis tient un WebSocket avec le serveur ; l’audio
 passe en WebRTC. Le serveur envoie des intentions, pas des mouvements : avec `intent.expression` et
-`joy`, un robot bouge ses antennes, une simple enceinte l’ignore.
+`joy`, un robot bouge ses antennes. Une simple enceinte ne le reçoit pas : elle n’a pas déclaré
+`expression.emotion`.
 
 ## Capacités
 
@@ -78,8 +79,8 @@ Un satellite autorisé à `device.update` se met à jour depuis sa page dans l�
 - `nestor-satellite run`, le micro et le haut-parleur de cette machine, dans les SDK
   [Python](/fr/docs/sdks/python/), [TypeScript](/fr/docs/sdks/typescript/) et
   [Rust](/fr/docs/sdks/rust/).
-- [`nestor-reachy`](https://github.com/nestor-home/nestor-reachy), pour Reachy Mini (son jumeau
-  simulé pour l’instant).
+- [`nestor-reachy`](https://github.com/nestor-home/nestor-reachy), pour Reachy Mini en simulation :
+  il refuse un robot physique tant que sa politique de sécurité n’est pas validée sur le matériel.
 - Un onglet de navigateur, avec le SDK TypeScript.
 
 Pour écrire le vôtre, lisez le [protocole](/fr/docs/satellites/protocol/), les

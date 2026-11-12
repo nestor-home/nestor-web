@@ -165,10 +165,12 @@ nestor-satellite run --core http://nestor.local:8471 --room bureau --text-only
 ## Software and updates
 
 The manifest names the software the device runs: the `nestor-satellite` crate and its version,
-unless the builder names the package a driver is published as. An optional `Updater` (`newer` finds
-a newer version at its source, `install` installs it) declares `device.update` and follows the
-protocol’s [update rules](/docs/satellites/protocol/#10-updates). Without it, the admin only shows
-the version.
+unless `Manifest::with_software(Software::new(…)?)` names the package a driver is published as. An
+optional `Updater` given to `.updater(…)` (`newer` finds a newer version at its source, `install`
+installs it) declares `device.update` and follows the protocol’s
+[update rules](/docs/satellites/protocol/#10-updates). Once a version is installed, the same program
+starts again with the same arguments (Unix), unless `.restart(…)` says otherwise. Without an
+updater, the admin only shows the version.
 
 ## Going further
 
