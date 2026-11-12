@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.4](https://github.com/nestor-home/nestor-web/compare/v0.7.3...v0.7.4) (2026-11-12)
+
+
+### Bug Fixes
+
+* **deps:** update astro monorepo ([#81](https://github.com/nestor-home/nestor-web/issues/81)) ([898b2d9](https://github.com/nestor-home/nestor-web/commit/898b2d9a119f9ca4853fb2bb8e41518bac4f28b9))
+* **deps:** update dependency lucide-react to v1.72.0 ([#84](https://github.com/nestor-home/nestor-web/issues/84)) ([b275fb2](https://github.com/nestor-home/nestor-web/commit/b275fb2dd334a3eb7049fb3dbf601849c4ec6de2))
+
+
+### Documentation
+
+* photos and voice messages on any messaging channel; the docs aligned with the code ([#83](https://github.com/nestor-home/nestor-web/issues/83)) ([b251b68](https://github.com/nestor-home/nestor-web/commit/b251b6854e36741983c7e9905d15c49ba0ca3540))
+* the admin's chat, mentions on every channel and conversation titles ([#85](https://github.com/nestor-home/nestor-web/issues/85)) ([ac69b34](https://github.com/nestor-home/nestor-web/commit/ac69b343b89db197c0ad2b0df3a5f65a5b472cf5))
+
 ## [0.7.3](https://github.com/nestor-home/nestor-web/compare/v0.7.2...v0.7.3) (2026-11-11)
 
 
