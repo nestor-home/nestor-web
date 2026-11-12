@@ -70,7 +70,8 @@ tools:
 Branchez les boîtes mail dans l’administration, sous **Connexions**, en lecture seule : Gmail, par
 votre propre application OAuth Google (l’administration vous guide), ou toute boîte IMAP avec un mot
 de passe d’application. L’agent peut alors y chercher et lire le courrier, seulement pour la
-personne à qui la boîte appartient.
+personne à qui la boîte appartient. Dans un message, `@gmail` ou `@mail` la lui désigne
+([Mentions](/fr/docs/channels/#mentions)).
 
 Demandez ensuite une **veille** : « préviens-moi quand le plombier répond ». Un modèle
 (`watches.model`) trie chaque nouveau message face aux veilles ouvertes et prévient la personne qui

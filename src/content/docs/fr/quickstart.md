@@ -4,8 +4,9 @@ title: Démarrage rapide
 description: De rien à une première conversation avec Nestor sur votre ordinateur, par écrit, en une dizaine de minutes.
 ---
 
-Obtenez une première réponse de Nestor dans votre terminal, par le plus court : uv, un modèle
-hébergé, l’écrit seul. Les autres voies sont dans [Installer](/fr/docs/install/).
+Obtenez une première réponse de Nestor, dans l’administration puis dans votre terminal, par le plus
+court : uv, un modèle hébergé, l’écrit seul. Les autres voies sont dans
+[Installer](/fr/docs/install/).
 
 Il vous faut :
 
@@ -56,12 +57,12 @@ laissez-le tourner.
 ## Ouvrir l’administration
 
 Ouvrez [http://localhost:8470](http://localhost:8470) et connectez-vous avec l’identifiant de
-l’étape 2.
+l’étape 2. Dans **Discussion**, écrivez un message : Nestor répond dans la page.
 
 ## Lui parler
 
-Dans un second terminal, dans le même dossier, créez un code d’appairage pour un satellite en
-terminal :
+Pour lui parler depuis un appareil, ouvrez un second terminal dans le même dossier et créez un code
+d’appairage pour un satellite en terminal :
 
 ```bash
 nestor satellites add --room bureau --name Terminal
@@ -78,6 +79,6 @@ journal de l’administration. Les lancements suivants se reconnectent sans code
 
 ## Ensuite
 
-- Lui parler à voix haute, ou sur Telegram : [Canaux et voix](/fr/docs/channels/).
+- Lui parler à voix haute, ou depuis une messagerie : [Canaux et voix](/fr/docs/channels/).
 - Lui faire voir qui est là et piloter la maison : [Maison et services](/fr/docs/connections/).
 - Ce qui s’est passé pendant ce tour : [Comment fonctionne l’agent](/fr/docs/agent/).

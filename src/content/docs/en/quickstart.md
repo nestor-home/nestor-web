@@ -4,7 +4,8 @@ title: Quickstart
 description: From nothing to a first conversation with Nestor on your computer, in writing, in about ten minutes.
 ---
 
-Get a first answer from Nestor in your terminal, the shortest way: uv, a hosted model, text only.
+Get a first answer from Nestor, in the admin then in your terminal, the shortest way: uv, a hosted
+model, text only.
 Other ways are in [Installation](/docs/install/).
 
 You need:
@@ -55,11 +56,13 @@ running.
 
 ## Open the admin
 
-Open [http://localhost:8470](http://localhost:8470) and sign in with the login from step 2.
+Open [http://localhost:8470](http://localhost:8470) and sign in with the login from step 2. Under
+**Chat**, write a message: Nestor answers in the page.
 
 ## Talk to it
 
-In a second terminal, in the same folder, create a pairing code for a terminal satellite:
+To talk to it from a device, open a second terminal in the same folder and create a pairing code
+for a terminal satellite:
 
 ```bash
 nestor satellites add --room office --name Terminal
@@ -76,6 +79,6 @@ journal. Later runs reconnect without a code.
 
 ## Next
 
-- Talk to it aloud, or on Telegram: [Channels and voice](/docs/channels/).
+- Talk to it aloud, or from a messaging app: [Channels and voice](/docs/channels/).
 - Let it see who is home and drive the house: [Home and services](/docs/connections/).
 - What happened during that turn: [How the agent works](/docs/agent/).
