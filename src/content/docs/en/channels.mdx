@@ -113,6 +113,46 @@ It answers direct messages and groups. Add `"signal:+33…"`, your number, to yo
 message is answered in writing.
 
 </ProviderSetup>
+<ProviderSetup kind="channel" brand="whatsapp">
+
+A WhatsApp Business number through Meta's Cloud API. In Meta's app dashboard, add WhatsApp, take the
+number's id, a permanent token of a system user and the app's secret, and point the webhook at
+`https://<your host>/whatsapp` (your reverse proxy forwards it to port 8473) with a verify token you
+choose:
+
+```yaml
+channels:
+  - kind: whatsapp
+    phone_number_id: "1098…"
+    token: ${WHATSAPP_TOKEN}
+    verify_token: ${WHATSAPP_VERIFY_TOKEN}
+    app_secret: ${WHATSAPP_APP_SECRET}
+```
+
+Add `"whatsapp:<your number, digits only>"` to your `accounts`. Every message is checked against
+Meta's signature. WhatsApp lets a business write freely only within 24 hours of the person's last
+message: a reminder sent later may be refused.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="email">
+
+A mailbox of Nestor's own: members write to it, the answer comes back in the thread.
+
+```yaml
+channels:
+  - kind: email
+    address: nestor@example.org
+    username: nestor@example.org
+    password: ${NESTOR_MAIL_PASSWORD}
+    imap_host: imap.example.org
+    smtp_host: smtp.example.org
+```
+
+Add `"email:you@example.org"` to your `accounts`. Anyone can write a `From` header: only mail your
+server authenticated (DMARC, or DKIM and SPF) is answered. Turn `require_authenticated` off only for
+a local bridge that adds no such header.
+
+</ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
 
 Devices people type on, talk to, or both. In writing:

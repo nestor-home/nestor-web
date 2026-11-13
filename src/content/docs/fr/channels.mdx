@@ -115,6 +115,46 @@ Il répond aux messages directs et aux groupes. Ajoutez `"signal:+33…"`, votre
 Un message vocal reçoit une réponse écrite.
 
 </ProviderSetup>
+<ProviderSetup kind="channel" brand="whatsapp">
+
+Un numéro WhatsApp Business par la Cloud API de Meta. Dans le tableau de bord de l’app Meta, ajoutez
+WhatsApp, récupérez l’identifiant du numéro, un jeton permanent d’utilisateur système et le secret de
+l’app, et dirigez le webhook vers `https://<votre hôte>/whatsapp` (votre reverse proxy le transmet au
+port 8473) avec un jeton de vérification de votre choix :
+
+```yaml
+channels:
+  - kind: whatsapp
+    phone_number_id: "1098…"
+    token: ${WHATSAPP_TOKEN}
+    verify_token: ${WHATSAPP_VERIFY_TOKEN}
+    app_secret: ${WHATSAPP_APP_SECRET}
+```
+
+Ajoutez `"whatsapp:<votre numéro, chiffres seuls>"` à vos `accounts`. Chaque message est vérifié
+contre la signature de Meta. WhatsApp ne laisse une entreprise écrire librement que dans les 24 heures
+qui suivent le dernier message de la personne : un rappel envoyé plus tard peut être refusé.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="email">
+
+Une boîte mail à Nestor : les membres y écrivent, la réponse revient dans le fil.
+
+```yaml
+channels:
+  - kind: email
+    address: nestor@example.org
+    username: nestor@example.org
+    password: ${NESTOR_MAIL_PASSWORD}
+    imap_host: imap.example.org
+    smtp_host: smtp.example.org
+```
+
+Ajoutez `"email:vous@example.org"` à vos `accounts`. N’importe qui peut écrire un en-tête `From` :
+seul le courrier que votre serveur a authentifié (DMARC, ou DKIM et SPF) reçoit une réponse.
+Désactivez `require_authenticated` seulement pour un pont local qui n’ajoute pas cet en-tête.
+
+</ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
 
 Des appareils sur lesquels on tape, auxquels on parle, ou les deux. À l’écrit :

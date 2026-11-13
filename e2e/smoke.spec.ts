@@ -359,7 +359,7 @@ test("integrations not shipped yet say so, on both pages", async ({ page }) => {
   for (const path of ["/", "/developers/"]) {
     await page.goto(path);
     const list = page.locator(".integrations");
-    await expect(list.getByRole("listitem").filter({ hasText: "WhatsApp" })).toContainText("planned");
+    await expect(list.getByRole("listitem").filter({ hasText: "Todoist" })).toContainText("planned");
     await expect(list.getByRole("listitem").filter({ hasText: "Telegram" })).not.toContainText("planned");
   }
 });
