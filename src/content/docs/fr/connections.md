@@ -1,7 +1,7 @@
 ---
 
 title: Maison et services
-description: Brancher Home Assistant pour la présence et les appareils, la recherche web, la météo et les cartes, des serveurs MCP pour d’autres outils, des comptes (mails, agendas, fichiers, contacts, tâches) pour l’agent et les veilles, et des agents pour les tâches longues.
+description: Brancher Home Assistant pour la présence et les appareils, la recherche web, la météo et les cartes, GitHub, Linear, Notion ou tout serveur MCP pour d’autres outils, des comptes (mails, agendas, fichiers, contacts, tâches) pour l’agent et les veilles, et des agents pour les tâches longues.
 ---
 
 Nestor voit et agit par ce que vous branchez ici. Chaque branchement est facultatif.
@@ -71,14 +71,32 @@ tools:
 
 ## Serveurs MCP
 
-Chaque serveur [Model Context Protocol](https://modelcontextprotocol.io) de `tools` ajoute ses
-outils à l’agent :
+Les services qui publient un serveur [Model Context Protocol](https://modelcontextprotocol.io)
+distant se connectent dans l’administration, sous **Connexions**, avec le connecteur **Serveur
+MCP** : choisissez l’un des serveurs connus (GitHub, Linear, Notion, Todoist, Atlassian, Asana,
+Sentry, Cloudflare, Stripe, Vercel, Canva, Hugging Face) ou tapez l’adresse de n’importe quel
+serveur, puis approuvez l’accès sur la page du service. Nestor suit le parcours d’autorisation de
+MCP : il trouve le serveur d’autorisation du serveur et s’y enregistre, sans application à créer.
+
+- Un serveur qui n’enregistre aucun client (GitHub, Asana) en demande un : créez une application
+  OAuth sur le service avec l’adresse de redirection affichée par l’administration, puis tapez son
+  identifiant et son secret. GitHub accepte aussi un jeton d’accès personnel.
+- Un serveur qui ne demande aucune autorisation (Hugging Face, un serveur de votre réseau) se
+  connecte aussitôt.
+- Une connexion appartient à une personne, ou au foyer. Ses outils portent le nom du service
+  (`linear_list_issues`). Les annotations du serveur disent s’ils lisent ou écrivent, et une
+  écriture demande d’abord l’accord de la personne, sauf si les réglages de la connexion disent
+  autrement. Vous coupez les outils un par un sur la page de la connexion.
+- Dans un message, `@linear` désigne ce serveur à l’agent ([Mentions](/fr/docs/channels/#mentions)).
+
+Un serveur écrit dans `tools` sert tout le foyer avec un jeton fixe. Utilisez-le pour un serveur de
+votre réseau, ou pour fixer le risque de chaque outil :
 
 ```yaml
 tools:
   - kind: mcp
     name: tracker
-    url: https://mcp.example.com/mcp
+    url: http://tracker.lan:8000/mcp
     token: ${TRACKER_TOKEN}
     include: [search_issues, create_issue]
 ```

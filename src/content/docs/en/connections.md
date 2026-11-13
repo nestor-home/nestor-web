@@ -1,7 +1,7 @@
 ---
 
 title: Home and services
-description: Connect Home Assistant for presence and devices, web search, weather and maps, any MCP server for more tools, accounts (mail, calendars, files, contacts, tasks) for the agent and the watches, and agents for longer tasks.
+description: Connect Home Assistant for presence and devices, web search, weather and maps, GitHub, Linear, Notion or any MCP server for more tools, accounts (mail, calendars, files, contacts, tasks) for the agent and the watches, and agents for longer tasks.
 ---
 
 Nestor sees and acts through what you connect here. Each connection is optional.
@@ -68,14 +68,31 @@ tools:
 
 ## MCP servers
 
-Each [Model Context Protocol](https://modelcontextprotocol.io) server in `tools` adds its tools to
-the agent:
+Services that publish a remote [Model Context Protocol](https://modelcontextprotocol.io) server
+connect in the admin, under **Connections**, with the **MCP server** connector: pick one of the
+known servers (GitHub, Linear, Notion, Todoist, Atlassian, Asana, Sentry, Cloudflare, Stripe,
+Vercel, Canva, Hugging Face) or type any server's address, then approve access on the service's
+page. Nestor follows the MCP authorization flow: it finds the server's authorization server and
+registers itself there, so there is no app to create.
+
+- A server that registers no client (GitHub, Asana) asks for one: create an OAuth app at the
+  service with the redirect address the admin shows, then type its ID and secret. GitHub also takes
+  a personal access token.
+- A server that asks for no authorization (Hugging Face, a server on your network) connects at once.
+- A connection belongs to one person, or to the household. Its tools carry the service's name
+  (`linear_list_issues`). The server's annotations tell reading from writing, and writing asks the
+  person first unless the connection's settings say otherwise. You switch tools off one by one on
+  the connection's page.
+- In a message, `@linear` points the agent to that server ([Mentions](/docs/channels/#mentions)).
+
+A server written in `tools` serves the whole household with a fixed token. Use it for a server on
+your network, or to set the risk of each tool:
 
 ```yaml
 tools:
   - kind: mcp
     name: tracker
-    url: https://mcp.example.com/mcp
+    url: http://tracker.lan:8000/mcp
     token: ${TRACKER_TOKEN}
     include: [search_issues, create_issue]
 ```

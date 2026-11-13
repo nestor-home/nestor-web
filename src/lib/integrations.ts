@@ -1,8 +1,8 @@
 /**
  * The services Nestor connects to, grouped by what they bring to a household: one source for the
  * home page and the developers' page. `available` means the framework ships it today (devices
- * through Home Assistant, tools through a generic MCP server); everything else is `planned` and
- * says so on both pages.
+ * through Home Assistant, tools through the service's own MCP server); everything else is `planned`
+ * and says so on both pages.
  */
 import type { BrandKey } from "@/lib/brands";
 
@@ -58,9 +58,9 @@ export const INTEGRATIONS: { group: string; items: Integration[] }[] = [
   {
     group: "lists",
     items: [
-      { brand: "todoist", status: "planned" },
+      { brand: "todoist", status: "available" },
       { brand: "google-keep", status: "planned" },
-      { brand: "notion", status: "planned" },
+      { brand: "notion", status: "available" },
       { brand: "spotify", status: "planned" },
     ],
   },
@@ -68,8 +68,8 @@ export const INTEGRATIONS: { group: string; items: Integration[] }[] = [
     group: "work",
     items: [
       { brand: "mcp", status: "available" },
-      { brand: "github", status: "planned" },
-      { brand: "linear", status: "planned" },
+      { brand: "github", status: "available" },
+      { brand: "linear", status: "available" },
       { brand: "hermes", status: "available" },
       { brand: "codex", status: "planned" },
     ],
