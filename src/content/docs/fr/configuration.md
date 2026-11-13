@@ -93,8 +93,9 @@ Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 | `executors`  | des agents qui prennent les tâches longues                                                                 | [Maison et services](/fr/docs/connections/#tâches-longues)                           |
 | `initiative` | les heures calmes, et la pièce où parler quand il sait seulement que quelqu’un est là                      | [Initiative](/fr/docs/agent/initiative/)                                             |
 | `voices`     | le modèle de locuteur qui reconnaît qui parle à un satellite                                               | [Locuteurs](/fr/docs/agent/speakers/)                                                |
-| `watches`    | le modèle qui trie le courrier entrant pour les veilles                                                    | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
-| `connectors` | les services auxquels l’administration relie des comptes ; tous ceux installés par défaut                  | [Maison et services](/fr/docs/connections/#comptes-connectés)                        |
+| `watches`    | le modèle qui trie ce qui arrive pour les veilles                                                          | [Maison et services](/fr/docs/connections/#courrier-et-veilles)                      |
+| `connectors` | les services auxquels l’administration relie des comptes ; tous ceux installés par défaut                  | [Maison et services](/fr/docs/connections/#comptes-connectés)                        |
+| `inbound`    | les flux d’actualité, pages web et webhooks que suivent les veilles                                        | [Maison et services](/fr/docs/connections/#flux-pages-et-webhooks)                   |
 | `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration                                 | [plus bas](#administration)                                                          |
 | `updates`    | si l’administration signale une version plus récente                                                       | [Mises à jour](/fr/docs/updates/)                                                    |
 

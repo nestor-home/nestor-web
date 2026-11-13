@@ -1,7 +1,7 @@
 ---
 
 title: Maison et services
-description: Brancher Home Assistant pour la présence et les appareils, la recherche web, la météo et les cartes, GitHub, Linear, Notion ou tout serveur MCP pour d’autres outils, des comptes (mails, agendas, fichiers, contacts, tâches) pour l’agent et les veilles, et des agents pour les tâches longues.
+description: Brancher Home Assistant pour la présence et les appareils, la recherche web, la météo et les cartes, GitHub, Linear, Notion ou tout serveur MCP pour d’autres outils, des comptes (mails, agendas, fichiers, contacts, tâches) pour l’agent, des flux, des pages et des webhooks pour les veilles, et des agents pour les tâches longues.
 ---
 
 Nestor voit et agit par ce que vous branchez ici. Chaque branchement est facultatif.
@@ -248,6 +248,39 @@ Une recherche rend au plus 20 mails ou fichiers, 30 contacts, 50 événements ou
 Demandez une **veille** : « préviens-moi quand le plombier répond ». Un modèle (`watches.model`)
 trie chaque nouveau message des boîtes Gmail, Outlook et IMAP connectées face aux veilles ouvertes
 et prévient la personne qui l’a demandée, là où elle est (voir [Initiative](/fr/docs/agent/initiative/)).
+
+## Flux, pages et webhooks
+
+Les veilles suivent aussi ce que vous listez sous `inbound` : des flux d’actualité, des pages web,
+et les envois de vos propres services.
+
+```yaml
+inbound:
+  - kind: rss
+    feeds:
+      - { name: Kernel, url: "https://www.kernel.org/feeds/kdist.xml" }
+      - { name: LWN, url: "https://lwn.net/headlines/rss" }
+  - kind: web-page
+    pages:
+      - { name: la lampe, url: "https://shop.example/lampe-fado" }
+  - kind: webhook
+    hooks:
+      - { name: github, kind: github, secret: "${GITHUB_HOOK_SECRET}" }
+```
+
+- `rss` lit les flux RSS et Atom toutes les 15 minutes (`every_s`, au moins 60). Chaque nouvelle
+  entrée est triée une fois ; ce que contient un flux à sa première lecture n’est pas nouveau.
+- `web-page` lit chaque page toutes les heures (`every_s`, au moins 300), comme `read_page` : son
+  contenu, sans menus ni bandeaux. Un changement est trié avec ce qui a changé, et le modèle juge
+  si c’est celui qu’on attend (« sous 50 € »). Les versions entre deux lectures ne sont pas vues.
+- `webhook` reçoit du JSON sur `POST /hooks/<nom>`, au port 8474 de 127.0.0.1 (`host`, `port` :
+  mettez un reverse proxy devant). Un envoi est signé avec le secret de son webhook
+  (`X-Hub-Signature-256: sha256=…`, comme GitHub signe) ou le porte (`Authorization: Bearer
+  <secret>`), jusqu’à 64 Ko (`max_bytes`). Ses envois sont du `kind` donné au webhook.
+
+Les flux et les pages de votre propre réseau sont refusés. L’agent les connaît par les noms que vous
+leur donnez : « préviens-moi quand Linux 7 sort sur Kernel », « quand la lampe passe sous 50 € ».
+Un nouveau flux ou une nouvelle page s’ajoute ici, pas par l’agent.
 
 ## Tâches longues
 
