@@ -23,7 +23,7 @@ import openrouterSvg from "@lobehub/icons-static-svg/icons/openrouter.svg?raw";
 import tavilySvg from "@lobehub/icons-static-svg/icons/tavily.svg?raw";
 import vllmSvg from "@lobehub/icons-static-svg/icons/vllm.svg?raw";
 import type { LucideIcon } from "lucide-react";
-import { Mail, MessageCircle, RadioTower } from "lucide-react";
+import { Braces, Mail, MessageCircle, RadioTower, Webhook } from "lucide-react";
 import {
   type SimpleIcon,
   siAnthropic,
@@ -46,6 +46,7 @@ import {
   siModelcontextprotocol,
   siNextcloud,
   siNotion,
+  siNtfy,
   siNvidia,
   siOpenrouter,
   siOpenstreetmap,
@@ -132,6 +133,9 @@ export const BRANDS = {
   slack: monogram("Slack", "S"), // in neither icon set
   chat: glyph("Chat", MessageCircle), // the admin's chat, not a brand: its name on a page comes from Fluent
   satellites: glyph("Satellites", RadioTower), // the satellites channel, not a brand: its name on a page comes from Fluent
+  api: glyph("API", Braces), // the OpenAI-compatible API, not a brand: its name on a page comes from Fluent
+  webhook: glyph("Webhook", Webhook),
+  ntfy: mark("ntfy", siNtfy),
   "home-assistant": mark("Home Assistant", siHomeassistant),
   "philips-hue": mark("Philips Hue", siPhilipshue),
   ikea: mark("IKEA", siIkea),

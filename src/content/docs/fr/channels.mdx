@@ -130,6 +130,55 @@ channels:
 [Locuteurs](/fr/docs/agent/speakers/).
 
 </ProviderSetup>
+<ProviderSetup kind="channel" brand="api">
+
+Nestor répond à `POST /v1/chat/completions` comme un modèle, donc tout client de cette API lui
+parle : Open WebUI, LibreChat, un script, ou Home Assistant par une intégration de conversation qui
+accepte une adresse (Extended OpenAI Conversation). Chaque clé appartient à un compte :
+
+```yaml
+channels:
+  - kind: openai-api
+    keys:
+      mathis: ${NESTOR_API_KEY}
+```
+
+Donnez au client `http://<nestor>:8472/v1`, le modèle `nestor` et cette clé, et ajoutez
+`"openai-api:mathis"` à vos `accounts`. `host: 0.0.0.0` l’ouvre aux autres machines. Nestor garde sa
+propre conversation : seul votre dernier message compte, images comprises.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="ntfy">
+
+Des notifications sur votre téléphone par [ntfy](https://ntfy.sh) : rappels, résultat d’une tâche,
+message transmis. Abonnez-vous à un sujet dans l’app ntfy, puis :
+
+```yaml
+channels:
+  - kind: ntfy
+```
+
+Indiquez `"ntfy:<sujet>"` comme `reach`. Sur le serveur public, quiconque connaît un sujet peut le
+lire : choisissez-en un que personne ne devinerait, ou votre propre serveur avec `url` et `token`.
+Personne ne répond par ce canal.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="webhook">
+
+Chaque message que Nestor envoie de lui-même part en JSON vers une adresse : une automatisation Home
+Assistant (qui peut notifier son app mobile), n8n, un script.
+
+```yaml
+channels:
+  - kind: webhook
+    url: https://homeassistant.local:8123/api/webhook/nestor
+    secret: ${WEBHOOK_SECRET}
+```
+
+Le corps est `{"to", "text", "attachments"}`, `to` étant ce qui suit `webhook:` dans le `reach` de la
+personne. Avec `secret`, `X-Nestor-Signature: sha256=…` le signe, comme GitHub signe ses webhooks.
+
+</ProviderSetup>
 </Providers>
 
 ## Voix
