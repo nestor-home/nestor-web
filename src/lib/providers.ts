@@ -48,6 +48,9 @@ export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
     { brand: "chat", status: "available", label: "providers-chat" },
     ...messaging.filter((c) => c.status === "available"),
     { brand: "satellites", status: "available", label: "providers-satellites" },
+    { brand: "api", status: "available", label: "providers-api" },
+    { brand: "ntfy", status: "available" },
+    { brand: "webhook", status: "available" },
     ...messaging.filter((c) => c.status === "planned"),
   ],
 };

@@ -128,6 +128,54 @@ them](/docs/satellites/). Anyone in the room can talk to a satellite: see
 [Speakers](/docs/agent/speakers/).
 
 </ProviderSetup>
+<ProviderSetup kind="channel" brand="api">
+
+Nestor answers `POST /v1/chat/completions` like a model would, so any client of that API talks to
+it: Open WebUI, LibreChat, a script, or Home Assistant through a conversation integration that takes a
+base URL (Extended OpenAI Conversation). Each key belongs to an account:
+
+```yaml
+channels:
+  - kind: openai-api
+    keys:
+      mathis: ${NESTOR_API_KEY}
+```
+
+Point the client at `http://<nestor>:8472/v1`, model `nestor`, with that key, and add
+`"openai-api:mathis"` to your `accounts`. `host: 0.0.0.0` opens it to other machines. Nestor keeps its
+own conversation: only the last message you wrote counts, pictures included.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="ntfy">
+
+Notifications on your phone through [ntfy](https://ntfy.sh): reminders, a task's result, a message
+passed on. Subscribe to a topic in the ntfy app, then:
+
+```yaml
+channels:
+  - kind: ntfy
+```
+
+Set your `reach` to `"ntfy:<topic>"`. On the public server, anyone who knows a topic can read it: pick
+one nobody would guess, or use a server of your own with `url` and `token`. Nobody answers through it.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="webhook">
+
+Each message Nestor sends by itself is posted as JSON to an address: a Home Assistant automation
+(which can notify its mobile app), n8n, a script.
+
+```yaml
+channels:
+  - kind: webhook
+    url: https://homeassistant.local:8123/api/webhook/nestor
+    secret: ${WEBHOOK_SECRET}
+```
+
+The body is `{"to", "text", "attachments"}`, `to` being what follows `webhook:` in the person's
+`reach`. With `secret`, `X-Nestor-Signature: sha256=…` signs it, as GitHub signs its webhooks.
+
+</ProviderSetup>
 </Providers>
 
 ## Voice

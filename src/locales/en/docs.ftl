@@ -17,6 +17,7 @@ providers-speech = Speech providers
 providers-channel = Channels
 providers-chat = Admin chat
 providers-satellites = Satellites
+providers-api = OpenAI-compatible API
 providers-local = local
 providers-planned-note = { $name } is planned: Nestor does not support it yet.
 tabs-install = Ways to install
