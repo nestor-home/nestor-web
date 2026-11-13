@@ -28,13 +28,13 @@ project is young: expect changes between releases.
 
 ## Where to start
 
-| You want to…                                    | Read                                                                                                   |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| try Nestor on your computer in ten minutes      | [Quickstart](/docs/quickstart/)                                                                        |
-| install it for good, on a server or with Docker | [Installation](/docs/install/)                                                                         |
-| know what it does during a conversation         | [How the agent works](/docs/agent/), [Memory](/docs/agent/memory/)                                     |
-| choose a model, local or hosted                 | [Models](/docs/models/)                                                                                |
-| talk to it aloud, or from a messaging app       | [Channels and voice](/docs/channels/)                                                                  |
-| connect Home Assistant, your mail, MCP servers  | [Home and services](/docs/connections/)                                                                |
-| add a speaker or a screen in a room             | [Satellites](/docs/satellites/)                                                                        |
-| build your own device                           | the [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/) or [Rust](/docs/sdks/rust/) SDK |
+| You want to…                                       | Read                                                                                                   |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| try Nestor on your computer in ten minutes         | [Quickstart](/docs/quickstart/)                                                                        |
+| install it for good, on a server or with Docker    | [Installation](/docs/install/)                                                                         |
+| know what it does during a conversation            | [How the agent works](/docs/agent/), [Memory](/docs/agent/memory/)                                     |
+| choose a model, local or hosted                    | [Models](/docs/models/)                                                                                |
+| talk to it aloud, or from a messaging app          | [Channels and voice](/docs/channels/)                                                                  |
+| connect Home Assistant, your accounts, MCP servers | [Home and services](/docs/connections/)                                                                |
+| add a speaker or a screen in a room                | [Satellites](/docs/satellites/)                                                                        |
+| build your own device                              | the [Python](/docs/sdks/python/), [TypeScript](/docs/sdks/typescript/) or [Rust](/docs/sdks/rust/) SDK |

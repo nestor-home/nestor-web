@@ -37,10 +37,12 @@ export const INTEGRATIONS: { group: string; items: Integration[] }[] = [
     group: "mail",
     items: [
       { brand: "gmail", status: "available" },
+      { brand: "google-calendar", status: "available" },
+      { brand: "google-drive", status: "available" },
+      { brand: "microsoft", status: "available" },
+      { brand: "icloud", status: "available" },
+      { brand: "nextcloud", status: "available" },
       { brand: "imap", status: "available" },
-      { brand: "google-calendar", status: "planned" },
-      { brand: "icloud", status: "planned" },
-      { brand: "nextcloud", status: "planned" },
     ],
   },
   {

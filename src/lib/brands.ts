@@ -15,6 +15,7 @@ import geminiSvg from "@lobehub/icons-static-svg/icons/gemini.svg?raw";
 import groqSvg from "@lobehub/icons-static-svg/icons/groq.svg?raw";
 import hermesagentSvg from "@lobehub/icons-static-svg/icons/hermesagent.svg?raw";
 import lmstudioSvg from "@lobehub/icons-static-svg/icons/lmstudio.svg?raw";
+import microsoftSvg from "@lobehub/icons-static-svg/icons/microsoft.svg?raw";
 import mistralSvg from "@lobehub/icons-static-svg/icons/mistral.svg?raw";
 import nvidiaSvg from "@lobehub/icons-static-svg/icons/nvidia.svg?raw";
 import ollamaSvg from "@lobehub/icons-static-svg/icons/ollama.svg?raw";
@@ -34,6 +35,7 @@ import {
   siGithub,
   siGmail,
   siGooglecalendar,
+  siGoogledrive,
   siGooglegemini,
   siGooglekeep,
   siHomeassistant,
@@ -121,7 +123,9 @@ const official = (name: string, svg: string): Brand => {
 export const BRANDS = {
   gmail: mark("Gmail", siGmail),
   "google-calendar": mark("Google Calendar", siGooglecalendar),
+  "google-drive": mark("Google Drive", siGoogledrive),
   "google-keep": mark("Google Keep", siGooglekeep),
+  microsoft: lobe("Microsoft 365", microsoftSvg), // Simple Icons dropped Microsoft's marks
   icloud: mark("iCloud", siIcloud),
   nextcloud: mark("Nextcloud", siNextcloud),
   imap: glyph("IMAP", Mail),

@@ -397,9 +397,9 @@ Sur tous les canaux, un message peut nommer avec `@` ce dont il parle :
 | `@gmail`   | un service d’un compte connecté                      | utilise pour cela les outils de ce compte       |
 
 Une personne se nomme par son `id`, une pièce par sa zone Home Assistant, un exécutant par son nom.
-Un connecteur nomme les services de ses comptes : `@gmail` pour un compte Google, `@mail` pour une
-boîte IMAP. Avec deux comptes d’un même service, le début de l’adresse les distingue :
-`@gmail-alex`.
+Un connecteur nomme les services de ses comptes : `@gmail` ou `@calendar` pour un compte Google,
+`@mail` pour une boîte IMAP ([tous](/fr/docs/connections/#comptes-connectés)). Quand deux comptes
+portent le même nom, le début de l’adresse les distingue : `@calendar-alex`.
 
 La casse et les accents ne comptent pas, et les noms répondent à des alias : le nom d’une personne
 ou d’une pièce (`@Léa`, `@salle-à-manger`), l’adresse d’un compte ou son début. Un nom qui ne
