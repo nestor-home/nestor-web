@@ -142,10 +142,10 @@ test("a provider mosaic shows one provider's setup at a time, chosen by click, k
   await expect(models.getByRole("tab", { name: /LM Studio/ })).toBeFocused();
   await expect(page.locator("#model-lm-studio-panel")).toBeVisible();
 
-  await page.goto("/fr/docs/channels/#speech-whisper");
+  await page.goto("/fr/docs/channels/#speech-deepgram");
   const speech = page.getByRole("tablist", { name: "Fournisseurs de parole" });
-  await expect(speech.getByRole("tab", { name: /Whisper/ })).toHaveAttribute("aria-selected", "true");
-  await expect(page.locator("#speech-whisper-panel")).toContainText("Whisper est prévu");
+  await expect(speech.getByRole("tab", { name: /Deepgram/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#speech-deepgram-panel")).toContainText("Deepgram est prévu");
   await expect(page.locator("#speech-elevenlabs-panel")).toBeHidden();
 });
 
