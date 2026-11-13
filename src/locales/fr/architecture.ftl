@@ -39,7 +39,7 @@ arch-home-point-1 = La présence à la granularité qu’a la maison
 arch-home-point-2 = Prévu : Nestor comme agent de conversation Assist de Home Assistant
 
 arch-connectors = Connecteurs
-arch-connectors-text = Les comptes tiers branchés depuis l’administration : Gmail et IMAP en natif, n’importe quel serveur MCP sans code. La connexion passe par OAuth avec PKCE, les jetons sont rangés dans un coffre chiffré, et chaque outil a son interrupteur.
+arch-connectors-text = Les comptes tiers branchés depuis l’administration : Google, Microsoft 365, CalDAV, CardDAV et IMAP en natif, n’importe quel serveur MCP sans code. La connexion passe par OAuth avec PKCE, les jetons sont rangés dans un coffre chiffré, et chaque outil a son interrupteur.
 arch-connectors-point-1 = Des outils pour l’agent, des déclencheurs pour les veilles
 arch-connectors-point-2 = Les jetons n’atteignent jamais le modèle, le journal ni les logs
 

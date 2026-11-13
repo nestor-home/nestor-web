@@ -1,9 +1,9 @@
 con-title = Des comptes, branchés depuis l’administration.
-con-lede = Choisissez un service, donnez votre accord chez le fournisseur, puis activez les outils voulus. Le mail fonctionne en natif, tout serveur MCP sans code.
+con-lede = Choisissez un service, donnez votre accord chez le fournisseur, puis activez les outils voulus. Mails, agendas et fichiers fonctionnent en natif, tout serveur MCP sans code.
 con-1 = Choisir
-con-1-text = Gmail et n’importe quelle boîte IMAP en natif. N’importe quel serveur MCP (Linear, Notion, GitHub, vos propres scripts) sans code.
+con-1-text = Google, Microsoft 365, les agendas et contacts CalDAV et CardDAV, et n’importe quelle boîte IMAP en natif. N’importe quel serveur MCP (Linear, Notion, GitHub, vos propres scripts) sans code.
 con-2 = Consentir
-con-2-text = OAuth 2.1 avec PKCE, chez le fournisseur. Pour Google, vous créez votre propre client OAuth pas à pas, comme dans Home Assistant.
+con-2-text = OAuth 2.1 avec PKCE, chez le fournisseur. Pour Google et Microsoft, vous créez votre propre client OAuth pas à pas, comme dans Home Assistant.
 con-3 = Autoriser
 con-3-text = Outil par outil. Ceux qui écrivent, comme envoyer un mail ou créer un ticket, demandent confirmation par défaut.
 con-consent-scope = Lire vos mails et surveiller ce qui arrive
