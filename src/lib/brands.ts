@@ -129,6 +129,7 @@ export const BRANDS = {
   signal: mark("Signal", siSignal),
   discord: mark("Discord", siDiscord),
   matrix: mark("Matrix", siMatrix),
+  slack: monogram("Slack", "S"), // in neither icon set
   chat: glyph("Chat", MessageCircle), // the admin's chat, not a brand: its name on a page comes from Fluent
   satellites: glyph("Satellites", RadioTower), // the satellites channel, not a brand: its name on a page comes from Fluent
   "home-assistant": mark("Home Assistant", siHomeassistant),

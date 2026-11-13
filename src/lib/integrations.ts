@@ -26,10 +26,11 @@ export const INTEGRATIONS: { group: string; items: Integration[] }[] = [
     group: "messages",
     items: [
       { brand: "telegram", status: "available" },
+      { brand: "discord", status: "available" },
+      { brand: "slack", status: "available" },
+      { brand: "signal", status: "available" },
+      { brand: "matrix", status: "available" },
       { brand: "whatsapp", status: "planned" },
-      { brand: "signal", status: "planned" },
-      { brand: "discord", status: "planned" },
-      { brand: "matrix", status: "planned" },
     ],
   },
   {

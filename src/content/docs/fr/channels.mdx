@@ -51,6 +51,70 @@ Ajoutez `"telegram:<votre identifiant>"` à vos `accounts` dans `household`. Pou
 aussi les photos et les messages vocaux : voir [plus bas](#photos-et-messages-vocaux).
 
 </ProviderSetup>
+<ProviderSetup kind="channel" brand="discord">
+
+Créez une application dans le [Developer Portal](https://discord.com/developers/applications), ajoutez
+un bot, activez son intent **Message Content** et invitez-le sur votre serveur. Puis :
+
+```yaml
+channels:
+  - kind: discord
+    token: ${DISCORD_BOT_TOKEN}
+```
+
+Il répond aux messages directs, et aux messages qui le mentionnent dans les salons d’un serveur.
+Ajoutez `"discord:<votre identifiant>"` à vos `accounts`.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="slack">
+
+Créez une app Slack avec le Socket Mode, un jeton d’application (`connections:write`) et un jeton de bot
+avec `chat:write`, `files:read`, `files:write`, `im:history` et `app_mentions:read`, abonné aux
+événements `message.im` et `app_mention`. Aucune adresse publique n’est nécessaire.
+
+```yaml
+channels:
+  - kind: slack
+    app_token: ${SLACK_APP_TOKEN}
+    bot_token: ${SLACK_BOT_TOKEN}
+```
+
+Il répond aux messages directs et aux mentions. Ajoutez `"slack:<votre identifiant de membre>"` à vos
+`accounts`.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="matrix">
+
+Créez un compte pour le bot sur un serveur d’accueil et récupérez son jeton d’accès. Invitez-le dans
+un salon : il le rejoint et y répond.
+
+```yaml
+channels:
+  - kind: matrix
+    homeserver: https://matrix.org
+    token: ${MATRIX_TOKEN}
+```
+
+Ajoutez `"matrix:@vous:matrix.org"` à vos `accounts`. Les salons chiffrés ne sont pas lus : créez le
+salon sans chiffrement.
+
+</ProviderSetup>
+<ProviderSetup kind="channel" brand="signal">
+
+Enregistrez un numéro dans [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api), en
+mode `normal` ou `native`, puis :
+
+```yaml
+channels:
+  - kind: signal
+    url: http://signal:8080
+    number: "+33612345678"
+```
+
+Il répond aux messages directs et aux groupes. Ajoutez `"signal:+33…"`, votre numéro, à vos `accounts`.
+Un message vocal reçoit une réponse écrite.
+
+</ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
 
 Des appareils sur lesquels on tape, auxquels on parle, ou les deux. À l’écrit :
