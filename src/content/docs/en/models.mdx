@@ -7,7 +7,7 @@ import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
 The agent thinks with a language model you choose, hosted or local, through the OpenAI Chat
-Completions API. Pick one that supports tool calls.
+Completions API, or natively for Claude and Gemini. Pick one that supports tool calls.
 
 ## Choose a provider
 
@@ -88,7 +88,8 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="gemini">
 
-Google’s OpenAI-compatible endpoint.
+Google’s Gemini API, natively: a PDF someone sends is read whole, pages and pictures, and Gemini
+caches the stable part of the prompt by itself.
 
 ```ini
 MODEL_API_KEY=...
@@ -98,16 +99,19 @@ MODEL_API_KEY=...
 models:
   main:
     type: language
-    provider: openai-compatible
-    base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+    provider: gemini
     api_key: ${MODEL_API_KEY}
     model: gemini-flash-latest
 ```
 
+`extra_body` is merged into every request, for `generationConfig` (`thinkingConfig`,
+`maxOutputTokens`).
+
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-Anthropic’s OpenAI-compatible layer is meant for testing. OpenRouter is the tested route to Claude.
+Anthropic’s Messages API, natively: the stable part of the prompt and the conversation go through
+its prompt cache, and a PDF someone sends is read whole, pages and pictures.
 
 ```ini
 MODEL_API_KEY=sk-ant-...
@@ -117,11 +121,13 @@ MODEL_API_KEY=sk-ant-...
 models:
   main:
     type: language
-    provider: openai-compatible
-    base_url: https://api.anthropic.com/v1/
+    provider: anthropic
     api_key: ${MODEL_API_KEY}
     model: claude-haiku-5-5
 ```
+
+`effort` (`low` to `max`) sets how much Claude thinks before answering, `max_tokens` the longest
+answer, thinking included (64000).
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="ollama">
@@ -224,6 +230,30 @@ agent:
   written: deep
 ```
 
+## Fallback
+
+When a model fails before answering (provider down, overloaded, key refused), its `fallback`
+answers instead, in every role the model holds, and the journal says which one took over. A
+fallback may have its own, tried in turn. It gets the request without the pictures or documents it
+cannot take.
+
+```yaml
+models:
+  claude:
+    type: language
+    provider: anthropic
+    api_key: ${ANTHROPIC_API_KEY}
+    model: claude-sonnet-5-5
+    fallback: gemini
+  gemini:
+    type: language
+    provider: gemini
+    api_key: ${GEMINI_API_KEY}
+    model: gemini-flash-latest
+```
+
+A model that fails once it has started answering is not replaced: the answer would start over.
+
 ## Search by meaning
 
 An embedding model lets Nestor find memories by meaning: “what does Léa eat?” finds “Léa is
@@ -287,9 +317,12 @@ Setting up the voice: [Channels and voice](/docs/channels/#voice).
 
 ## Settings
 
-A language model also takes:
+An `openai-compatible` language model also takes:
 
 - `extra_body`, merged into every request (routing, reasoning);
 - `read_timeout_s`, in seconds (30);
 - `cache_control`, for the provider’s prompt cache, on by default for OpenRouter and Anthropic;
 - `vision: true` for a model that reads images: it then sees the photos people send.
+
+The `anthropic` and `gemini` models see images and read PDFs without saying so, and take
+`extra_body` and `read_timeout_s` (60). Any language model takes a `fallback` ([Fallback](#fallback)).
