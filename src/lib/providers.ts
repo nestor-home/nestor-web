@@ -35,12 +35,13 @@ export const PROVIDERS: Record<ProviderKind, readonly Provider[]> = {
   ],
   speech: [
     { brand: "elevenlabs", status: "available" },
+    { brand: "openai", status: "available" },
+    { brand: "nvidia", status: "available", local: true },
+    { brand: "kokoro", status: "available", local: true },
+    { brand: "whisper", status: "available", local: true },
     { brand: "gradium", status: "planned" },
     { brand: "deepgram", status: "planned" },
     { brand: "cartesia", status: "planned" },
-    { brand: "openai", status: "planned" },
-    { brand: "whisper", status: "planned", local: true },
-    { brand: "kokoro", status: "planned", local: true },
     { brand: "piper", status: "planned", local: true },
   ],
   channel: [

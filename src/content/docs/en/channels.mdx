@@ -107,6 +107,80 @@ channels:
 model does not read files.
 
 </ProviderSetup>
+<ProviderSetup kind="speech" brand="openai">
+
+Any API that speaks OpenAI's `/audio/transcriptions` and `/audio/speech`: OpenAI, Groq and Mistral
+for hearing, OpenAI for speaking.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: openai-compatible
+    base_url: https://api.groq.com/openai/v1
+    api_key: ${GROQ_API_KEY}
+    model: whisper-large-v3-turbo
+  voice:
+    type: speech
+    provider: openai-compatible
+    base_url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+    model: gpt-4o-mini-tts
+    voice: alloy
+```
+
+Transcription hears the household's language unless `language` says otherwise. Satellites hear a
+turn once it ends: the first words wait for it.
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="nvidia">
+
+Parakeet TDT v3 hears 25 European languages on Nestor's own machine: no key, nothing said leaves the
+house. It needs `nestor-home[voice,voice-id]`, downloads half a gigabyte once, and takes about 1 GB of
+memory.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: sherpa-onnx
+    model: parakeet-v3
+```
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="kokoro">
+
+Kokoro speaks on your own machine through a server that speaks OpenAI's API, such as Kokoro-FastAPI
+or speaches. Run it beside Nestor, then point a speech model at it; it needs no key.
+
+```yaml
+models:
+  voice:
+    type: speech
+    provider: openai-compatible
+    base_url: http://localhost:8880/v1
+    model: kokoro
+    voice: ff_siwis
+```
+
+`ff_siwis` is Kokoro's French voice; `af_heart` and `bm_george` speak English.
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="whisper">
+
+Whisper hears on your own machine through a server that speaks OpenAI's API, such as speaches or
+whisper.cpp's server. Point a transcription model at it; it needs no key.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: openai-compatible
+    base_url: http://localhost:8000/v1
+    model: Systran/faster-whisper-small
+```
+
+</ProviderSetup>
 </Providers>
 
 The `voice` block also takes:

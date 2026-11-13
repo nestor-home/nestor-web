@@ -16,6 +16,7 @@ import groqSvg from "@lobehub/icons-static-svg/icons/groq.svg?raw";
 import hermesagentSvg from "@lobehub/icons-static-svg/icons/hermesagent.svg?raw";
 import lmstudioSvg from "@lobehub/icons-static-svg/icons/lmstudio.svg?raw";
 import mistralSvg from "@lobehub/icons-static-svg/icons/mistral.svg?raw";
+import nvidiaSvg from "@lobehub/icons-static-svg/icons/nvidia.svg?raw";
 import ollamaSvg from "@lobehub/icons-static-svg/icons/ollama.svg?raw";
 import openaiSvg from "@lobehub/icons-static-svg/icons/openai.svg?raw";
 import openrouterSvg from "@lobehub/icons-static-svg/icons/openrouter.svg?raw";
@@ -45,6 +46,7 @@ import {
   siModelcontextprotocol,
   siNextcloud,
   siNotion,
+  siNvidia,
   siOpenrouter,
   siOpenstreetmap,
   siPhilipshue,
@@ -173,6 +175,7 @@ export const BRANDS = {
   cartesia: official("Cartesia", cartesiaSvg),
   whisper: lobe("Whisper", openaiSvg), // OpenAI's model: its maker's mark
   kokoro: monogram("Kokoro", "K"),
+  nvidia: lobe("Parakeet (NVIDIA)", nvidiaSvg, siNvidia),
   piper: official("Piper", piperSvg),
 } as const satisfies Record<string, Brand>;
 
