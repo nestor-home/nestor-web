@@ -348,10 +348,11 @@ chat takes up to 10 files of 20 MB each per message.
 
 - A voice message is transcribed by a `transcription` model. When a `speech` model is set and the
   channel can send voice messages, the answer is one too.
-- A photo goes to the model when its profile sees images (`vision: true`). Otherwise the model says
-  it cannot see it.
+- A photo goes to the model when it sees images (`vision: true`, an `anthropic` or `gemini` model).
+  Otherwise the model says it cannot see it.
 - A PDF or a text file is read: the model reads its text in parts, where it was sent or by whoever
-  sent it. A scan has no text to read, and the model says so.
+  sent it. A scan has no text to read, and the model says so. An `anthropic` or `gemini` model reads
+  the last two PDFs of the conversation whole, scans included.
 - Any other file is named to the model, which says it cannot open it.
 
 The pictures Nestor draws go with its answer, on the channels that show pictures ([Pictures](/docs/models/#pictures)).

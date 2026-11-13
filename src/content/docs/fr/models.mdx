@@ -7,7 +7,8 @@ import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
 L’agent pense avec un modèle de langage de votre choix, hébergé ou local, par l’API Chat
-Completions d’OpenAI. Choisissez-en un qui gère les appels d’outils.
+Completions d’OpenAI, ou nativement pour Claude et Gemini. Choisissez-en un qui gère les appels
+d’outils.
 
 ## Choisir un fournisseur
 
@@ -88,7 +89,8 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="gemini">
 
-Le point d’accès compatible OpenAI de Google.
+L’API Gemini de Google, nativement : un PDF envoyé est lu en entier, pages et images comprises, et
+Gemini met de lui-même en cache la partie stable du prompt.
 
 ```ini
 MODEL_API_KEY=...
@@ -98,16 +100,19 @@ MODEL_API_KEY=...
 models:
   main:
     type: language
-    provider: openai-compatible
-    base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+    provider: gemini
     api_key: ${MODEL_API_KEY}
     model: gemini-flash-latest
 ```
 
+`extra_body` est fusionné dans chaque requête, pour `generationConfig` (`thinkingConfig`,
+`maxOutputTokens`).
+
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-Anthropic réserve sa couche compatible OpenAI aux essais. OpenRouter est la voie testée vers Claude.
+L’API Messages d’Anthropic, nativement : la partie stable du prompt et la conversation passent par
+son cache de prompt, et un PDF envoyé est lu en entier, pages et images comprises.
 
 ```ini
 MODEL_API_KEY=sk-ant-...
@@ -117,11 +122,13 @@ MODEL_API_KEY=sk-ant-...
 models:
   main:
     type: language
-    provider: openai-compatible
-    base_url: https://api.anthropic.com/v1/
+    provider: anthropic
     api_key: ${MODEL_API_KEY}
     model: claude-haiku-5-5
 ```
+
+`effort` (de `low` à `max`) règle combien Claude réfléchit avant de répondre, `max_tokens` la
+réponse la plus longue, réflexion comprise (64000).
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="ollama">
@@ -225,6 +232,30 @@ agent:
   written: deep
 ```
 
+## Modèle de secours
+
+Quand un modèle échoue avant de répondre (fournisseur en panne, surchargé, clé refusée), son
+`fallback` répond à sa place, dans tous les rôles du modèle, et le journal dit lequel a pris le
+relais. Un modèle de secours peut avoir le sien, essayé à son tour. Il reçoit la requête sans les
+images ni les documents qu’il ne sait pas lire.
+
+```yaml
+models:
+  claude:
+    type: language
+    provider: anthropic
+    api_key: ${ANTHROPIC_API_KEY}
+    model: claude-sonnet-5-5
+    fallback: gemini
+  gemini:
+    type: language
+    provider: gemini
+    api_key: ${GEMINI_API_KEY}
+    model: gemini-flash-latest
+```
+
+Un modèle qui échoue après avoir commencé à répondre n’est pas remplacé : la réponse recommencerait.
+
 ## Recherche par le sens
 
 Un modèle d’embedding permet à Nestor de retrouver ses souvenirs par le sens : « que mange
@@ -288,10 +319,14 @@ Configurer la voix : [Canaux et voix](/fr/docs/channels/#voix).
 
 ## Réglages
 
-Un modèle de langage accepte aussi :
+Un modèle de langage `openai-compatible` accepte aussi :
 
 - `extra_body`, fusionné dans chaque requête (routage, raisonnement) ;
 - `read_timeout_s`, en secondes (30) ;
 - `cache_control`, pour le cache de prompt du fournisseur, actif par défaut pour OpenRouter et
   Anthropic ;
 - `vision: true` pour un modèle qui lit les images : il voit alors les photos envoyées.
+
+Les modèles `anthropic` et `gemini` voient les images et lisent les PDF sans qu’on le dise, et
+acceptent `extra_body` et `read_timeout_s` (60). Tout modèle de langage accepte un `fallback`
+([Modèle de secours](#modèle-de-secours)).
