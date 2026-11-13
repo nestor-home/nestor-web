@@ -28,7 +28,7 @@ dg-map-ha-note = Les appareils, les pièces, qui est là.
 dg-map-connectors = Connecteurs
 dg-map-connectors-note = Google, Microsoft 365, CalDAV, IMAP, tout serveur MCP.
 dg-map-executors = Exécutants
-dg-map-executors-note = Hermes, pour les recherches et les démarches.
+dg-map-executors-note = Hermes, Codex, Claude Code : recherches, démarches, code.
 dg-map-journal = Le journal
 dg-map-journal-note = Chaque tour, appel d’outil, souvenir, message et décision, en événements dans un seul fichier SQLite. L’administration le lit ; un redémarrage y retrouve son état.
 

@@ -239,7 +239,11 @@ person who asked, where they are (see [Initiative](/docs/agent/initiative/)).
 ## Longer tasks
 
 Tasks that take minutes go to an **executor**, an agent that works in the background. Nestor tracks
-the task and tells the person when it is done. Nestor comes with a Hermes executor:
+the task, tells the person when it is done, and sends the files the executor made with the result,
+where the channel can carry them. `description` tells the agent what to hand over: write what this
+executor can really do. Each executor is named after its `kind`; give two of the same kind a `name`.
+
+### Hermes
 
 ```yaml
 executors:
@@ -250,4 +254,61 @@ executors:
     description: Searches the web and writes a short report. No access to the house.
 ```
 
-`model` is the Hermes agent profile. `description` tells the agent what to hand it.
+`model` is the Hermes agent profile. Its runs live on the Hermes server: a task goes on through a
+restart of Nestor.
+
+### Codex
+
+Nestor drives [Codex](https://github.com/openai/codex) through `codex app-server`. Install the Codex
+CLI where it will run and sign in (`codex login`).
+
+```yaml
+executors:
+  - kind: codex
+    working_directory: /srv/codex/work
+    sandbox: workspace-write
+    description: Writes and runs code in /srv/codex/work. No access to the house.
+```
+
+Each task is a Codex thread in `working_directory`. Codex never waits for an approval: `sandbox`
+decides what it may change (`read-only`, `workspace-write` by default, or `danger-full-access`), and
+a request for approval or input is declined. `model` picks its model; `config` passes Codex settings
+to each task, as in its `config.toml` (MCP servers, network access in the sandbox).
+
+To run Codex on a server, start its daemon there (`codex app-server daemon start`) and let `command`
+reach it:
+
+```yaml
+executors:
+  - kind: codex
+    command: [ssh, codex@server, codex, app-server, proxy]
+    working_directory: /srv/codex/work
+    description: Writes and runs code on the server, in /srv/codex/work. No access to the house.
+```
+
+A task then goes on through a restart of Nestor, which finds its thread again. A `codex app-server`
+started by Nestor stops with it, and its task is reported interrupted.
+
+### Claude Code
+
+Nestor runs [Claude Code](https://github.com/anthropics/claude-code) headless (`claude -p`) on its
+own machine. Install it and sign in, or give an API key.
+
+```yaml
+executors:
+  - kind: claude-code
+    working_directory: /home/nestor/work
+    allowed_tools: [Read, Glob, Grep, Write, Edit, "Bash(git *)"]
+    max_budget_usd: 2
+    api_key: ${ANTHROPIC_API_KEY}
+    description: Writes and fixes code in /home/nestor/work and commits with git. No access to the house.
+```
+
+Nobody answers a permission prompt in a headless run. With `permission_mode: dontAsk`, the default,
+only `allowed_tools` run; without the setting, they read and write in its folder and search the web,
+with no shell. `max_budget_usd` caps what one task spends, `model` picks the model. A task runs in a
+process of Nestor: a restart reports it interrupted. Its session id is the task's first step in the
+journal, to open it again with `claude --resume`.
+
+Codex and Claude Code hand back files from `working_directory` only, at most 10 per task and
+`max_file_bytes` each (20 MB by default); the result says which were left out.

@@ -9,6 +9,7 @@
  * own colour, shown on hover where it reads on both themes.
  */
 import anthropicSvg from "@lobehub/icons-static-svg/icons/anthropic.svg?raw";
+import claudecodeSvg from "@lobehub/icons-static-svg/icons/claudecode.svg?raw";
 import codexSvg from "@lobehub/icons-static-svg/icons/codex.svg?raw";
 import elevenlabsSvg from "@lobehub/icons-static-svg/icons/elevenlabs.svg?raw";
 import geminiSvg from "@lobehub/icons-static-svg/icons/gemini.svg?raw";
@@ -159,6 +160,7 @@ export const BRANDS = {
   github: mark("GitHub", siGithub),
   hermes: lobe("Hermes", hermesagentSvg),
   codex: lobe("Codex", codexSvg),
+  "claude-code": lobe("Claude Code", claudecodeSvg),
   python: mark("Python", siPython),
   typescript: mark("TypeScript", siTypescript),
   rust: mark("Rust", siRust),

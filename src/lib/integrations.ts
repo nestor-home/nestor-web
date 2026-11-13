@@ -71,7 +71,8 @@ export const INTEGRATIONS: { group: string; items: Integration[] }[] = [
       { brand: "github", status: "available" },
       { brand: "linear", status: "available" },
       { brand: "hermes", status: "available" },
-      { brand: "codex", status: "planned" },
+      { brand: "codex", status: "available" },
+      { brand: "claude-code", status: "available" },
     ],
   },
 ];
