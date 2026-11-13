@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.7.5](https://github.com/nestor-home/nestor-web/compare/v0.7.4...v0.7.5) (2026-11-13)
+
+
+### Bug Fixes
+
+* **deps:** update astro monorepo ([#94](https://github.com/nestor-home/nestor-web/issues/94)) ([e8dfcf7](https://github.com/nestor-home/nestor-web/commit/e8dfcf719c782f1f7bdae2f698d0bfc8fcd20b01))
+* **deps:** update dependency nestor-home to v0.12.0 ([#87](https://github.com/nestor-home/nestor-web/issues/87)) ([8f2b576](https://github.com/nestor-home/nestor-web/commit/8f2b576a49d30e8abec2a84dfcfedb0d37166643))
+
+
+### Documentation
+
+* accounts from Google, Microsoft 365, CalDAV and CardDAV ([#95](https://github.com/nestor-home/nestor-web/issues/95)) ([22b77d7](https://github.com/nestor-home/nestor-web/commit/22b77d73d0a980b28882d8baad305a298fbc4bbe))
+* channels for Discord, Slack, Matrix and Signal ([#91](https://github.com/nestor-home/nestor-web/issues/91)) ([da20ef3](https://github.com/nestor-home/nestor-web/commit/da20ef37e254e55aac5c49359351f52c571543dc))
+* channels for WhatsApp and email ([#93](https://github.com/nestor-home/nestor-web/issues/93)) ([19f7ac3](https://github.com/nestor-home/nestor-web/commit/19f7ac312a0045c357d2e64b18a604537609f149))
+* executors for Codex and Claude Code ([#97](https://github.com/nestor-home/nestor-web/issues/97)) ([348bc45](https://github.com/nestor-home/nestor-web/commit/348bc454129d9c81ad06195cbf2fff978443c77d))
+* feeds, web pages and webhooks for the watches ([#99](https://github.com/nestor-home/nestor-web/issues/99)) ([b09a790](https://github.com/nestor-home/nestor-web/commit/b09a7900adf56b2e8c3b440f03be2b32b68c12de))
+* native Anthropic and Gemini models, and fallbacks ([#98](https://github.com/nestor-home/nestor-web/issues/98)) ([aef544b](https://github.com/nestor-home/nestor-web/commit/aef544b5e6e60d0f37473ccd37fd84a7bb9b1771))
+* remote MCP servers connected from the admin ([#96](https://github.com/nestor-home/nestor-web/issues/96)) ([aa2eb69](https://github.com/nestor-home/nestor-web/commit/aa2eb6918636a919c8681793a52d90b386c75a02))
+* the OpenAI-compatible API, ntfy and webhook channels ([#92](https://github.com/nestor-home/nestor-web/issues/92)) ([56e99d0](https://github.com/nestor-home/nestor-web/commit/56e99d07c288535d90ae6c60ec116a6a6724fb5d))
+* voice from any OpenAI-compatible API, speech recognized locally ([#90](https://github.com/nestor-home/nestor-web/issues/90)) ([b5437cd](https://github.com/nestor-home/nestor-web/commit/b5437cd9a81ab51f9214d8495bae18af5c21c907))
+* web search, pages, weather, maps, documents read and pictures ([#86](https://github.com/nestor-home/nestor-web/issues/86)) ([bc79fd1](https://github.com/nestor-home/nestor-web/commit/bc79fd14c758dded3487985e075ae183547c51c5))
+
 ## [0.7.4](https://github.com/nestor-home/nestor-web/compare/v0.7.3...v0.7.4) (2026-11-12)
 
 
