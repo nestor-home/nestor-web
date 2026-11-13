@@ -18,6 +18,7 @@ providers-channel = Channels
 providers-chat = Admin chat
 providers-satellites = Satellites
 providers-api = OpenAI-compatible API
+providers-email = Email
 providers-local = local
 providers-planned-note = { $name } is planned: Nestor does not support it yet.
 tabs-install = Ways to install

@@ -125,6 +125,7 @@ export const BRANDS = {
   icloud: mark("iCloud", siIcloud),
   nextcloud: mark("Nextcloud", siNextcloud),
   imap: glyph("IMAP", Mail),
+  email: glyph("Email", Mail), // the email channel, not a brand: its name on a page comes from Fluent
   telegram: mark("Telegram", siTelegram),
   whatsapp: mark("WhatsApp", siWhatsapp),
   signal: mark("Signal", siSignal),
