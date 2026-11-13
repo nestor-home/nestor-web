@@ -45,8 +45,8 @@ arch-connectors-point-2 = Tokens never reach the model, the journal or the logs
 
 arch-executors = Executors
 arch-executors-text = Long and complex work (research, paperwork, code, browsing) goes to an execution agent as a durable task the agent follows, announces once and can cancel.
-arch-executors-point-1 = Hermes today; Codex and others are planned on the same contract
-arch-executors-point-2 = Tasks survive a restart and deliver once
+arch-executors-point-1 = Hermes, Codex and Claude Code, on one contract; the files they make come back with the result
+arch-executors-point-2 = Remote work survives a restart; each result is delivered once
 
 arch-providers = Models
 arch-providers-text = The agent’s model is an adapter: any OpenAI-compatible API, cloud or local. Speech services are set in the `voice` section of the satellites channel.

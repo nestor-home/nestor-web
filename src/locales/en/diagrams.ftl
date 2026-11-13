@@ -28,7 +28,7 @@ dg-map-ha-note = Devices, rooms, who is home.
 dg-map-connectors = Connectors
 dg-map-connectors-note = Google, Microsoft 365, CalDAV, IMAP, any MCP server.
 dg-map-executors = Executors
-dg-map-executors-note = Hermes, for research and paperwork.
+dg-map-executors-note = Hermes, Codex, Claude Code: research, paperwork, code.
 dg-map-journal = The journal
 dg-map-journal-note = Every turn, tool call, memory, message and decision, as events in one SQLite file. The admin reads it; a restart rebuilds from it.
 
