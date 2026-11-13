@@ -92,8 +92,9 @@ Only `persona`, `household`, `models` and `channels` are required.
 | `executors`  | agents that take on longer tasks                                                   | [Home and services](/docs/connections/#longer-tasks)                     |
 | `initiative` | quiet hours, and the room to speak in when it only knows someone is home           | [Initiative](/docs/agent/initiative/)                                    |
 | `voices`     | the speaker model that recognises who speaks to a satellite                        | [Speakers](/docs/agent/speakers/)                                        |
-| `watches`    | the model that sorts incoming mail for the watches                                 | [Home and services](/docs/connections/#mail-and-watches)                 |
+| `watches`    | the model that sorts incoming items for the watches                                | [Home and services](/docs/connections/#mail-and-watches)                 |
 | `connectors` | the services the admin connects accounts to; every installed one by default        | [Home and services](/docs/connections/#connected-accounts)               |
+| `inbound`    | news feeds, web pages and webhooks the watches follow                              | [Home and services](/docs/connections/#feeds-pages-and-webhooks)         |
 | `admin`      | the admin’s address and port; without it, there is no admin                        | [below](#the-admin)                                                      |
 | `updates`    | whether the admin says when a newer release is out                                 | [Updates](/docs/updates/)                                                |
 

@@ -19,8 +19,9 @@ it, where they are, like a task's result; when there is nothing to tell (a price
 nothing is sent and the journal says so. A wake-up missed while Nestor was stopped runs once at the
 next start.
 
-**Watches.** "Tell me when the bank writes" creates a watch. A small model reads each incoming mail
-once against all watches and announces a match to whoever asked.
+**Watches.** "Tell me when the bank writes" creates a watch. A small model reads each incoming item
+(a mail, a feed entry, a page change, a webhook post) once against all watches and announces a match
+to whoever asked.
 
 **Tasks.** An executor's result is announced once to whoever asked, even after a restart.
 

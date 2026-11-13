@@ -1,7 +1,7 @@
 ---
 
 title: Home and services
-description: Connect Home Assistant for presence and devices, web search, weather and maps, GitHub, Linear, Notion or any MCP server for more tools, accounts (mail, calendars, files, contacts, tasks) for the agent and the watches, and agents for longer tasks.
+description: Connect Home Assistant for presence and devices, web search, weather and maps, GitHub, Linear, Notion or any MCP server for more tools, accounts (mail, calendars, files, contacts, tasks) for the agent, feeds, pages and webhooks for the watches, and agents for longer tasks.
 ---
 
 Nestor sees and acts through what you connect here. Each connection is optional.
@@ -235,6 +235,39 @@ A search returns at most 20 mails or files, 30 contacts, 50 events or 100 tasks.
 Ask for a **watch**: “tell me when the plumber replies”. A model (`watches.model`) sorts each new
 message of the connected Gmail, Outlook and IMAP mailboxes against the open watches and tells the
 person who asked, where they are (see [Initiative](/docs/agent/initiative/)).
+
+## Feeds, pages and webhooks
+
+Watches also follow what you list under `inbound`: news feeds, web pages, and posts from your own
+services.
+
+```yaml
+inbound:
+  - kind: rss
+    feeds:
+      - { name: Kernel, url: "https://www.kernel.org/feeds/kdist.xml" }
+      - { name: LWN, url: "https://lwn.net/headlines/rss" }
+  - kind: web-page
+    pages:
+      - { name: the lamp, url: "https://shop.example/fado-lamp" }
+  - kind: webhook
+    hooks:
+      - { name: github, kind: github, secret: "${GITHUB_HOOK_SECRET}" }
+```
+
+- `rss` reads RSS and Atom feeds every 15 minutes (`every_s`, at least 60). Each new entry is
+  sorted once; what a feed holds at its first read is not new.
+- `web-page` reads each page every hour (`every_s`, at least 300), like `read_page`: its content
+  without menus and banners. A change is sorted with what changed, and the model judges whether it
+  is the one awaited (“under 50 €”). Versions between two reads are not seen.
+- `webhook` takes JSON at `POST /hooks/<name>`, on port 8474 of 127.0.0.1 (`host`, `port`: put a
+  reverse proxy in front). A post is signed with its hook’s secret (`X-Hub-Signature-256:
+  sha256=…`, as GitHub signs) or bears it (`Authorization: Bearer <secret>`), up to 64 KB
+  (`max_bytes`). Its posts are of the hook’s `kind`.
+
+Feeds and pages on your own network are refused. The agent knows them by the names you give: “tell
+me when Linux 7 is out on Kernel”, “tell me when the lamp drops under 50 €”. A new feed or page is
+added here, not by the agent.
 
 ## Longer tasks
 
