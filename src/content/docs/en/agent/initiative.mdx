@@ -50,9 +50,16 @@ The **courier** decides first and journals its decision with the reason:
 A message spoken aloud is heard by everyone in the room. See [Speakers](/docs/agent/speakers/).
 
 Only the agent's final answer goes out, never what it writes before using its tools ("let me
-check"). Each one ends in the journal in one of three ways: passed on, nothing to tell (a wake-up
-only: the others always have something to say), or not passed on (no channel took it, or the model
-could not write it).
+check"). Each one ends in the journal in one of three ways:
+
+- passed on;
+- nothing to tell: a check that found nothing, a result that changes nothing for them. Nothing is
+  sent, the journal keeps the agent's reason, and it is never brought back, even after a restart;
+- not passed on: no channel took it, or the model could not write it. It is tried again at the next
+  start.
+
+A message someone asked to pass on, a confirmation to ask for and a failure are always told: for
+them, nothing to tell counts as not passed on.
 
 A delivered message stays in the conversation's history together with what it was about (the task's
 result, the mail), so a reply to it has that context.
