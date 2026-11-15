@@ -53,9 +53,17 @@ Un message dit à voix haute est entendu par toute la pièce. Voir
 [Locuteurs](/fr/docs/agent/speakers/).
 
 Seule la réponse finale de l’agent part, jamais ce qu’il écrit avant d’utiliser ses outils (« je
-regarde »). Chacune finit dans le journal de trois façons : transmise, rien à dire (seulement pour un
-réveil : les autres ont toujours quelque chose à dire), ou non transmise (aucun canal ne l’a prise,
-ou le modèle n’a pas pu l’écrire).
+regarde »). Chacune finit dans le journal de trois façons :
+
+- transmise ;
+- rien à dire : une vérification qui n’a rien trouvé, un résultat qui ne change rien pour la
+  personne. Rien n’est envoyé, le journal garde la raison donnée par l’agent, et elle ne revient
+  jamais, même après un redémarrage ;
+- non transmise : aucun canal ne l’a prise, ou le modèle n’a pas pu l’écrire. Elle est retentée au
+  démarrage suivant.
+
+Un message qu’on a demandé de transmettre, une confirmation à demander et un échec sont toujours
+dits : pour eux, rien à dire compte comme non transmis.
 
 Un message livré reste dans l’historique de la conversation avec ce qu’il concernait (le résultat de
 la tâche, le mail) : une réponse à ce message en a le contexte.
