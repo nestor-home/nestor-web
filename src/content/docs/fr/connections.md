@@ -374,15 +374,15 @@ Codex et Claude Code ne rendent que des fichiers de `working_directory`, au plus
 
 Pendant une tâche, un exécutant peut joindre le serveur MCP de Nestor pour cette tâche :
 
-| Outil | Ce qu’il fait |
-|---|---|
-| `task_brief` | l’objectif, qui l’a demandé, quand et où, la conversation d’où elle vient, les fichiers envoyés |
-| `read_file` | un fichier envoyé avec la tâche |
-| `recall`, `remember` | ce que Nestor sait de la personne, et un fait appris pour elle |
-| `report_progress` | une étape, visible dans l’admin et quand quelqu’un demande où ça en est |
-| `ask_requester`, `check_answer` | une question à la personne, puis sa réponse une fois donnée |
-| `attach_file` | un fichier rendu avec le résultat |
-| `home_state` | qui est à la maison et les pièces occupées, avec un `home` |
+| Outil                           | Ce qu’il fait                                                                                   |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `task_brief`                    | l’objectif, qui l’a demandé, quand et où, la conversation d’où elle vient, les fichiers envoyés |
+| `read_file`                     | un fichier envoyé avec la tâche                                                                 |
+| `recall`, `remember`            | ce que Nestor sait de la personne, et un fait appris pour elle                                  |
+| `report_progress`               | une étape, visible dans l’admin et quand quelqu’un demande où ça en est                         |
+| `ask_requester`, `check_answer` | une question à la personne, puis sa réponse une fois donnée                                     |
+| `attach_file`                   | un fichier rendu avec le résultat                                                               |
+| `home_state`                    | qui est à la maison et les pièces occupées, avec un `home`                                      |
 
 Le serveur est servi par l’admin sur `/mcp` : il lui faut la `public_url` de l’admin, joignable
 depuis l’endroit où tourne l’exécutant (un domaine, un VPN, Tailscale), et `NESTOR_SECRET_KEY`.

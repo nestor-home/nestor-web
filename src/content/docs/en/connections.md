@@ -357,15 +357,15 @@ Codex and Claude Code hand back files from `working_directory` only, at most 10 
 
 While it works on a task, an executor can reach Nestor's MCP server for that task:
 
-| Tool | What it does |
-|---|---|
-| `task_brief` | the objective, who asked, when and where, the conversation it came from, the files they sent |
-| `read_file` | a file sent with the task |
-| `recall`, `remember` | what Nestor knows of the requester, and a fact learned for them |
-| `report_progress` | a step, shown in the admin and when someone asks how it is going |
-| `ask_requester`, `check_answer` | a question to the requester, and their answer once given |
-| `attach_file` | a file handed back with the result |
-| `home_state` | who is home and the occupied rooms, with a `home` |
+| Tool                            | What it does                                                                                 |
+| ------------------------------- | -------------------------------------------------------------------------------------------- |
+| `task_brief`                    | the objective, who asked, when and where, the conversation it came from, the files they sent |
+| `read_file`                     | a file sent with the task                                                                    |
+| `recall`, `remember`            | what Nestor knows of the requester, and a fact learned for them                              |
+| `report_progress`               | a step, shown in the admin and when someone asks how it is going                             |
+| `ask_requester`, `check_answer` | a question to the requester, and their answer once given                                     |
+| `attach_file`                   | a file handed back with the result                                                           |
+| `home_state`                    | who is home and the occupied rooms, with a `home`                                            |
 
 The server is served by the admin at `/mcp`, so it needs the admin's `public_url`, reachable from
 where the executor runs (a domain, a VPN, Tailscale), and `NESTOR_SECRET_KEY`. Each call carries two
