@@ -369,3 +369,44 @@ rouvrir avec `claude --resume`.
 
 Codex et Claude Code ne rendent que des fichiers de `working_directory`, au plus 10 par tâche et
 `max_file_bytes` chacun (20 Mo par défaut) ; le résultat dit lesquels sont restés de côté.
+
+### Les outils de Nestor pour les exécutants
+
+Pendant une tâche, un exécutant peut joindre le serveur MCP de Nestor pour cette tâche :
+
+| Outil | Ce qu’il fait |
+|---|---|
+| `task_brief` | l’objectif, qui l’a demandé, quand et où, la conversation d’où elle vient, les fichiers envoyés |
+| `read_file` | un fichier envoyé avec la tâche |
+| `recall`, `remember` | ce que Nestor sait de la personne, et un fait appris pour elle |
+| `report_progress` | une étape, visible dans l’admin et quand quelqu’un demande où ça en est |
+| `ask_requester`, `check_answer` | une question à la personne, puis sa réponse une fois donnée |
+| `attach_file` | un fichier rendu avec le résultat |
+| `home_state` | qui est à la maison et les pièces occupées, avec un `home` |
+
+Le serveur est servi par l’admin sur `/mcp` : il lui faut la `public_url` de l’admin, joignable
+depuis l’endroit où tourne l’exécutant (un domaine, un VPN, Tailscale), et `NESTOR_SECRET_KEY`.
+Chaque appel porte deux secrets : la clé de l’exécutant, dans `Authorization: Bearer`, et la
+capacité de la tâche, dans `task`. La clé dit qui appelle ; la capacité, créée quand la tâche est
+confiée, ne vaut que tant que cette tâche tourne et seulement avec la clé de cet exécutant. Tout le
+reste est refusé dans les mêmes termes, les appels sont limités par clé et chacun est journalisé. Les
+outils ne lisent et ne gardent que ce qui est à la personne qui a demandé.
+
+Codex et Claude Code reçoivent le serveur avec chaque tâche : Nestor crée leur clé, la garde
+chiffrée et la passe avec la tâche (dans les réglages du fil, ou dans un fichier privé pour Claude
+Code). Hermes déclare ses serveurs MCP dans son profil : créez sa clé dans **Système** de l’admin,
+ou avec `nestor executors key hermes`, qui la montre une fois avec ce qu’il faut ajouter au
+`config.yaml` du profil, puis mettez `nestor_mcp: true` :
+
+```yaml
+executors:
+  - kind: hermes
+    base_url: https://hermes.example/v1
+    api_key: ${HERMES_API_KEY}
+    model: research
+    nestor_mcp: true
+    description: Cherche sur le web et écrit un court rapport. Aucun accès à la maison.
+```
+
+Renouveler une clé met fin à la précédente ; `nestor executors revoke hermes` laisse l’exécutant
+sans clé.
