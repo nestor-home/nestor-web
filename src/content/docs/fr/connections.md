@@ -221,7 +221,8 @@ passe en IMAP pour les comptes Outlook personnels : connectez-les avec Microso
 
 Dans un message, le nom d’un service désigne ce compte à l’agent : « ajoute le dentiste à
 `@calendar` ». Quand deux comptes portent le même nom, le moins de l’adresse qui les distingue
-le suit : `@calendar-alex`, ou avec le domaine quand le début est le même : `@calendar-alex-gmail`. Voir [Mentions](/fr/docs/channels/#mentions).
+le suit : `@calendar-alex`, ou avec le domaine quand le début est le même : `@calendar-alex-gmail`.
+Voir [Mentions](/fr/docs/channels/#mentions).
 
 ### Écritures
 
