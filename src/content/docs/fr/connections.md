@@ -45,7 +45,7 @@ ses actions.
 
 ## Web, météo et cartes
 
-Chacun de ces outils est une ligne de `tools`, et chacun est facultatif.
+Chacun de ces outils est une ligne de `tools`, et chacun est facultatif. `nestor init` écrit les quatre moteurs gratuits et `web-pages`.
 
 ```yaml
 tools:
@@ -58,14 +58,20 @@ tools:
     home: 12 rue Mercière, Lyon
 ```
 
-- **Recherche** : `searxng` est un moteur que vous hébergez, sans clé ; ses réglages doivent
-  autoriser le format JSON. `brave` et `tavily` prennent une `api_key`.
+- **Recherche** : tous les moteurs de `tools` servent l’unique `web_search` de l’agent. Ceux qui ont
+  une clé passent d’abord, dans l’ordre de la configuration ; puis les offres gratuites, à tour de
+  rôle ; une recherche passe au moteur suivant quand l’un est saturé ou la refuse. `exa`,
+  `parallel`, `firecrawl` et `keenable` marchent sans clé, sur des offres gratuites parfois lentes,
+  limitées ou fermées : l’agent sait quand il ne cherche que par elles, et le dit quand une
+  recherche échoue. Chacun prend une `api_key` facultative pour des limites plus hautes (pas encore
+  essayée avec de vraies clés). `brave` et `tavily` prennent une `api_key` ; `searxng` est un moteur
+  que vous hébergez, à son `url`, avec le format JSON autorisé dans ses réglages.
 - **Pages** : `web-pages` lit une page à partir de son adresse : son texte sans menus ni bandeaux,
   ou celui d’un PDF. Seulement les adresses publiques : l’agent ne lit jamais une adresse de votre
   réseau, même par un lien.
 - **Météo** : `open-meteo`, sans clé. `home` est la ville prise quand aucun lieu n’est demandé.
-- **Lieux et trajets** : `openstreetmap` trouve des lieux, avec les horaires d'ouverture, le site et
-  le téléphone qu'OpenStreetMap connaît, et calcule des trajets en voiture, à vélo ou à pied, depuis
+- **Lieux et trajets** : `openstreetmap` trouve des lieux, avec les horaires d’ouverture, le site et
+  le téléphone qu’OpenStreetMap connaît, et calcule des trajets en voiture, à vélo ou à pied, depuis
   `home` sauf si un autre départ est demandé, sans trafic ni transports en commun. Il passe par les
   serveurs publics de la communauté OpenStreetMap, qui acceptent une recherche par seconde ;
   `nominatim_url` et `routing_url` désignent les vôtres.

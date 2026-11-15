@@ -67,6 +67,11 @@ Chaque module remplit ses sections : souvenirs, veilles et réveils dans la co
 conversations passées, tâches en cours, questions ouvertes et actions en attente de confirmation
 dans la couche du tour.
 
+La couche du foyer dit aussi comment l’agent fonctionne en ce moment, tel que le signalent les
+parties dont il dépend : une recherche web sur des offres gratuites, par exemple. L’agent le dit à
+la personne quand cela touche à sa demande, pas à chaque réponse. Un plugin le signale par les
+`notes()` de son composant, en anglais, pour le modèle.
+
 ## Les modèles par rôle
 
 Nommez des profils de modèles dans `models` et faites pointer chaque rôle vers l’un d’eux. Un seul

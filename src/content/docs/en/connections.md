@@ -43,12 +43,12 @@ admin's **Home** page shows who is where, the rooms, the people Home Assistant k
 
 ## Web, weather and maps
 
-Each of these tools is one line in `tools`, and each is optional.
+Each of these tools is one line in `tools`, and each is optional. `nestor init` writes the four free search engines and `web-pages`.
 
 ```yaml
 tools:
-  - kind: searxng # or brave, or tavily: one search engine
-    url: http://searxng:8080
+  - kind: exa # search engines: exa, parallel, firecrawl, keenable, brave, tavily, searxng
+  - kind: keenable
   - kind: web-pages
   - kind: open-meteo
     home: Lyon
@@ -56,8 +56,13 @@ tools:
     home: 12 rue Mercière, Lyon
 ```
 
-- **Search**: `searxng` is a search engine you host, without a key; its settings must allow the
-  JSON format. `brave` and `tavily` take an `api_key`.
+- **Search**: every search engine in `tools` serves the one `web_search` the agent has. Those with a
+  key come first, in the configuration's order; then the free tiers, taken in turn; a search goes on
+  to the next engine when one is busy or refuses it. `exa`, `parallel`, `firecrawl` and `keenable`
+  work with no key, on free tiers that may be slow, limited or closed at times: the agent knows when
+  it searches on them only, and says so when a search fails. Each takes an optional `api_key` for
+  higher limits (not yet tried with real keys). `brave` and `tavily` take an `api_key`; `searxng` is
+  an engine you host, at its `url`, with the JSON format allowed in its settings.
 - **Pages**: `web-pages` reads a page from its address: its text without menus or banners, or a
   PDF's. Only public addresses: the agent never reads one on your network, even through a link.
 - **Weather**: `open-meteo`, without a key. `home` is the town used when no place is asked.
