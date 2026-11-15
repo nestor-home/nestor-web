@@ -47,8 +47,7 @@ Each of these tools is one line in `tools`, and each is optional.
 
 ```yaml
 tools:
-  - kind: searxng # or brave, or tavily: one search engine
-    url: http://searxng:8080
+  - kind: free-web-search # or searxng, brave, tavily: one search engine
   - kind: web-pages
   - kind: open-meteo
     home: Lyon
@@ -56,8 +55,12 @@ tools:
     home: 12 rue Mercière, Lyon
 ```
 
-- **Search**: `searxng` is a search engine you host, without a key; its settings must allow the
-  JSON format. `brave` and `tavily` take an `api_key`.
+- **Search**: `free-web-search` needs no key: it takes the free tiers of Exa, Parallel, Firecrawl
+  and Keenable in turn, and goes on to the next when one is busy or turns it away. `engines` keeps
+  some of them, in the order you give. Free tiers can be slow, limited or closed: the agent knows
+  its search runs on them and says so when a search fails. For a reliable search, `brave` and
+  `tavily` take an `api_key`; `searxng` is an engine you host, at its `url`, with the JSON format
+  allowed in its settings.
 - **Pages**: `web-pages` reads a page from its address: its text without menus or banners, or a
   PDF's. Only public addresses: the agent never reads one on your network, even through a link.
 - **Weather**: `open-meteo`, without a key. `home` is the town used when no place is asked.

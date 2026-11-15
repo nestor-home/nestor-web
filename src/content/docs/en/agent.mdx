@@ -65,6 +65,10 @@ Each module fills its own sections: memories, watches and wake-ups in the househ
 conversations, running tasks, open questions and actions waiting for a confirmation in the turn
 layer.
 
+The household layer also says how the agent runs right now, as the parts it relies on report it: a
+web search on free tiers, for instance. The agent tells the person when it bears on what they ask,
+not in every answer. A plugin says so through its component's `notes()`, in English, for the model.
+
 ## Models by role
 
 Name model profiles in `models` and point each role to one. A single model needs nothing more.
