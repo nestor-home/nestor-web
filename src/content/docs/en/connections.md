@@ -61,10 +61,11 @@ tools:
 - **Pages**: `web-pages` reads a page from its address: its text without menus or banners, or a
   PDF's. Only public addresses: the agent never reads one on your network, even through a link.
 - **Weather**: `open-meteo`, without a key. `home` is the town used when no place is asked.
-- **Places and journeys**: `openstreetmap` finds places and computes journeys by car, bike or on
-  foot, from `home` unless another start is asked, without traffic or public transport. It uses
-  the OpenStreetMap community's public servers, which accept one search a second; `nominatim_url`
-  and `routing_url` point to your own.
+- **Places and journeys**: `openstreetmap` finds places, with the opening hours, website and phone
+  OpenStreetMap knows for them, and computes journeys by car, bike or on foot, from `home` unless
+  another start is asked, without traffic or public transport. It uses the OpenStreetMap community's
+  public servers, which accept one search a second; `nominatim_url` and `routing_url` point to your
+  own.
 
 ## MCP servers
 

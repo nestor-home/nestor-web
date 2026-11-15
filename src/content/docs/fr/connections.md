@@ -64,10 +64,11 @@ tools:
   ou celui d’un PDF. Seulement les adresses publiques : l’agent ne lit jamais une adresse de votre
   réseau, même par un lien.
 - **Météo** : `open-meteo`, sans clé. `home` est la ville prise quand aucun lieu n’est demandé.
-- **Lieux et trajets** : `openstreetmap` trouve des lieux et calcule des trajets en voiture, à vélo
-  ou à pied, depuis `home` sauf si un autre départ est demandé, sans trafic ni transports en commun.
-  Il passe par les serveurs publics de la communauté OpenStreetMap, qui acceptent une recherche par
-  seconde ; `nominatim_url` et `routing_url` désignent les vôtres.
+- **Lieux et trajets** : `openstreetmap` trouve des lieux, avec les horaires d'ouverture, le site et
+  le téléphone qu'OpenStreetMap connaît, et calcule des trajets en voiture, à vélo ou à pied, depuis
+  `home` sauf si un autre départ est demandé, sans trafic ni transports en commun. Il passe par les
+  serveurs publics de la communauté OpenStreetMap, qui acceptent une recherche par seconde ;
+  `nominatim_url` et `routing_url` désignent les vôtres.
 
 ## Serveurs MCP
 
