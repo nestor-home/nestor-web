@@ -352,3 +352,42 @@ journal, to open it again with `claude --resume`.
 
 Codex and Claude Code hand back files from `working_directory` only, at most 10 per task and
 `max_file_bytes` each (20 MB by default); the result says which were left out.
+
+### Nestor's tools for executors
+
+While it works on a task, an executor can reach Nestor's MCP server for that task:
+
+| Tool                            | What it does                                                                                 |
+| ------------------------------- | -------------------------------------------------------------------------------------------- |
+| `task_brief`                    | the objective, who asked, when and where, the conversation it came from, the files they sent |
+| `read_file`                     | a file sent with the task                                                                    |
+| `recall`, `remember`            | what Nestor knows of the requester, and a fact learned for them                              |
+| `report_progress`               | a step, shown in the admin and when someone asks how it is going                             |
+| `ask_requester`, `check_answer` | a question to the requester, and their answer once given                                     |
+| `attach_file`                   | a file handed back with the result                                                           |
+| `home_state`                    | who is home and the occupied rooms, with a `home`                                            |
+
+The server is served by the admin at `/mcp`, so it needs the admin's `public_url`, reachable from
+where the executor runs (a domain, a VPN, Tailscale), and `NESTOR_SECRET_KEY`. Each call carries two
+secrets: the executor's key, in `Authorization: Bearer`, and the task's capability, in `task`. The
+key says who calls; the capability, made when the task is handed over, is valid only while that task
+runs and only with that executor's key. Anything else is refused in the same words, calls are
+limited per key, and each one is journaled. The tools read and keep only what is the requester's.
+
+Codex and Claude Code get the server with each task: Nestor makes their key, keeps it encrypted, and
+passes it with the task (in the thread's settings, or in a private file for Claude Code). Hermes
+declares its MCP servers in its profile: make its key under **System** in the admin, or with
+`nestor executors key hermes`, which shows it once with what to add to the profile's `config.yaml`,
+then set `nestor_mcp: true`:
+
+```yaml
+executors:
+  - kind: hermes
+    base_url: https://hermes.example/v1
+    api_key: ${HERMES_API_KEY}
+    model: research
+    nestor_mcp: true
+    description: Searches the web and writes a short report. No access to the house.
+```
+
+Renewing a key ends the one before; `nestor executors revoke hermes` leaves the executor without.
