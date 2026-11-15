@@ -207,7 +207,8 @@ Microsoft 365.
 ### Mentions
 
 In a message, a service’s name points the agent to that account: “add the dentist to `@calendar`”.
-When two accounts share a name, the start of the address tells them apart: `@calendar-alex`. See
+When two accounts share a name, the least of the address that tells them apart follows it:
+`@calendar-alex`, or with the domain when the names match too: `@calendar-alex-gmail`. See
 [Mentions](/docs/channels/#mentions).
 
 ### Writes
