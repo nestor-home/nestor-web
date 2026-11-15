@@ -45,7 +45,7 @@ ses actions.
 
 ## Web, météo et cartes
 
-Chacun de ces outils est une ligne de `tools`, et chacun est facultatif.
+Chacun de ces outils est une ligne de `tools`, et chacun est facultatif. `nestor init` écrit les quatre moteurs gratuits et `web-pages`.
 
 ```yaml
 tools:
@@ -58,13 +58,14 @@ tools:
     home: 12 rue Mercière, Lyon
 ```
 
-- **Recherche** : `free-web-search` ne demande aucune clé : il prend à tour de rôle les offres
-  gratuites d’Exa, Parallel, Firecrawl et Keenable, et passe à la suivante quand l’une est saturée
-  ou le refuse. `engines` en garde certaines, dans l’ordre donné. Une offre gratuite peut être
-  lente, limitée ou fermer : l’agent sait que sa recherche passe par elles et le dit quand une
-  recherche échoue. Pour une recherche fiable, `brave` et `tavily` prennent une `api_key` ;
-  `searxng` est un moteur que vous hébergez, à son `url`, avec le format JSON autorisé dans ses
-  réglages.
+- **Recherche** : tous les moteurs de `tools` servent l’unique `web_search` de l’agent. Ceux qui ont
+  une clé passent d’abord, dans l’ordre de la configuration ; puis les offres gratuites, à tour de
+  rôle ; une recherche passe au moteur suivant quand l’un est saturé ou la refuse. `exa`,
+  `parallel`, `firecrawl` et `keenable` marchent sans clé, sur des offres gratuites parfois lentes,
+  limitées ou fermées : l’agent sait quand il ne cherche que par elles, et le dit quand une
+  recherche échoue. Chacun prend une `api_key` facultative pour des limites plus hautes (pas encore
+  essayée avec de vraies clés). `brave` et `tavily` prennent une `api_key` ; `searxng` est un moteur
+  que vous hébergez, à son `url`, avec le format JSON autorisé dans ses réglages.
 - **Pages** : `web-pages` lit une page à partir de son adresse : son texte sans menus ni bandeaux,
   ou celui d’un PDF. Seulement les adresses publiques : l’agent ne lit jamais une adresse de votre
   réseau, même par un lien.
