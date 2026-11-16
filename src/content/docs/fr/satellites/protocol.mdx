@@ -350,8 +350,8 @@ interlocuteur de l’appareil ; il relaie vers la personne, qui ne joint jamai
   et la propose à nouveau après ; le cœur refuse une offre vocale entre-temps (`403`).
 - **M6.** Sur `intent.media.snapshot`, un appareil qui filme envoie `media.snapshot {of, jpeg}` :
   une image fixe, en JPEG et en base64, `of` étant l’identifiant de l’intention.
-- **M7.** Le cœur n’accueille un appareil autorisé à `video.capture` que par TLS (`wss`), sauf
-  s’il se connecte depuis la machine du cœur ; sinon il ferme le lien avec `4403`.
+- **M7.** Le cœur n’accorde `video.capture` que par TLS (`wss`), ou à un appareil sur la machine
+  du cœur ; sur un lien en clair, `welcome` l’omet et l’appareil ne filme pas.
 
 ## 10. Mises à jour
 

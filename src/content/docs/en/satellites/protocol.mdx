@@ -325,8 +325,8 @@ device; it relays to the person, who never reaches the device.
   call and offers it again after; the core refuses a voice offer meanwhile (`403`).
 - **M6.** On `intent.media.snapshot`, a device that films sends `media.snapshot {of, jpeg}`: a
   still picture, JPEG in base64, `of` the intent’s id.
-- **M7.** The core welcomes a device granted `video.capture` only over TLS (`wss`), unless it
-  connects from the core’s own machine; otherwise it closes the link with `4403`.
+- **M7.** The core grants `video.capture` only over TLS (`wss`), or to a device on the core’s own
+  machine; over a plain link, `welcome` leaves it out and the device does not film.
 
 ## 10. Updates
 
