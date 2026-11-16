@@ -200,7 +200,8 @@ channels:
 
 Indiquez `"ntfy:<sujet>"` comme `reach`. Sur le serveur public, quiconque connaît un sujet peut le
 lire : choisissez-en un que personne ne devinerait, ou votre propre serveur avec `url` et `token`.
-Personne ne répond par ce canal.
+Personne ne répond par ce canal. Chaque fichier part dans une notification à lui ; ntfy.sh garde les
+pièces jointes 3 heures, 15 Mo au plus.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="webhook">
@@ -216,7 +217,8 @@ channels:
 ```
 
 Le corps est `{"to", "text", "attachments"}`, `to` étant ce qui suit `webhook:` dans le `reach` de la
-personne. Avec `secret`, `X-Nestor-Signature: sha256=…` le signe, comme GitHub signe ses webhooks.
+personne ; chaque pièce jointe porte son `kind` (`image`, `voice`, `audio`, `file`), son `name` et son
+contenu. Avec `secret`, `X-Nestor-Signature: sha256=…` le signe, comme GitHub signe ses webhooks.
 
 </ProviderSetup>
 </Providers>
@@ -360,7 +362,8 @@ montre. La discussion accepte jusqu’à 10 fichiers de 20 Mo chacun par message
   `anthropic` ou `gemini` lit en entier les deux derniers PDF de la conversation, scans compris.
 - Tout autre fichier est nommé au modèle, qui dit qu’il ne peut pas l’ouvrir.
 
-Les images que Nestor dessine partent avec sa réponse, sur les canaux qui montrent les images ([Images](/fr/docs/models/#images)).
+Ce que Nestor envoie part avec sa réponse, sous son nom : les images qu’il dessine ([Images](/fr/docs/models/#images)),
+les documents et fichiers audio qu’une tâche fait. Tous les canaux de messagerie et le chat de l’admin les envoient.
 
 ```yaml
 models:
