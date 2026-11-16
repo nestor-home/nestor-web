@@ -275,7 +275,7 @@ observations et exécuter des intentions.
 - **L1.** Avec son jeton, l’appareil ouvre un WebSocket sur `/satellites/{device_id}/link`, sous
   l’URL de base du cœur (`ws://` pour `http`, `wss://` pour `https`). Son premier message DOIT être
   `hello` : son manifeste, avec l’identifiant appairé, et son jeton. Le cœur répond `welcome` : la
-  pièce appairée et les capacités autorisées.
+  pièce appairée, les capacités autorisées, et `voice`, qui dit si le cœur parle avec l’appareil (A1).
 - **L2.** Le cœur ferme le lien sans `welcome` quand `hello` tarde (10 s), sort du contrat ou vise un
   autre appareil (`4400`), ou quand le jeton est refusé (`4401`). Sur `4401`, l’appareil DOIT
   oublier son jeton et s’appairer à nouveau (P8).
@@ -313,7 +313,8 @@ observations et exécuter des intentions.
 
 ## 9. Audio et vidéo
 
-- **A1.** Un appareil autorisé à `audio.capture` ou `audio.playback` (dans `welcome`) propose une
+- **A1.** Un appareil autorisé à `audio.capture` ou `audio.playback` (dans `welcome`), quand
+  `welcome` indique `voice`, propose une
   connexion WebRTC une fois accueilli : `POST /satellites/{device_id}/audio` avec
   `Authorization: Bearer <jeton>` et `{"sdp", "type"}` ; le cœur répond `{"sdp", "type", "pc_id"}`.
   Les candidats ICE suivent en `PATCH` sur le même chemin. Un mauvais jeton reçoit `401` ; un

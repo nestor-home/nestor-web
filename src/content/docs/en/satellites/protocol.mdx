@@ -251,8 +251,8 @@ carries out intents.
 
 - **L1.** With its token, the device opens a WebSocket on `/satellites/{device_id}/link`, under the
   core’s base URL (`ws://` for `http`, `wss://` for `https`). Its first message MUST be `hello`: its
-  manifest, with the paired device id, and its token. The core answers `welcome`: the paired room
-  and the capabilities allowed.
+  manifest, with the paired device id, and its token. The core answers `welcome`: the paired room,
+  the capabilities allowed, and `voice`, whether the core talks with the device (A1).
 - **L2.** The core closes the link without a `welcome` when `hello` is late (10 s), off-contract or
   for another device (`4400`), or when the token is refused (`4401`). On `4401` the device MUST
   forget its token and pair again (P8).
@@ -290,7 +290,8 @@ carries out intents.
 
 ## 9. Audio and video
 
-- **A1.** A device allowed `audio.capture` or `audio.playback` (in `welcome`) offers WebRTC once
+- **A1.** A device allowed `audio.capture` or `audio.playback` (in `welcome`), when `welcome` says
+  `voice`, offers WebRTC once
   welcomed: `POST /satellites/{device_id}/audio` with `Authorization: Bearer <token>` and
   `{"sdp", "type"}`; the core answers `{"sdp", "type", "pc_id"}`. ICE candidates follow with `PATCH`
   on the same path. A wrong token gets `401`; a device without a link or not allowed audio, `403`;
