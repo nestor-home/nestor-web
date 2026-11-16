@@ -24,7 +24,8 @@ wake-up missed while Nestor was stopped runs once at the next start.
 (a mail, a feed entry, a page change, a webhook post) once against all watches and announces a match
 to whoever asked.
 
-**Tasks.** An executor's result is announced once to whoever asked, even after a restart.
+**Tasks.** An executor's result is announced once to whoever asked, even after a restart, with the
+files it made.
 
 **Messages.** "Tell Hugo dinner is at eight", "ask Léa if she needs the car": the agent calls
 `message_person`. A message that expects a reply opens a question, which both see until the answer
@@ -46,7 +47,9 @@ The **courier** decides first and journals its decision with the reason:
 - no presence at all: a message; said aloud only back into a spoken conversation still going on,
   or to someone with nowhere to write;
 - something private (a mail for someone): the room only hears that something came, and the content
-  is written at once.
+  is written at once;
+- a result with files (a document a task made): written with its files, and the room hears what it
+  brings.
 
 A message spoken aloud is heard by everyone in the room. See [Speakers](/docs/agent/speakers/).
 
@@ -59,8 +62,9 @@ check"). Each one ends in the journal in one of three ways:
 - not passed on: no channel took it, or the model could not write it. It is tried again at the next
   start.
 
-A message someone asked to pass on, a confirmation to ask for and a failure are always told: for
-them, nothing to tell counts as not passed on.
+What a person asked for (a task, a tool that went on in the background), a message someone asked to
+pass on, a confirmation to ask for and a failure are always told: for them, nothing to tell counts as
+not passed on. Only what Nestor starts by itself (a wake-up, a watch) may end in silence.
 
 A delivered message stays in the conversation's history together with what it was about (the task's
 result, the mail), so a reply to it has that context.

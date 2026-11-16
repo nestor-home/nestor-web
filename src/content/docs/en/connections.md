@@ -350,8 +350,9 @@ with no shell. `max_budget_usd` caps what one task spends, `model` picks the mod
 process of Nestor: a restart reports it interrupted. Its session id is the task's first step in the
 journal, to open it again with `claude --resume`.
 
-Codex and Claude Code hand back files from `working_directory` only, at most 10 per task and
-`max_file_bytes` each (20 MB by default); the result says which were left out.
+Codex and Claude Code work on each task in a folder of its own under `working_directory`, where
+the files sent with the task wait for them. They hand back files from that folder only, at most 10
+per task and `max_file_bytes` each (20 MB by default); the result says which were left out.
 
 ### Nestor's tools for executors
 
@@ -360,12 +361,15 @@ While it works on a task, an executor can reach Nestor's MCP server for that tas
 | Tool                            | What it does                                                                                 |
 | ------------------------------- | -------------------------------------------------------------------------------------------- |
 | `task_brief`                    | the objective, who asked, when and where, the conversation it came from, the files they sent |
-| `read_file`                     | a file sent with the task                                                                    |
+| `read_file`                     | a link to download a file sent with the task                                                 |
 | `recall`, `remember`            | what Nestor knows of the requester, and a fact learned for them                              |
 | `report_progress`               | a step, shown in the admin and when someone asks how it is going                             |
 | `ask_requester`, `check_answer` | a question to the requester, and their answer once given                                     |
-| `attach_file`                   | a file handed back with the result                                                           |
+| `attach_file`                   | a link to upload a file that goes with the result                                            |
 | `home_state`                    | who is home and the occupied rooms, with a `home`                                            |
+
+Files never go through the executor's model: a link works for ten minutes while the task runs, an
+upload link once. Codex and Claude Code find the files in their folder instead.
 
 The server is served by the admin at `/mcp`, so it needs the admin's `public_url`, reachable from
 where the executor runs (a domain, a VPN, Tailscale), and `NESTOR_SECRET_KEY`. Each call carries two

@@ -26,7 +26,7 @@ chose qui arrive (un mail, une entrée de flux, le changement d’une page, l’
 fois, face à toutes les veilles, et annonce ce qui correspond à qui l’a demandé.
 
 **Les tâches.** Le résultat d’un exécutant est annoncé une fois à qui l’a demandé, même après un
-redémarrage.
+redémarrage, avec les fichiers qu’il a faits.
 
 **Les messages.** « Dis à Hugo que le dîner est à 20 h », « demande à Léa si elle a besoin de la
 voiture » : l’agent appelle `message_person`. Un message qui attend une réponse ouvre une question,
@@ -49,7 +49,9 @@ Le **coursier** décide d’abord, et journalise sa décision avec sa raison :
 - aucune information de présence : un message ; dit à voix haute seulement dans une conversation
   parlée encore en cours, ou à quelqu’un qui n’a nulle part où lire ;
 - quelque chose de privé (un mail pour quelqu’un) : la pièce entend seulement que quelque chose est
-  arrivé, et le contenu part aussitôt par écrit.
+  arrivé, et le contenu part aussitôt par écrit ;
+- un résultat avec des fichiers (un document fait par une tâche) : il part par écrit avec ses fichiers,
+  et la pièce entend ce qu’il apporte.
 
 Un message dit à voix haute est entendu par toute la pièce. Voir
 [Locuteurs](/fr/docs/agent/speakers/).
@@ -64,8 +66,10 @@ regarde »). Chacune finit dans le journal de trois façons :
 - non transmise : aucun canal ne l’a prise, ou le modèle n’a pas pu l’écrire. Elle est retentée au
   démarrage suivant.
 
-Un message qu’on a demandé de transmettre, une confirmation à demander et un échec sont toujours
-dits : pour eux, rien à dire compte comme non transmis.
+Ce qu’une personne a demandé (une tâche, un outil qui a continué en arrière-plan), un message qu’on
+a demandé de transmettre, une confirmation à demander et un échec sont toujours dits : pour eux,
+rien à dire compte comme non transmis. Seul ce que Nestor lance de lui-même (un réveil, une veille)
+peut finir en silence.
 
 Un message livré reste dans l’historique de la conversation avec ce qu’il concernait (le résultat de
 la tâche, le mail) : une réponse à ce message en a le contexte.

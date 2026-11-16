@@ -367,8 +367,10 @@ dossier et cherchent sur le web, sans shell. `max_budget_usd` plafonne ce qu’u
 interrompue. L’identifiant de sa session est la première étape de la tâche dans le journal, pour la
 rouvrir avec `claude --resume`.
 
-Codex et Claude Code ne rendent que des fichiers de `working_directory`, au plus 10 par tâche et
-`max_file_bytes` chacun (20 Mo par défaut) ; le résultat dit lesquels sont restés de côté.
+Codex et Claude Code travaillent chaque tâche dans un dossier à elle sous `working_directory`, où
+les fichiers envoyés avec la tâche les attendent. Ils ne rendent que des fichiers de ce dossier, au
+plus 10 par tâche et `max_file_bytes` chacun (20 Mo par défaut) ; le résultat dit lesquels sont
+restés de côté.
 
 ### Les outils de Nestor pour les exécutants
 
@@ -377,12 +379,16 @@ Pendant une tâche, un exécutant peut joindre le serveur MCP de Nestor pour cet
 | Outil                           | Ce qu’il fait                                                                                   |
 | ------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `task_brief`                    | l’objectif, qui l’a demandé, quand et où, la conversation d’où elle vient, les fichiers envoyés |
-| `read_file`                     | un fichier envoyé avec la tâche                                                                 |
+| `read_file`                     | un lien pour télécharger un fichier envoyé avec la tâche                                        |
 | `recall`, `remember`            | ce que Nestor sait de la personne, et un fait appris pour elle                                  |
 | `report_progress`               | une étape, visible dans l’admin et quand quelqu’un demande où ça en est                         |
 | `ask_requester`, `check_answer` | une question à la personne, puis sa réponse une fois donnée                                     |
-| `attach_file`                   | un fichier rendu avec le résultat                                                               |
+| `attach_file`                   | un lien pour déposer un fichier qui part avec le résultat                                       |
 | `home_state`                    | qui est à la maison et les pièces occupées, avec un `home`                                      |
+
+Les fichiers ne passent jamais par le modèle de l’exécutant : un lien vaut dix minutes tant que la
+tâche tourne, un lien de dépôt une seule fois. Codex et Claude Code trouvent les fichiers dans leur
+dossier.
 
 Le serveur est servi par l’admin sur `/mcp` : il lui faut la `public_url` de l’admin, joignable
 depuis l’endroit où tourne l’exécutant (un domaine, un VPN, Tailscale), et `NESTOR_SECRET_KEY`.
