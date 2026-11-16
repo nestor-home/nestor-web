@@ -198,6 +198,7 @@ channels:
 
 Set your `reach` to `"ntfy:<topic>"`. On the public server, anyone who knows a topic can read it: pick
 one nobody would guess, or use a server of your own with `url` and `token`. Nobody answers through it.
+Each file goes as a notification of its own; ntfy.sh keeps attachments 3 hours, 15 MB at most.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="webhook">
@@ -213,7 +214,7 @@ channels:
 ```
 
 The body is `{"to", "text", "attachments"}`, `to` being what follows `webhook:` in the person's
-`reach`. With `secret`, `X-Nestor-Signature: sha256=…` signs it, as GitHub signs its webhooks.
+`reach`; each attachment carries its `kind` (`image`, `voice`, `audio`, `file`), `name` and content. With `secret`, `X-Nestor-Signature: sha256=…` signs it, as GitHub signs its webhooks.
 
 </ProviderSetup>
 </Providers>
@@ -355,7 +356,8 @@ chat takes up to 10 files of 20 MB each per message.
   the last two PDFs of the conversation whole, scans included.
 - Any other file is named to the model, which says it cannot open it.
 
-The pictures Nestor draws go with its answer, on the channels that show pictures ([Pictures](/docs/models/#pictures)).
+What Nestor sends goes with its answer, by its name: the pictures it draws ([Pictures](/docs/models/#pictures)),
+the documents and audio files a task makes. Every messaging channel and the admin's chat send them.
 
 ```yaml
 models:
