@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.7.7](https://github.com/nestor-home/nestor-web/compare/v0.7.6...v0.7.7) (2026-11-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency nestor-home to v0.13.0 ([#108](https://github.com/nestor-home/nestor-web/issues/108)) ([bfb1252](https://github.com/nestor-home/nestor-web/commit/bfb1252a75613f2fddb3e213ce625d3875d7974f))
+* **deps:** update dependency nestor-home to v0.14.0 ([#117](https://github.com/nestor-home/nestor-web/issues/117)) ([37c3164](https://github.com/nestor-home/nestor-web/commit/37c3164193625332405cd466efe809a6cb6e4f2d))
+* **deps:** update dependency simple-icons to v16.38.0 ([#115](https://github.com/nestor-home/nestor-web/issues/115)) ([9202f42](https://github.com/nestor-home/nestor-web/commit/9202f42d655f58437e3017d3b22ecc4a20aca34f))
+
+
+### Documentation
+
+* a recurring wake-up reads back what it already told ([#111](https://github.com/nestor-home/nestor-web/issues/111)) ([1ba2128](https://github.com/nestor-home/nestor-web/commit/1ba2128db4ccab12f1d31a66a48304441b6ea938))
+* a task's files and results that reach people with them ([#114](https://github.com/nestor-home/nestor-web/issues/114)) ([d9786a3](https://github.com/nestor-home/nestor-web/commit/d9786a3e04e20f9e2621ce9683565013d3981cfa))
+* a web search with no key, and what the agent is told of how it runs ([#110](https://github.com/nestor-home/nestor-web/issues/110)) ([535375e](https://github.com/nestor-home/nestor-web/commit/535375e3ce30f80ced4d5a5a537ce5164b70463f))
+* media sessions in the satellite protocol ([#116](https://github.com/nestor-home/nestor-web/issues/116)) ([7766eeb](https://github.com/nestor-home/nestor-web/commit/7766eebeb9f03b96e1d51656fe95d190bd6b64ef))
+* places come with their opening hours, website and phone ([#109](https://github.com/nestor-home/nestor-web/issues/109)) ([289c786](https://github.com/nestor-home/nestor-web/commit/289c78670bd10f657b2d614ce52ffd3042b8c27c))
+* the tools Nestor gives executors ([#113](https://github.com/nestor-home/nestor-web/issues/113)) ([bf1bce6](https://github.com/nestor-home/nestor-web/commit/bf1bce6fa270b1c998ac9640069557da38237614))
+* two accounts of one service are told apart by their domain when needed ([#112](https://github.com/nestor-home/nestor-web/issues/112)) ([b42a8a0](https://github.com/nestor-home/nestor-web/commit/b42a8a0e008bee3effc0ee406be6d705eb69e401))
+* when a notification may stay silent ([#106](https://github.com/nestor-home/nestor-web/issues/106)) ([4aa10bc](https://github.com/nestor-home/nestor-web/commit/4aa10bcb7d60712b0c681d2528be64e2ea87eb4a))
+
 ## [0.7.6](https://github.com/nestor-home/nestor-web/compare/v0.7.5...v0.7.6) (2026-11-15)
 
 
