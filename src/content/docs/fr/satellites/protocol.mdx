@@ -29,8 +29,9 @@ Un satellite passe par trois phases, dans cet ordre :
    ([section 2](#2-méthodes-dappairage)), et le cœur lui remet un jeton ([section 3](#3-appairage)).
 2. **Le lien**, tant que l’appareil tourne : un WebSocket ouvert avec le jeton, qui porte tous les
    messages ([section 7](#7-lien)).
-3. **L’audio**, seulement pour un appareil autorisé : une connexion WebRTC liée au lien, qui ne
-   porte que l’audio ([section 9](#9-audio)).
+3. **L’audio et la vidéo**, seulement pour un appareil autorisé : des connexions WebRTC liées au
+   lien, pour la voix du cœur, et pour les sessions qu’une personne ouvre pour regarder l’appareil ou
+   appeler par lui ([section 9](#9-audio-et-vidéo)).
 
 <PairingFlow locale="fr" n={1} />
 
@@ -250,6 +251,8 @@ l’appairage et dans `hello`.
 | `motion.head`             | bouge avec la parole de l’assistant                 |
 | `device.identify`         | se fait remarquer sur demande (section 6)           |
 | `device.update`           | installe une version plus récente de son logiciel sur demande (section 10) |
+| `video.capture`           | filme, dans les sessions qu’une personne ouvre (section 9.1) |
+| `media.indicator`         | montre qu’une session est ouverte (un voyant, un écran) (M3) |
 
 Un appareil sans `text.*` ni `audio.*` est un capteur ou un corps : il ne fait que remonter des
 observations et exécuter des intentions.
@@ -308,7 +311,7 @@ observations et exécuter des intentions.
 - **T4.** `input.text` tient 1 à 4 000 caractères, `intent.text` jusqu’à 16 000. Le texte est brut,
   sans Markdown.
 
-## 9. Audio
+## 9. Audio et vidéo
 
 - **A1.** Un appareil autorisé à `audio.capture` ou `audio.playback` (dans `welcome`) propose une
   connexion WebRTC une fois accueilli : `POST /satellites/{device_id}/audio` avec
@@ -322,6 +325,32 @@ observations et exécuter des intentions.
   lien tient, un appareil dont l’audio tombe propose à nouveau, en espaçant ses tentatives.
 - **A4.** Un appareil n’ouvre son micro que pour cette connexion. Ni l’appairage ni le lien ne
   l’attendent, car un navigateur peut attendre qu’une personne autorise le micro.
+
+### 9.1 Sessions
+
+Une personne peut regarder ce que filme un appareil, ou appeler par un appareil qui entend et joue
+du son : parler à travers lui et entendre la pièce, avec sa vidéo s’il filme. Le cœur est le seul
+interlocuteur de l’appareil ; il relaie vers la personne, qui ne joint jamais l’appareil.
+
+- **M1.** Un appareil n’ouvre de connexion média que sur `intent.media.open {session, video, audio,
+  max_s}` reçu par son lien, et seulement pour ce qu’on lui a accordé : la vidéo avec
+  `video.capture`, un appel avec `audio.capture` et `audio.playback`. Il propose alors aussitôt une
+  connexion WebRTC : `POST /satellites/{device_id}/media` avec `Authorization: Bearer <jeton>` et
+  `{"session", "sdp", "type"}`, ses candidats déjà rassemblés (pas de `PATCH`) ; le cœur répond
+  `{"sdp", "type"}`. Il envoie la vidéo de sa caméra si `video` ; pour un appel (`audio`), il
+  envoie son micro et joue ce que le cœur envoie. Une session que personne n’a ouverte reçoit `403`.
+- **M2.** Il termine la connexion sur `intent.media.close {session}`, à `max_s` selon sa propre
+  horloge, et quand son lien se ferme.
+- **M3.** Il montre qu’une session est ouverte tant qu’elle dure, s’il en a le moyen (un voyant, un
+  écran), et déclare alors `media.indicator`.
+- **M4.** Il n’écoute sur aucun port et n’expose aucune adresse de flux : il ne fait que se
+  connecter au cœur.
+- **M5.** Pendant un appel, sa voix (A1) ne porte rien de la pièce : il la raccroche pour l’appel
+  et la propose à nouveau après ; le cœur refuse une offre vocale entre-temps (`403`).
+- **M6.** Sur `intent.media.snapshot`, un appareil qui filme envoie `media.snapshot {of, jpeg}` :
+  une image fixe, en JPEG et en base64, `of` étant l’identifiant de l’intention.
+- **M7.** Le cœur n’accueille un appareil autorisé à `video.capture` que par TLS (`wss`), sauf
+  s’il se connecte depuis la machine du cœur ; sinon il ferme le lien avec `4403`.
 
 ## 10. Mises à jour
 
@@ -382,6 +411,10 @@ au plus demander à un appareil une version à laquelle il fait déjà confiance
   n’appairez jamais sur la seule identification.
 - **Consentement.** Un appareil ne reçoit que les capacités qu’une personne a autorisées, jamais
   plus que ce qu’il a déclaré.
+- **Média.** Rien ne sort d’un appareil hors d’une session ouverte par une personne autorisée, par
+  son lien (M1) : il n’existe pas d’adresse de flux à trouver, et un jeton volé ne permet que
+  d’envoyer au cœur le média de cet appareil. Chaque session est journalisée et se termine à sa
+  durée maximale.
 - **Mises à jour.** Un appareil récupère une nouvelle version à sa propre source, avec les
   contrôles d’intégrité de celle-ci, et seulement la version qu’il a signalée (U1, U2). Un appareil
   qui ne sait pas se mettre à jour sans risque ne déclare pas `device.update`.
@@ -405,6 +438,9 @@ La [suite de conformité](/fr/docs/satellites/conformance/) vérifie les règles
 | accuse réception de `intent.text` (s’il déclare `text.display`)                                 | L3, T2 |
 | reçoit l’audio du cœur ; envoie l’audio de son micro (s’il déclare `audio.*`)                   | A1, A2 |
 | ne propose pas d’audio quand l’audio n’est pas autorisé                                         | A1     |
+| n’ouvre aucune connexion média sans qu’on la demande (s’il filme ou peut être appelé)           | M1     |
+| en ouvre une quand on la demande, avec sa vidéo ou son micro comme demandé ; envoie une image | M1, M6 |
+| termine la session quand on le lui dit, et de lui-même à son heure                              | M2     |
 | s’appaire avec le code d’enrôlement de `NESTOR_PAIRING_URI`, sans code tapé                     | P3, P4 |
 | se rabat sur un code d’appareil après le refus de son code d’enrôlement (faux, expiré, utilisé) | P5     |
 | ne présente qu’une fois un code d’enrôlement refusé (faux, expiré, utilisé)                     | P5     |
@@ -417,4 +453,4 @@ tests :
 
 ## 13. Historique
 
-- **1.** Première version.
+- **1.** Première version, avec les sessions média de la section 9.1.
