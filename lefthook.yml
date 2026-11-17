@@ -1,0 +1,14 @@
+# Before a push: Biome (format and lint) on the pushed files, then astro check.
+# `pnpm install` installs the hook (the "prepare" script).
+# No Git LFS here: without this, lefthook runs `git lfs pre-push`, which talks to the remote (seconds).
+skip_lfs: true
+
+pre-push:
+  parallel: true
+  jobs:
+    - name: biome
+      glob: "*.{js,mjs,cjs,ts,mts,cts,tsx,jsx,json,jsonc,css,astro}"
+      run: pnpm exec biome check --no-errors-on-unmatched --files-ignore-unknown=true {push_files}
+    - name: typecheck
+      glob: "*.{ts,mts,cts,tsx,astro,mdx}"
+      run: pnpm exec astro check

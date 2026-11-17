@@ -6,7 +6,9 @@ The website of Nestor. Read this before changing anything; the product's own rul
 ## Commands
 
 ```bash
-pnpm lint && pnpm typecheck && pnpm test   # Biome, astro check, Vitest
+pnpm install                               # also installs the pre-push hook (lefthook.yml: Biome, astro check)
+pnpm lint && pnpm typecheck && pnpm test   # Biome, astro check, Vitest (files in a random order:
+                                           # `pnpm test --sequence.seed=<seed>` replays a printed seed)
 pnpm build && pnpm e2e                     # Playwright on the built site (starts a preview on 4380)
 E2E_BASE=http://localhost:4321 pnpm e2e    # against a server already running
 docker build -t nestor-web . && docker run --rm -p 8080:8080 nestor-web   # the site's Nginx, then:
