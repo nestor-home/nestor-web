@@ -9,7 +9,7 @@ const base = process.env.E2E_BASE ?? "http://localhost:4380";
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: true,
-  retries: process.env.CI ? 1 : 0,
+  retries: 0, // a test that needs a retry has a bug: find it
   reporter: process.env.CI ? "github" : "list",
   use: { baseURL: base, trace: "on-first-retry" },
   projects: [

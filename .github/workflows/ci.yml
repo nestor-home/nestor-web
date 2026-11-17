@@ -12,8 +12,24 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# The site is built once (build), then checked in parallel: lint, types and unit tests (check),
+# the built pages in a browser in shards (e2e), what only the Nginx image does (nginx).
 jobs:
   check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -25,14 +41,78 @@ jobs:
       # the build takes the protocol's JSON Schemas and the OAuth relay from the server package with uvx (scripts/server.mjs)
       - uses: astral-sh/setup-uv@v10.3.3
       - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm test
+      # Astro keeps the optimised images here, keyed by source and options: an image already
+      # made is not made again (most of the build's time)
+      - uses: actions/cache@v5
+        with:
+          path: node_modules/.astro
+          key: astro-${{ hashFiles('pnpm-lock.yaml', 'astro.config.mjs', 'src/assets/**') }}
+          restore-keys: astro-
       - run: pnpm build
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm e2e
-      # what only the site's Nginx does (deploy/nginx.conf): the OAuth relay's exact URL, redirects
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+
+  e2e:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/4, 2/4, 3/4, 4/4]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - id: playwright
+        run: echo "version=$(pnpm exec playwright --version)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - run: pnpm e2e --shard ${{ matrix.shard }}
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-${{ strategy.job-index }}
+          path: test-results/
+          retention-days: 7
+
+  # what only the site's Nginx does (deploy/nginx.conf): the OAuth relay's exact URL, redirects
+  nginx:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
       - run: docker build -t nestor-web . && docker run -d --rm -p 8080:8080 nestor-web
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - id: playwright
+        run: echo "version=$(pnpm exec playwright --version)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
       - run: pnpm e2e e2e/nginx.spec.ts
         env:
           E2E_NGINX: "1"
@@ -40,15 +120,15 @@ jobs:
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright
+          name: playwright-nginx
           path: test-results/
           retention-days: 7
 
   # The single check the branch rules require.
   ci:
-    needs: [check]
+    needs: [check, build, e2e, nginx]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
         run: exit 1
