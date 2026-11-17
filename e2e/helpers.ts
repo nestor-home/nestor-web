@@ -8,7 +8,13 @@ export function watch(page: Page): string[] {
   const problems: string[] = [];
   page.on("console", (m) => m.type() === "error" && problems.push(m.text()));
   page.on("pageerror", (e) => problems.push(String(e)));
-  page.on("requestfailed", (r) => problems.push(`${r.url()} ${r.failure()?.errorText}`));
+  page.on("requestfailed", (r) => {
+    const error = r.failure()?.errorText;
+    // a video's fetch is cancelled by the browser itself when it pauses (out of view) or moves to
+    // another byte range: not a failure; a missing file still shows as an error response below
+    if (r.resourceType() === "media" && error === "net::ERR_ABORTED") return;
+    problems.push(`${r.url()} ${error}`);
+  });
   page.on("response", (r) => r.status() >= 400 && problems.push(`${r.status()} ${r.url()}`));
   return problems;
 }
