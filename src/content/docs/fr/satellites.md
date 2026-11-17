@@ -31,6 +31,8 @@ Une caméra ou des moteurs sont facultatifs : l’appareil les déclare, une p
 | `motion.head`             | bouge la tête au rythme de la parole (`intent.beat`)          |
 | `device.identify`         | se fait remarquer quand quelqu’un le cherche                  |
 | `device.update`           | installe une version plus récente de son logiciel sur demande |
+| `video.capture`           | filme, pendant les sessions qu’une personne ouvre             |
+| `media.indicator`         | montre qu’il filme ou qu’il est en appel                      |
 
 ## Appairage
 
@@ -73,6 +75,27 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satel
 
 Un satellite autorisé à `device.update` se met à jour depuis sa page dans l’administration : voir
 [Mises à jour](/fr/docs/updates/#mettre-à-jour-un-satellite).
+
+## Caméras et appels
+
+Depuis la page **Caméras** de l’administration, une personne peut regarder ce que filme un
+satellite autorisé à `video.capture`, prendre une image, ou appeler un satellite qui entend et joue
+du son : parler à travers lui et entendre la pièce, avec sa vidéo s’il filme. Rien ne sort d’un
+appareil hors d’une session ouverte par une personne. L’appareil ne se connecte qu’au serveur, qui
+relaie vers le navigateur, et il montre qu’il filme ou qu’il est en appel. Pendant un appel,
+l’assistant n’écoute pas cette pièce. Chaque session et chaque image vont au journal ; les images
+sont gardées 7 jours.
+
+Les propriétaires regardent et appellent tous les appareils (`media.view.all`, `media.call.all`).
+Les admins et les membres (`media.view`, `media.call`) n’utilisent que les appareils qui les
+listent, réglés sur la page de chaque satellite. Il faut l’extra `media` du serveur
+(`pip install 'nestor-home[media]'`), et un satellite ne filme que par TLS (`wss`), sauf s’il
+tourne sur la machine du serveur.
+
+L’assistant peut regarder aussi. Quand on lui demande par écrit, depuis son propre compte, « la
+lumière du salon est allumée ? », il prend une image avec l’outil `look` et la regarde, si la
+personne a le droit de voir la pièce et que son modèle voit les images. À voix haute, il demande
+d’écrire depuis son compte : une voix ne prouve pas qui parle.
 
 ## Prêts à l’emploi
 

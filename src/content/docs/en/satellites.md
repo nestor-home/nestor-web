@@ -30,6 +30,8 @@ A camera or motors are optional: the device declares them and a person allows th
 | `motion.head`             | moves its head with the beats of speech (`intent.beat`) |
 | `device.identify`         | makes itself noticed when a person looks for it         |
 | `device.update`           | installs a newer version of its software when asked     |
+| `video.capture`           | films, in the sessions a person opens                   |
+| `media.indicator`         | shows that it films or is in a call                     |
 
 ## Pairing
 
@@ -71,6 +73,25 @@ NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satel
 
 A satellite allowed `device.update` can be updated from its page in the admin: see
 [Updates](/docs/updates/#update-a-satellite).
+
+## Cameras and calls
+
+From the admin’s **Cameras** page, a person can watch what a satellite allowed `video.capture`
+films, take a still picture, or call a satellite that hears and plays sound: talk through it and
+hear the room, with its video when it films. Nothing leaves a device outside a session a person
+opened. The device connects to the server only, which relays to the browser, and it shows that it
+films or is in a call. During a call, the assistant does not listen to that room. Each session and
+picture goes in the journal; pictures are kept 7 days.
+
+Owners watch and call every device (`media.view.all`, `media.call.all`). Admins and members
+(`media.view`, `media.call`) use only the devices that list them, set on each satellite’s page.
+This needs the server’s `media` extra (`pip install 'nestor-home[media]'`), and a satellite films
+only over TLS (`wss`), unless it runs on the server’s machine.
+
+The assistant can look too. Asked “is the light on in the living room?” in writing from a person’s
+own account, it takes a picture with the `look` tool and looks at it, when that person may see the
+room and its model sees images. Asked aloud, it asks them to write from their account: a voice
+does not prove who speaks.
 
 ## Ready to run
 
