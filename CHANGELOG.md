@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.8](https://github.com/nestor-home/nestor-web/compare/v0.7.7...v0.7.8) (2026-11-17)
+
+
+### Documentation
+
+* cameras, calls and look on the satellites page ([#119](https://github.com/nestor-home/nestor-web/issues/119)) ([35ee109](https://github.com/nestor-home/nestor-web/commit/35ee109530d55fafe376d95318542aded40dbc48))
+
 ## [0.7.7](https://github.com/nestor-home/nestor-web/compare/v0.7.6...v0.7.7) (2026-11-16)
 
 
