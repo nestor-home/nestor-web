@@ -1,11 +1,12 @@
 ---
 /**
  * The story of one request, told by what it leaves in the household's life: the words said in the kitchen, the
- * watch that reads the mail, the message on Léa's phone, a voice in the right room, the journal's trace. One
+ * watch that reads the mail, the message on a phone, the bodies it can speak through, a voice in the right room, the journal's trace. One
  * object per moment, alone on its line, its words beside it.
  */
 import Phone from "@/components/objects/Phone.astro";
 import Room from "@/components/objects/Room.astro";
+import Satellites from "@/components/objects/Satellites.astro";
 import Spoken from "@/components/objects/Spoken.astro";
 import Trace from "@/components/objects/Trace.astro";
 import Watch from "@/components/objects/Watch.astro";
@@ -19,6 +20,7 @@ const chapters = [
   { id: "ask", object: Spoken },
   { id: "watch", object: Watch },
   { id: "found", object: Phone },
+  { id: "bodies", object: Satellites },
   { id: "reminder", object: Room },
   { id: "why", object: Trace },
 ];

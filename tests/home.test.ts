@@ -1,5 +1,5 @@
 /**
- * The home page's pieces that the build alone would not catch: the story is told in five chapters,
+ * The home page's pieces that the build alone would not catch: the story is told in six chapters,
  * each with its words in both languages, every word its objects show exists in both languages,
  * nothing is shipped as media, and every group of integrations has its name.
  */
@@ -42,11 +42,12 @@ function asked(file: string): string[] {
 }
 
 describe("the story", () => {
-  it("is told in five chapters, each shown by its object, in this order", () => {
+  it("is told in six chapters, each shown by its object, in this order", () => {
     expect(chapters).toEqual([
       { id: "ask", object: "Spoken" },
       { id: "watch", object: "Watch" },
       { id: "found", object: "Phone" },
+      { id: "bodies", object: "Satellites" },
       { id: "reminder", object: "Room" },
       { id: "why", object: "Trace" },
     ]);

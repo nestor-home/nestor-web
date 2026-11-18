@@ -1,5 +1,6 @@
 ---
 /** A satellite in a room, speaking: the device, its ring lit while it talks, the words, and why this room. */
+import { AlarmClock } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import Dither from "@/components/Dither.astro";
 import type { Translator } from "@/i18n";
@@ -19,10 +20,17 @@ const { t } = Astro.props;
   </div>
   <figcaption class="room-said">
     <span class="room-where tabular">{t("story-reminder-room")} · 20:00</span>
+    <span class="room-to">{t("story-reminder-to")}</span>
     <span class="room-words">{t("story-reminder-said")}</span>
-    <span class="room-why">
-      <Brand brand="home-assistant" class="size-4 shrink-0" decorative />
-      {t("story-reminder-why")}
+    <span class="room-whys">
+      <span class="room-why">
+        <AlarmClock className="size-4 shrink-0" strokeWidth={1.7} aria-hidden="true" />
+        {t("story-reminder-asked")}
+      </span>
+      <span class="room-why">
+        <Brand brand="home-assistant" class="size-4 shrink-0" decorative />
+        {t("story-reminder-why")}
+      </span>
     </span>
   </figcaption>
 </figure>
@@ -75,6 +83,18 @@ const { t } = Astro.props;
     line-height: 1.2;
     color: var(--ink);
     text-wrap: balance;
+  }
+  .room-to {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ember);
+  }
+  .room-whys {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
   }
   .room-why {
     display: inline-flex;

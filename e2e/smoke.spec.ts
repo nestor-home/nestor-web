@@ -59,7 +59,8 @@ const STORY = [
     titles: [
       "You say it, once.",
       "It keeps an eye on it.",
-      "It finds Léa, wherever she is.",
+      "It finds you, wherever you are.",
+      "Anything that listens can be a satellite.",
       "At home, it speaks in the right room.",
       "And you always know why.",
     ],
@@ -69,7 +70,8 @@ const STORY = [
     titles: [
       "Vous le dites, une fois.",
       "Il garde un œil dessus.",
-      "Il trouve Léa, où qu’elle soit.",
+      "Il vous trouve, où que vous soyez.",
+      "Tout ce qui écoute peut devenir un satellite.",
       "À la maison, il parle dans la bonne pièce.",
       "Et vous savez toujours pourquoi.",
     ],
@@ -77,21 +79,22 @@ const STORY = [
 ];
 
 for (const { path, titles } of STORY) {
-  test(`${path} tells one request in five chapters, in order`, async ({ page }) => {
+  test(`${path} tells one request in six chapters, in order`, async ({ page }) => {
     await page.goto(path);
-    await expect(page.locator("#story > .chapter")).toHaveCount(5);
+    await expect(page.locator("#story > .chapter")).toHaveCount(6);
     await expect(page.locator("#story > .chapter").getByRole("heading", { level: 2 })).toHaveText(titles);
   });
 }
 
 /** Each object, and what it shows last once it has played: the answer, the kept mail, the
-    notification, why this room, the journal's reason. */
+    notification, the last body, why this room, the journal's reason. */
 const OBJECTS = [
   { object: ".spoken", last: ".spoken-answer", text: "I’ll watch your mail" },
-  { object: ".watch", last: ".watch-mail.is-kept", text: "for Léa" },
+  { object: ".watch", last: ".watch-mail.is-kept", text: "for Mom" },
   { object: ".phone", last: ".phone-note", text: "Friday’s trip is on" },
-  { object: ".room", last: ".room-why", text: "Grandma is in her room" },
-  { object: ".trace", last: ".trace-why", text: "Léa is out, says Home Assistant" },
+  { object: ".sats", last: ".sat:last-child", text: "A camera" },
+  { object: ".room", last: ".room-why:last-child", text: "Grandma is in her room" },
+  { object: ".trace", last: ".trace-why", text: "Mom is out, says Home Assistant" },
 ];
 
 /** The story's words drawn too faint to read (an element and its ancestors' opacity under one
@@ -247,7 +250,7 @@ test.describe("without JavaScript", () => {
       .locator("[data-reveal]")
       .evaluateAll((nodes) => nodes.filter((n) => Number(getComputedStyle(n).opacity) < 1).length);
     expect(hidden).toBe(0);
-    await expect(page.locator("#story > .chapter")).toHaveCount(5);
+    await expect(page.locator("#story > .chapter")).toHaveCount(6);
     expect(await unseen(page)).toEqual([]);
     const ways = page.getByRole("group", { name: "Install" }).locator(".copy-command");
     await expect(ways.filter({ visible: true })).toContainText("uv tool install nestor-home");

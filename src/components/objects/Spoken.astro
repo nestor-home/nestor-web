@@ -22,6 +22,7 @@ const bars = [3, 5, 8, 12, 9, 14, 18, 13, 20, 16, 22, 17, 12, 19, 15, 10, 13, 8,
     {bars.map((h, i) => <span style={`--h:${h};--i:${i}`} />)}
   </div>
   <p class="spoken-words">{t("story-ask-said")}</p>
+  <p class="spoken-who"><span>{t("story-ask-who")}</span></p>
   <p class="spoken-answer">
     <Nestor state="speaking" size={30} class="shrink-0" />
     <span>{t("story-ask-answer")}</span>
@@ -70,6 +71,18 @@ const bars = [3, 5, 8, 12, 9, 14, 18, 13, 20, 16, 22, 17, 12, 19, 15, 10, 13, 8,
     text-align: center;
     text-wrap: balance;
   }
+  .spoken-who {
+    margin-top: 0.8rem;
+    text-align: center;
+  }
+  .spoken-who span {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.08);
+    font-size: var(--text-xs);
+    color: rgb(243 236 223 / 0.8);
+  }
   .spoken-answer {
     display: flex;
     align-items: center;
@@ -88,6 +101,7 @@ const bars = [3, 5, 8, 12, 9, 14, 18, 13, 20, 16, 22, 17, 12, 19, 15, 10, 13, 8,
       animation: speak 1.1s ease-in-out calc(var(--i) * 40ms) 3 both;
     }
     :global(.js) .spoken .spoken-words,
+    :global(.js) .spoken .spoken-who,
     :global(.js) .spoken .spoken-answer {
       opacity: 0;
       transform: translateY(6px);
@@ -95,7 +109,8 @@ const bars = [3, 5, 8, 12, 9, 14, 18, 13, 20, 16, 22, 17, 12, 19, 15, 10, 13, 8,
         opacity 500ms var(--ease-out),
         transform 500ms var(--ease-out);
     }
-    :global(.js) .spoken[data-shown] .spoken-words {
+    :global(.js) .spoken[data-shown] .spoken-words,
+    :global(.js) .spoken[data-shown] .spoken-who {
       opacity: 1;
       transform: none;
       transition-delay: 600ms;
