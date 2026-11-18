@@ -108,7 +108,7 @@ page de chaque satellite, à côté de qui peut regarder, vous pouvez ajouter 
   Home Assistant. Quand Home Assistant ne sait pas, la caméra reste coupée.
 
 Une règle vaut pour la vue en direct, les images, la vidéo d’un appel et `look`, et coupe une session
-qu’elle n’autorise plus. Le journal dit pourquoi.
+qu’elle n’autorise plus, y compris un appel par cet appareil. Le journal dit pourquoi.
 
 ## Prêts à l’emploi
 

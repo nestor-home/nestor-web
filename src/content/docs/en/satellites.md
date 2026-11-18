@@ -104,7 +104,7 @@ next to who may watch, you can add:
   Home Assistant cannot tell, the camera stays off.
 
 A rule applies to live views, pictures, the video of a call and `look`, and ends a session it no
-longer allows. The journal says why.
+longer allows, a call through that device included. The journal says why.
 
 ## Ready to run
 
