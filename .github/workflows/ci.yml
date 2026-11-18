@@ -8,9 +8,10 @@ on:
 permissions:
   contents: read
 
+# A new commit on a pull request makes its earlier run moot: it is cancelled. Runs on main always finish.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # The site is built once (build), then checked in parallel: lint, types and unit tests (check),
 # the built pages in a browser in shards (e2e), what only the Nginx image does (nginx).
@@ -83,7 +84,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - run: pnpm exec playwright install --only-shell chromium  # the runner image has the system libraries
       - run: pnpm e2e --shard ${{ matrix.shard }}
       - if: failure()
         uses: actions/upload-artifact@v7
@@ -116,7 +117,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - run: pnpm exec playwright install --only-shell chromium  # the runner image has the system libraries
       - run: pnpm e2e e2e/nginx.spec.ts
         env:
           E2E_NGINX: "1"
