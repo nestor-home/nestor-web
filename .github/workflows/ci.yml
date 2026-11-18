@@ -84,7 +84,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - run: pnpm exec playwright install --only-shell chromium  # the runner image has the system libraries
+      - run: pnpm exec playwright install --only-shell chromium # the runner image has the system libraries
       - run: pnpm e2e --shard ${{ matrix.shard }}
       - if: failure()
         uses: actions/upload-artifact@v7
@@ -117,7 +117,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - run: pnpm exec playwright install --only-shell chromium  # the runner image has the system libraries
+      - run: pnpm exec playwright install --only-shell chromium # the runner image has the system libraries
       - run: pnpm e2e e2e/nginx.spec.ts
         env:
           E2E_NGINX: "1"
