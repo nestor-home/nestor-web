@@ -93,7 +93,7 @@ const OBJECTS = [
   { object: ".watch", last: ".watch-mail.is-kept", text: "for Mom" },
   { object: ".phone", last: ".phone-note", text: "Friday’s trip is on" },
   { object: ".sats", last: ".sat:last-child", text: "A camera" },
-  { object: ".room", last: ".room-why:last-child", text: "Grandma is in her room" },
+  { object: ".room", last: ".room-why:last-child", text: "Someone in her room, says Home Assistant" },
   { object: ".trace", last: ".trace-why", text: "Mom is out, says Home Assistant" },
 ];
 
