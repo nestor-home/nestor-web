@@ -15,43 +15,13 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
 ---
 
 <section class="hero relative overflow-hidden" aria-labelledby="hero-title">
-  <div class="wrap grid items-center gap-x-10 gap-y-12 pt-12 pb-16 sm:pt-16 lg:grid-cols-12 lg:pt-20 lg:pb-24">
-    <div class="lg:col-span-6">
-      <h1 id="hero-title" class="display-1 display-hero text-ink">
-        {lines.map((id) => <span class="block">{t(id)}</span>)}
-      </h1>
-      <p class="lede mt-8">{t("hero-lede")}</p>
-      <div class="mt-8 flex flex-wrap items-center gap-3">
-        <a href={href(t.locale, "docs")} class="btn btn-ink">
-          {t("hero-start")}
-          <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
-        </a>
-        <a href={REPOS.nestor} class="btn btn-line">
-          <Brand brand="github" class="size-4" decorative />
-          {t("nav-github")}
-        </a>
-      </div>
-      <!-- the quick install: one tab per way, without a script (a radio, its label, then its commands) -->
-      <div class="hero-install mt-8 max-w-xl font-mono text-2xs" style={`--ways: ${QUICK_INSTALL.length}`} role="group" aria-label={t("hero-install-title")}>
-        {
-          QUICK_INSTALL.map((way, i) => (
-            <>
-              <input type="radio" name="hero-install" id={`hero-install-${way.id}`} class="sr-only" checked={i === 0} />
-              <label for={`hero-install-${way.id}`} class="hero-tab cursor-pointer rounded-sm px-2.5 py-1 text-ink-muted hover:text-ink">
-                {way.label}
-              </label>
-              <CopyCommand t={t} command={way.command} class="hero-way mt-2" />
-            </>
-          ))
-        }
-      </div>
-      <ul class="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-ink-muted">
-        {facts.map((id) => <li>{t(id)}</li>)}
-      </ul>
-    </div>
-
+  <div class="wrap grid items-center gap-x-10 gap-y-8 pt-12 pb-16 sm:pt-16 lg:grid-cols-12 lg:pt-20 lg:pb-24">
+    <!-- on a phone: the title, Nestor and its bodies, then the rest; side by side from lg -->
+    <h1 id="hero-title" class="display-1 display-hero text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:self-end">
+      {lines.map((id) => <span class="block">{t(id)}</span>)}
+    </h1>
     <!-- one agent, its bodies around it: a speaker that heard Léa, a robot, a screen, a phone far from home -->
-    <div class="hero-stage lg:col-span-6" data-reveal aria-hidden="true">
+    <div class="hero-stage lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1" data-reveal aria-hidden="true">
       <svg class="hero-links" viewBox="0 0 100 100" preserveAspectRatio="none">
         <path d="M50 52 L22 18" />
         <path d="M50 52 L80 16" />
@@ -88,6 +58,38 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
         <p class="hero-note-text">{t("hero-note-text")}</p>
       </div>
     </div>
+
+    <div class="lg:col-span-6 lg:col-start-1 lg:row-start-2 lg:self-start">
+      <p class="lede">{t("hero-lede")}</p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a href={href(t.locale, "docs")} class="btn btn-ink">
+          {t("hero-start")}
+          <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
+        </a>
+        <a href={REPOS.nestor} class="btn btn-line">
+          <Brand brand="github" class="size-4" decorative />
+          {t("nav-github")}
+        </a>
+      </div>
+      <!-- the quick install: one tab per way, without a script (a radio, its label, then its commands) -->
+      <div class="hero-install mt-8 max-w-xl font-mono text-2xs" style={`--ways: ${QUICK_INSTALL.length}`} role="group" aria-label={t("hero-install-title")}>
+        {
+          QUICK_INSTALL.map((way, i) => (
+            <>
+              <input type="radio" name="hero-install" id={`hero-install-${way.id}`} class="sr-only" checked={i === 0} />
+              <label for={`hero-install-${way.id}`} class="hero-tab cursor-pointer rounded-sm px-2.5 py-1 text-ink-muted hover:text-ink">
+                {way.label}
+              </label>
+              <CopyCommand t={t} command={way.command} class="hero-way mt-2" />
+            </>
+          ))
+        }
+      </div>
+      <ul class="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-ink-muted">
+        {facts.map((id) => <li>{t(id)}</li>)}
+      </ul>
+    </div>
+
   </div>
 </section>
 

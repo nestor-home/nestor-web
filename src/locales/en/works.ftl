@@ -1,5 +1,5 @@
 int-title = It works with what you already have.
-int-lede = Logos show the services Nestor connects to; they belong to their owners.
+int-lede = Logos belong to their owners.
 int-group-home = Home
 int-group-messages = Messages
 int-group-mail = Mail, calendar and files

@@ -1,5 +1,5 @@
 int-title = Il s’entend avec ce que vous avez déjà.
-int-lede = Les logos indiquent les services auxquels Nestor se connecte ; ils appartiennent à leurs propriétaires.
+int-lede = Les logos appartiennent à leurs propriétaires.
 int-group-home = Maison
 int-group-messages = Messagerie
 int-group-mail = Mail, agenda et fichiers
