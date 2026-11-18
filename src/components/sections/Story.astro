@@ -53,6 +53,8 @@ const chapters = [
   }
   .chapter-grid {
     display: grid;
+    /* one column a phone wide, never wider: a long line inside an object shortens rather than pushes */
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
     gap: 2.5rem 4rem;
   }
@@ -76,7 +78,11 @@ const chapters = [
   }
   .chapter-object {
     display: flex;
+    min-width: 0;
     justify-content: center;
+  }
+  .chapter-object > :global(*) {
+    min-width: 0;
   }
   @media (min-width: 900px) {
     .chapter-grid {

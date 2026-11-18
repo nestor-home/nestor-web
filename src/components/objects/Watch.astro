@@ -30,7 +30,7 @@ const mails = [
         <li class:list={["watch-mail", m.kept && "is-kept"]} style={`--i:${i}`}>
           <Brand brand="gmail" class="size-4 shrink-0" decorative />
           <span class="min-w-0 flex-1">
-            <span class="block truncate text-ink">{t(`story-watch-${m.id}`)}</span>
+            <span class:list={["block truncate", m.kept ? "text-ink" : "text-ink-muted"]}>{t(`story-watch-${m.id}`)}</span>
             <span class="block text-xs text-ink-muted tabular">{m.time}</span>
           </span>
           <span class="watch-verdict">{t(m.kept ? "story-watch-kept" : "story-watch-dropped")}</span>
@@ -78,6 +78,7 @@ const mails = [
   }
   .watch-mails {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
     margin-top: 1rem;
   }
@@ -90,8 +91,9 @@ const mails = [
     background: var(--paper);
     font-size: var(--text-sm);
   }
-  .watch-mail:not(.is-kept) {
-    opacity: 0.55;
+  /* set aside: quieter, still readable */
+  .watch-mail:not(.is-kept) :global(svg) {
+    opacity: 0.6;
   }
   .watch-mail.is-kept {
     background: var(--ember-soft);
@@ -117,12 +119,9 @@ const mails = [
         transform 450ms var(--ease-out);
     }
     :global(.js) .watch[data-shown] .watch-mail {
-      opacity: 0.55;
+      opacity: 1;
       transform: none;
       transition-delay: calc(400ms + var(--i) * 550ms);
-    }
-    :global(.js) .watch[data-shown] .watch-mail.is-kept {
-      opacity: 1;
     }
   }
 </style>
