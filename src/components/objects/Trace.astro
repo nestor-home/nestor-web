@@ -1,0 +1,107 @@
+---
+/** The journal's trace of one request, from the first word to the answer, each step with its reason. */
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const steps = [
+  { id: "asked", time: "09:10" },
+  { id: "watch", time: "09:10" },
+  { id: "match", time: "16:47" },
+  { id: "sent", time: "16:47", why: true, hot: true },
+  { id: "closed", time: "16:52" },
+];
+---
+
+<figure class="obj trace" data-reveal>
+  <figcaption class="trace-head">{t("story-why-journal")}</figcaption>
+  <ol class="trace-steps">
+    {
+      steps.map((s, i) => (
+        <li class:list={["trace-step", s.hot && "is-hot"]} style={`--i:${i}`}>
+          <time class="trace-time tabular">{s.time}</time>
+          <span class="trace-dot" aria-hidden="true" />
+          <span class="min-w-0">
+            <span class="block text-ink">{t(`story-why-${s.id}`)}</span>
+            {s.why && <span class="trace-why">{t(`story-why-${s.id}-why`)}</span>}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</figure>
+
+<style>
+  .trace {
+    width: min(100%, 30rem);
+    padding: 1.3rem 1.4rem 1.4rem;
+    border-radius: 1.4rem;
+    background: var(--paper-raised);
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 30px 60px -32px rgb(40 28 12 / 0.4);
+  }
+  .trace-head {
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    color: var(--ink);
+  }
+  .trace-steps {
+    margin-top: 0.4rem;
+  }
+  .trace-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3rem 1rem 1fr;
+    gap: 0.6rem;
+    align-items: baseline;
+    padding-block: 0.65rem;
+    font-size: var(--text-sm);
+  }
+  .trace-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 1.55rem;
+    bottom: -0.65rem;
+    left: calc(3rem + 0.6rem + 0.5rem - 0.5px);
+    width: 1px;
+    background: var(--rule-strong);
+  }
+  .trace-time {
+    color: var(--ink-muted);
+  }
+  .trace-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    justify-self: center;
+    border-radius: 50%;
+    background: var(--rule-strong);
+  }
+  .is-hot .trace-dot {
+    background: var(--ember);
+    box-shadow: 0 0 0 0.3rem var(--ember-soft);
+  }
+  .trace-why {
+    display: block;
+    margin-top: 0.3rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 0.7rem;
+    background: var(--ember-soft);
+    color: var(--ember);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .trace .trace-step {
+      opacity: 0;
+      transition: opacity 400ms var(--ease-out);
+    }
+    :global(.js) .trace[data-shown] .trace-step {
+      opacity: 1;
+      transition-delay: calc(300ms + var(--i) * 260ms);
+    }
+  }
+</style>

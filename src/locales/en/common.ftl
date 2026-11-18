@@ -10,7 +10,6 @@ lang-other = FR
 lang-other-label = Lire cette page en français
 copy = Copy
 copied = Copied
-video-pause = Pause the film
 nestor-label = Nestor
 nf-title = Nobody is in this room.
 nf-text = The page you asked for isn’t here. The house is this way.

@@ -145,8 +145,7 @@
     min-width: 0;
   }
 
-  img,
-  video {
+  img {
     max-width: 100%;
     height: auto;
   }
@@ -507,28 +506,5 @@
   .js [data-reveal] {
     opacity: 1;
     transform: none;
-  }
-}
-
-/* a picture per theme: only the one matching the page's theme is shown (and, lazy, downloaded) */
-.only-dark {
-  display: none;
-}
-
-:root[data-theme="dark"] .only-dark {
-  display: block;
-}
-
-:root[data-theme="dark"] .only-light {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .only-dark {
-    display: block;
-  }
-
-  :root:not([data-theme="light"]) .only-light {
-    display: none;
   }
 }

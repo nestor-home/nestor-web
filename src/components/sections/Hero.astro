@@ -2,7 +2,6 @@
 import { ArrowRight } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import CopyCommand from "@/components/CopyCommand.astro";
-import Film from "@/components/Film.astro";
 import { href, type Translator } from "@/i18n";
 import { QUICK_INSTALL, REPOS } from "@/lib/site";
 
@@ -15,7 +14,7 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
 ---
 
 <section class="relative" aria-labelledby="hero-title">
-  <div class="wrap grid items-end gap-x-12 gap-y-10 pt-12 pb-10 sm:pt-16 lg:grid-cols-12 lg:pt-20 lg:pb-14">
+  <div class="wrap grid items-end gap-x-12 gap-y-10 pt-12 pb-6 sm:pt-16 lg:grid-cols-12 lg:pt-20 lg:pb-8">
     <div class="lg:col-span-7">
       <h1 id="hero-title" class="display-1 display-hero text-ink">
         {lines.map((id) => <span class="block">{t(id)}</span>)}
@@ -52,10 +51,6 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
         {facts.map((id) => <li>{t(id)}</li>)}
       </ul>
     </div>
-  </div>
-
-  <div class="wrap pb-16 lg:pb-24">
-    <Film t={t} />
   </div>
 </section>
 

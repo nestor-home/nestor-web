@@ -1,0 +1,128 @@
+---
+/** A watch at work: what it looks for, for whom, and the mails it reads once and sets aside, until the one. */
+import { Radar } from "lucide-react";
+import Brand from "@/components/Brand.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const mails = [
+  { id: "letter", time: "11:02", kept: false },
+  { id: "bill", time: "14:30", kept: false },
+  { id: "school", time: "16:47", kept: true },
+];
+---
+
+<figure class="obj watch" data-reveal>
+  <figcaption class="watch-head">
+    <span class="watch-mark" aria-hidden="true"><Radar className="size-5" strokeWidth={1.7} /></span>
+    <span class="min-w-0">
+      <span class="block font-medium text-ink">{t("story-watch-name")}</span>
+      <span class="block text-sm text-ink-muted">{t("story-watch-looks")}</span>
+    </span>
+    <span class="watch-live">{t("story-watch-live")}</span>
+  </figcaption>
+  <ol class="watch-mails">
+    {
+      mails.map((m, i) => (
+        <li class:list={["watch-mail", m.kept && "is-kept"]} style={`--i:${i}`}>
+          <Brand brand="gmail" class="size-4 shrink-0" decorative />
+          <span class="min-w-0 flex-1">
+            <span class="block truncate text-ink">{t(`story-watch-${m.id}`)}</span>
+            <span class="block text-xs text-ink-muted tabular">{m.time}</span>
+          </span>
+          <span class="watch-verdict">{t(m.kept ? "story-watch-kept" : "story-watch-dropped")}</span>
+        </li>
+      ))
+    }
+  </ol>
+</figure>
+
+<style>
+  .watch {
+    width: min(100%, 30rem);
+    padding: 1.25rem;
+    border-radius: 1.4rem;
+    background: var(--paper-raised);
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 30px 60px -32px rgb(40 28 12 / 0.4);
+  }
+  .watch-head {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .watch-mark {
+    display: grid;
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: none;
+    place-items: center;
+    border-radius: 0.8rem;
+    background: var(--ember-soft);
+    color: var(--ember);
+  }
+  .watch-live {
+    margin-left: auto;
+    flex: none;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--paper-sunken);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  .watch-mails {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .watch-mail {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 0.9rem;
+    background: var(--paper);
+    font-size: var(--text-sm);
+  }
+  .watch-mail:not(.is-kept) {
+    opacity: 0.55;
+  }
+  .watch-mail.is-kept {
+    background: var(--ember-soft);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--ember) 35%, transparent);
+  }
+  .watch-verdict {
+    flex: none;
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  .is-kept .watch-verdict {
+    font-weight: 600;
+    color: var(--ember);
+  }
+
+  /* when it comes into view: the mails arrive one after the other, the last one kept */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .watch .watch-mail {
+      opacity: 0;
+      transform: translateY(8px);
+      transition:
+        opacity 450ms var(--ease-out),
+        transform 450ms var(--ease-out);
+    }
+    :global(.js) .watch[data-shown] .watch-mail {
+      opacity: 0.55;
+      transform: none;
+      transition-delay: calc(400ms + var(--i) * 550ms);
+    }
+    :global(.js) .watch[data-shown] .watch-mail.is-kept {
+      opacity: 1;
+    }
+  }
+</style>

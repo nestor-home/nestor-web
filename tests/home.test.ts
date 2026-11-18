@@ -1,47 +1,91 @@
 /**
- * The home page's pieces that the build alone would not catch: the story's four moments each have
- * their words and their capture of the admin in both themes and languages, nothing else is shipped
- * as a capture, the film is there, and every group of integrations has its name.
+ * The home page's pieces that the build alone would not catch: the story is told in five chapters,
+ * each with its words in both languages, every word its objects show exists in both languages,
+ * nothing is shipped as media, and every group of integrations has its name.
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { LOCALES, translator } from "@/i18n";
 import { INTEGRATIONS } from "@/lib/integrations";
 
-/** The moments, in the order the page tells them (the list `Moments.astro` renders). */
-const moments = JSON.parse(
-  /const moments = (\[[^\]]+\]);/.exec(readFileSync("src/components/sections/Moments.astro", "utf8"))?.[1] ?? "[]",
-) as string[];
+const STORY = "src/components/sections/Story.astro";
+
+/** The chapters, in the order `Story.astro` renders them: their id and the object that shows them. */
+const chapters = [...readFileSync(STORY, "utf8").matchAll(/\{ id: "([a-z]+)", object: (\w+) \}/g)].map((m) => ({
+  id: m[1] ?? "",
+  object: m[2] ?? "",
+}));
+
+/**
+ * The `story-*` messages an object asks for: those it names whole, and those it builds from a list
+ * it draws (`t(\`story-watch-${m.id}\`)` over `mails`), only for the items a guard lets through
+ * (`{s.why && t(\`story-why-${s.id}-why\`)}` asks only for the steps with `why`).
+ */
+function asked(file: string): string[] {
+  const source = readFileSync(file, "utf8");
+  const ids = new Set([...source.matchAll(/["'](story-[a-z0-9-]+)["']/g)].map((m) => m[1] ?? ""));
+  const lists = new Map(
+    [...source.matchAll(/const (\w+) = (\[[\s\S]*?\]);/g)].map((m) => [
+      m[1] ?? "",
+      new Function(`return ${m[2]}`)() as Record<string, unknown>[],
+    ]),
+  );
+  const built = [...source.matchAll(/^.*\bt\(`(story-[a-z0-9-]*)\$\{(\w+)\.id\}([a-z0-9-]*)`\).*$/gm)];
+  for (const [line, prefix, item, suffix] of built) {
+    const list = new RegExp(`(\\w+)\\.map\\(\\(${item}\\b`).exec(source)?.[1] ?? "";
+    const items = lists.get(list);
+    if (!items) throw new Error(`${file}: no list drawn as ${item}`);
+    const guard = new RegExp(`\\{${item}\\.(\\w+) &&`).exec(line)?.[1];
+    for (const it of items) if (!guard || it[guard]) ids.add(`${prefix}${it.id}${suffix}`);
+  }
+  return [...ids];
+}
 
 describe("the story", () => {
-  it("is told in four moments", () => {
-    expect(moments).toHaveLength(4);
+  it("is told in five chapters, each shown by its object, in this order", () => {
+    expect(chapters).toEqual([
+      { id: "ask", object: "Spoken" },
+      { id: "watch", object: "Watch" },
+      { id: "found", object: "Phone" },
+      { id: "reminder", object: "Room" },
+      { id: "why", object: "Trace" },
+    ]);
   });
 
-  it("gives each moment a title, a text and a description of its picture in every language", () => {
+  it("gives each chapter a title and a text in every language", () => {
     for (const locale of LOCALES) {
       const t = translator(locale);
-      for (const name of moments) {
-        for (const part of ["title", "text", "alt"]) expect(t(`moment-${name}-${part}`), locale).not.toBe("");
+      expect(t("story-label"), locale).not.toBe("");
+      for (const { id } of chapters) {
+        for (const part of ["title", "text"]) expect(t(`story-${id}-${part}`), locale).not.toBe("");
       }
     }
   });
 
-  it("shows each moment by a capture of the admin in both themes and languages, and ships no other", () => {
-    const expected = moments.flatMap((name) =>
-      ["light", "dark"].flatMap((theme) => LOCALES.map((locale) => `${name}-${theme}-${locale}.webp`)),
+  it("has every word its objects ask for, in every language", () => {
+    const words = chapters.flatMap(({ object }) => asked(`src/components/objects/${object}.astro`));
+    // the lists are read: the watch's three mails, the journal's five steps and its one reason
+    expect(words).toEqual(
+      expect.arrayContaining(["story-watch-school", "story-why-closed", "story-why-sent-why", "story-found-message"]),
     );
-    expect(readdirSync("src/assets/captures").sort()).toEqual(expected.sort());
+    expect(words).not.toContain("story-why-asked-why");
+    for (const locale of LOCALES) {
+      const t = translator(locale);
+      const missing = words.filter((id) => {
+        try {
+          return t(id) === "";
+        } catch {
+          return true;
+        }
+      });
+      expect(missing, locale).toEqual([]);
+    }
   });
 });
 
-describe("the film", () => {
-  it("is shipped with its poster, where the page asks for them", () => {
-    const film = readFileSync("src/components/Film.astro", "utf8");
-    const asked = [...film.matchAll(/(?:src|poster)="(\/media\/[^"]+)"/g)].map((match) => match[1] ?? "");
-    expect(asked.sort()).toEqual(["/media/film.mp4", "/media/film.poster.webp", "/media/film.webm"]);
-    for (const path of asked) expect(existsSync(`public${path}`), path).toBe(true);
-    expect(readdirSync("public/media").sort()).toEqual(["film.mp4", "film.poster.webp", "film.webm"]);
+describe("the media", () => {
+  it("are none: the page ships no picture and no film of its own", () => {
+    expect(existsSync("public/media") ? readdirSync("public/media") : []).toEqual([]);
   });
 });
 

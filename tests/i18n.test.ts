@@ -51,7 +51,7 @@ describe("the catalogues", () => {
     const source = files("src", /\.(astro|ts)$/)
       .map((file) => readFileSync(file, "utf8"))
       .join("\n");
-    // ids written whole (`t("copy")`, a list of ids) and ids built from a part (`t(\`moment-${name}-title\`)`)
+    // ids written whole (`t("copy")`, a list of ids) and ids built from a part (`t(\`story-${id}-title\`)`)
     const built = [...source.matchAll(/\bt\(`([a-z0-9-]*)\$\{[^}]+\}([a-z0-9-]*)`/g)].map(
       (match) => new RegExp(`^${match[1]}[a-z0-9-]+${match[2]}$`),
     );

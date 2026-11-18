@@ -1,0 +1,100 @@
+---
+/** A satellite in a room, speaking: the device, its ring lit while it talks, the words, and why this room. */
+import Brand from "@/components/Brand.astro";
+import Dither from "@/components/Dither.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+---
+
+<figure class="obj room" data-reveal>
+  <div class="room-device" aria-hidden="true">
+    <span class="room-ring"></span>
+    <span class="room-body">
+      <Dither shape="field" from={0.38} to={0.38} dot={2} class="room-mesh absolute inset-0" />
+    </span>
+  </div>
+  <figcaption class="room-said">
+    <span class="room-where tabular">{t("story-reminder-room")} · 20:00</span>
+    <span class="room-words">{t("story-reminder-said")}</span>
+    <span class="room-why">
+      <Brand brand="home-assistant" class="size-4 shrink-0" decorative />
+      {t("story-reminder-why")}
+    </span>
+  </figcaption>
+</figure>
+
+<style>
+  .room {
+    display: grid;
+    width: min(100%, 30rem);
+    justify-items: center;
+    gap: 1.6rem;
+  }
+  .room-device {
+    position: relative;
+    width: 11rem;
+    aspect-ratio: 1;
+  }
+  .room-body {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #3a332b, #15120f 70%);
+    box-shadow: 0 30px 50px -24px rgb(20 14 8 / 0.6);
+  }
+  .room-mesh {
+    color: #5b5146;
+  }
+  .room-ring {
+    position: absolute;
+    inset: -0.5rem;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 0.25rem var(--ember),
+      0 0 2.5rem 0.5rem color-mix(in oklab, var(--ember) 45%, transparent);
+  }
+  .room-said {
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
+    text-align: center;
+  }
+  .room-where {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .room-words {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+    line-height: 1.2;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .room-why {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 1px var(--rule);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .room[data-shown] .room-ring {
+      animation: breathe 2.4s ease-in-out infinite;
+    }
+  }
+  @keyframes breathe {
+    50% {
+      opacity: 0.45;
+    }
+  }
+</style>

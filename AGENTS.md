@@ -29,26 +29,24 @@ src/
 │                     favicon*, robots.txt
 ├── content/docs/     the documentation: one Markdown file per page and locale
 ├── components/
-│   ├── Home.astro        the home page: the hero (title, quick install, the film), the story in four
-│   │                     moments, what it works with, how to start and three links to build
-│   ├── sections/         one file per section: Hero, Moments, Works, Cta
-│   ├── Film.astro        the film of a day in a home that runs Nestor (public/media/film.mp4)
-│   ├── Shot.astro        a capture of the admin, one picture per theme
+│   ├── Home.astro        the home page: the hero (title, quick install), the story of one request
+│   │                     in five chapters, what it works with, how to start and three links to build
+│   ├── sections/         one file per section: Hero, Story, Works, Cta
+│   ├── objects/          what each chapter of the story shows, drawn in HTML: Spoken (the request
+│   │                     said in the kitchen), Watch (a watch reading the mail), Phone (Léa's lock
+│   │                     screen), Room (a satellite speaking in Grandma's room), Trace (the journal)
 │   ├── Nestor.astro      the character (one drawing, its states, a gaze)
 │   ├── docs/             the documentation's pieces: tabs, provider mosaics, diagrams
 │   └── *.astro           shared pieces: Header, Footer, Brand, Integrations, CopyCommand, Dither, Tie…
 ├── layouts/          Base (head, header, footer) and Docs (sidebar, text, sections, prev/next)
 ├── scripts/site.ts   the one global script: theme, the menu sheet, dither canvases, the header's
-│                     hairline, the section being read in a table of contents, reveals, copy
-│                     buttons, tabs, the film played only on screen and its pause button
-│                     (docs.ts: code copy buttons)
+│                     hairline, the section being read in a table of contents, reveals (which also
+│                     start the story's objects), copy buttons, tabs (docs.ts: code copy buttons)
 ├── locales/<lang>/   the words, in Fluent (.ftl), one file per section
 ├── i18n/             the Fluent loader (`translator(locale)`)
-├── lib/              data and logic: links, brands, integrations, providers, docs, captures, OG pictures
+├── lib/              data and logic: links, brands, integrations, providers, docs, OG pictures
 ├── styles/           tokens.css (a verbatim copy of the admin's) and global.css
-├── assets/brands/    official marks no icon set has
-└── assets/captures/  admin screenshots (WebP sources; Astro derives AVIF/WebP sizes)
-public/media/         the film (mp4 + poster)
+└── assets/brands/    official marks no icon set has
 public/schemas/       the satellite protocol's JSON Schemas, generated at build (not committed)
 public/redirect/      the OAuth relay page, copied from the server package at build (not committed)
 ```
@@ -57,11 +55,13 @@ public/redirect/      the OAuth relay page, copied from the server package at bu
 
 The home page is about **use**: the promise and the final experience of Nestor, including what is
 planned, told through moments almost every household lives (no niche scenarios, no invented brands,
-shops, prices or dates). It goes in this order: the title with the quick install and the film of a
-day; the story in four moments (you ask once, it takes care of it, it finds the right person in the
-right place, you always know why), each shown by a capture of the admin; what it works with (logos,
-almost no words); how to start, then three links to build on it (a satellite, the SDKs, the
-protocol). No contract names, no benchmarks, no internal status, no vendor comparisons; honesty
+shops, prices or dates). It goes in this order: the title with the quick install; the story of one
+request in five chapters (you say it once, it keeps an eye on it, it finds Léa wherever she is, at
+home it speaks in the right room, you always know why), each a title, a paragraph and one object
+drawn in HTML (`components/objects/`); what it works with (logos, almost no words); how to start,
+then three links to build on it (a satellite, the SDKs, the protocol). There are no pictures of the
+admin and no film: an object shows what the household sees, in the page's own words and theme.
+No contract names, no benchmarks, no internal status, no vendor comparisons; honesty
 lives in one place (the "early project" line near the install).
 
 Everything else belongs to the **documentation** (`/docs/`, `/fr/docs/`): how it works (the agent,
@@ -139,8 +139,8 @@ approved one); `cursor` is the original wordmark. The monogram (`renderMarkStill
 an ink tile) is the favicon and app icon. The bow tie is a motif used sparingly: list markers
 (`Tie.astro`). The copy uses no em-dashes (a test checks the catalogues). Eight states
 mirror the product's: `idle`, `listening`, `thinking`, `speaking`, `laughing`, `sleeping`,
-`working`, `concerned`. On the site, `Nestor.astro` renders it, still (the first page of the docs);
-the home page shows it in the film. Its stills are published at
+`working`, `concerned`. On the site, `Nestor.astro` renders it (the first page of the docs, and
+speaking in the story's first object). Its stills are published at
 `/character/*` (avatars, tiles, PNG sizes) and drawn into the favicon and sharing images.
 
 ## Conventions
@@ -163,8 +163,10 @@ the home page shows it in the film. Its stills are published at
   wordmark, the hero); `tests/type-scale.test.ts` fails on an arbitrary size in a component. The
   header's height and its layer are tokens there too (`--header-h`, `--z-header`).
 - **Motion** is transform and opacity only, triggered by IntersectionObserver, never scroll
-  handlers that write layout. Everything reads in full without JavaScript, and under
-  `prefers-reduced-motion` nothing moves or plays by itself (`e2e` checks it).
+  handlers that write layout. An element with `data-reveal` fades in once seen (the script sets
+  `data-shown`); a story object animates its inside from `data-shown`, only under `.js` and
+  `prefers-reduced-motion: no-preference`, so it reads in full at once without JavaScript and under
+  reduced motion, where nothing moves by itself (`e2e` checks all three).
 - **Anti-slop**: no gradients or glows, no emoji, no eyebrows above titles, no coloured side borders,
   no stat tiles; numbers in `tabular-nums`; a description only when it says something.
 - Brand marks come from `lib/brands.ts` (nominative use): Simple Icons (CC0) for services, Lobe Icons
@@ -190,26 +192,6 @@ not translated). Every sentence says something concrete: subject, verb, object; 
 | Cloud services are optional by design                            | Cloud services are optional                                                    |
 | Consultable, corrigeable et supprimable depuis l’administration. | Vous pouvez le consulter, le corriger ou le supprimer depuis l’administration. |
 | Une capacité facultative absente dégrade                         | Sans une capacité facultative, il continue avec moins                          |
-
-## Refreshing the media
-
-The pictures are the real admin (`nestor/web`) on its mock API, captured with Playwright.
-
-```bash
-cd ../nestor/web && pnpm dev --port 5190 --strictPort &      # the admin on its mocks
-node scripts/capture-admin.mjs     # → .media-raw/ (ONLY=journal THEMES=dark LOCALES=en for a subset;
-                                   # BROWSER_CHANNEL=chrome for the installed browser)
-node scripts/encode-media.mjs      # → src/assets/captures/*.webp
-```
-
-Shots: `today`, `ongoing`, `house`, `journal`, one per moment of the home page's story, each in
-`light`/`dark` and `en`/`fr`. A capture a moment asks for and does not find fails the build, and
-`tests/home.test.ts` fails on a capture no moment shows. The mock household follows the
-account's language, which the capture sets for each locale: English captures show English rooms
-and messages, French ones French.
-
-The film (`public/media/film.mp4`, 1280×720, H.264, without sound, and `film.poster.webp`) is not
-produced here: replace both files together, and the duration `film-caption` gives in both languages.
 
 ## What the build takes from the server package
 

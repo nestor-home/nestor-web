@@ -7,5 +7,3 @@ hero-install-title = Installer
 hero-fact-license = Licence MIT
 hero-fact-python = Python 3.12+
 hero-fact-sdks = SDK satellites en Python, TypeScript, Rust
-film-label = Le film d’une journée dans une maison où tourne Nestor
-film-caption = Une journée dans une maison où tourne Nestor, du réveil au coucher. 1 min 21, sans le son.

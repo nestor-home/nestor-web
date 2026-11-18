@@ -3,7 +3,6 @@ dist/
 .astro/
 test-results/
 playwright-report/
-.media-raw/
 *.log
 .DS_Store
 .shoot.mjs

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { axe, renderAll, scrollThrough, watch } from "./helpers";
 
 const PAGES = [
@@ -56,90 +56,115 @@ test("the theme toggle switches the page and remembers it", async ({ page }) => 
 const STORY = [
   {
     path: "/",
-    locale: "en",
     titles: [
-      "You ask, once.",
-      "It takes care of it.",
-      "It finds the right person, in the right place.",
+      "You say it, once.",
+      "It keeps an eye on it.",
+      "It finds Léa, wherever she is.",
+      "At home, it speaks in the right room.",
       "And you always know why.",
     ],
   },
   {
     path: "/fr/",
-    locale: "fr",
     titles: [
-      "Vous demandez, une fois.",
-      "Il s’en occupe.",
-      "Il trouve la bonne personne, au bon endroit.",
+      "Vous le dites, une fois.",
+      "Il garde un œil dessus.",
+      "Il trouve Léa, où qu’elle soit.",
+      "À la maison, il parle dans la bonne pièce.",
       "Et vous savez toujours pourquoi.",
     ],
   },
 ];
-const SHOTS = ["today", "ongoing", "house", "journal"];
 
-for (const { path, locale, titles } of STORY) {
-  test(`${path} tells the story in four moments, each shown by the admin in the page's theme`, async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
+for (const { path, titles } of STORY) {
+  test(`${path} tells one request in five chapters, in order`, async ({ page }) => {
     await page.goto(path);
-    await renderAll(page);
-    const moments = page.locator("#story ol > li");
-    await expect(moments.getByRole("heading", { level: 3 })).toHaveText(titles);
-    /** the picture each moment shows: the capture's name, loaded, with a text */
-    const shown = async () => {
-      const names: string[] = [];
-      for (const moment of await moments.all()) {
-        await moment.scrollIntoViewIfNeeded();
-        const pictures = moment.locator("img:visible");
-        await expect(pictures).toHaveCount(1);
-        await expect(pictures).toHaveAttribute("alt", /\S/);
-        await expect.poll(() => pictures.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
-        names.push(await pictures.evaluate((img: HTMLImageElement) => decodeURIComponent(img.currentSrc)));
-      }
-      return names;
-    };
-    const dark = await page.evaluate(() => matchMedia("(prefers-color-scheme: dark)").matches);
-    const [theme, other] = dark ? ["dark", "light"] : ["light", "dark"];
-    const first = await shown();
-    SHOTS.forEach((name, i) => {
-      expect(first[i]).toContain(`${name}-${theme}-${locale}`);
-    });
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.getByRole("button", { name: /light and dark|clair et sombre/ }).click();
-    const second = await shown();
-    SHOTS.forEach((name, i) => {
-      expect(second[i]).toContain(`${name}-${other}-${locale}`);
-    });
+    await expect(page.locator("#story > .chapter")).toHaveCount(5);
+    await expect(page.locator("#story > .chapter").getByRole("heading", { level: 2 })).toHaveText(titles);
   });
 }
 
-test("the film plays only while it is on screen, and its button pauses it for good", async ({ page }) => {
+/** Each object, and what it shows last once it has played: the answer, the kept mail, the
+    notification, why this room, the journal's reason. */
+const OBJECTS = [
+  { object: ".spoken", last: ".spoken-answer", text: "I’ll watch your mail" },
+  { object: ".watch", last: ".watch-mail.is-kept", text: "for Léa" },
+  { object: ".phone", last: ".phone-note", text: "Friday’s trip is on" },
+  { object: ".room", last: ".room-why", text: "Grandma is in her room" },
+  { object: ".trace", last: ".trace-why", text: "Léa is out, says Home Assistant" },
+];
+
+/** The story's words drawn too faint to read (an element and its ancestors' opacity under one
+    half), and the last thing each object shows when it is not fully there (faded or still moving). */
+function unseen(page: Page): Promise<string[]> {
+  return page.locator("#story").evaluate(
+    (story, lasts) => {
+      const opacity = (el: Element) => {
+        let o = 1;
+        for (let n: Element | null = el; n; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
+        return o;
+      };
+      const words = [...story.querySelectorAll("*")].filter((el) =>
+        [...el.childNodes].some((c) => c.nodeType === Node.TEXT_NODE && c.textContent?.trim()),
+      );
+      const faint = words.filter((el) => opacity(el) < 0.5).map((el) => `faint: ${el.textContent?.trim()}`);
+      const partial = lasts.flatMap((selector) =>
+        [...story.querySelectorAll(selector)]
+          .filter((el) => opacity(el) < 1 || getComputedStyle(el).transform !== "none")
+          .map(() => `not shown: ${selector}`),
+      );
+      return [...faint, ...partial];
+    },
+    OBJECTS.map((o) => o.last),
+  );
+}
+
+test("scrolling to a chapter plays its object to the end", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  await renderAll(page);
-  const film = page.locator("video#film");
-  const button = page.getByRole("button", { name: "Pause the recording" });
-  const paused = () => film.evaluate((video: HTMLVideoElement) => video.paused);
-  const show = (selector: string) =>
-    page.evaluate((s) => document.querySelector(s)?.scrollIntoView({ block: "center", behavior: "instant" }), selector);
-  await expect(film).toHaveJSProperty("muted", true);
-  await show("#film");
-  await expect.poll(paused).toBe(false);
-  await expect(button).toHaveAttribute("aria-pressed", "false");
-  await show("#start");
-  await expect.poll(paused).toBe(true);
-  await show("#film");
-  await expect.poll(paused).toBe(false);
-  await button.click();
-  await expect.poll(paused).toBe(true);
-  await expect(button).toHaveAttribute("aria-pressed", "true");
-  // paused by the visitor: coming back to it does not start it again
-  await show("#start");
-  await show("#film");
-  await page.waitForTimeout(600);
-  expect(await paused()).toBe(true);
-  await button.click();
-  await expect.poll(paused).toBe(false);
+  const trace = page.locator("#story .trace");
+  // below the fold, the journal waits for the reader
+  await expect(trace).not.toHaveAttribute("data-shown");
+  expect(
+    await trace
+      .locator(".trace-step")
+      .last()
+      .evaluate((el) => getComputedStyle(el).opacity),
+  ).toBe("0");
+  for (const { object, last, text } of OBJECTS) {
+    const shown = page.locator(`#story ${object}`);
+    await shown.scrollIntoViewIfNeeded();
+    await expect(shown).toHaveAttribute("data-shown", "");
+    const end = shown.locator(last);
+    await expect(end).toContainText(text);
+    await expect
+      .poll(() =>
+        end.evaluate((el) => {
+          let o = 1;
+          for (let n: Element | null = el; n; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
+          return o === 1 && getComputedStyle(el).transform === "none";
+        }),
+      )
+      .toBe(true);
+  }
+  expect(await unseen(page)).toEqual([]);
 });
+
+for (const { path } of PAGES) {
+  test(`${path} at 375px: the story's objects stay within the page`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(path);
+    await scrollThrough(page);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    const outside = await page.locator("#story .obj").evaluateAll((objects) =>
+      objects
+        .map((o) => [o.className, o.getBoundingClientRect()] as const)
+        .filter(([, r]) => r.left < 0 || r.right > window.innerWidth)
+        .map(([name]) => name),
+    );
+    expect(outside).toEqual([]);
+  });
+}
 
 test("the install box shows the documentation's commands, one way at a time, and copies them", async ({
   page,
@@ -222,7 +247,8 @@ test.describe("without JavaScript", () => {
       .locator("[data-reveal]")
       .evaluateAll((nodes) => nodes.filter((n) => Number(getComputedStyle(n).opacity) < 1).length);
     expect(hidden).toBe(0);
-    await expect(page.locator("#story ol > li")).toHaveCount(4);
+    await expect(page.locator("#story > .chapter")).toHaveCount(5);
+    expect(await unseen(page)).toEqual([]);
     const ways = page.getByRole("group", { name: "Install" }).locator(".copy-command");
     await expect(ways.filter({ visible: true })).toContainText("uv tool install nestor-home");
     await page.getByRole("group", { name: "Install" }).getByText("Docker", { exact: true }).click();
@@ -235,15 +261,18 @@ test("under reduced motion everything is shown, nothing moves by itself", async 
   const context = await browser.newContext({ reducedMotion: "reduce" });
   const page = await context.newPage();
   await page.goto("/");
+  // before any scroll: every object already shows all it has
+  expect(await unseen(page)).toEqual([]);
   await scrollThrough(page);
   const hidden = await page
     .locator("[data-reveal]")
     .evaluateAll((nodes) => nodes.filter((n) => Number(getComputedStyle(n).opacity) < 1).length);
   expect(hidden).toBe(0);
-  const playing = await page
-    .locator("video")
-    .evaluateAll((v) => v.filter((x) => !(x as HTMLVideoElement).paused).length);
-  expect(playing).toBe(0);
+  expect(await unseen(page)).toEqual([]);
+  // nothing runs on its own: every animation has ended at once
+  await expect
+    .poll(() => page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length))
+    .toBe(0);
   await context.close();
 });
 

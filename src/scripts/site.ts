@@ -1,13 +1,12 @@
 /**
  * The site's only global script: small behaviours wired by data attributes (theme, menu, dither,
- * header hairline, table of contents, reveals, copy, tabs, the film). Everything here is
+ * header hairline, table of contents, reveals, copy, tabs). Everything here is
  * progressive: without it, every section reads in full.
  */
 import { drawDither } from "@nestor-home/character";
 import { nextIndex, tabAxes } from "@/lib/tabs";
 
 const root = document.documentElement;
-const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 
 /* theme: system by default, a click pins the opposite of what is shown */
 function currentTheme(): "light" | "dark" {
@@ -151,38 +150,4 @@ for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
     follow();
     addEventListener("hashchange", follow);
   }
-}
-
-/* the film plays only while seen, and never by itself under reduced motion; its button pauses it for good */
-const videos = [...document.querySelectorAll<HTMLVideoElement>("video[data-autoplay]")];
-const playing = new IntersectionObserver(
-  (entries) => {
-    for (const entry of entries) {
-      const video = entry.target as HTMLVideoElement;
-      if (entry.isIntersecting && !reduced.matches && !video.dataset.paused) void video.play().catch(() => {});
-      else video.pause();
-    }
-  },
-  { threshold: 0.4 },
-);
-for (const video of videos) {
-  // its own controls are for a page without this script: here the button and the scroll drive it
-  video.controls = false;
-  playing.observe(video);
-}
-for (const button of document.querySelectorAll<HTMLButtonElement>("[data-video-toggle]")) {
-  const video = document.getElementById(button.getAttribute("aria-controls") ?? "") as HTMLVideoElement | null;
-  if (!video) continue;
-  const sync = () => button.setAttribute("aria-pressed", String(video.paused));
-  video.addEventListener("play", sync);
-  video.addEventListener("pause", sync);
-  button.addEventListener("click", () => {
-    if (video.paused) {
-      delete video.dataset.paused;
-      void video.play().catch(() => {});
-    } else {
-      video.dataset.paused = "1";
-      video.pause();
-    }
-  });
 }
