@@ -132,6 +132,11 @@ un compte du foyer sert à tout le monde.
 Aucun n’envoie, ne supprime ni ne modifie un mail, un fichier ou un contact. Ils lisent, et ajoutent
 des événements et des tâches après avoir demandé (voir [Écritures](#écritures)).
 
+Google, Microsoft 365 et les serveurs MCP se connectent par OAuth avec PKCE. Jetons et mots de passe
+sont gardés chiffrés dans `state/` (AES-256-GCM, sous `NESTOR_SECRET_KEY`), renouvelés quand ils
+expirent, et révoqués chez le fournisseur à la déconnexion, quand il le permet. Le modèle ne les voit
+jamais et le journal n’en contient aucun.
+
 ### Google
 
 - **Gmail** : cherche et lit le courrier, avec la syntaxe de recherche de Gmail (`from:`,
@@ -256,6 +261,8 @@ Une recherche rend au plus 20 mails ou fichiers, 30 contacts, 50 événements ou
 Demandez une **veille** : « préviens-moi quand le plombier répond ». Un modèle (`watches.model`)
 trie chaque nouveau message des boîtes Gmail, Outlook et IMAP connectées face aux veilles ouvertes
 et prévient la personne qui l’a demandée, là où elle est (voir [Initiative](/fr/docs/agent/initiative/)).
+Ce qui arrive est une donnée : le modèle qui le lit a pour consigne de ne jamais suivre les
+instructions qu’il contient.
 
 ## Flux, pages et webhooks
 
@@ -297,6 +304,10 @@ la tâche, prévient la personne quand elle est faite et envoie avec le résulta
 l’exécutant a produits, là où le canal sait les porter. `description` dit à l’agent quoi lui confier :
 écrivez ce que cet exécutant sait vraiment faire. Un exécutant porte le nom de son `kind` ; donnez un
 `name` à deux exécutants du même type.
+
+Demandez à Nestor d’arrêter une tâche : il demande à l’exécutant de s’arrêter. Il ne dit la tâche
+annulée qu’une fois l’arrêt confirmé par l’exécutant ; un arrêt resté sans confirmation termine la
+tâche en échec.
 
 ### Hermes
 

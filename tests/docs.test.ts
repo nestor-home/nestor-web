@@ -1,14 +1,14 @@
 /**
  * The developer documentation: every page of the reading order exists in both languages, links stay
- * in the reader's language, and the developers' page finds each SDK's example where it reads it.
+ * in the reader's language, and its examples show the server's own records and code.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { LOCALES, type Locale } from "@/i18n";
-import { DOC_SLUGS, docHref, firstCodeBlock, neighbours, parseDocId, taggedCommands } from "@/lib/docs";
+import { DOC_SLUGS, docHref, neighbours, parseDocId, taggedCommands } from "@/lib/docs";
 import { PROVIDERS, type ProviderKind } from "@/lib/providers";
-import { INSTALL, QUICKSTART } from "@/lib/site";
+import { INSTALL, QUICK_INSTALL } from "@/lib/site";
 
 const ROOT = "src/content/docs";
 
@@ -65,11 +65,17 @@ describe("the documentation", () => {
     expect(lines).toEqual([]);
   });
 
-  it("opens each SDK page with a driver in its language, which the developers' page shows", () => {
+  it("shows the journal's records, a plugin and each SDK's driver", () => {
     for (const locale of LOCALES) {
-      expect(firstCodeBlock(read(locale, "sdks/python"), "python")).toContain("Satellite(");
-      expect(firstCodeBlock(read(locale, "sdks/typescript"), "ts")).toContain("new Satellite(");
-      expect(firstCodeBlock(read(locale, "sdks/rust"), "rust")).toContain("Satellite::builder(");
+      const journal = read(locale, "agent/journal");
+      expect(journal, locale).toContain('"type": "initiative.considered"');
+      expect(journal, locale).toContain('class WatchTriggered(Event, event_type="watch.triggered")');
+      const plugins = read(locale, "plugins");
+      expect(plugins, locale).toContain('[project.entry-points."nestor.adapters"]');
+      expect(plugins, locale).toContain("plugin = Plugin(Family.TOOLS,");
+      expect(read(locale, "sdks/python"), locale).toContain("Satellite(");
+      expect(read(locale, "sdks/typescript"), locale).toContain("new Satellite(");
+      expect(read(locale, "sdks/rust"), locale).toContain("Satellite::builder(");
     }
   });
 });
@@ -79,13 +85,16 @@ describe("the commands the site shows", () => {
     expect(INSTALL[0]).toBe("uv tool install nestor-home");
     expect(INSTALL).toContain("nestor init");
     expect(INSTALL.at(-1)).toBe("nestor run");
-    expect(QUICKSTART.map((s) => s.id)).toEqual(["qs-1", "qs-2", "qs-3"]);
-    expect(QUICKSTART[0]?.command).toBe("docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init");
+    const docker = QUICK_INSTALL.find((way) => way.id === "docker")?.command.split("\n") ?? [];
+    expect(docker[0]).toBe("docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init");
     for (const locale of LOCALES) {
       expect(taggedCommands(read(locale, "quickstart"), "quickstart").flat(), locale).toEqual(INSTALL);
-      expect(taggedCommands(read(locale, "install"), "docker-quickstart").flat().join(" && "), locale).toBe(
-        QUICKSTART.map((s) => s.command).join(" && "),
-      );
+      expect(
+        taggedCommands(read(locale, "install"), "docker-quickstart")
+          .flat()
+          .filter((line) => !line.startsWith("$EDITOR")),
+        locale,
+      ).toEqual(docker);
     }
   });
 
@@ -113,7 +122,9 @@ describe("the reading order", () => {
   it("leads from one page to the next, with nothing before the first or after the last", () => {
     expect(neighbours("")).toEqual({ next: "quickstart" });
     expect(neighbours("agent/initiative")).toEqual({ previous: "agent/memory", next: "agent/speakers" });
-    expect(neighbours("agent/speakers")).toEqual({ previous: "agent/initiative", next: "configuration" });
+    expect(neighbours("agent/speakers")).toEqual({ previous: "agent/initiative", next: "agent/journal" });
+    expect(neighbours("agent/journal")).toEqual({ previous: "agent/speakers", next: "configuration" });
+    expect(neighbours("contributing")).toEqual({ previous: "plugins" });
     expect(neighbours("satellites/protocol")).toEqual({ previous: "satellites", next: "satellites/schemas" });
     expect(neighbours(DOC_SLUGS.at(-1) ?? "")).toEqual({ previous: DOC_SLUGS.at(-2) });
     expect(neighbours("no/such/page")).toEqual({});
@@ -124,13 +135,5 @@ describe("the reading order", () => {
     expect(docHref("fr", "sdks/rust")).toBe("/fr/docs/sdks/rust/");
     expect(parseDocId("fr/index")).toEqual({ locale: "fr", slug: "" });
     expect(parseDocId("en/satellites/protocol")).toEqual({ locale: "en", slug: "satellites/protocol" });
-  });
-});
-
-describe("a page's example", () => {
-  it("is the first block of the language asked, not another language's", () => {
-    const text = "Install:\n\n```bash\npip install x\n```\n\n```python\nprint(1)\n```\n\n```python\nprint(2)\n```\n";
-    expect(firstCodeBlock(text, "python")).toBe("print(1)\n");
-    expect(firstCodeBlock(text, "rust")).toBeUndefined();
   });
 });

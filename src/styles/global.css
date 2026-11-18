@@ -51,12 +51,10 @@
   --section-space: 4rem;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --reveal: 700ms;
-  /* the sticky header, and the sections' bar under it on pages that have one (SubNav sets it) */
+  /* the sticky header */
   --header-h: 3.5rem;
   --z-header: 40;
-  --z-sticky: 30;
-  --z-dock: 30;
-  scroll-padding-top: calc(var(--header-h) + var(--subnav-h, 0px) + 1rem);
+  scroll-padding-top: calc(var(--header-h) + 1rem);
 }
 
 @media (min-width: 640px) {
@@ -206,42 +204,6 @@
     @apply max-w-prose text-lg text-ink-muted;
   }
 
-  .lede strong,
-  .prose-copy strong {
-    color: var(--ink);
-    font-weight: 600;
-  }
-
-  .prose-copy {
-    font-size: 1rem;
-    line-height: 1.5rem;
-    max-width: 65ch;
-    color: var(--ink-muted);
-  }
-
-  .prose-copy code,
-  .lede code {
-    font-size: 0.86em;
-    color: var(--ink);
-    background: var(--paper-sunken);
-    padding: 0.05em 0.35em;
-    border-radius: 3px;
-  }
-
-  /* the ember block cursor of the wordmark, reused as "the agent is here" */
-  .cursor {
-    display: inline-block;
-    width: 0.36em;
-    height: 0.62em;
-    background: var(--ember);
-    transform: translateY(0.02em);
-    margin-left: 0.08em;
-  }
-
-  .cursor-blink {
-    animation: blink 1.1s steps(1, end) infinite;
-  }
-
   /* the signature corner ticks: four short ink strokes at the corners of a key surface */
   .corner-marks {
     --tick: 8px;
@@ -271,27 +233,6 @@
       calc(100% + 1px) calc(100% + 1px);
     background-repeat: no-repeat;
     background-origin: border-box;
-  }
-
-  /* a hairline-bordered surface that holds a product picture */
-  .plate {
-    position: relative;
-    border: 1px solid var(--rule);
-    background: var(--paper-raised);
-    padding: 0.5rem;
-  }
-
-  @media (min-width: 768px) {
-    .plate {
-      padding: 0.75rem;
-    }
-  }
-
-  .plate > .plate-inner {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--rule);
-    background: var(--paper);
   }
 
   /* buttons: ink for the one main action, hairline for the rest */
@@ -340,71 +281,7 @@
     text-decoration-color: var(--ember);
   }
 
-  /* status of a feature: the word always says it, the colour only helps */
-  .state {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: var(--font-data);
-    font-size: 0.72rem;
-    white-space: nowrap;
-  }
-
-  .state::before {
-    content: "";
-    width: 0.45rem;
-    height: 0.45rem;
-    border-radius: 999px;
-    background: currentColor;
-  }
-
-  .state[data-state="shipped"] {
-    color: var(--sage);
-  }
-
-  .state[data-state="next"] {
-    color: var(--amber);
-  }
-
-  .state[data-state="later"] {
-    color: var(--ink-muted);
-  }
-
-  .state[data-state="later"]::before {
-    background: transparent;
-    box-shadow: inset 0 0 0 1px currentColor;
-  }
-
-  /* a mono chip for data: rooms, channels, capabilities, tool names */
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    padding: 0 0.4rem;
-    font-family: var(--font-data);
-    font-size: 0.72rem;
-    line-height: 1.35rem;
-    color: var(--ink-muted);
-    white-space: nowrap;
-  }
-
-  .kbd {
-    display: inline-grid;
-    place-items: center;
-    min-width: 1.3rem;
-    height: 1.3rem;
-    padding-inline: 0.3rem;
-    border: 1px solid var(--rule-strong);
-    border-bottom-width: 2px;
-    border-radius: 3px;
-    font-family: var(--font-data);
-    font-size: 0.7rem;
-    color: var(--ink-muted);
-  }
-
-  /* a section's opening: serif title, one sentence, the dithered rule under them */
+  /* a section of the home page: its vertical rhythm, laid out only once it nears the screen */
   .section {
     padding-block: var(--section-space);
     content-visibility: auto;
@@ -424,34 +301,6 @@
   .js [data-reveal][data-shown] {
     opacity: 1;
     transform: none;
-  }
-
-  /* Shiki, through CSS variables: the code takes the identity's colours in both themes */
-  .code {
-    --shiki-foreground: var(--ink);
-    --shiki-background: transparent;
-    --shiki-token-constant: var(--kind-task);
-    --shiki-token-string: var(--sage);
-    --shiki-token-string-expression: var(--sage);
-    --shiki-token-comment: var(--ink-faint);
-    --shiki-token-keyword: var(--ember);
-    --shiki-token-parameter: var(--ink);
-    --shiki-token-function: var(--kind-watch);
-    --shiki-token-punctuation: var(--ink-muted);
-    --shiki-token-link: var(--ember);
-    font-family: var(--font-data);
-    font-size: 0.8125rem; /* text-[13px]: dense blocks */
-    line-height: 1.6;
-  }
-
-  .code pre {
-    overflow-x: auto;
-    padding: 1.25rem 1.25rem 1.5rem;
-    tab-size: 2;
-  }
-
-  .code pre code {
-    font-family: inherit;
   }
 }
 
@@ -644,36 +493,6 @@
   }
 }
 
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(0.35em);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -712,36 +531,4 @@
   :root:not([data-theme="light"]) .only-light {
     display: none;
   }
-}
-
-/* speech: a person's line (ink) and Nestor's (paper), used in the hero and the day's scenes */
-.bubble-ask,
-.bubble-say {
-  position: relative;
-  max-width: 19rem;
-  padding: 0.55rem 0.8rem;
-  border-radius: 12px;
-  font-size: 0.92rem;
-  line-height: 1.4;
-}
-
-.bubble-ask {
-  background: var(--ink);
-  color: var(--paper);
-  border-bottom-right-radius: 3px;
-}
-
-.bubble-say {
-  background: var(--paper-raised);
-  color: var(--ink);
-  border: 1px solid var(--rule-strong);
-  border-bottom-left-radius: 3px;
-}
-
-.bubble-who {
-  display: block;
-  margin-bottom: 0.1rem;
-  font-family: var(--font-data);
-  font-size: 0.68rem;
-  opacity: 0.75;
 }

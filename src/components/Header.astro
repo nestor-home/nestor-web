@@ -3,7 +3,7 @@
  * The one global navigation, identical on every page: the logo (home), the site's pages, then the
  * utilities (language, theme, GitHub) and one call to action. On small screens the pages and the
  * utilities move into a sheet (a modal <dialog>: focus kept inside, Escape closes, the page below
- * neither scrolls nor takes focus). In-page sections have their own bar (SubNav.astro).
+ * neither scrolls nor takes focus).
  */
 import { ArrowRight, Menu, Moon, Sun, X } from "lucide-react";
 import Brand from "@/components/Brand.astro";
@@ -22,7 +22,6 @@ const { t, alternates, current } = Astro.props;
 const other = t.locale === "en" ? "fr" : "en";
 const pages: { page: Page; label: string }[] = [
   { page: "home", label: t("nav-product") },
-  { page: "developers", label: t("nav-developers") },
   { page: "docs", label: t("nav-docs") },
 ];
 ---

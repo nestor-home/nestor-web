@@ -1,0 +1,20 @@
+---
+/** What Nestor plugs into, by what it brings to a household: logos first, almost no words. */
+import Integrations from "@/components/Integrations.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+---
+
+<section id="works-with" class="section border-t border-rule" aria-labelledby="works-title">
+  <div class="wrap">
+    <h2 id="works-title" data-reveal class="display-2 max-w-3xl text-ink">{t("int-title")}</h2>
+    <div class="mt-12">
+      <Integrations t={t} />
+    </div>
+    <p class="mt-10 text-sm text-ink-muted">{t("int-lede")}</p>
+  </div>
+</section>

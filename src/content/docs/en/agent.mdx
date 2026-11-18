@@ -29,8 +29,15 @@ silence aloud, or four hours in writing, a new one starts and the model stops re
 turns. Each channel can change this with `conversation_ends_after_s`. Memories cross conversations.
 
 A conversation has one turn at a time. Two messages sent together are answered in order, and a
-message Nestor brings by itself waits for the answer being written. Aloud, the person can always
-cut in.
+message Nestor brings by itself waits for the answer being written.
+
+Aloud, Nestor starts speaking while the model is still writing. A short acknowledgement (“ok”, “mm”)
+does not stop it; any other word does, and so does 1.2 seconds of speech. The journal then keeps what
+was heard, not what was written, so the model knows where it was cut. The acknowledgements it knows
+are French ones, with “ok”.
+
+When the model or a voice service fails or stalls, Nestor says so, and the journal records it
+(`conversation.fallback`).
 
 ## Tools
 

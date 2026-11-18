@@ -159,7 +159,17 @@ deviennent illisibles.
   valeur par défaut, la réserve à la machine.
 - `public_url` : son adresse derrière un proxy inverse, par exemple `https://nestor.example.org`.
 
-Les comptes vivent dans `state/`, pas dans le fichier.
+Les comptes vivent dans `state/`, pas dans le fichier. Chacun a un rôle :
+
+| Rôle           | Peut                                                                          |
+| -------------- | ----------------------------------------------------------------------------- |
+| propriétaire   | tout, y compris sur les autres propriétaires ; il y en a toujours au moins un |
+| administrateur | faire tourner l’assistant du foyer, sans toucher aux propriétaires            |
+| membre         | voir et gérer ses conversations, ses souvenirs, ses tâches et ses connexions  |
+| invité         | voir ce que l’assistant sait de lui                                           |
+
+Invitez quelqu’un depuis la page **Comptes** de l’administration : vous recevez un lien à lui
+envoyer.
 
 ## Appliquer un changement
 

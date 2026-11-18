@@ -9,11 +9,11 @@ import type { BrandKey } from "@/lib/brands";
 /** Groups of the sidebar; their names are the Fluent messages `docs-group-<id>`. */
 export const DOC_GROUPS = [
   { id: "start", pages: ["", "quickstart", "install"] },
-  { id: "agent", pages: ["agent", "agent/memory", "agent/initiative", "agent/speakers"] },
+  { id: "agent", pages: ["agent", "agent/memory", "agent/initiative", "agent/speakers", "agent/journal"] },
   { id: "configure", pages: ["configuration", "models", "channels", "connections", "updates"] },
   { id: "satellites", pages: ["satellites", "satellites/protocol", "satellites/schemas", "satellites/conformance"] },
   { id: "sdks", pages: ["sdks/python", "sdks/typescript", "sdks/rust", "sdks/templates"] },
-  { id: "project", pages: ["contributing"] },
+  { id: "project", pages: ["plugins", "contributing"] },
 ] as const;
 
 export type DocSlug = (typeof DOC_GROUPS)[number]["pages"][number];
@@ -40,12 +40,6 @@ export function neighbours(slug: string): { previous?: DocSlug; next?: DocSlug }
   const previous = DOC_SLUGS[index - 1];
   const next = DOC_SLUGS[index + 1];
   return { ...(previous !== undefined ? { previous } : {}), ...(next !== undefined ? { next } : {}) };
-}
-
-/** The first fenced code block of a language in a Markdown text (a page's minimal example). */
-export function firstCodeBlock(markdown: string, lang: string): string | undefined {
-  const fence = new RegExp(`^\`\`\`${lang}[^\\n]*\\n([\\s\\S]*?)^\`\`\``, "m");
-  return fence.exec(markdown)?.[1];
 }
 
 /** The tabs a page shows (`<Tabs set>` and its `<Tab>`s): each set's choices, the first shown before one is made.

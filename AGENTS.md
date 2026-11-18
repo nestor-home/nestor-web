@@ -25,50 +25,51 @@ see README.md, Production.
 
 ```text
 src/
-├── pages/            home (/ and /fr/), developers (/developers/, /fr/developpeurs/),
-│                     docs (/docs/…, /fr/docs/…), 404, og/[page]-[locale].png, favicon*, robots.txt
-├── content/docs/     the developer documentation: one Markdown file per page and locale
+├── pages/            home (/ and /fr/), docs (/docs/…, /fr/docs/…), 404, og/[page]-[locale].png,
+│                     favicon*, robots.txt
+├── content/docs/     the documentation: one Markdown file per page and locale
 ├── components/
-│   ├── Home.astro        the home page: hero, the story (ask once → it watches → it finds you →
-│   │                     you see why), same agent in any body, everyday requests and
-│   │                     integrations, trust and the journal, install
-│   ├── Developers.astro  the developers' page: runtime principles, architecture, the journal's
-│   │                     events, extension points, satellites and SDKs, updates, connectors, Home
-│   │                     Assistant, security, self-hosting, i18n
-│   ├── Nestor.astro      the character (one drawing, six states, a gaze)
-│   ├── Device.astro      its bodies: speaker, robot, tablet, laptop, phone, browser tab
-│   ├── sections/         one file per section
-│   └── *.astro           shared pieces: Shot, Clip, Dither, Brand, Integrations, CopyCommand…
-├── islands/          React, only where interaction needs state (the architecture explorer)
+│   ├── Home.astro        the home page: the hero (title, quick install, the film), the story in four
+│   │                     moments, what it works with, how to start and three links to build
+│   ├── sections/         one file per section: Hero, Moments, Works, Cta
+│   ├── Film.astro        the film of a day in a home that runs Nestor (public/media/film.mp4)
+│   ├── Shot.astro        a capture of the admin, one picture per theme
+│   ├── Nestor.astro      the character (one drawing, its states, a gaze)
+│   ├── docs/             the documentation's pieces: tabs, provider mosaics, diagrams
+│   └── *.astro           shared pieces: Header, Footer, Brand, Integrations, CopyCommand, Dither, Tie…
 ├── layouts/          Base (head, header, footer) and Docs (sidebar, text, sections, prev/next)
-├── scripts/site.ts   the one global script: reveals, the character's sequences, story stepper
-│                     and its presence switch, pairing, tabs (replaying a panel's character), copy,
-│                     theme (docs.ts: code copy buttons)
+├── scripts/site.ts   the one global script: theme, the menu sheet, dither canvases, the header's
+│                     hairline, the section being read in a table of contents, reveals, copy
+│                     buttons, tabs, the film played only on screen and its pause button
+│                     (docs.ts: code copy buttons)
 ├── locales/<lang>/   the words, in Fluent (.ftl), one file per section
 ├── i18n/             the Fluent loader (`translator(locale)`)
-├── lib/              data and logic: links, brands, dither, Shiki, media index, OG pictures
+├── lib/              data and logic: links, brands, integrations, providers, docs, captures, OG pictures
 ├── styles/           tokens.css (a verbatim copy of the admin's) and global.css
-├── assets/captures/  admin screenshots (WebP sources; Astro derives AVIF/WebP sizes)
-└── data/             media.json (what was captured)
-public/media/         admin recordings (mp4 + webm + poster)
+├── assets/brands/    official marks no icon set has
+└── assets/captures/  admin screenshots (WebP sources; Astro derives AVIF/WebP sizes)
+public/media/         the film (mp4 + poster)
 public/schemas/       the satellite protocol's JSON Schemas, generated at build (not committed)
 public/redirect/      the OAuth relay page, copied from the server package at build (not committed)
 ```
 
-## Two audiences, three places
+## Two places, one job each
 
 The home page is about **use**: the promise and the final experience of Nestor, including what is
 planned, told through moments almost every household lives (no niche scenarios, no invented brands,
-shops, prices or dates). One story shows the core loop; no contract names, no benchmarks, no
-internal status, no vendor comparisons; honesty lives in one place (the "early project" line near
-Install). Everything technical (architecture, events, protocol, SDK code, self-hosting) goes to the
-developers' page, where what is not shipped yet carries a discreet "planned" marker. Keep it that
-way when adding content.
+shops, prices or dates). It goes in this order: the title with the quick install and the film of a
+day; the story in four moments (you ask once, it takes care of it, it finds the right person in the
+right place, you always know why), each shown by a capture of the admin; what it works with (logos,
+almost no words); how to start, then three links to build on it (a satellite, the SDKs, the
+protocol). No contract names, no benchmarks, no internal status, no vendor comparisons; honesty
+lives in one place (the "early project" line near the install).
 
-How to do things (install, pair, write a satellite, the protocol itself) belongs to the
-**documentation** (`/docs/`, `/fr/docs/`): the developers' page shows and links, the docs explain.
-It is the single source: the protocol specification lives there (the `nestor` repository only links
-to it), and SDK READMEs stay short and link to their page.
+Everything else belongs to the **documentation** (`/docs/`, `/fr/docs/`): how it works (the agent,
+its memory, the journal and its events), how to do things (install, configure, pair, write a
+satellite or a plugin) and the protocol itself. It is the single source: the protocol specification
+lives there (the `nestor` repository only links to it), and SDK READMEs stay short and link to their
+page. There is no developers' page: `/developers/` and `/fr/developpeurs/` redirect to the docs.
+Before adding a section to the home page, check the docs do not already say it; link to them.
 
 ## The documentation
 
@@ -77,8 +78,8 @@ to it), and SDK READMEs stay short and link to their page.
   **Start** (Introduction: what Nestor does for you, then a "where to start" table; Quickstart: one
   path, from nothing to a first conversation; Installation: every way, in tabs), **How it works**
   (concepts, with diagrams), **Configure** (one task per page: the configuration file, models,
-  channels and voice, home and services), then **Satellites**, **SDKs** and **Project**, for
-  developers. Each fact has one page; others link to it rather than repeat it.
+  channels and voice, home and services), then **Satellites**, **SDKs** and **Project** (plugins,
+  contributing), for developers. Each fact has one page; others link to it rather than repeat it.
 - A page opens with one or two sentences saying what it gives the reader, then goes in the order
   they will act. Every option shown exists in the server (read its code before writing), and every
   command is run before it is written.
@@ -113,8 +114,8 @@ to it), and SDK READMEs stay short and link to their page.
   a `text` block holds real output (a URI, a command's lines), nothing drawn.
 - Code blocks are highlighted at build (Shiki's `css-variables` theme, coloured by `.doc-prose` in
   `global.css`) and get a copy button. Commands in the docs are run before they are written.
-- The developers' page shows each SDK's minimal driver: the **first** code block of that SDK's page
-  in its language (`python`, `ts`, `rust`). Change the example there.
+- A record, an event or a plugin shown in the docs is produced by the server's code, not written by
+  hand: build the event and print `to_record()`, run the plugin with `nestor check`.
 - `e2e/docs.spec.ts` walks every page in both languages, follows every internal link and anchor, and
   checks overflow, code, copy and accessibility.
 
@@ -136,12 +137,10 @@ soft disc behind it, a ground, a sky), lightly. One cue per state at most.
 The logo is "nestor" in Fraunces followed by the ember bow tie (`renderLogo()`, variant `bow`, the
 approved one); `cursor` is the original wordmark. The monogram (`renderMarkStill()`, the bow tie on
 an ink tile) is the favicon and app icon. The bow tie is a motif used sparingly: list markers
-(`Tie.astro`), one pause on the home page (`TieRule.astro`). The copy uses no em-dashes (a test
-checks the catalogues). Eight states
+(`Tie.astro`). The copy uses no em-dashes (a test checks the catalogues). Eight states
 mirror the product's: `idle`, `listening`, `thinking`, `speaking`, `laughing`, `sleeping`,
-`working`, `concerned`. On the site, `Nestor.astro` renders it and `Device.astro` puts it in a
-body; `scripts/live.ts` makes the hero and the docked one react to the visitor. Sections give the
-docked one its mood with `data-mood` (and a line with `data-say`). Its stills are published at
+`working`, `concerned`. On the site, `Nestor.astro` renders it, still (the first page of the docs);
+the home page shows it in the film. Its stills are published at
 `/character/*` (avatars, tiles, PNG sizes) and drawn into the favicon and sharing images.
 
 ## Conventions
@@ -151,19 +150,18 @@ docked one its mood with `data-mood` (and a line with `data-say`). Its stills ar
   Paper and ink, one ember accent, Fraunces for display, Instrument Sans for text, IBM Plex Mono
   for data, hairlines, corner marks and the Bayer dither (from the character package, as in the admin).
 - **No sentence in a component.** Every visible word is a Fluent message in
-  `src/locales/{en,fr}/*.ftl`, read with `t("id")` (or `t.html("id")` for `*em*`, `**strong**`,
-  `` `code` ``). `tests/no-literals.test.ts` fails on literal text nodes and on literal `alt`,
-  `aria-label`, `title`; `tests/i18n.test.ts` checks both languages hold the same messages and every
-  id a component names. A missing message fails the build. Islands get their words as props.
+  `src/locales/{en,fr}/*.ftl`, read with `t("id")`. `tests/no-literals.test.ts` fails on literal
+  text nodes and on literal `alt`, `aria-label`, `title`; `tests/i18n.test.ts` checks both languages
+  hold the same messages, every id a component names, and no message nothing asks for. A missing
+  message fails the build.
 - **French typography**: narrow no-break spaces before `: ; ? ! »` and after `«`, `’` for apostrophes.
 - **Honesty.** No figures from local benches or proofs of concept, anywhere. The home page shows
-  what Nestor is designed to do; the developers' page marks anything not built as planned
-  (the services: `status` in `lib/integrations.ts`, shown as a "planned" badge on both pages).
+  what Nestor is designed to do, and marks a service not built yet as planned (`status` in
+  `lib/integrations.ts`, shown as a "planned" badge). The docs describe only what the server does.
 - **Type scale.** Font sizes are Tailwind's steps (`text-xs`… or `var(--text-xs)` in a style
   block), plus the few declared once in `global.css`'s `@theme` (`text-2xs` for micro labels, the
   wordmark, the hero); `tests/type-scale.test.ts` fails on an arbitrary size in a component. The
-  header's height and the layers are tokens there too (`--header-h`, `--z-header`, `--z-sticky`,
-  `--z-dock`).
+  header's height and its layer are tokens there too (`--header-h`, `--z-header`).
 - **Motion** is transform and opacity only, triggered by IntersectionObserver, never scroll
   handlers that write layout. Everything reads in full without JavaScript, and under
   `prefers-reduced-motion` nothing moves or plays by itself (`e2e` checks it).
@@ -199,16 +197,19 @@ The pictures are the real admin (`nestor/web`) on its mock API, captured with Pl
 
 ```bash
 cd ../nestor/web && pnpm dev --port 5190 --strictPort &      # the admin on its mocks
-node scripts/capture-admin.mjs     # → .media-raw/ (≈ 6 min; ONLY=journal THEMES=dark LOCALES=en for a subset)
-node scripts/encode-media.mjs      # → src/assets/captures/*.webp, public/media/*, src/data/media.json
+node scripts/capture-admin.mjs     # → .media-raw/ (ONLY=journal THEMES=dark LOCALES=en for a subset;
+                                   # BROWSER_CHANNEL=chrome for the installed browser)
+node scripts/encode-media.mjs      # → src/assets/captures/*.webp
 ```
 
-Shots: `journal`, `connection`, `satellites`, `system`; clips shown: `journal-live` (home)
-and `journal-filters` (developers) — each in `light`/`dark` and `en`/`fr`. `command` and `mobile`
-are captured too; encode them with `ONLY=command,mobile` if a section needs them. Sections render
-only what `media.json` lists, so the site builds without them. The mock household follows the
+Shots: `today`, `ongoing`, `house`, `journal`, one per moment of the home page's story, each in
+`light`/`dark` and `en`/`fr`. A capture a moment asks for and does not find fails the build, and
+`tests/home.test.ts` fails on a capture no moment shows. The mock household follows the
 account's language, which the capture sets for each locale: English captures show English rooms
 and messages, French ones French.
+
+The film (`public/media/film.mp4`, 1280×720, H.264, without sound, and `film.poster.webp`) is not
+produced here: replace both files together, and the duration `film-caption` gives in both languages.
 
 ## What the build takes from the server package
 
@@ -231,5 +232,5 @@ package through uvx before `astro dev` and `astro build` and writes into `public
   Change the page in the server, release it, then raise `NESTOR_SERVER`.
 
 Raise `NESTOR_SERVER` when a server release changes the protocol or the relay, and update the
-manifest shown in `sections/Satellites.astro` and its schema link if the protocol version changes.
+schema links of the docs' `satellites/schemas` page if the protocol version changes.
 Without uv the build stops and says so.

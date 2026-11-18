@@ -127,6 +127,11 @@ everyone.
 None of them sends, deletes or changes a mail, a file or a contact. They read, and add events and
 tasks after asking (see [Writes](#writes)).
 
+Google, Microsoft 365 and MCP servers sign in with OAuth and PKCE. Tokens and passwords are kept
+encrypted in `state/` (AES-256-GCM, under `NESTOR_SECRET_KEY`), renewed when they expire, and
+revoked at the provider when you disconnect, where it offers that. The model never sees them and the
+journal holds none.
+
 ### Google
 
 - **Gmail**: searches and reads mail, with Gmail’s search syntax (`from:`, `newer_than:7d`). New
@@ -241,7 +246,8 @@ A search returns at most 20 mails or files, 30 contacts, 50 events or 100 tasks.
 
 Ask for a **watch**: “tell me when the plumber replies”. A model (`watches.model`) sorts each new
 message of the connected Gmail, Outlook and IMAP mailboxes against the open watches and tells the
-person who asked, where they are (see [Initiative](/docs/agent/initiative/)).
+person who asked, where they are (see [Initiative](/docs/agent/initiative/)). What comes in is data:
+the model that reads it is told never to follow instructions it contains.
 
 ## Feeds, pages and webhooks
 
@@ -282,6 +288,9 @@ Tasks that take minutes go to an **executor**, an agent that works in the backgr
 the task, tells the person when it is done, and sends the files the executor made with the result,
 where the channel can carry them. `description` tells the agent what to hand over: write what this
 executor can really do. Each executor is named after its `kind`; give two of the same kind a `name`.
+
+Ask Nestor to stop a task and it asks the executor to stop. It says the task is cancelled only once
+the executor confirms it; a stop left unconfirmed ends the task as failed.
 
 ### Hermes
 

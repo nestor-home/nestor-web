@@ -157,7 +157,16 @@ nestor secrets set openrouter   # then, in nestor.yaml: api_key: ${secret:openro
   `127.0.0.1`, the default, keeps it to the machine.
 - `public_url`: its address behind a reverse proxy, such as `https://nestor.example.org`.
 
-Accounts live in `state/`, not in the file.
+Accounts live in `state/`, not in the file. Each has a role:
+
+| Role   | May                                                                     |
+| ------ | ----------------------------------------------------------------------- |
+| owner  | everything, other owners included; there is always at least one         |
+| admin  | run the household's assistant, without touching the owners              |
+| member | see and manage their own conversations, memories, tasks and connections |
+| guest  | see what the assistant knows about them                                 |
+
+Invite someone from the admin's **Accounts** page: you get a link to send them.
 
 ## Applying a change
 

@@ -20,26 +20,24 @@ const {
   class: className = "",
   eager = false,
 } = Astro.props;
-const pictures = THEMES.map((theme) => ({ theme, src: shot(name, theme, locale) })).filter((p) => p.src);
+const pictures = THEMES.map((theme) => ({ theme, src: shot(name, theme, locale) }));
 const widths = [640, 960, 1280, 1600, 2400];
 ---
 
 {
-  pictures.map(({ theme, src }) =>
-    src ? (
-      <Picture
-        src={src}
-        alt={alt}
-        formats={["avif", "webp"]}
-        fallbackFormat="webp"
-        quality={78}
-        widths={widths.filter((w) => w <= src.width)}
-        sizes={sizes}
-        loading={eager ? "eager" : "lazy"}
-        decoding="async"
-        pictureAttributes={{ class: `only-${theme}` }}
-        class:list={["block h-auto w-full", className]}
-      />
-    ) : null,
-  )
+  pictures.map(({ theme, src }) => (
+    <Picture
+      src={src}
+      alt={alt}
+      formats={["avif", "webp"]}
+      fallbackFormat="webp"
+      quality={78}
+      widths={widths.filter((w) => w <= src.width)}
+      sizes={sizes}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      pictureAttributes={{ class: `only-${theme}` }}
+      class:list={["block h-auto w-full", className]}
+    />
+  ))
 }

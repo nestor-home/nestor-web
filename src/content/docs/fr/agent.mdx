@@ -32,7 +32,15 @@ modèle ne relit plus les anciens tours. Chaque canal peut changer ce délai ave
 
 Une conversation n’a qu’un tour à la fois. Deux messages envoyés ensemble reçoivent leurs
 réponses dans l’ordre, et un message que Nestor apporte de lui-même attend la fin de la réponse en
-cours. À l’oral, la personne peut toujours couper la parole.
+cours.
+
+À l’oral, Nestor commence à parler pendant que le modèle écrit encore. Un petit acquiescement
+(« oui », « d’accord », « mm ») ne l’arrête pas ; tout autre mot l’arrête, comme 1,2 seconde de
+parole. Le journal garde alors ce qui a été entendu, pas ce qui était écrit : le modèle sait où il
+a été coupé. Les acquiescements qu’il connaît sont des mots français, et « ok ».
+
+Quand le modèle ou un service de voix tombe ou tarde, Nestor le dit, et le journal le note
+(`conversation.fallback`).
 
 ## Les outils
 

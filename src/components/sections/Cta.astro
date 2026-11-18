@@ -2,55 +2,101 @@
 import { ArrowRight } from "lucide-react";
 import Brand from "@/components/Brand.astro";
 import CopyCommand from "@/components/CopyCommand.astro";
-import Dither from "@/components/Dither.astro";
-import Nestor from "@/components/Nestor.astro";
 import Tie from "@/components/Tie.astro";
 import { href, type Translator } from "@/i18n";
+import { docHref } from "@/lib/docs";
 import { INSTALL, REPOS } from "@/lib/site";
 
 interface Props {
   t: Translator;
 }
 const { t } = Astro.props;
+const needs = ["cta-need-machine", "cta-need-model", "cta-need-time"];
+const build = [
+  { id: "satellite", slug: "satellites" },
+  { id: "sdks", slug: "sdks/python" },
+  { id: "protocol", slug: "satellites/protocol" },
+];
 ---
 
-<section id="start" class="section relative overflow-hidden border-t border-rule" aria-labelledby="cta-title" data-mood="idle" data-say={t("char-ready")}>
-  <Dither shape="ramp-up" from={0} to={0.3} dot={3} class="absolute inset-x-0 bottom-0 h-16 text-ink/10" />
-  <div class="wrap relative grid items-center gap-12 lg:grid-cols-12">
+<section id="start" class="section border-t border-rule" aria-labelledby="cta-title">
+  <div class="wrap grid items-start gap-x-12 gap-y-10 lg:grid-cols-12">
     <div class="lg:col-span-6">
       <h2 id="cta-title" data-reveal class="display-1 text-ink">{t("cta-title")}</h2>
-      <p data-reveal class="lede mt-8">{t("cta-text")}</p>
+      <ul data-reveal class="mt-8 grid gap-3">
+        {
+          needs.map((id) => (
+            <li class="flex gap-3 text-ink">
+              <Tie size={13} class="mt-1.5 shrink-0" />
+              <span>{t(id)}</span>
+            </li>
+          ))
+        }
+      </ul>
       <div data-reveal class="mt-8 flex flex-wrap gap-3">
         <a href={href(t.locale, "docs")} class="btn btn-ink">
           {t("cta-install")}
           <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
         </a>
-        <a href={href(t.locale, "developers")} class="btn btn-line">{t("cta-developers")}</a>
         <a href={REPOS.nestor} class="btn btn-line">
           <Brand brand="github" class="size-4" decorative />
           {t("nav-github")}
         </a>
       </div>
-      <p data-reveal class="mt-6 flex items-center gap-2 font-mono text-xs text-ink-muted">
-        <Tie size={13} />
-        {t("cta-early")}
-      </p>
+      <p data-reveal class="mt-6 text-sm text-ink-muted">{t("cta-early")}</p>
     </div>
-    <div class="relative lg:col-span-6">
-      <Nestor size={110} state="idle" look="down" script="idle@0,laughing@600,idle@1700" class="cta-nestor" />
-      <div data-reveal class="corner-marks border border-rule-strong bg-paper-raised">
-        <p class="border-b border-rule px-4 py-2.5 font-mono text-2xs text-ink-muted">{t("cta-terminal")}</p>
-        <div class="flex flex-col gap-2 p-4">
-          {INSTALL.map((command) => <CopyCommand t={t} command={command} />)}
-        </div>
+    <div data-reveal class="cta-terminal lg:col-span-6">
+      <p class="border-b border-rule px-4 py-2.5 text-sm text-ink-muted">{t("cta-terminal")}</p>
+      <div class="p-4">
+        <CopyCommand t={t} command={INSTALL.join("\n")} />
       </div>
     </div>
+  </div>
+
+  <div class="wrap mt-16 lg:mt-24">
+    <h3 data-reveal class="display-3 text-ink">{t("cta-build-title")}</h3>
+    <ul class="mt-6 grid gap-3 md:grid-cols-3">
+      {
+        build.map(({ id, slug }, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            <a href={docHref(t.locale, slug)} class="cta-card">
+              <span class="font-serif text-xl text-ink">{t(`cta-build-${id}`)}</span>
+              <span class="mt-1.5 block text-ink-muted">{t(`cta-build-${id}-text`)}</span>
+              <ArrowRight className="mt-4 size-4 text-ink-faint" strokeWidth={1.6} aria-hidden="true" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
 
 <style>
-  .cta-nestor {
+  .cta-terminal,
+  .cta-card {
+    border-radius: var(--radius-surface);
+    background: var(--paper-raised);
+    box-shadow: var(--lift);
+  }
+  .cta-terminal {
+    overflow: hidden;
+  }
+  .cta-card {
     display: block;
-    margin: 0 1.5rem -0.6rem auto;
+    height: 100%;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition:
+      box-shadow var(--duration) var(--ease),
+      transform var(--duration) var(--ease);
+  }
+  .cta-card:hover {
+    box-shadow: var(--lift-hover);
+    transform: translateY(-1px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta-card:hover {
+      transform: none;
+    }
   }
 </style>

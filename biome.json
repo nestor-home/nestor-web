@@ -10,7 +10,6 @@
       "!test-results",
       "!playwright-report",
       "!src/styles/tokens.css",
-      "!src/data/media.json",
       "!public/schemas",
       "!src/assets/brands"
     ]

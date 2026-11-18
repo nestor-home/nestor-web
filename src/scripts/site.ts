@@ -1,6 +1,7 @@
 /**
- * The site's only global script: small, dependency-free behaviours wired by data attributes.
- * Everything here is progressive — without it, every section reads in full.
+ * The site's only global script: small behaviours wired by data attributes (theme, menu, dither,
+ * header hairline, table of contents, reveals, copy, tabs, the film). Everything here is
+ * progressive: without it, every section reads in full.
  */
 import { drawDither } from "@nestor-home/character";
 import { nextIndex, tabAxes } from "@/lib/tabs";
@@ -41,7 +42,6 @@ if (sheet && opener) {
     if (event.target === sheet) sheet.close();
   });
   sheet.addEventListener("close", () => opener.focus());
-  for (const link of sheet.querySelectorAll("a[href^='#']")) link.addEventListener("click", () => sheet.close());
   matchMedia("(min-width: 48rem)").addEventListener("change", () => sheet.close());
 }
 
@@ -62,7 +62,7 @@ const onScroll = () => header?.toggleAttribute("data-scrolled", window.scrollY >
 onScroll();
 addEventListener("scroll", onScroll, { passive: true });
 
-/* the section being read, in the navigation */
+/* the section being read, in a page's table of contents (the docs) */
 const links = new Map(
   [...document.querySelectorAll<HTMLAnchorElement>("[data-nav]")].map((a) => [a.dataset.nav ?? "", a]),
 );
@@ -97,20 +97,6 @@ const reveals = new IntersectionObserver(
 );
 for (const element of document.querySelectorAll("[data-reveal]")) reveals.observe(element);
 
-/* things that animate once when they come into view: bars, pairing */
-const once = new IntersectionObserver(
-  (entries) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      entry.target.dispatchEvent(new CustomEvent("inview"));
-      entry.target.setAttribute("data-inview", "");
-      once.unobserve(entry.target);
-    }
-  },
-  { threshold: 0.35 },
-);
-for (const element of document.querySelectorAll("[data-inview-once]")) once.observe(element);
-
 /* copy buttons */
 for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy]")) {
   const label = button.querySelector<HTMLElement>("[data-copy-label]");
@@ -143,12 +129,7 @@ for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
       tab.setAttribute("aria-selected", String(on));
       tab.tabIndex = on ? 0 : -1;
       const panel = document.getElementById(tab.getAttribute("aria-controls") ?? "");
-      if (!panel) return;
-      const shown = panel.hidden && on;
-      panel.hidden = !on;
-      // a character in the panel plays its sequence each time the panel is shown
-      if (shown)
-        for (const c of panel.querySelectorAll("svg.nestor[data-script]")) c.dispatchEvent(new CustomEvent("inview"));
+      if (panel) panel.hidden = !on;
     });
     if (focus) tabs[index]?.focus();
     if (hash && tabs[index]) history.replaceState(null, "", `#${tabs[index].id}`);
@@ -172,72 +153,7 @@ for (const list of document.querySelectorAll<HTMLElement>("[role=tablist]")) {
   }
 }
 
-/* the guided story: the step in the middle of the screen drives the stage */
-for (const story of document.querySelectorAll<HTMLElement>("[data-story]")) {
-  const stage = story.querySelector<HTMLElement>("[data-stage]");
-  const counter = story.querySelector<HTMLElement>("[data-stage-step]");
-  const steps = [...story.querySelectorAll<HTMLElement>("li[data-step]")];
-  const character = stage?.querySelector<SVGElement>("svg.nestor");
-  /* the character on the stage takes the mood of the step, or the one the step gives the place
-     the person is in (`data-mood-<where>`) */
-  const pose = () => {
-    if (!character || !stage) return;
-    const step = steps.find((s) => s.dataset.step === stage.dataset.step);
-    const where = story.dataset.where ?? "";
-    const place = `mood${where.charAt(0).toUpperCase()}${where.slice(1)}`;
-    character.dataset.state = step?.dataset[place] ?? step?.dataset.mood ?? "idle";
-  };
-  const show = (n: number) => {
-    if (!stage || stage.dataset.step === String(n)) return;
-    stage.dataset.step = String(n);
-    stage.style.setProperty("--step", String(n));
-    for (const step of steps) step.toggleAttribute("data-current", step.dataset.step === String(n));
-    if (counter) counter.textContent = counter.dataset.template?.replace("{n}", String(n)) ?? "";
-    pose();
-  };
-  show(1);
-  /* where the person is (a group of toggle buttons): the stage and the decision follow */
-  const places = [...story.querySelectorAll<HTMLButtonElement>("[data-where-set]")];
-  for (const button of places) {
-    button.addEventListener("click", () => {
-      story.dataset.where = button.dataset.whereSet ?? "";
-      for (const other of places) other.setAttribute("aria-pressed", String(other === button));
-      pose();
-    });
-  }
-  const watcher = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) if (entry.isIntersecting) show(Number((entry.target as HTMLElement).dataset.step));
-    },
-    { rootMargin: "-58% 0px -40% 0px" },
-  );
-  for (const step of steps) watcher.observe(step);
-}
-
-/* the pairing demonstration: device code, typed code, approval, manifest */
-for (const demo of document.querySelectorAll<HTMLElement>("[data-pairing]")) {
-  const phases = ["code", "typing", "approve", "paired", "manifest"];
-  const delays = [300, 900, 1500, 700, 500];
-  let timers: number[] = [];
-  const play = () => {
-    for (const timer of timers) clearTimeout(timer);
-    timers = [];
-    if (reduced.matches) {
-      demo.dataset.phase = "manifest";
-      return;
-    }
-    demo.dataset.phase = "idle";
-    let at = 0;
-    phases.forEach((phase, i) => {
-      at += delays[i] ?? 600;
-      timers.push(window.setTimeout(() => (demo.dataset.phase = phase), at));
-    });
-  };
-  demo.addEventListener("inview", play);
-  demo.querySelector("[data-replay]")?.addEventListener("click", play);
-}
-
-/* recordings play only while seen, and never by themselves under reduced motion */
+/* the film plays only while seen, and never by itself under reduced motion; its button pauses it for good */
 const videos = [...document.querySelectorAll<HTMLVideoElement>("video[data-autoplay]")];
 const playing = new IntersectionObserver(
   (entries) => {
@@ -249,7 +165,11 @@ const playing = new IntersectionObserver(
   },
   { threshold: 0.4 },
 );
-for (const video of videos) playing.observe(video);
+for (const video of videos) {
+  // its own controls are for a page without this script: here the button and the scroll drive it
+  video.controls = false;
+  playing.observe(video);
+}
 for (const button of document.querySelectorAll<HTMLButtonElement>("[data-video-toggle]")) {
   const video = document.getElementById(button.getAttribute("aria-controls") ?? "") as HTMLVideoElement | null;
   if (!video) continue;
@@ -259,31 +179,10 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-video-t
   button.addEventListener("click", () => {
     if (video.paused) {
       delete video.dataset.paused;
-      void video.play();
+      void video.play().catch(() => {});
     } else {
       video.dataset.paused = "1";
       video.pause();
     }
   });
 }
-
-/* Nestor, the character: a sequence of states when it comes into view ("listening@0,speaking@900") */
-for (const character of document.querySelectorAll<SVGElement>("svg.nestor[data-script]")) {
-  const steps = (character.dataset.script ?? "")
-    .split(",")
-    .map((part) => part.split("@"))
-    .map(([state, at]) => ({ state: state ?? "idle", at: Number(at ?? 0) }));
-  let timers: number[] = [];
-  character.addEventListener("inview", () => {
-    if (reduced.matches) {
-      const last = steps.at(-1);
-      if (last) character.dataset.state = last.state;
-      return;
-    }
-    for (const timer of timers) clearTimeout(timer);
-    timers = steps.map((step) => window.setTimeout(() => (character.dataset.state = step.state), step.at));
-  });
-}
-
-import "./constellation";
-import "./live";

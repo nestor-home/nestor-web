@@ -104,11 +104,16 @@ test("on a phone, the pages are one tap away", async ({ page }) => {
   await expect(page).toHaveURL(/\/docs\/satellites\/conformance\/$/);
 });
 
-test("the developers' page points to the documentation and shows its examples", async ({ page }) => {
-  await page.goto("/developers/#satellites");
-  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("Satellite(");
-  await page.getByRole("link", { name: "The Python SDK’s documentation" }).click();
-  await expect(page).toHaveURL(/\/docs\/sdks\/python\/$/);
+test("the documentation shows the journal's records and a plugin, in both languages", async ({ page }) => {
+  for (const root of ["/docs/", "/fr/docs/"]) {
+    await page.goto(`${root}agent/journal/`);
+    await expect(page.locator('.doc-prose pre[data-language="json"]').nth(1)).toContainText("delivery-in-room");
+    await expect(page.locator('.doc-prose pre[data-language="python"]')).toContainText("class WatchTriggered(Event");
+    await page.goto(`${root}plugins/`);
+    await expect(page.locator('.doc-prose pre[data-language="toml"]')).toContainText("nestor.adapters");
+    await expect(page.locator('.doc-prose pre[data-language="python"]').first()).toContainText("Plugin(Family.TOOLS");
+    await expect(page.locator(".doc-prose table").last()).toContainText("claude-code");
+  }
 });
 
 for (const path of [
@@ -162,10 +167,12 @@ test.describe("without JavaScript", () => {
   });
 });
 
-test("the former providers' page leads to the models", async ({ request }) => {
+test("pages that moved lead to where their content went", async ({ request }) => {
   for (const [from, to] of [
     ["/docs/providers/", "/docs/models/"],
     ["/fr/docs/providers/", "/fr/docs/models/"],
+    ["/developers/", "/docs/"],
+    ["/fr/developpeurs/", "/fr/docs/"],
   ]) {
     expect(await (await request.get(from ?? "")).text()).toContain(`url=${to}`);
   }

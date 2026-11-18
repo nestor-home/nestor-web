@@ -1,8 +1,8 @@
 /**
- * The services Nestor connects to, grouped by what they bring to a household: one source for the
- * home page and the developers' page. `available` means the framework ships it today (devices
- * through Home Assistant, tools through the service's own MCP server); everything else is `planned`
- * and says so on both pages.
+ * The services Nestor connects to, grouped by what they bring to a household: the home page's list,
+ * and the source of the docs' messaging channels (lib/providers.ts). `available` means the framework
+ * ships it today (devices through Home Assistant, tools through the service's own MCP server);
+ * everything else is `planned` and says so wherever it is shown.
  */
 import type { BrandKey } from "@/lib/brands";
 

@@ -36,8 +36,10 @@ projet est jeune : attendez-vous à des changements d’une version à l’aut
 | essayer Nestor sur votre ordinateur en dix minutes     | [Démarrage rapide](/fr/docs/quickstart/)                                                                       |
 | l’installer pour de bon, sur un serveur ou avec Docker | [Installer](/fr/docs/install/)                                                                                 |
 | savoir ce qu’il fait pendant une conversation          | [Comment fonctionne l’agent](/fr/docs/agent/), [Mémoire](/fr/docs/agent/memory/)                               |
+| voir ce qu’il a fait, et pourquoi                      | [Le journal](/fr/docs/agent/journal/)                                                                          |
 | choisir un modèle, local ou hébergé                    | [Modèles](/fr/docs/models/)                                                                                    |
 | lui parler à voix haute, ou depuis une messagerie      | [Canaux et voix](/fr/docs/channels/)                                                                           |
 | brancher Home Assistant, vos comptes, des serveurs MCP | [Maison et services](/fr/docs/connections/)                                                                    |
 | ajouter une enceinte ou un écran dans une pièce        | [Satellites](/fr/docs/satellites/)                                                                             |
 | construire votre propre appareil                       | le SDK [Python](/fr/docs/sdks/python/), [TypeScript](/fr/docs/sdks/typescript/) ou [Rust](/fr/docs/sdks/rust/) |
+| ajouter un outil, un modèle ou un canal à vous         | [Plugins](/fr/docs/plugins/)                                                                                   |

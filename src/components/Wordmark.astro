@@ -1,13 +1,12 @@
 ---
 /** The logo: "nestor" in the display serif, then the ember bow tie (`@nestor-home/character`). */
-import { type LogoVariant, renderLogo } from "@nestor-home/character";
+import { renderLogo } from "@nestor-home/character";
 import "@nestor-home/character/nestor.css";
 
 interface Props {
   class?: string;
-  variant?: LogoVariant;
 }
-const { class: className, variant = "bow" } = Astro.props;
+const { class: className } = Astro.props;
 ---
 
-<Fragment set:html={renderLogo({ variant, ...(className ? { className } : {}) })} />
+<Fragment set:html={renderLogo({ variant: "bow", ...(className ? { className } : {}) })} />

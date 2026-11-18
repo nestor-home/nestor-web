@@ -15,6 +15,8 @@ export default defineConfig({
   build: { format: "directory", inlineStylesheets: "auto" },
   // pages that moved, for the links already published
   redirects: {
+    "/developers/": "/docs/",
+    "/fr/developpeurs/": "/fr/docs/",
     "/docs/providers/": "/docs/models/",
     "/fr/docs/providers/": "/fr/docs/models/",
   },

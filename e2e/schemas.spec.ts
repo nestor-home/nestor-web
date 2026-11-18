@@ -11,9 +11,9 @@ test("the protocol's schemas are served where their $id points", async ({ reques
   expect((await response.json()).$id).toBe(`${SITE}${path}`);
 });
 
-test("the developers' page links to a schema that is served", async ({ page, request }) => {
-  await page.goto("/developers/");
-  const href = await page.locator('a[href^="/schemas/"]').first().getAttribute("href");
+test("the documentation links to a schema that is served", async ({ page, request }) => {
+  await page.goto("/docs/satellites/schemas/");
+  const href = await page.locator('a[href^="/schemas/"][href$="/manifest.json"]').first().getAttribute("href");
   expect(href).toMatch(/^\/schemas\/satellite\/\d+\/manifest\.json$/);
   const schema = await (await request.get(href ?? "")).json();
   expect(schema.$id).toBe(`${SITE}${href}`);

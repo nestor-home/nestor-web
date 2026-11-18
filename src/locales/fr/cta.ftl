@@ -1,6 +1,14 @@
 cta-title = Faites-le entrer chez vous.
-cta-text = Open source, sur votre machine, avec vos comptes. Un ordinateur suffit pour commencer ; ajoutez un micro et un haut-parleur pour lui parler.
 cta-early = Projet jeune, construit au grand jour.
 cta-install = Lire le guide
-cta-developers = Pour les développeurs
 cta-terminal = Terminal
+cta-need-machine = Une machine qui reste allumée : un mini-PC, un Raspberry Pi 5, un vieux portable.
+cta-need-model = Un modèle de langage, chez un fournisseur ou sur votre machine.
+cta-need-time = Cinq minutes pour le premier message ; un micro et un haut-parleur plus tard, pour lui parler.
+cta-build-title = Construisez dessus.
+cta-build-satellite = Écrire un satellite
+cta-build-satellite-text = Un écran, une enceinte, un robot : tout ce qui écoute, parle ou montre.
+cta-build-sdks = Les SDK
+cta-build-sdks-text = Python, TypeScript et Rust, chacun avec un dépôt modèle.
+cta-build-protocol = Le protocole
+cta-build-protocol-text = La spécification ouverte que tout satellite parle.

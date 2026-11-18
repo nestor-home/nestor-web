@@ -38,6 +38,15 @@ Questions and ideas go to [Discussions](https://github.com/orgs/nestor-home/disc
 reproducible bugs to the repository’s issues. For a vulnerability, follow the
 [security policy](https://github.com/nestor-home/.github/blob/main/SECURITY.md).
 
+## Licence and languages
+
+The server, the SDKs, the Reachy satellite and the character are under the MIT licence.
+
+Nestor speaks English and French. What it says to people is never in the code: each sentence is a
+[Project Fluent](https://projectfluent.org/) message, in `src/nestor/locales/<language>/` for the
+server, `web/src/locales/<language>/` for the admin and `src/locales/<language>/` for this site.
+Another language starts as another folder of catalogues.
+
 ## This documentation
 
 Each page is a Markdown file in [nestor-web](https://github.com/nestor-home/nestor-web), under
