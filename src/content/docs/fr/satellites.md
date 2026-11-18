@@ -97,6 +97,19 @@ lumière du salon est allumée ? », il prend une image avec l’outil `look
 personne a le droit de voir la pièce et que son modèle voit les images. À voix haute, il demande
 d’écrire depuis son compte : une voix ne prouve pas qui parle.
 
+### Confidentialité
+
+Une caméra filme dès qu’une personne autorisée le demande, sauf si vous lui donnez des règles. Sur la
+page de chaque satellite, à côté de qui peut regarder, vous pouvez ajouter :
+
+- **des heures calmes** : des plages à l’heure du foyer, les jours choisis, qui peuvent passer
+  minuit (22:00 à 07:00) ;
+- **coupée quand quelqu’un est à la maison** : n’importe qui, ou les personnes choisies, selon
+  Home Assistant. Quand Home Assistant ne sait pas, la caméra reste coupée.
+
+Une règle vaut pour la vue en direct, les images, la vidéo d’un appel et `look`, et coupe une session
+qu’elle n’autorise plus. Le journal dit pourquoi.
+
 ## Prêts à l’emploi
 
 - `nestor-satellite run`, le micro et le haut-parleur de cette machine, dans les SDK

@@ -93,6 +93,19 @@ own account, it takes a picture with the `look` tool and looks at it, when that 
 room and its model sees images. Asked aloud, it asks them to write from their account: a voice
 does not prove who speaks.
 
+### Privacy
+
+A camera films whenever someone allowed asks, unless you set rules for it. On each satellite’s page,
+next to who may watch, you can add:
+
+- **quiet hours**: time slots in the household’s time, on the days you pick, which may run past
+  midnight (22:00 to 07:00);
+- **off while someone is home**: anyone, or the people you pick, as Home Assistant sees them. When
+  Home Assistant cannot tell, the camera stays off.
+
+A rule applies to live views, pictures, the video of a call and `look`, and ends a session it no
+longer allows. The journal says why.
+
 ## Ready to run
 
 - `nestor-satellite run`, this machine’s microphone and speaker, in the
