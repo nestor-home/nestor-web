@@ -40,6 +40,8 @@ if (sheet && opener) {
   sheet.addEventListener("click", (event) => {
     if (event.target === sheet) sheet.close();
   });
+  // a link to a section of this page closes it, so the section shows
+  for (const link of sheet.querySelectorAll("a")) link.addEventListener("click", () => sheet.close());
   sheet.addEventListener("close", () => opener.focus());
   matchMedia("(min-width: 48rem)").addEventListener("change", () => sheet.close());
 }

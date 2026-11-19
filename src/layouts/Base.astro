@@ -20,8 +20,10 @@ interface Props {
   card: Page;
   /** the 404 is not canonical and has no alternates */
   indexable?: boolean;
+  /** the docs read in their own mode: mono headings, code on ink, a dot grid */
+  area?: "docs" | undefined;
 }
-const { locale, alternates, title, description, card, indexable = true } = Astro.props;
+const { locale, alternates, title, description, card, indexable = true, area } = Astro.props;
 const t = translator(locale);
 const site = Astro.site ?? new URL("https://nestorhome.dev");
 const canonical = new URL(alternates[locale], site).href;
@@ -29,7 +31,7 @@ const og = new URL(`/og/${card}-${locale}.png`, site).href;
 ---
 
 <!doctype html>
-<html lang={locale} class="no-js">
+<html lang={locale} class="no-js" data-area={area}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

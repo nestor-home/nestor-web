@@ -99,7 +99,7 @@ const OBJECTS = [
   { object: ".sats", last: ".sat:last-child", text: "A camera" },
   { object: ".room", last: ".room-why:last-child", text: "Someone in her room, says Home Assistant" },
   { object: ".trace", last: ".trace-why", text: "Mom is out, says Home Assistant" },
-  { object: ".models", last: ".models-item:last-child", text: "llama.cpp" },
+  { object: ".models", last: ".models-group:last-child .models-item:last-child", text: "llama.cpp" },
   { object: ".local", last: ".local-row:last-child", text: "Keys, encrypted" },
 ];
 
@@ -281,20 +281,20 @@ test("under reduced motion everything is shown, nothing moves by itself", async 
 });
 
 test("the home page loads no framework, and every picture has a text", async ({ page }) => {
+  const scripts = () =>
+    page.evaluate(() =>
+      (performance.getEntriesByType("resource") as PerformanceResourceTiming[])
+        .filter((e) => e.initiatorType === "script" || e.name.endsWith(".js"))
+        .reduce((total, e) => total + e.decodedBodySize, 0),
+    );
   await page.goto("/");
+  // uncompressed, at load: only the site script
+  const atLoad = await scripts();
+  expect(atLoad).toBeLessThan(12_000);
+  expect(atLoad).toBeGreaterThan(3_000);
+  // the 3D robot is the one library, fetched only once its section comes near
   await scrollThrough(page);
-  const { js } = await page.evaluate(() => {
-    const entries = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
-    const sum = (filter: (e: PerformanceResourceTiming) => boolean) =>
-      entries.filter(filter).reduce((total, e) => total + e.decodedBodySize, 0);
-    return {
-      js: sum((e) => e.initiatorType === "script" || e.name.endsWith(".js")),
-      images: entries.filter((e) => e.initiatorType === "img").length,
-    };
-  });
-  // uncompressed: only the site script
-  expect(js).toBeLessThan(12_000);
-  expect(js).toBeGreaterThan(3_000);
+  expect(await scripts()).toBeLessThan(atLoad + 700_000);
   const alts = await page.locator("img").evaluateAll((imgs) => imgs.filter((i) => !(i as HTMLImageElement).alt).length);
   expect(alts).toBe(0);
 });
@@ -310,16 +310,17 @@ for (const { path } of PAGES) {
   });
 }
 
-test("one navigation on every page, with the current page marked", async ({ page }) => {
-  for (const [path, current] of [
-    ["/", "Product"],
-    ["/docs/", "Docs"],
-  ] as const) {
+test("one navigation on every page: the home page's sections, then the docs, marked when read", async ({ page }) => {
+  for (const path of ["/", "/docs/"]) {
     await page.goto(path);
     const nav = page.getByRole("navigation", { name: "Main" }).first();
-    await expect(nav.getByRole("link")).toHaveText(["Product", "Docs"]);
-    await expect(nav.getByRole("link", { name: current })).toHaveAttribute("aria-current", "page");
+    await expect(nav.getByRole("link")).toHaveText(["Uses", "Satellites", "Integrations", "Install", "Docs"]);
+    await expect(nav.getByRole("link", { name: "Integrations" })).toHaveAttribute("href", "/#works-with");
+    await expect(nav.locator("[aria-current]")).toHaveCount(path === "/" ? 0 : 1);
   }
+  await page.getByRole("navigation", { name: "Main" }).first().getByRole("link", { name: "Integrations" }).click();
+  await expect(page).toHaveURL(/\/#works-with$/);
+  await expect(page.locator("#works-with")).toBeInViewport();
 });
 
 test("on a phone, the menu is a sheet that keeps focus and closes with Escape", async ({ page }) => {
@@ -329,13 +330,18 @@ test("on a phone, the menu is a sheet that keeps focus and closes with Escape", 
   await button.click();
   const sheet = page.getByRole("dialog", { name: "Menu" });
   await expect(sheet).toBeVisible();
-  await expect(sheet.getByRole("link", { name: "Product" })).toHaveAttribute("aria-current", "page");
+  await expect(sheet.getByRole("link", { name: "Docs" })).toBeVisible();
   for (let i = 0; i < 12; i++) await page.keyboard.press("Tab");
   expect(await sheet.evaluate((d) => d.contains(document.activeElement))).toBe(true);
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe("hidden");
   await page.keyboard.press("Escape");
   await expect(sheet).toBeHidden();
   await expect(button).toBeFocused();
+  // a section of the page closes the sheet and shows it
+  await button.click();
+  await sheet.getByRole("link", { name: "Install", exact: true }).click();
+  await expect(sheet).toBeHidden();
+  await expect(page.locator("#start")).toBeInViewport();
 });
 
 /* No content runs out of its box: a block whose content is wider than itself must scroll on its
