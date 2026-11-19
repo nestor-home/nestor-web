@@ -19,6 +19,8 @@ export default defineConfig({
     "/fr/developpeurs/": "/fr/docs/",
     "/docs/providers/": "/docs/models/",
     "/fr/docs/providers/": "/fr/docs/models/",
+    "/docs/connections/": "/docs/home/",
+    "/fr/docs/connections/": "/fr/docs/home/",
   },
   integrations: [
     serverFiles(),

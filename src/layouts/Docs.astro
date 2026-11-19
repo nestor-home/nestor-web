@@ -11,6 +11,7 @@ import Nestor from "@/components/Nestor.astro";
 import { LOCALES, type Locale, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 import { docHref, neighbours, parseDocId } from "@/lib/docs";
+import { markdownHref } from "@/lib/markdown";
 import { REPOS } from "@/lib/site";
 
 interface Props {
@@ -95,9 +96,13 @@ const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
             )
           }
         </div>
-        <p class="mt-6">
+        <p class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
           <a href={edit} class="link inline-flex items-center gap-1 font-mono text-xs text-ink-muted">
             {t("docs-edit")}
+            <ArrowUpRight className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
+          </a>
+          <a href={markdownHref(locale, slug)} class="link inline-flex items-center gap-1 font-mono text-xs text-ink-muted">
+            {t("docs-markdown")}
             <ArrowUpRight className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
           </a>
         </p>

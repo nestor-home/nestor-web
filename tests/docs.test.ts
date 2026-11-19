@@ -108,7 +108,7 @@ describe("the commands the site shows", () => {
 describe("the provider mosaics", () => {
   it("give every available provider a setup in every language, and none to a planned one", () => {
     for (const locale of LOCALES) {
-      const text = read(locale, "models") + read(locale, "channels");
+      const text = read(locale, "models") + read(locale, "channels") + read(locale, "voice");
       const setups = [...text.matchAll(/<ProviderSetup kind="(\w+)" brand="([\w-]+)">/g)].map((m) => `${m[1]}/${m[2]}`);
       const available = (Object.keys(PROVIDERS) as ProviderKind[]).flatMap((kind) =>
         PROVIDERS[kind].filter((p) => p.status === "available").map((p) => `${kind}/${p.brand}`),
@@ -125,7 +125,8 @@ describe("the reading order", () => {
     expect(neighbours("agent/speakers")).toEqual({ previous: "agent/initiative", next: "agent/journal" });
     expect(neighbours("agent/journal")).toEqual({ previous: "agent/speakers", next: "configuration" });
     expect(neighbours("contributing")).toEqual({ previous: "plugins" });
-    expect(neighbours("satellites/protocol")).toEqual({ previous: "satellites", next: "satellites/schemas" });
+    expect(neighbours("satellites/protocol")).toEqual({ previous: "satellites/cameras", next: "satellites/schemas" });
+    expect(neighbours("executors")).toEqual({ previous: "tools", next: "satellites" });
     expect(neighbours(DOC_SLUGS.at(-1) ?? "")).toEqual({ previous: DOC_SLUGS.at(-2) });
     expect(neighbours("no/such/page")).toEqual({});
   });

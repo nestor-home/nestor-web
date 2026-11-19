@@ -1,0 +1,68 @@
+---
+title: Mises à jour
+description: Comment Nestor apprend qu’une version sort, et comment mettre à jour le serveur, puis ses satellites.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+Nestor vous dit quand une version sort et ce qu’elle change. Mettez à jour le serveur d’abord, puis
+les satellites : un satellite mis à jour avant le serveur parlerait une version que le serveur
+refuse.
+
+## Nouvelles versions
+
+Chaque version publie `releases.json` : toutes les versions, leurs changements, les versions du
+protocole des satellites qu’elle parle. Nestor le lit une minute après son démarrage, puis chaque
+jour, et n’envoie rien d’autre que la requête.
+
+| Clé     | Défaut                                 | Rôle                                  |
+| ------- | -------------------------------------- | ------------------------------------- |
+| `check` | `true`                                 | `false` : ne jamais lire la liste     |
+| `feed`  | la dernière version publiée sur GitHub | l’adresse de la liste, pour un miroir |
+
+L’admin affiche alors **Nouvelle version** en bas de la barre latérale, avec les notes depuis votre
+version, ruptures d’abord.
+
+## Mettre à jour le serveur
+
+Installé avec `uv tool` ou pip :
+
+<Steps>
+
+1. **Installer.** Cliquez sur **Installer**, puis confirmez.
+2. **Vérifier.** Nestor installe la version depuis PyPI avec vos extras et lance `nestor check`.
+3. **Redémarrer.** Il redémarre dessus, ce qui coupe une conversation en cours. Si une étape échoue,
+   il remet la version précédente et le dit.
+
+</Steps>
+
+Avec Docker, la fenêtre donne les commandes. L’admin ne demande jamais le socket Docker : il lui
+donnerait les droits root sur la machine.
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Une copie de développement se met à jour avec git. Jusqu’à la première version stable, une version
+avec rupture peut demander de recréer `state/` et d’appairer de nouveau les satellites.
+
+## Mettre à jour un satellite
+
+Un satellite autorisé à `device.update` cherche chaque jour une version plus récente, là où il a été
+installé.
+
+<Steps>
+
+1. **Ouvrir.** Sa page affiche **Mise à jour disponible**, avec les notes que l’appareil a trouvées.
+2. **Installer.** L’appareil va chercher la version lui-même. Nestor ne lui envoie que la version
+   qu’il a signalée, jamais de fichier ni d’adresse, et n’ouvre jamais le lien des notes.
+3. **Redémarrer.** Si la nouvelle version ne se connecte pas en une minute, l’appareil revient à la
+   précédente et le signale.
+
+</Steps>
+
+Un satellite n’installe jamais une version plus ancienne, ni une version qu’il n’a pas trouvée
+([protocole](/fr/docs/satellites/protocol/#10-mises-à-jour)). Quand une version abandonne la version
+du protocole d’un satellite, ses notes le disent : mettez ce satellite à jour sur l’appareil
+lui-même, après le serveur.

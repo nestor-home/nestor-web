@@ -12,28 +12,27 @@ Le [Démarrage rapide](/fr/docs/quickstart/) détaille la voie uv pas à pas.
 ## Choisir une voie
 
 Le serveur est le paquet Python [`nestor-home`](https://pypi.org/project/nestor-home/) (Python
-3.12 ou plus récent) et l’image `ghcr.io/nestor-home/nestor` (amd64, arm64). Les trois voies
-lancent le même serveur :
+3.12 ou plus récent), aussi construit en image `ghcr.io/nestor-home/nestor` (amd64, arm64).
 
-| Installer avec              | uv                                                            | pip                                                   | Docker                                   |
-| --------------------------- | ------------------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| Ce qu’on obtient            | `nestor` dans le `PATH`, dans son propre environnement        | `nestor` dans un environnement virtuel que vous gérez | l’image, avec `docker run` ou Compose    |
-| Python                      | uv le télécharge au besoin                                    | le vôtre, 3.12 ou plus                                | dans l’image                             |
-| Configuration, `.env`, état | le dossier où vous avez lancé `nestor init`                   | le dossier où vous avez lancé `nestor init`           | le dossier monté sur `/data`             |
-| Mise à jour                 | `uv tool upgrade nestor-home`                                 | `pip install -U nestor-home`                          | `docker pull`, puis un nouveau conteneur |
-| Pour                        | une machine de développement, un essai, écrire des satellites | un environnement que vous avez déjà                   | un serveur à la maison, toujours allumé  |
+| Installer avec              | uv                                          | pip                                 | Docker                                   |
+| --------------------------- | ------------------------------------------- | ----------------------------------- | ---------------------------------------- |
+| Python                      | uv le télécharge au besoin                  | le vôtre, 3.12 ou plus              | dans l’image                             |
+| Configuration, `.env`, état | le dossier où vous avez lancé `nestor init` | idem                                | le dossier monté sur `/data`             |
+| Mise à jour                 | `uv tool upgrade nestor-home`               | `pip install -U nestor-home`        | `docker pull`, puis un nouveau conteneur |
+| Pour                        | un essai, écrire des satellites             | un environnement que vous avez déjà | un serveur à la maison, toujours allumé  |
 
-Le paquet fait tout tourner à l’écrit. Deux extras ajoutent le reste : `voice` pour la voix temps
-réel des satellites, `voice-id` pour [reconnaître qui parle](/fr/docs/agent/speakers/). L’image
-contient les deux. Sans un extra dont elle a besoin, une configuration échoue au démarrage et donne
-la commande à lancer.
+Le paquet fait tout tourner à l’écrit. Deux extras ajoutent le reste, et l’image contient les deux.
+Sans un extra dont il a besoin, Nestor s’arrête au démarrage et donne la commande à lancer.
+
+| Extra      | Ajoute                                                 |
+| ---------- | ------------------------------------------------------ |
+| `voice`    | la voix temps réel des satellites                      |
+| `voice-id` | [la reconnaissance de qui parle](/fr/docs/agent/speakers/) |
 
 ## Installer et lancer
 
 <Tabs set="install" locale="fr">
 <Tab set="install" choice="uv">
-
-[uv](https://docs.astral.sh/uv/) installe `nestor` dans son propre environnement, dans le `PATH` :
 
 ```bash
 uv tool install 'nestor-home[voice]'   # ou nestor-home, sans la voix des satellites
@@ -49,13 +48,8 @@ nestor run
 ```
 
 `nestor` lit `nestor.yaml` et `.env` dans le dossier courant, ou un autre fichier avec
-`-c <fichier>` ([Les fichiers](/fr/docs/configuration/#les-fichiers)).
-
-Pour mettre à jour, extras compris :
-
-```bash
-uv tool upgrade nestor-home
-```
+`-c <fichier>` ([Configuration](/fr/docs/configuration/)). Pour mettre à jour, extras compris :
+`uv tool upgrade nestor-home`.
 
 </Tab>
 <Tab set="install" choice="pip">
@@ -85,7 +79,7 @@ docker run -d --name nestor --restart unless-stopped -v ./nestor:/data -p 8470:8
 ```
 
 Le conteneur tourne sous l’uid 1000. Le port 8470 est celui de l’administration, 8471 celui des
-satellites. Pour les changer, réglez `admin.port` et le `port` du canal des satellites dans
+satellites : pour les changer, réglez `admin.port` et le `port` du canal des satellites dans
 `nestor.yaml`, puis les options `-p`.
 
 Les autres commandes `nestor` passent par l’image :
@@ -110,23 +104,13 @@ docker compose run --rm nestor init
 docker compose up -d
 ```
 
-Pour mettre à jour :
-
-```bash
-docker compose pull
-docker compose up -d
-```
-
-Il suit `latest`. Pour rester sur une ligne de versions, fixez son étiquette :
-`ghcr.io/nestor-home/nestor:<majeure>.<mineure>`.
+Pour mettre à jour, `docker compose pull` puis `docker compose up -d`. Il suit `latest` ; pour
+rester sur une ligne de versions, fixez son étiquette : `ghcr.io/nestor-home/nestor:<majeure>.<mineure>`.
 
 </Tab>
 </Tabs>
 
-## Mises à jour
-
-L’administration signale une version plus récente ; [Mises à jour](/fr/docs/updates/) dit comment
-mettre à jour.
+L’administration signale une version plus récente : voir [Mises à jour](/fr/docs/updates/).
 
 ## Le compte propriétaire
 
@@ -138,5 +122,5 @@ nestor accounts create-owner --login alex
 ```
 
 La commande demande le mot de passe ; `--person` choisit le membre du foyer, le premier par défaut.
-Redémarrez Nestor s’il tourne. Avec Docker :
-`docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor accounts create-owner --login alex`.
+Redémarrez Nestor s’il tourne. Avec Docker, faites précéder la commande de
+`docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor`.

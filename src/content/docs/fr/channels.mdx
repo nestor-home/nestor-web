@@ -1,35 +1,34 @@
 ---
-title: Canaux et voix
-description: Comment on joint Nestor, depuis la discussion de l’admin, une messagerie ou des satellites, ce qu’on peut nommer avec @, et comment donner une voix aux satellites.
+title: Canaux
+description: Comment on joint Nestor, depuis la discussion de l’admin, une messagerie ou des satellites, ce qu’on peut lui envoyer, et ce qu’on peut nommer avec @.
 ---
 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-On joint Nestor par ses `channels`. Tous partagent un seul agent et une seule mémoire : une question
-posée dans la cuisine peut se poursuivre depuis l’admin.
+On joint Nestor par ses `channels`. Tous partagent un même agent et une même mémoire : une question
+posée dans la cuisine peut se poursuivre depuis l’admin. Pour parler à voix haute, voir
+[Voix](/fr/docs/voice/).
 
-## Choisir ses canaux
+## Choisir les canaux
 
 <Providers kind="channel" locale="fr">
 <ProviderSetup kind="channel" brand="chat">
 
-Écrivez à Nestor depuis l’admin, dans **Discussion**. `nestor init` l’ajoute :
+La **Discussion** de l’admin. `nestor init` l’ajoute :
 
 ```yaml
 channels:
   - kind: web
 ```
 
-Chaque discussion a son propre fil, listé sous son [titre](/fr/docs/models/#rôles) ; la mémoire est
-la même dans toutes. Les réponses s’affichent au fil de l’écriture, avec les outils que Nestor
-utilise, et **Arrêter** en interrompt une. Une réponse continue quand vous quittez la page et
-réapparaît quand vous revenez. Ce que Nestor apporte de lui-même pour une discussion, comme le
-résultat d’une tâche, y arrive.
+Chaque discussion est un fil avec son [titre](/fr/docs/models/#rôles) ; la mémoire est commune. Les
+réponses s’affichent au fil de l’écriture, avec les outils que Nestor utilise, **Arrêter** en
+interrompt une, et une réponse continue quand vous quittez la page. Le résultat d’une tâche arrive
+dans la discussion qui l’a demandée.
 
-La discussion est ouverte aux comptes de l’admin liés à une personne du foyer ; le propriétaire
-que crée `nestor init` est lié à la première. Elle accepte les photos, les fichiers et les messages
-vocaux enregistrés dans le navigateur : voir [plus bas](#photos-et-messages-vocaux).
+Ouverte aux comptes de l’admin liés à une personne du foyer ; le propriétaire que crée
+`nestor init` est lié à la première.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="telegram">
@@ -46,15 +45,14 @@ channels:
     token: ${TELEGRAM_BOT_TOKEN}
 ```
 
-Ajoutez `"telegram:<votre identifiant>"` à vos `accounts` dans `household`. Pour le trouver,
-écrivez au bot : le journal du serveur affiche l’identifiant de chaque inconnu qu’il ignore. Il lit
-aussi les photos et les messages vocaux : voir [plus bas](#photos-et-messages-vocaux).
+Pour trouver votre identifiant, écrivez au bot : le journal du serveur affiche l’identifiant de
+chaque inconnu qu’il ignore.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="discord">
 
-Créez une application dans le [Developer Portal](https://discord.com/developers/applications), ajoutez
-un bot, activez son intent **Message Content** et invitez-le sur votre serveur. Puis :
+Dans le [Developer Portal](https://discord.com/developers/applications), créez une application,
+ajoutez un bot, activez son intent **Message Content** et invitez-le sur votre serveur.
 
 ```yaml
 channels:
@@ -62,15 +60,14 @@ channels:
     token: ${DISCORD_BOT_TOKEN}
 ```
 
-Il répond aux messages directs, et aux messages qui le mentionnent dans les salons d’un serveur.
-Ajoutez `"discord:<votre identifiant>"` à vos `accounts`.
+Il répond aux messages directs, et aux messages qui le mentionnent dans un serveur.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="slack">
 
-Créez une app Slack avec le Socket Mode, un jeton d’application (`connections:write`) et un jeton de bot
-avec `chat:write`, `files:read`, `files:write`, `im:history` et `app_mentions:read`, abonné aux
-événements `message.im` et `app_mention`. Aucune adresse publique n’est nécessaire.
+Créez une app Slack avec le Socket Mode, un jeton d’application (`connections:write`) et un jeton de
+bot avec `chat:write`, `files:read`, `files:write`, `im:history` et `app_mentions:read`, abonné à
+`message.im` et `app_mention`. Aucune adresse publique n’est nécessaire.
 
 ```yaml
 channels:
@@ -79,14 +76,13 @@ channels:
     bot_token: ${SLACK_BOT_TOKEN}
 ```
 
-Il répond aux messages directs et aux mentions. Ajoutez `"slack:<votre identifiant de membre>"` à vos
-`accounts`.
+Il répond aux messages directs et aux mentions.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="matrix">
 
-Créez un compte pour le bot sur un serveur d’accueil et récupérez son jeton d’accès. Invitez-le dans
-un salon : il le rejoint et y répond.
+Créez un compte pour le bot sur un serveur d’accueil, récupérez son jeton d’accès et invitez-le dans
+un salon.
 
 ```yaml
 channels:
@@ -95,14 +91,13 @@ channels:
     token: ${MATRIX_TOKEN}
 ```
 
-Ajoutez `"matrix:@vous:matrix.org"` à vos `accounts`. Les salons chiffrés ne sont pas lus : créez le
-salon sans chiffrement.
+Les salons chiffrés ne sont pas lus : créez le salon sans chiffrement.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="signal">
 
-Enregistrez un numéro dans [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api), en
-mode `normal` ou `native`, puis :
+Enregistrez un numéro dans [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api),
+en mode `normal` ou `native`.
 
 ```yaml
 channels:
@@ -111,16 +106,15 @@ channels:
     number: "+33612345678"
 ```
 
-Il répond aux messages directs et aux groupes. Ajoutez `"signal:+33…"`, votre numéro, à vos `accounts`.
-Un message vocal reçoit une réponse écrite.
+Il répond aux messages directs et aux groupes. Un message vocal reçoit une réponse écrite.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="whatsapp">
 
 Un numéro WhatsApp Business par la Cloud API de Meta. Dans le tableau de bord de l’app Meta, ajoutez
 WhatsApp, récupérez l’identifiant du numéro, un jeton permanent d’utilisateur système et le secret de
-l’app, et dirigez le webhook vers `https://<votre hôte>/whatsapp` (votre reverse proxy le transmet au
-port 8473) avec un jeton de vérification de votre choix :
+l’app. Dirigez le webhook vers `https://<votre hôte>/whatsapp` (transmis au port 8473) avec un jeton
+de vérification de votre choix.
 
 ```yaml
 channels:
@@ -131,9 +125,9 @@ channels:
     app_secret: ${WHATSAPP_APP_SECRET}
 ```
 
-Ajoutez `"whatsapp:<votre numéro, chiffres seuls>"` à vos `accounts`. Chaque message est vérifié
-contre la signature de Meta. WhatsApp ne laisse une entreprise écrire librement que dans les 24 heures
-qui suivent le dernier message de la personne : un rappel envoyé plus tard peut être refusé.
+Chaque message est vérifié contre la signature de Meta. Une entreprise ne peut écrire librement que
+dans les 24 heures qui suivent le dernier message de la personne : un rappel plus tardif peut être
+refusé.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="email">
@@ -150,14 +144,14 @@ channels:
     smtp_host: smtp.example.org
 ```
 
-Ajoutez `"email:vous@example.org"` à vos `accounts`. N’importe qui peut écrire un en-tête `From` :
-seul le courrier que votre serveur a authentifié (DMARC, ou DKIM et SPF) reçoit une réponse.
-Désactivez `require_authenticated` seulement pour un pont local qui n’ajoute pas cet en-tête.
+N’importe qui peut écrire un en-tête `From` : seul le courrier que votre serveur a authentifié
+(DMARC, ou DKIM et SPF) reçoit une réponse. Désactivez `require_authenticated` seulement pour un pont
+local qui n’ajoute pas cet en-tête.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
 
-Des appareils sur lesquels on tape, auxquels on parle, ou les deux. À l’écrit :
+Des appareils sur lesquels on tape, auxquels on parle, ou les deux.
 
 ```yaml
 channels:
@@ -165,16 +159,16 @@ channels:
     host: 0.0.0.0
 ```
 
-`host: 0.0.0.0` ouvre le port 8471 à votre réseau. À voix haute, ajoutez une [voix](#voix). Ensuite,
-[appairez-les](/fr/docs/satellites/). Tout le monde dans la pièce peut parler à un satellite : voir
-[Locuteurs](/fr/docs/agent/speakers/).
+`host: 0.0.0.0` ouvre le port 8471 à votre réseau. Pour parler à voix haute, ajoutez une
+[voix](/fr/docs/voice/). Ensuite, [appairez-les](/fr/docs/satellites/). Tout le monde dans la pièce
+peut parler à un satellite ([Locuteurs](/fr/docs/agent/speakers/)).
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="api">
 
-Nestor répond à `POST /v1/chat/completions` comme un modèle, donc tout client de cette API lui
-parle : Open WebUI, LibreChat, un script, ou Home Assistant par une intégration de conversation qui
-accepte une adresse (Extended OpenAI Conversation). Chaque clé appartient à un compte :
+Nestor répond à `POST /v1/chat/completions` comme un modèle : Open WebUI, LibreChat, un script, ou
+Home Assistant par une intégration de conversation qui accepte une adresse (Extended OpenAI
+Conversation). Chaque clé appartient à un compte :
 
 ```yaml
 channels:
@@ -183,31 +177,30 @@ channels:
       mathis: ${NESTOR_API_KEY}
 ```
 
-Donnez au client `http://<nestor>:8472/v1`, le modèle `nestor` et cette clé, et ajoutez
-`"openai-api:mathis"` à vos `accounts`. `host: 0.0.0.0` l’ouvre aux autres machines. Nestor garde sa
-propre conversation : seul votre dernier message compte, images comprises.
+Donnez au client `http://<nestor>:8472/v1`, le modèle `nestor` et cette clé. `host: 0.0.0.0` l’ouvre
+aux autres machines. Nestor garde sa propre conversation : seul votre dernier message compte, images
+comprises.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="ntfy">
 
-Des notifications sur votre téléphone par [ntfy](https://ntfy.sh) : rappels, résultat d’une tâche,
-message transmis. Abonnez-vous à un sujet dans l’app ntfy, puis :
+Des notifications sur votre téléphone par [ntfy](https://ntfy.sh). Abonnez-vous à un sujet dans
+l’app ntfy :
 
 ```yaml
 channels:
   - kind: ntfy
 ```
 
-Indiquez `"ntfy:<sujet>"` comme `reach`. Sur le serveur public, quiconque connaît un sujet peut le
-lire : choisissez-en un que personne ne devinerait, ou votre propre serveur avec `url` et `token`.
-Personne ne répond par ce canal. Chaque fichier part dans une notification à lui ; ntfy.sh garde les
-pièces jointes 3 heures, 15 Mo au plus.
+Sur le serveur public, quiconque connaît un sujet peut le lire : choisissez-en un que personne ne
+devinerait, ou votre propre serveur avec `url` et `token`. Personne ne répond par ce canal. Chaque
+fichier part dans sa propre notification ; ntfy.sh garde les pièces jointes 3 heures, 15 Mo au plus.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="webhook">
 
-Chaque message que Nestor envoie de lui-même part en JSON vers une adresse : une automatisation Home
-Assistant (qui peut notifier son app mobile), n8n, un script.
+Chaque message que Nestor envoie de lui-même part en JSON : vers une automatisation Home Assistant,
+n8n, un script.
 
 ```yaml
 channels:
@@ -216,206 +209,81 @@ channels:
     secret: ${WEBHOOK_SECRET}
 ```
 
-Le corps est `{"to", "text", "attachments"}`, `to` étant ce qui suit `webhook:` dans le `reach` de la
-personne ; chaque pièce jointe porte son `kind` (`image`, `voice`, `audio`, `file`), son `name` et son
-contenu. Avec `secret`, `X-Nestor-Signature: sha256=…` le signe, comme GitHub signe ses webhooks.
+Le corps est `{"to", "text", "attachments"}` ; chaque pièce jointe porte son `kind` (`image`,
+`voice`, `audio`, `file`), son `name` et son contenu. Avec `secret`, `X-Nestor-Signature: sha256=…`
+le signe, comme GitHub signe ses webhooks.
 
 </ProviderSetup>
 </Providers>
 
-## Voix
+## Qui est qui
 
-Parler à voix haute demande l’extra `voice`, `nestor-home[voice]` ([Installer](/fr/docs/install/)).
-L’image Docker le contient.
+Chaque personne indique, dans `household`, le compte sous lequel Nestor la connaît sur chaque canal
+([Configuration](/fr/docs/configuration/#le-foyer)). Les canaux qui ne font qu’envoyer prennent un
+`reach`.
 
-<Providers kind="speech" locale="fr">
-<ProviderSetup kind="speech" brand="elevenlabs">
+| Canal      | Dans `accounts` ou `reach`                                |
+| ---------- | --------------------------------------------------------- |
+| Telegram   | `telegram:<identifiant>`                                  |
+| Discord    | `discord:<identifiant>`                                   |
+| Slack      | `slack:<identifiant de membre>`                           |
+| Matrix     | `matrix:@vous:matrix.org`                                 |
+| Signal     | `signal:+33…`, votre numéro                               |
+| WhatsApp   | `whatsapp:<votre numéro, chiffres seuls>`                 |
+| E-mail     | `email:vous@example.org`                                  |
+| API OpenAI | `openai-api:<nom de la clé>`, par exemple `openai-api:mathis` |
+| ntfy       | `reach: "ntfy:<sujet>"`                                   |
+| Webhook    | `reach: "webhook:<to>"`, envoyé comme `to`                |
 
-Une seule clé couvre deux modèles : l’un entend les gens (Scribe v2 Realtime), l’autre donne sa voix
-à l’assistant (v4 Turbo). Ce sont des [modèles](/fr/docs/models/#entendre-et-parler), nommés dans le
-bloc `voice`.
-
-```ini
-ELEVENLABS_API_KEY=sk_...
-```
-
-```yaml
-models:
-  ears:
-    type: transcription
-    provider: elevenlabs
-    api_key: ${ELEVENLABS_API_KEY}
-  voice:
-    type: speech
-    provider: elevenlabs
-    api_key: ${ELEVENLABS_API_KEY}
-    voice_id: GPAQQPp9dazaB2bl4zg9
-
-channels:
-  - kind: satellites
-    host: 0.0.0.0
-    voice:
-      transcription: ears
-      speech: voice
-```
-
-`voice_id` est n’importe quelle voix de votre bibliothèque. La transcription attend de l’anglais,
-sauf si le modèle fixe `language` (`fr`, `de`…). Les messages vocaux passent par `file_model`
-(`scribe_v2`) : le modèle temps réel ne lit pas de fichiers.
-
-</ProviderSetup>
-<ProviderSetup kind="speech" brand="openai">
-
-Toute API qui parle `/audio/transcriptions` et `/audio/speech` comme OpenAI : OpenAI, Groq et
-Mistral pour entendre, OpenAI pour parler.
-
-```yaml
-models:
-  ears:
-    type: transcription
-    provider: openai-compatible
-    base_url: https://api.groq.com/openai/v1
-    api_key: ${GROQ_API_KEY}
-    model: whisper-large-v3-turbo
-  voice:
-    type: speech
-    provider: openai-compatible
-    base_url: https://api.openai.com/v1
-    api_key: ${OPENAI_API_KEY}
-    model: gpt-4o-mini-tts
-    voice: alloy
-```
-
-La transcription entend la langue du foyer, sauf si `language` en dit une autre. Les satellites
-entendent un tour une fois fini : les premiers mots l’attendent.
-
-</ProviderSetup>
-<ProviderSetup kind="speech" brand="nvidia">
-
-Parakeet TDT v3 entend 25 langues européennes sur la machine de Nestor : pas de clé, rien de ce qui
-est dit ne sort de la maison. Il demande `nestor-home[voice,voice-id]`, télécharge un demi-gigaoctet
-une fois et prend environ 1 Go de mémoire.
-
-```yaml
-models:
-  ears:
-    type: transcription
-    provider: sherpa-onnx
-    model: parakeet-v3
-```
-
-</ProviderSetup>
-<ProviderSetup kind="speech" brand="kokoro">
-
-Kokoro parle sur votre machine par un serveur qui parle l’API d’OpenAI, comme Kokoro-FastAPI ou
-speaches. Lancez-le à côté de Nestor, puis désignez-le dans un modèle de synthèse ; il ne demande pas
-de clé.
-
-```yaml
-models:
-  voice:
-    type: speech
-    provider: openai-compatible
-    base_url: http://localhost:8880/v1
-    model: kokoro
-    voice: ff_siwis
-```
-
-`ff_siwis` est la voix française de Kokoro ; `af_heart` et `bm_george` parlent anglais.
-
-</ProviderSetup>
-<ProviderSetup kind="speech" brand="whisper">
-
-Whisper entend sur votre machine par un serveur qui parle l’API d’OpenAI, comme speaches ou le serveur
-de whisper.cpp. Désignez-le dans un modèle de transcription ; il ne demande pas de clé.
-
-```yaml
-models:
-  ears:
-    type: transcription
-    provider: openai-compatible
-    base_url: http://localhost:8000/v1
-    model: Systran/faster-whisper-small
-```
-
-</ProviderSetup>
-</Providers>
-
-Le bloc `voice` accepte aussi :
-
-- `style` : comment l’assistant écrit pour cette voix, par exemple ses balises d’expression ;
-- `fallback_clips` : un dossier avec `stt.wav` et `tts.wav`, enregistrés dans la même voix, joués
-  quand le modèle de parole est en panne.
 
 ## Photos et messages vocaux
 
-Les canaux de messagerie, dont la discussion de l’admin, transmettent les photos, messages vocaux,
-fichiers audio et documents, avec leur légende. Nestor les garde avec son journal, où l’admin les
-montre. La discussion accepte jusqu’à 10 fichiers de 20 Mo chacun par message.
+Les canaux de messagerie, dont la discussion de l’admin, transmettent les fichiers avec leur légende.
+Nestor les garde avec son journal, où l’admin les montre. La discussion accepte jusqu’à 10 fichiers
+de 20 Mo chacun par message.
 
-- Un message vocal est transcrit par un modèle `transcription`. Quand un modèle `speech` est défini
-  et que le canal sait envoyer des vocaux, la réponse en est un aussi.
-- Une photo va au modèle quand il voit les images (`vision: true`, un modèle `anthropic` ou
-  `gemini`). Sinon, le modèle dit qu’il ne la voit pas.
-- Un PDF ou un fichier texte est lu : le modèle en lit le texte par parties, là où il a été envoyé
-  ou pour qui l’a envoyé. Un scan n’a pas de texte à lire, et le modèle le dit. Un modèle
-  `anthropic` ou `gemini` lit en entier les deux derniers PDF de la conversation, scans compris.
-- Tout autre fichier est nommé au modèle, qui dit qu’il ne peut pas l’ouvrir.
+| Reçu               | Ce que fait Nestor                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------ |
+| message vocal      | le transcrit ; répond par un vocal quand un modèle de synthèse est défini et que le canal en envoie ([Voix](/fr/docs/voice/#messages-vocaux)) |
+| photo              | la montre à un modèle qui voit les images (`vision: true`, `anthropic`, `gemini`) ; sinon, le modèle dit qu’il ne la voit pas |
+| PDF, fichier texte | le modèle en lit le texte par parties ; un scan n’a pas de texte, et le modèle le dit. `anthropic` et `gemini` lisent en entier les deux derniers PDF, scans compris |
+| tout autre fichier | le nomme au modèle, qui dit qu’il ne peut pas l’ouvrir                                                  |
 
-Ce que Nestor envoie part avec sa réponse, sous son nom : les images qu’il dessine ([Images](/fr/docs/models/#images)),
-les documents et fichiers audio qu’une tâche fait. Tous les canaux de messagerie et le chat de l’admin les envoient.
-
-```yaml
-models:
-  chat:
-    type: language
-    provider: openai-compatible
-    base_url: https://openrouter.ai/api/v1
-    api_key: ${MODEL_API_KEY}
-    model: anthropic/claude-haiku-5.5
-    vision: true
-  ears:
-    type: transcription
-    provider: elevenlabs
-    api_key: ${ELEVENLABS_API_KEY}
-    language: fr
-  voice:
-    type: speech
-    provider: elevenlabs
-    api_key: ${ELEVENLABS_API_KEY}
-    voice_id: GPAQQPp9dazaB2bl4zg9
-```
-
-`agent.transcription` et `agent.speech` nomment ces modèles ; chacun prend par défaut le seul de
-son type ([Rôles](/fr/docs/models/#rôles)).
+Ce que Nestor envoie part avec sa réponse, sous son nom : les [images](/fr/docs/models/#images)
+qu’il dessine, les documents et fichiers audio qu’une tâche produit. Toutes les messageries et la
+discussion de l’admin les envoient.
 
 ## Mentions
 
 Sur tous les canaux, un message peut nommer avec `@` ce dont il parle :
 
-| Écrit      | Nomme                                                | Nestor                                          |
-| ---------- | ---------------------------------------------------- | ----------------------------------------------- |
-| `@sam`     | une personne du foyer                                | lui écrit ce qui lui est destiné                |
-| `@cuisine` | une pièce de la maison, vue par Home Assistant       | fait dans cette pièce ce que demande le message |
-| `@hermes`  | un [exécutant](/fr/docs/connections/#tâches-longues) | lui confie cette partie du travail              |
-| `@gmail`   | un service d’un compte connecté                      | utilise pour cela les outils de ce compte       |
+| Écrit      | Nomme                                                  | Nestor                                          |
+| ---------- | ------------------------------------------------------ | ----------------------------------------------- |
+| `@sam`     | une personne, par son `id`                             | lui écrit ce qui lui est destiné                |
+| `@cuisine` | une pièce, par sa zone Home Assistant                  | fait dans cette pièce ce que demande le message |
+| `@hermes`  | un [exécutant](/fr/docs/executors/), par son nom       | lui confie cette partie du travail              |
+| `@gmail`   | un service d’un [compte connecté](/fr/docs/accounts/)  | utilise pour cela les outils de ce compte       |
 
-Une personne se nomme par son `id`, une pièce par sa zone Home Assistant, un exécutant par son nom.
-Un connecteur nomme les services de ses comptes : `@gmail` ou `@calendar` pour un compte Google,
-`@mail` pour une boîte IMAP, `@linear` pour le serveur MCP de Linear ([tous](/fr/docs/connections/#comptes-connectés)).
-Quand deux comptes portent le même nom, le moins de l’adresse qui les distingue le suit :
-`@calendar-alex`, ou `@calendar-alex-gmail` quand le début est le même.
+Un compte Google répond à `@gmail` ou `@calendar`, une boîte IMAP à `@mail`, le serveur MCP de Linear
+à `@linear`. Quand deux comptes portent le même nom, le moins de l’adresse qui les distingue le suit :
+`@calendar-alex`, ou `@calendar-alex-gmail`.
 
-La casse et les accents ne comptent pas, et les noms répondent à des alias : le nom d’une personne
-ou d’une pièce (`@Léa`, `@salle-à-manger`), l’adresse d’un compte ou son début. Un nom qui ne
-correspond à rien, ou une adresse e-mail, reste un mot. Chacun ne peut nommer que ce qu’il a le
-droit d’utiliser : ses propres comptes et ceux du foyer, jamais ceux d’un autre.
+- La casse et les accents ne comptent pas. Les noms répondent à des alias : le nom d’une personne ou
+  d’une pièce (`@Léa`, `@salle-à-manger`), l’adresse d’un compte ou son début.
+- Un nom qui ne correspond à rien, ou une adresse e-mail, reste un mot.
+- Chacun ne nomme que ce qu’il a le droit d’utiliser : ses propres comptes et ceux du foyer.
 
-La discussion de l’admin propose les noms dès qu’on tape `@`. Chaque nom est journalisé avec le
-tour et indiqué au modèle dans les instructions de ce tour.
+La discussion de l’admin propose les noms dès qu’on tape `@`. Chaque nom est journalisé avec le tour
+et indiqué au modèle.
 
 ## Quand une conversation se termine
 
 Après un silence, le message suivant ouvre une nouvelle conversation et la précédente rejoint la
-[mémoire](/fr/docs/agent/memory/). Ce silence est de 5 minutes à voix haute, 4 heures à l’écrit ;
+[mémoire](/fr/docs/agent/memory/).
+
+| Canal       | Silence   |
+| ----------- | --------- |
+| à voix haute | 5 minutes |
+| écrit       | 4 heures  |
+
 `conversation_ends_after_s` le change pour un canal.

@@ -7,38 +7,34 @@ import Consolidation from "@/components/docs/diagrams/Consolidation.astro";
 import HybridSearch from "@/components/docs/diagrams/HybridSearch.astro";
 import MemoryTurn from "@/components/docs/diagrams/MemoryTurn.astro";
 
-Nestor keeps **memories**, lasting facts it was told ("Léa is vegetarian"), and **episodes**, what
-each past conversation was about. Both are rebuilt from the journal, which keeps every word.
-Memory is generous: a line the model skips costs little, a missing memory costs a wrong answer.
+Nestor keeps **memories**, lasting facts ("Léa is vegetarian"), and **episodes**, what each past
+conversation was about. Both are rebuilt from the journal. Memory is generous: a skipped line costs
+little, a missing memory costs a wrong answer.
 
 ## What a turn carries
 
-<MemoryTurn locale="en" n={4} />
+<MemoryTurn locale="en" n={1} />
 
-The **household layer** carries the latest 150 memories, dated so the model keeps the later of two
-that disagree. They stay the same from turn to turn, so the provider caches them. Beyond 150, the
-**turn layer** adds those the speaker's last three messages find.
+The latest memories are dated, so the model keeps the later of two that disagree, and cached with
+the household layer. The turn layer adds older ones the speaker's last three messages find, and the
+speaker's episodes, which only their participants see. Tools reach the rest:
 
-The turn layer also carries the speaker's **episodes**, which only their participants see. Tools
-reach the rest: `recall` searches memories and past conversations, between two dates when asked
-("what did we say last week?"), and `read_conversation` rereads one conversation word for word.
-`remember`, `correct_memory` and `forget` keep, fix and drop a memory.
+| Tool                | Does                                                                   |
+| ------------------- | ---------------------------------------------------------------------- |
+| `recall`            | searches memories and past conversations, between two dates if asked   |
+| `read_conversation` | rereads one conversation word for word                                 |
+| `remember`          | keeps a memory                                                         |
+| `correct_memory`    | fixes one                                                              |
+| `forget`            | drops one                                                              |
 
 ## Finding by words and by meaning
 
-<HybridSearch locale="en" n={5} />
+<HybridSearch locale="en" n={2} />
 
-Every search runs twice:
-
-- **By words**, SQLite's full-text index ranks what shares words with the question, accents
-  ignored.
-- **By meaning**, an embedding model turns the question into a vector, and
-  [sqlite-vec](https://github.com/asg017/sqlite-vec) returns the nearest ones.
-
-Reciprocal rank fusion merges the lists: what is in both comes first.
-
-Search by meaning is optional. Name an embedding model in `models` and point `memory.embedder` at
-it:
+**By words**, SQLite's full-text index ranks matches, accents ignored. **By meaning**, an embedding
+model turns the question into a vector and [sqlite-vec](https://github.com/asg017/sqlite-vec)
+returns the nearest. Reciprocal rank fusion merges both lists. Search by meaning is optional: point
+`memory.embedder` at an embedding model.
 
 ```yaml
 models:
@@ -53,26 +49,26 @@ memory:
 ```
 
 Any OpenAI-compatible embeddings server works, local ones included (llama.cpp's
-`llama-server --embeddings`). Vectors are computed in the background, and changing the model
-reindexes there too. A question not embedded within a second (`memory.query_timeout_s`) is searched
-by words only.
+`llama-server --embeddings`). Vectors are computed, and recomputed after a model change, in the
+background.
 
 ## When a conversation is over
 
-<Consolidation locale="en" n={6} />
+<Consolidation locale="en" n={3} />
 
-A conversation is over once its silence outlasts every medium of its place. The consolidation model
-then writes its **episode**, two or three sentences and a few topics, and saves the lasting facts
-the agent missed as memories. If Nestor was stopped, it catches up at the next start, never twice.
+Once a conversation's silence outlasts every medium of its place, the consolidation model writes
+its episode (a few sentences and topics) and keeps the lasting facts the agent missed. After a
+stop, Nestor catches up at the next start.
 
 ## Settings
 
-| Setting | Default | What it does |
-| --- | --- | --- |
-| `memory.strategy` | `both` | `recent`: the latest only; `search`: only what the words find |
-| `memory.recent` | 150 | memories in the household layer |
-| `memory.found` | 12 | memories the words may add beyond them |
-| `memory.recent_episodes` | 3 | latest conversations of whoever speaks |
-| `memory.found_episodes` | 4 | older conversations their words may add |
-| `memory.embedder` | none | the embedding model, for search by meaning |
-| `memory.consolidation` | `agent.written` | the model that writes episodes |
+| Setting                  | Default         | What it does                                                    |
+| ------------------------ | --------------- | --------------------------------------------------------------- |
+| `memory.strategy`        | `both`          | `recent`: the latest only; `search`: only what the words find   |
+| `memory.recent`          | 150             | memories in the household layer                                 |
+| `memory.found`           | 12              | memories the words may add beyond them                          |
+| `memory.recent_episodes` | 3               | latest conversations of whoever speaks                          |
+| `memory.found_episodes`  | 4               | older conversations their words may add                         |
+| `memory.embedder`        | none            | the embedding model, for search by meaning                      |
+| `memory.query_timeout_s` | 1               | seconds to embed a question before searching by words only      |
+| `memory.consolidation`   | `agent.written` | the model that writes episodes                                  |

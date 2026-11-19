@@ -1,0 +1,74 @@
+---
+title: Templates
+description: Start a satellite from a repository that already pairs, passes the conformance suite and releases.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+Each template is a working satellite with a microphone, a speaker and a status light. It pairs,
+runs the [conformance suite](/docs/satellites/conformance/) in CI and prepares its releases.
+Replace the light with your hardware.
+
+| Language   | Repository                                                                                                  | Built on                                 | Publishes to | Needs                                                               |
+| ---------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ------------ | ------------------------------------------------------------------- |
+| Python     | [nestor-satellite-template-python](https://github.com/nestor-home/nestor-satellite-template-python)         | [Python SDK](/docs/sdks/python/)         | PyPI         | uv; on Linux, PortAudio                                             |
+| TypeScript | [nestor-satellite-template-typescript](https://github.com/nestor-home/nestor-satellite-template-typescript) | [TypeScript SDK](/docs/sdks/typescript/), in Node | npm  | Node 22.12 or later, pnpm; `arecord`/`aplay` on Linux, SoX on macOS |
+| Rust       | [nestor-satellite-template-rust](https://github.com/nestor-home/nestor-satellite-template-rust)             | [Rust SDK](/docs/sdks/rust/)             | crates.io    | Rust 1.91 or later, a C compiler, `cmake`; on Linux, ALSA           |
+
+## Start one
+
+<Steps>
+
+1. **Create your repository** with **Use this template** on GitHub, or:
+
+   ```bash
+   gh repo create my-satellite --template nestor-home/nestor-satellite-template-python --public --clone
+   ```
+
+2. **Rename it.** Everything is spelled `my-satellite` (`my_satellite` in Python); the README
+   lists where.
+
+3. **Plug in your hardware** where the code says `TODO(hardware)`. Declare only what the device
+   has.
+
+4. **Pair it.** Make an enrollment code with `nestor satellites add --room salon`, or in the admin
+   under **Satellites**, then give the device the pairing URI it prints (commands below). Later runs
+   need only `--core` and `--room`.
+
+</Steps>
+
+```bash
+# Python
+uv run my-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+# TypeScript
+pnpm build && pnpm start run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+# Rust
+cargo run -- run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+```
+
+Without a sound card, add `--null-audio` (Python, Rust) or `--input none --output none`
+(TypeScript).
+
+## Test it
+
+Each template runs the conformance suite against its own command, at the server version in
+`.nestor-version`:
+
+| Language   | Checks and conformance                                                                |
+| ---------- | ------------------------------------------------------------------------------------- |
+| Python     | `uv run ruff check && uv run ruff format --check && uv run ty check && uv run pytest` |
+| TypeScript | `pnpm lint && pnpm typecheck && pnpm test && pnpm conformance`                        |
+| Rust       | `cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test`        |
+
+CI runs the same on every pull request and ends with one `ci` job to require in your branch rules.
+
+## Release it
+
+release-please turns Conventional Commits titles into a release pull request. Its job calls a
+shared nestor-home workflow that only runs in nestor-home: replace it with the commented job under
+it. Publishing is commented out too: register a trusted publisher, then uncomment
+the publish job. The README gives the steps.
+
+The Python template's `--managed` lets a person update the device from Nestor once it is on PyPI.
+The TypeScript and Rust templates name their package in the manifest; give them an `updater` to do
+the same ([Updates](/docs/satellites/protocol/#10-updates)).

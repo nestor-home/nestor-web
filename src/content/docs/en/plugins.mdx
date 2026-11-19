@@ -1,0 +1,188 @@
+---
+title: Plugins
+description: Add a tool, a model, a channel, an executor or a connector to Nestor from your own Python package.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+Every part Nestor plugs in is a plugin, its own included. Yours are declared the same way, in your
+own package, without changing the server. A service with an MCP server needs no plugin
+([MCP servers](/docs/tools/#mcp-servers)), nor does a device ([Satellites](/docs/satellites/)).
+
+## Families
+
+A plugin is a family, a kind (the name the configuration picks it by), a settings class and a
+function that builds the part from its settings.
+
+| Family      | Configured under | Builds                                                                                                   | Contract suite                                                                                                               |
+| ----------- | ---------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `model`     | `models`         | a `LanguageModel`, `EmbeddingModel`, `ImageModel`, `TranscriptionModel`, `SpeechModel` or `SpeakerModel` | `LanguageModelContract`, `EmbeddingModelContract`, `ImageModelContract`, `TranscriptionModelContract`, `SpeechModelContract` |
+| `executor`  | `executors`      | an `Executor`, or a `RemoteExecutor` when the work runs elsewhere and goes on through a restart          | `ExecutorContract`, `RemoteExecutorContract`                                                                                 |
+| `channel`   | `channels`       | a `Channel`                                                                                              | `MessagingChannelContract`                                                                                                   |
+| `home`      | `home`           | a `Home`: presence and the home's actions                                                                |                                                                                                                              |
+| `tools`     | `tools`          | a `ToolProvider`, or a `WebSearch` for a search engine                                                   | `WebSearchContract`                                                                                                          |
+| `inbound`   | `inbound`        | an `InboundEventSource`, which feeds the watches                                                         | `InboundEventSourceContract`                                                                                                 |
+| `connector` | `connectors`     | a `Connector`: a service people connect accounts to from the admin                                       |                                                                                                                              |
+
+The contracts are in `nestor.modules` (`cognition`, `channels`, `identity`, `home`, `web`,
+`initiative`, `connectors`), the suites in `nestor.testing`, which ships with the package.
+
+## Write a tools plugin
+
+This one gives the agent a `bin_days` tool.
+
+<Steps>
+
+1. **Declare the entry point**
+
+   In `pyproject.toml`, under `nestor.adapters`:
+
+   ```toml
+   [project]
+   name = "nestor-bins"
+   version = "0.1.0"
+   dependencies = ["nestor-home"]
+
+   [project.entry-points."nestor.adapters"]
+   bins = "nestor_bins:plugin"
+
+   [build-system]
+   requires = ["hatchling"]
+   build-backend = "hatchling.build"
+   ```
+
+2. **Write the settings, the tool and the plugin**
+
+   In `nestor_bins/__init__.py`:
+
+   ```python
+   from collections.abc import Mapping, Sequence
+
+   from nestor.modules.cognition.model import ToolSpec
+   from nestor.modules.cognition.tools import Risk, Tool, ToolContext, ToolOutput, ToolProvider
+   from nestor.runtime import AdapterSettings, Family, Plugin, Services
+
+
+   class BinsSettings(AdapterSettings):
+       days: dict[str, str]
+
+
+   class Bins(ToolProvider):
+       def __init__(self, days: Mapping[str, str]) -> None:
+           self._days = days
+
+       def tools(self) -> Sequence[Tool]:
+           spec = ToolSpec(
+               "bin_days",
+               "Which bin goes out on which day of the week.",
+               {"type": "object", "properties": {}},
+           )
+           return (Tool(spec=spec, run=self.bin_days, risk=Risk.READ),)
+
+       async def bin_days(self, arguments: Mapping[str, object], context: ToolContext) -> ToolOutput:
+           return dict(self._days)
+
+
+   def build(settings: BinsSettings, name: str, services: Services) -> Bins:
+       bins = Bins(settings.days)
+       bins.name = name
+       return bins
+
+
+   plugin = Plugin(Family.TOOLS, "bins", BinsSettings, build)
+   ```
+
+3. **Configure it**
+
+   In `nestor.yaml`, `kind` picks the plugin and the other keys are its settings:
+
+   ```yaml
+   tools:
+     - kind: bins
+       days:
+         monday: recycling
+         thursday: household waste
+   ```
+
+4. **Check it**
+
+   Install the package where Nestor runs, then check the configuration. With uvx, from the folder
+   that holds `nestor.yaml`:
+
+   ```bash
+   uvx --from nestor-home --with-editable ./nestor-bins nestor check
+   ```
+
+   It answers `nestor.yaml: OK` and names what it built, without starting anything. An unknown key
+   or kind is refused:
+
+   ```text
+   nestor: tools 'bins' (bins): colour: Extra inputs are not permitted
+   nestor: no tools plugin 'bin' is installed (available: bins, brave, exa, …)
+   ```
+
+</Steps>
+
+The admin's **System** page lists each part with its health and the package it comes from.
+
+## What a plugin can rely on
+
+- **Settings** are a Pydantic model. A `SecretStr` field takes a key (`${NAME}` or `${secret:name}`,
+  see [Keys and secrets](/docs/configuration/#keys-and-secrets)); `RequiredSecret`, from
+  `nestor.runtime`, also refuses an empty one.
+- **`Services`** gives `build` the data folder, the household's language, and the models of
+  `models` by name (`services.model(...)`).
+- **A tool's risk** is `read`, `write` or `sensitive`. A sensitive call is confirmed first
+  ([Sensitive actions](/docs/agent/speakers/#sensitive-actions)). A tool slower than the turn waits
+  goes on in the background ([Tools](/docs/agent/#tools)).
+- **A part's life**: `start` opens what it needs, `close` releases it, `health` says whether it can
+  serve, `notes` tells the model how it runs right now, in English.
+- **Optional dependencies** are imported in `build`. `Plugin(..., requires="my-package[extra]")`
+  names what installs them: without them, a configuration that uses the plugin fails at start with
+  that command. Finding plugins loads every entry point, so the module holding `plugin` imports only
+  what its settings need.
+- **Words for people** are Fluent messages in a `locales/<language>/` folder of your package, loaded
+  with Nestor's. What the model reads stays in English.
+- **Events** of your own go in the journal like the server's
+  ([Declaring an event](/docs/agent/journal/#declaring-an-event)).
+
+A model plugin also says which type of model it serves, and its entry point is named
+`<provider>-<type>`. The configuration then names it by both: `type: language`,
+`provider: my-provider`.
+
+```python
+plugin = Plugin(Family.MODEL, "my-provider", MySettings, build, serves=LanguageModel)
+```
+
+## Test it
+
+A contract suite is a class of tests. Subclass it and give it what its docstring asks for; an
+executor's suite wants one that completes, a slow one and one that fails:
+
+```python
+from nestor.modules.cognition import Executor
+from nestor.testing.cognition import ExecutorContract
+
+
+class TestMyExecutor(ExecutorContract):
+    def executor(self) -> Executor: ...
+    def slow_executor(self) -> Executor: ...
+    def failing_executor(self) -> Executor: ...
+```
+
+The tests are coroutines: pytest needs pytest-asyncio, in `auto` mode. The server's own adapters
+pass the same suites.
+
+## Built in
+
+Every part the server ships is a plugin of `nestor-home`:
+
+| Family      | Kinds                                                                                                                         | Set up in                                                   |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `model`     | `openai-compatible` (language, embedding, image, transcription, speech), `anthropic`, `gemini`, `elevenlabs`, `sherpa-onnx`   | [Models](/docs/models/), [Voice](/docs/voice/)              |
+| `channel`   | `web`, `satellites`, `telegram`, `discord`, `slack`, `matrix`, `signal`, `whatsapp`, `email`, `ntfy`, `webhook`, `openai-api` | [Channels](/docs/channels/)                                 |
+| `home`      | `home-assistant`                                                                                                              | [Home Assistant](/docs/home/)                               |
+| `tools`     | `mcp`, `exa`, `parallel`, `firecrawl`, `keenable`, `brave`, `tavily`, `searxng`, `web-pages`, `open-meteo`, `openstreetmap`   | [Tools](/docs/tools/)                                       |
+| `connector` | `google`, `microsoft`, `dav`, `imap`, `mcp`                                                                                   | [Accounts](/docs/accounts/)                                 |
+| `inbound`   | `rss`, `web-page`, `webhook`                                                                                                  | [Feeds, pages and webhooks](/docs/tools/#feeds-pages-and-webhooks) |
+| `executor`  | `hermes`, `codex`, `claude-code`                                                                                              | [Executors](/docs/executors/)                               |

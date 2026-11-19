@@ -1,0 +1,75 @@
+---
+title: Home Assistant
+description: Brancher Home Assistant pour que Nestor sache qui est là et agisse sur les appareils que vous exposez.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+Home Assistant apporte à Nestor **la présence** (qui est là, et dans quelle pièce quand il le sait) et
+**les appareils** (ce qu’il expose aux assistants, par son serveur MCP). Une adresse et un jeton
+suffisent pour les deux.
+
+## Mise en place
+
+<Steps>
+
+1. **Créer un jeton.** Dans Home Assistant, ouvrez votre profil, **Sécurité**, et créez un jeton
+   d’accès longue durée.
+
+2. **Exposer les appareils.** Ajoutez l’intégration **Model Context Protocol Server**, puis choisissez
+   les entités dans **Paramètres › Assistants vocaux › Exposer**. La présence s’en passe.
+
+3. **Ajouter les secrets** dans `.env` :
+
+   ```ini
+   HOME_ASSISTANT_URL=http://homeassistant.local:8123
+   HOME_ASSISTANT_TOKEN=eyJ...
+   ```
+
+4. **Activer `home`** dans `nestor.yaml` (`nestor init` l’a écrit, en commentaire) :
+
+   ```yaml
+   home:
+     kind: home-assistant
+     url: ${HOME_ASSISTANT_URL}
+     token: ${HOME_ASSISTANT_TOKEN}
+     people:
+       alex: person.alex # chaque identifiant du foyer, avec son entité personne
+   ```
+
+</Steps>
+
+## Ce que Nestor voit et fait
+
+| Quoi                          | D’où ça vient                                                                          | Clé                 |
+| ----------------------------- | -------------------------------------------------------------------------------------- | ------------------- |
+| Qui est là                    | l’entité `person.*` de chaque personne                                                 | `people`            |
+| Dans quelle pièce est chacun  | un capteur de pièce par personne (Bermuda, ESPresense)                                 | `rooms`             |
+| Quelles pièces sont occupées  | des capteurs rattachés à une pièce ; par défaut tout capteur d’occupation, de présence ou de mouvement | `occupancy_sensors` |
+| Les appareils qu’il pilote    | les entités exposées aux assistants, par le serveur MCP de Home Assistant (`/api/mcp`) | aucune              |
+
+La page **Maison** de l’admin montre qui est où, les pièces, les personnes que Home Assistant connaît
+et ses actions.
+
+## Actions sensibles
+
+Certaines actions attendent l’accord de la personne (voir [Locuteurs](/fr/docs/agent/speakers/)). Une
+action est sensible quand son domaine, sa classe d’appareil ou son nom contient l’une de ces valeurs,
+sans tenir compte de la casse :
+
+| Clé              | Défaut                                    |
+| ---------------- | ----------------------------------------- |
+| `domains`        | `lock`, `alarm_control_panel`             |
+| `device_classes` | `garage`, `gate`, `door`                  |
+| `names`          | `lock`, `alarm`, `garage`, `gate`, `door` |
+
+Les lumières, le chauffage et les médias ne le sont pas, et lire un état ne l’est jamais. Une liste que
+vous donnez remplace son défaut ; ajoutez les noms dans votre langue :
+
+```yaml
+home:
+  kind: home-assistant
+  # …
+  sensitive:
+    names: [lock, garage, door, porte, portail]
+```

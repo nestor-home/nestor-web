@@ -7,11 +7,10 @@ description: The standard every satellite implements, whatever its language.
 import PairingFlow from "@/components/docs/diagrams/PairingFlow.astro";
 import PairingStates from "@/components/docs/diagrams/PairingStates.astro";
 
-This is the standard every satellite implements, version 1 ([changelog](#13-changelog)). The core’s
-black-box [conformance suite](/docs/satellites/conformance/) checks SDKs and drivers against it.
-
-A **satellite** is a device paired with a Nestor server (the **core**). It talks with the assistant
-in writing, aloud or both, reports observations and carries out the core’s intents.
+The standard every satellite implements, version 1 ([changelog](#13-changelog)). A **satellite**
+is a device paired with a Nestor server (the **core**): it talks with the assistant in writing,
+aloud or both, reports observations and carries out the core’s intents. The
+[conformance suite](/docs/satellites/conformance/) checks SDKs and drivers against it.
 
 MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are read as in
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119). The core’s message classes
@@ -20,7 +19,7 @@ MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are read as in
 
 ## 1. Overview
 
-A satellite goes through three phases, in this order:
+Three phases, in this order:
 
 1. **Pairing**, once: a person proves they meant to pair the device
    ([section 2](#2-pairing-methods)), and the core hands it a token ([section 3](#3-pairing)).
@@ -274,6 +273,36 @@ carries out intents.
 | `4401`     | the token is refused                             | forgets it and pairs again (P8)  |
 | `4409`     | a newer link of this device replaced this one    | stops: the other link is current |
 
+### 7.1 Messages
+
+Each message’s `payload` holds these fields. A message that names a capability is sent only by, or
+to, a device allowed it.
+
+| `type`                        | From   | `payload`                                                                                   | Capability                |
+| ----------------------------- | ------ | ------------------------------------------------------------------------------------------- | ------------------------- |
+| `hello`                       | device | `manifest`, `token`                                                                         |                           |
+| `welcome`                     | core   | `device_id`, `room`, `capabilities`, `voice` (default `true`)                               |                           |
+| `ack`                         | device | `of`: the intent’s `id`                                                                     |                           |
+| `input.text`                  | device | `text` (1 to 4,000 characters)                                                              | `text.input`              |
+| `observation.speech.activity` | device | `active`: started (`true`) or stopped                                                       | `audio.speech_activity`   |
+| `observation.person.detected` | device | `count`, `confidence` (0 to 1)                                                              | `vision.person_detection` |
+| `update.status`               | device | `state`, `version`, `notes` (section 10)                                                    | `device.update`           |
+| `media.snapshot`              | device | `of`, `jpeg` (base64, at most 4,000,000 characters)                                         | `video.capture`           |
+| `intent.behavior`             | core   | `behavior`: `idle`, `listening`, `thinking` or `speaking`, shown until the next one         |                           |
+| `intent.expression`           | core   | `expression`: `joy`, `sigh`, `thoughtful`, `whisper`, `excited` or `ahem`; `intensity` (0 to 1, default 1) | `expression.emotion` |
+| `intent.beat`                 | core   | none: a word is played                                                                      | `motion.head`             |
+| `intent.identify`             | core   | none (section 6)                                                                            | `device.identify`         |
+| `intent.text`                 | core   | `text` (up to 16,000 characters), `final` (default `true`)                                  | `text.display`            |
+| `intent.update`               | core   | `version` (section 10)                                                                      | `device.update`           |
+| `intent.media.open`           | core   | `session`, `video`, `audio`, `max_s` (1 to 3,600)                                           | M1                        |
+| `intent.media.close`          | core   | `session`                                                                                   |                           |
+| `intent.media.snapshot`       | core   | none                                                                                        | `video.capture`           |
+
+```json
+{"type": "intent.expression", "id": "…", "at": "2026-10-30T12:00:00+00:00",
+ "payload": {"expression": "joy", "intensity": 1.0}}
+```
+
 ## 8. Text
 
 - **T1.** A device allowed `text.input` sends what a person typed as `input.text`. Each one is a turn
@@ -291,8 +320,7 @@ carries out intents.
 ## 9. Audio and video
 
 - **A1.** A device allowed `audio.capture` or `audio.playback` (in `welcome`), when `welcome` says
-  `voice`, offers WebRTC once
-  welcomed: `POST /satellites/{device_id}/audio` with `Authorization: Bearer <token>` and
+  `voice`, offers WebRTC once welcomed: `POST /satellites/{device_id}/audio` with `Authorization: Bearer <token>` and
   `{"sdp", "type"}`; the core answers `{"sdp", "type", "pc_id"}`. ICE candidates follow with `PATCH`
   on the same path. A wrong token gets `401`; a device without a link or not allowed audio, `403`;
   another device’s `pc_id`, `403`.
@@ -305,9 +333,8 @@ carries out intents.
 
 ### 9.1 Sessions
 
-A person may watch what a device films, or call through a device that hears and plays sound: talk
-through it and hear the room, with its video when it films. The core is the only peer of the
-device; it relays to the person, who never reaches the device.
+A person may watch what a device films, or call through a device that hears and plays sound. The
+core is the device’s only peer: it relays to the person, who never reaches the device.
 
 - **M1.** A device opens a media connection only on `intent.media.open {session, video, audio,
   max_s}` received on its link, and only for what it was granted: video with `video.capture`, a

@@ -1,20 +1,19 @@
 ---
 title: Modèles
-description: Le modèle de langage avec lequel pense l’agent, hébergé ou local, un par rôle si vous voulez, et la recherche par le sens pour sa mémoire.
+description: Le modèle de langage avec lequel pense l’agent, un par rôle si vous voulez, un modèle de secours, et les modèles de la recherche en mémoire et des images.
 ---
 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-L’agent pense avec un modèle de langage de votre choix, hébergé ou local, par l’API Chat
-Completions d’OpenAI, ou nativement pour Claude et Gemini. Choisissez-en un qui gère les appels
-d’outils.
+L’agent pense avec un modèle de langage de votre choix, hébergé ou local. Choisissez-en un qui gère
+les appels d’outils.
 
 ## Choisir un fournisseur
 
-`nestor init` écrit un profil sous `models`, nommé `main`. Pour changer de fournisseur,
-remplacez-le par un bloc ci-dessous et lancez `nestor check`. La clé va dans `.env`, en
-`MODEL_API_KEY` ; les serveurs locaux n’en demandent pas.
+`nestor init` écrit un profil sous `models`, nommé `main`. Pour changer de fournisseur, remplacez-le
+par un bloc ci-dessous et lancez `nestor check`. La clé va dans `.env`, en `MODEL_API_KEY` ; les
+serveurs locaux n’en demandent pas.
 
 <Providers kind="model" locale="fr">
 <ProviderSetup kind="model" brand="openrouter">
@@ -189,26 +188,30 @@ models:
 </ProviderSetup>
 </Providers>
 
-Un modèle local répond plus lentement, et la voix le ressent en premier.
+Un modèle local répond plus lentement, et la voix le ressent en premier. Avec Docker, un serveur de
+modèle sur l’hôte est à `http://host.docker.internal:<port>/v1` ; sous Linux, faites-le écouter sur
+toutes les interfaces (`OLLAMA_HOST=0.0.0.0` pour Ollama, `--host 0.0.0.0` pour llama.cpp).
 
-Avec Docker, un serveur de modèle sur l’hôte est à `http://host.docker.internal:<port>/v1`. Sous
-Linux, faites-le écouter sur toutes les interfaces : `OLLAMA_HOST=0.0.0.0` pour Ollama,
-`--host 0.0.0.0` pour llama.cpp.
+## Types
+
+Chaque modèle dit son `type` (`language`, `embedding`, `transcription`, `speech`, `speaker`, `image`)
+et son `provider`. Un réglage ne propose que les modèles de son type. Entendre et parler sont sur
+[Voix](/fr/docs/voice/), reconnaître qui parle sur [Locuteurs](/fr/docs/agent/speakers/).
 
 ## Rôles
 
 Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
 
-| Rôle                   | Ce qu’il fait                                                                  | Sans réglage                    |
-| ---------------------- | ------------------------------------------------------------------------------ | ------------------------------- |
-| `agent.spoken`         | répond à voix haute : les premiers mots doivent venir vite                     | `agent.written`                 |
-| `agent.written`        | répond par écrit, où quelques secondes ne gênent pas                           | `agent.spoken`                  |
-| `watches.model`        | trie le courrier entrant pour les veilles                                      | `agent.written`                 |
-| `memory.consolidation` | résume chaque conversation une fois terminée                                   | `agent.written`                 |
-| `agent.titles`         | titre chaque discussion de l’admin d’après son premier échange ; un petit modèle suffit | `agent.written`                 |
-| `agent.transcription`  | écoute les messages vocaux                                                     | le seul modèle de transcription |
-| `agent.speech`         | répond à un message vocal par un autre                                         | le seul modèle de synthèse      |
-| `agent.images`         | dessine les images qu’on lui demande                                           | le seul modèle d’images         |
+| Rôle                   | Ce qu’il fait                                               | Sans réglage                    |
+| ---------------------- | ----------------------------------------------------------- | ------------------------------- |
+| `agent.spoken`         | répond à voix haute : les premiers mots doivent venir vite  | `agent.written`                 |
+| `agent.written`        | répond par écrit                                            | `agent.spoken`                  |
+| `agent.titles`         | titre chaque discussion de l’admin ; un petit modèle suffit | `agent.written`                 |
+| `watches.model`        | trie le courrier entrant pour les veilles                   | `agent.written`                 |
+| `memory.consolidation` | résume chaque conversation une fois terminée                | `agent.written`                 |
+| `agent.transcription`  | écoute les messages vocaux                                  | le seul modèle de transcription |
+| `agent.speech`         | répond à un message vocal par un autre                      | le seul modèle de synthèse      |
+| `agent.images`         | dessine les images                                          | le seul modèle d’images         |
 
 Un modèle rapide pour la voix, un plus solide pour le reste :
 
@@ -232,12 +235,24 @@ agent:
   written: deep
 ```
 
+## Réglages
+
+| Clé              | Modèles                        | Rôle                                                                        |
+| ---------------- | ------------------------------ | --------------------------------------------------------------------------- |
+| `extra_body`     | tous les modèles de langage    | fusionné dans chaque requête (routage, raisonnement, `generationConfig`)    |
+| `read_timeout_s` | tous les modèles de langage    | en secondes : 30 pour `openai-compatible`, 60 pour `anthropic` et `gemini`  |
+| `fallback`       | tous les modèles de langage    | le modèle qui répond quand celui-ci échoue ([Modèle de secours](#modèle-de-secours)) |
+| `vision`         | `openai-compatible`            | `true` pour un modèle qui lit les images : il voit alors les photos envoyées |
+| `cache_control`  | `openai-compatible`            | le cache de prompt du fournisseur, actif par défaut pour OpenRouter et Anthropic |
+
+Les modèles `anthropic` et `gemini` voient les images et lisent les PDF sans qu’on le dise.
+
 ## Modèle de secours
 
 Quand un modèle échoue avant de répondre (fournisseur en panne, surchargé, clé refusée), son
-`fallback` répond à sa place, dans tous les rôles du modèle, et le journal dit lequel a pris le
-relais. Un modèle de secours peut avoir le sien, essayé à son tour. Il reçoit la requête sans les
-images ni les documents qu’il ne sait pas lire.
+`fallback` répond à sa place, dans tous ses rôles, et le journal dit lequel a pris le relais. Un
+modèle de secours peut avoir le sien. Il reçoit la requête sans les images ni les documents qu’il ne
+sait pas lire.
 
 ```yaml
 models:
@@ -258,8 +273,8 @@ Un modèle qui échoue après avoir commencé à répondre n’est pas remplacé
 
 ## Recherche par le sens
 
-Un modèle d’embedding permet à Nestor de retrouver ses souvenirs par le sens : « que mange
-Léa ? » trouve « Léa est végétarienne ». Nommez un profil d’embedding dans `memory.embedder` :
+Un modèle d’embedding retrouve les souvenirs par le sens : « que mange Léa ? » trouve « Léa est
+végétarienne ». Nommez-le dans `memory.embedder` :
 
 ```yaml
 models:
@@ -275,16 +290,20 @@ memory:
   embedder: vectors
 ```
 
-Tout point `/embeddings` compatible OpenAI convient. `dimensions` est la taille des vecteurs ;
-avec `send_dimensions: true`, un modèle qui sait raccourcir ses vecteurs les rend à cette taille.
-Pour un modèle qui attend un préfixe (`query: `), réglez `query_prefix` et `document_prefix`.
-Changer de modèle réindexe en tâche de fond. Voir [Mémoire](/fr/docs/agent/memory/).
+| Clé                               | Rôle                                                               |
+| --------------------------------- | ------------------------------------------------------------------ |
+| `dimensions`                      | la taille des vecteurs                                             |
+| `send_dimensions`                 | `true` demande cette taille à un modèle qui sait raccourcir ses vecteurs |
+| `query_prefix`, `document_prefix` | pour un modèle qui attend un préfixe (`query: `)                   |
+
+Tout point `/embeddings` compatible OpenAI convient. Changer de modèle réindexe en tâche de fond.
+Voir [Mémoire](/fr/docs/agent/memory/).
 
 ## Images
 
-Avec un modèle d’images, Nestor dessine ce qu’on lui demande (« dessine un dragon pour la carte de
-Léa ») et l’envoie avec sa réponse, là où la conversation montre les images : la discussion de
-l’admin, Telegram. Une image demandée à voix haute dans une pièce reste dans le journal de l’admin.
+Avec un modèle d’images, Nestor dessine ce qu’on lui demande et l’envoie avec sa réponse là où la
+conversation montre les images : la discussion de l’admin, les messageries. Une image demandée à
+voix haute reste dans le journal de l’admin.
 
 ```yaml
 models:
@@ -300,33 +319,3 @@ models:
 `endpoint: images`, par défaut, parle à `/images/generations` (OpenAI, Gemini, serveurs locaux) ;
 `chat` parle à Chat Completions, comme les modèles d’images d’OpenRouter. `size` fixe la taille quand
 le modèle en prend une (`1024x1024`).
-
-## Entendre et parler
-
-`models` contient tous les modèles qu’utilise Nestor. Chacun dit son `type` et son `provider`, le
-plugin qui sert ce type, et un réglage ne propose que les modèles de son type :
-
-| Type          | Ce qu’il fait                                              | Nommé dans                                                         |
-| ------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ |
-| language      | répond, à voix haute ou à l’écrit                          | `agent` ([Rôles](#rôles))                                          |
-| embedding     | retrouve les souvenirs par le sens                         | `memory.embedder`                                                  |
-| transcription | entend ce qu’on dit à un satellite, et les messages vocaux | `voice.transcription` d’un canal satellites, `agent.transcription` |
-| speech        | donne sa voix à l’assistant                                | `voice.speech` d’un canal satellites, `agent.speech`               |
-| speaker       | reconnaît qui parle                                        | `voices.embedder` ([Locuteurs](/fr/docs/agent/speakers/))          |
-| image         | dessine les images qu’on lui demande                       | `agent.images` ([Images](#images))                                 |
-
-Configurer la voix : [Canaux et voix](/fr/docs/channels/#voix).
-
-## Réglages
-
-Un modèle de langage `openai-compatible` accepte aussi :
-
-- `extra_body`, fusionné dans chaque requête (routage, raisonnement) ;
-- `read_timeout_s`, en secondes (30) ;
-- `cache_control`, pour le cache de prompt du fournisseur, actif par défaut pour OpenRouter et
-  Anthropic ;
-- `vision: true` pour un modèle qui lit les images : il voit alors les photos envoyées.
-
-Les modèles `anthropic` et `gemini` voient les images et lisent les PDF sans qu’on le dise, et
-acceptent `extra_body` et `read_timeout_s` (60). Tout modèle de langage accepte un `fallback`
-([Modèle de secours](#modèle-de-secours)).

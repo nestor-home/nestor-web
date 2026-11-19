@@ -147,7 +147,7 @@ test("a provider mosaic shows one provider's setup at a time, chosen by click, k
   await expect(models.getByRole("tab", { name: /LM Studio/ })).toBeFocused();
   await expect(page.locator("#model-lm-studio-panel")).toBeVisible();
 
-  await page.goto("/fr/docs/channels/#speech-deepgram");
+  await page.goto("/fr/docs/voice/#speech-deepgram");
   const speech = page.getByRole("tablist", { name: "Fournisseurs de parole" });
   await expect(speech.getByRole("tab", { name: /Deepgram/ })).toHaveAttribute("aria-selected", "true");
   await expect(page.locator("#speech-deepgram-panel")).toContainText("Deepgram est prévu");
@@ -160,8 +160,9 @@ test.describe("without JavaScript", () => {
     await page.goto("/docs/models/");
     await expect(page.locator("#model-openrouter-panel")).toBeVisible();
     await expect(page.locator("#model-openai-panel")).toBeHidden();
-    await page.goto("/docs/channels/");
+    await page.goto("/docs/voice/");
     await expect(page.locator("#speech-elevenlabs-panel")).toBeVisible();
+    await page.goto("/docs/channels/");
     await expect(page.locator("#channel-chat-panel")).toBeVisible();
     await expect(page.locator("#channel-telegram-panel")).toBeHidden();
   });
@@ -173,6 +174,8 @@ test("pages that moved lead to where their content went", async ({ request }) =>
     ["/fr/docs/providers/", "/fr/docs/models/"],
     ["/developers/", "/docs/"],
     ["/fr/developpeurs/", "/fr/docs/"],
+    ["/docs/connections/", "/docs/home/"],
+    ["/fr/docs/connections/", "/fr/docs/home/"],
   ]) {
     expect(await (await request.get(from ?? "")).text()).toContain(`url=${to}`);
   }
@@ -189,4 +192,23 @@ test("the installation shows one way at a time, Docker opened by its address", a
   await expect(page.getByRole("tab", { name: "Docker" })).toHaveAttribute("aria-selected", "true");
   await expect(page.locator("#install-docker-panel")).toContainText("docker run -d");
   await expect(page.locator("#install-uv-panel")).toBeHidden();
+});
+
+test("the docs are served to language models: an index, every page in Markdown, the whole set", async ({ request }) => {
+  for (const root of ["", "/fr"]) {
+    const index = await (await request.get(`${root}/llms.txt`)).text();
+    expect(index).toMatch(/^# Nestor\n\n> /);
+    const pages = [...index.matchAll(/\]\(https:\/\/nestorhome\.dev(\/[^)]+\.md)\)/g)].map((m) => m[1] ?? "");
+    expect(pages.length).toBeGreaterThan(20);
+    for (const path of pages) {
+      const page = await request.get(path);
+      expect(page.status(), path).toBe(200);
+      expect(page.headers()["content-type"], path).toContain("text/markdown");
+      const text = await page.text();
+      expect(text, path).toMatch(/^# \S/);
+      expect(text, path).not.toMatch(/^import |<\/?[A-Z][A-Za-z]*[\s>/]/m);
+    }
+    const full = await (await request.get(`${root}/llms-full.txt`)).text();
+    expect(full.split("\n---\n").length).toBe(pages.length);
+  }
 });

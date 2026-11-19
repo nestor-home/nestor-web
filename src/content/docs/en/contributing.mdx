@@ -1,24 +1,39 @@
 ---
-
 title: Contributing and releases
-description: How changes reach the Nestor repositories, and how each one is released.
+description: How a change reaches the Nestor repositories, and how each one is released.
 ---
 
+import Steps from "@/components/docs/Steps.astro";
+
 Every [nestor-home](https://github.com/nestor-home) repository follows the organization’s
-[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md):
+[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md). Each repository’s
+`README.md` and `AGENTS.md` explain its setup and checks.
 
-- Every change is a pull request, merged once its `ci` check is green.
-- The title becomes the squashed commit, so it follows
-  [Conventional Commits](https://www.conventionalcommits.org/): `feat: …`, `fix: …`. A breaking
-  change adds `!`.
-- One pull request is one change, with its tests and documentation. Tests check real behaviour.
+## Make a change
 
-Each repository’s `README.md` and `AGENTS.md` explain its setup and checks.
+<Steps>
+
+1. **Open a pull request**
+
+   One pull request is one change, with its tests and documentation. Tests check real behaviour.
+
+2. **Title it**
+
+   The title becomes the squashed commit, so it follows
+   [Conventional Commits](https://www.conventionalcommits.org/): `feat: …`, `fix: …`. A breaking
+   change adds `!`.
+
+3. **Merge it**
+
+   It is merged once its `ci` check is green.
+
+</Steps>
 
 ## Releases
 
 release-please keeps a pull request open with the next version and its changelog. Merging it tags
-and publishes the release:
+and publishes the release. Before 1.0, a `feat` or a breaking change raises the minor version,
+anything else the patch.
 
 | Repository                                                                                | Published as                                                |
 | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
@@ -30,21 +45,27 @@ and publishes the release:
 | [nestor-character](https://github.com/nestor-home/nestor-character)                       | `@nestor-home/character` on npm                             |
 | [nestor-web](https://github.com/nestor-home/nestor-web)                                   | this site                                                   |
 
-Before 1.0, a `feat` or a breaking change raises the minor version, anything else the patch.
-
 ## Reporting
 
-Questions and ideas go to [Discussions](https://github.com/orgs/nestor-home/discussions),
-reproducible bugs to the repository’s issues. For a vulnerability, follow the
-[security policy](https://github.com/nestor-home/.github/blob/main/SECURITY.md).
+| What                 | Where                                                                                   |
+| -------------------- | --------------------------------------------------------------------------------------- |
+| questions and ideas  | [Discussions](https://github.com/orgs/nestor-home/discussions)                          |
+| a reproducible bug   | the repository’s issues                                                                 |
+| a vulnerability      | the [security policy](https://github.com/nestor-home/.github/blob/main/SECURITY.md)     |
 
 ## Licence and languages
 
 The server, the SDKs, the Reachy satellite and the character are under the MIT licence.
 
 Nestor speaks English and French. What it says to people is never in the code: each sentence is a
-[Project Fluent](https://projectfluent.org/) message, in `src/nestor/locales/<language>/` for the
-server, `web/src/locales/<language>/` for the admin and `src/locales/<language>/` for this site.
+[Project Fluent](https://projectfluent.org/) message.
+
+| Catalogues of       | Folder                            |
+| ------------------- | --------------------------------- |
+| the server          | `src/nestor/locales/<language>/`  |
+| the admin           | `web/src/locales/<language>/`     |
+| this site           | `src/locales/<language>/`         |
+
 Another language starts as another folder of catalogues.
 
 ## This documentation

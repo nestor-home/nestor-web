@@ -4,14 +4,10 @@ title: The journal
 description: What Nestor writes down, what a record looks like, the events of one watch from the request to the answer, and how a module declares its own.
 ---
 
-Everything Nestor does is an event in its journal: each turn, tool call, task, memory, message it
-brings by itself, and each decision with its reason. The admin, the tasks that survive a restart and
-the memory are all read from it.
-
-## Where it lives
-
-The journal is in `state/nestor.db`, one SQLite file. Records are added, never changed. What would
-weigh it down stays out of it: a long tool result, a file, a voiceprint.
+Everything Nestor does is an event in its journal, each decision with its reason. The admin, the
+memory and the tasks that survive a restart all read from it. It is one SQLite file,
+`state/nestor.db`; records are added, never changed. Long tool results, files and voiceprints stay
+out of it.
 
 ## A record
 
@@ -36,38 +32,37 @@ Every event has the same envelope around its own `payload`:
 }
 ```
 
-- `type` and `version` say how to read the payload.
-- `at` is the time, in UTC.
-- `source` is the part of Nestor that wrote it.
-- `session` is where it was said (`satellites:kitchen`), for what belongs to a conversation.
+| Field             | Holds                                                                        |
+| ----------------- | ---------------------------------------------------------------------------- |
+| `type`, `version` | how to read the payload                                                      |
+| `at`              | the time, in UTC                                                             |
+| `source`          | the part of Nestor that wrote it                                             |
+| `session`         | where it was said (`satellites:kitchen`), for what belongs to a conversation |
 
 ## One watch, from the request to the answer
 
-In the kitchen, Léa says “tell me as soon as the school writes back”. That afternoon the mail
-arrives while she is in the office. The journal holds, in order:
+Léa says in the kitchen "tell me as soon as the school writes back". The mail arrives while she is
+in the office. The journal holds, in order:
 
-| Event                            | Written when                                   | Its payload holds                                                        |
-| -------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------ |
-| `conversation.turn.user`         | she asks                                       | her words, where (`satellites:kitchen`), who spoke and how that is known |
-| `agent.tool.called`              | the agent calls the tool that creates a watch  | the tool and its arguments                                               |
-| `watch.created`                  | the watch exists                               | what to watch for, the kinds of items, its owner, the turn that asked    |
-| `conversation.turn.assistant`    | the agent confirms                             | what she heard                                                           |
-| `watch.sorted`                   | a model has read the new mail                  | the mail, the watches it was read against, those it matches              |
-| `watch.triggered`                | it matches hers                                | the mail, a summary, whether it is urgent                                |
-| `initiative.considered`          | the courier has decided where to tell her      | the reason, and the place chosen aloud or in writing                     |
-| `conversation.turn.notification` | the match enters the conversation of that room | what the agent is given to tell                                          |
-| `conversation.turn.assistant`    | the agent tells her                            | what she heard                                                           |
-| `initiative.delivered`           | it reached her                                 | where, and what it was about                                             |
+| Event                            | Written when                                   | Its payload holds                                                                |
+| -------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------- |
+| `conversation.turn.user`         | she asks                                       | her words, where (`satellites:kitchen`), who spoke and how that is known         |
+| `agent.tool.called`              | the agent calls the tool that creates a watch  | the tool and its arguments                                                       |
+| `watch.created`                  | the watch exists                               | its title, what to watch for, the kinds of items, its owner, the turn that asked |
+| `conversation.turn.assistant`    | the agent confirms                             | what she heard                                                                   |
+| `watch.sorted`                   | a model has read the new mail                  | the mail, the watches it was read against, those it matches                      |
+| `watch.triggered`                | it matches hers                                | the mail, a summary, whether it is urgent                                        |
+| `initiative.considered`          | the courier has decided where to tell her      | the reason, and the place chosen aloud or in writing                             |
+| `conversation.turn.notification` | the match enters the conversation of that room | what the agent is given to tell                                                  |
+| `conversation.turn.assistant`    | the agent tells her                            | what she heard                                                                   |
+| `initiative.delivered`           | it reached her                                 | where, and what it was about                                                     |
 
-A watch for one item ends once it has matched (`watch.ended`).
+A watch for one item ends once it has matched (`watch.ended`). Every event of a turn carries the
+same `exchange`, a conversation id and a turn id, by which the admin groups them. The turn's
+`speaker` says who spoke: a person, how they are known (`account`, `voice`, `said` or `unknown`)
+and, for a voice, how close it was ([Speakers](/docs/agent/speakers/)).
 
-Every event of a turn carries the same `exchange`: a conversation id and a turn id. The admin groups
-them by it.
-
-“Who spoke” is the turn's `speaker`: a person, how they are known (`account`, `voice`, `said` or
-`unknown`) and, for a voice, how close it was. See [Speakers](/docs/agent/speakers/).
-
-The decision is what answers “why did it speak to me here?”:
+The decision answers "why did it speak to me here?":
 
 ```json
 {
@@ -88,14 +83,14 @@ The decision is what answers “why did it speak to me here?”:
 ```
 
 The reason is a message id with its values, never a sentence: the admin renders it in the reader's
-language (“Léa is in the office”). The other reasons are on [Initiative](/docs/agent/initiative/).
+language ("Léa is in the office"). The other cases are on [Initiative](/docs/agent/initiative/).
 
-## Reading it in the admin
+## In the admin
 
-The **Journal** page shows the events as conversation threads, live. Filter them by person, channel,
+The **Journal** shows the events live, as conversation threads. Filter them by person, channel,
 room and kind (conversations, unprompted messages, tools, tasks, watches, reminders, memories,
-connections, presence, satellites, voices, observations, accounts). An entry opens with what it says, what it relates to and
-its raw record.
+connections, presence, satellites, voices, observations, accounts). An entry opens on what it says,
+what it relates to and its raw record.
 
 ## Declaring an event
 
@@ -115,10 +110,10 @@ class WatchTriggered(Event, event_type="watch.triggered"):
     urgent: bool = False
 ```
 
-The class becomes a frozen, typed record, registered under its type; two classes cannot share one.
-A payload holds plain data only (text, numbers, booleans, dates, enumerations, lists, and records
-made of these), so the journal stays readable without the code that wrote it.
+The class becomes a frozen, typed record, registered under its type, which no other class may
+take. A payload holds plain data only (text, numbers, booleans, dates, enumerations, lists, and
+records of these), so the journal reads without the code that wrote it.
 
-To change a payload, raise the event's `version` and write its `upgrade`, which turns a record of
-the version before into the new one. Older records are upgraded as they are read; the file is never
-rewritten. The admin files an event it has no kind for under **Other**.
+To change a payload, raise `version` and write the event's `upgrade` from the version before. Old
+records are upgraded as they are read; the file is never rewritten. The admin files an event of
+unknown kind under **Other**.

@@ -4,27 +4,28 @@ title: Conformité
 description: Vérifier en ligne de commande qu’un satellite, quel que soit son langage, respecte le protocole.
 ---
 
-La suite boîte noire du serveur lance votre satellite, quel que soit son langage, une fois par
-scénario face à un faux cœur fait du vrai service d’appairage et de la vraie passerelle. Chaque
-vérification nomme la [règle du protocole](/fr/docs/satellites/protocol/#12-conformité) qu’elle
-prouve.
+La suite boîte noire du serveur lance votre satellite une fois par scénario, face à un faux cœur
+fait du vrai service d’appairage et de la vraie passerelle. Chaque vérification nomme la
+[règle du protocole](/fr/docs/satellites/protocol/#12-conformité) qu’elle prouve.
 
 ## La lancer
 
-uvx lance la suite, avec l’extra `voice` du serveur, sans rien installer :
+uvx lance la suite avec l’extra `voice` du serveur, sans rien installer :
 
 ```bash
 uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance [--deadline SECONDES] -- <commande>
 ```
 
-`<version>` est une version du serveur. Après `--` vient la ligne de commande de votre satellite,
-où :
-
-- `{url}` devient l’adresse du faux cœur ;
-- `{state}` devient un dossier neuf, pour le jeton et tout ce que garde le satellite.
+| Élément      | Ce que c’est                                                                              |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| `<version>`  | une version du serveur                                                                    |
+| `<commande>` | la ligne de commande de votre satellite, après `--`                                       |
+| `{url}`      | dans la commande, remplacé par l’adresse du faux cœur                                     |
+| `{state}`    | dans la commande, remplacé par un dossier neuf pour le jeton et ce que garde le satellite |
+| `--deadline` | secondes laissées par étape, 15 par défaut                                                |
 
 Les scénarios avec un code d’enrôlement le donnent dans `NESTOR_PAIRING_URI` (règle P1) ; les
-autres retirent la variable. `--deadline` donne les secondes laissées par étape (15 par défaut).
+autres retirent la variable. Sans l’extra `voice`, les vérifications audio échouent.
 
 Avec les commandes des SDK, sans carte son :
 
@@ -59,13 +60,10 @@ OK     ouvre son lien avec son jeton, un hello d'abord, comme l'appareil appair�
 | `1`            | une vérification a échoué                                                          |
 | `2`            | la commande ne peut pas tourner : aucune commande donnée, ou programme introuvable |
 
-Sans l’extra `voice`, les vérifications audio échouent.
-
 ## En intégration continue
 
 Lancez la même commande dans un job, après avoir construit le satellite ; seul uv est nécessaire.
 Épinglez la version du serveur et montez-la avec celle du protocole.
 
-En Python, `check_satellite(driver)` de `nestor.adapters.channels.satellites.conformance` renvoie
-les résultats pour vos propres tests. `driver` est une fonction coroutine qui prend un `Launch`, ou
-une commande.
+Dans des tests Python, `check_satellite(driver)` de `nestor.adapters.channels.satellites.conformance`
+renvoie les résultats. `driver` est une fonction coroutine qui prend un `Launch`, ou une commande.

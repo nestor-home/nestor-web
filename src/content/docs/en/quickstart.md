@@ -4,65 +4,76 @@ title: Quickstart
 description: From nothing to a first conversation with Nestor on your computer, in writing, in about ten minutes.
 ---
 
-Get a first answer from Nestor, in the admin then in your terminal, the shortest way: uv, a hosted
-model, text only.
-Other ways are in [Installation](/docs/install/).
+The shortest way to a first answer: uv, a hosted model, text only. Other ways are in
+[Installation](/docs/install/).
 
-You need:
-
-- macOS or Linux with [uv](https://docs.astral.sh/uv/getting-started/installation/);
-- a model provider key: [OpenRouter](https://openrouter.ai/keys) by default, or any
-  OpenAI-compatible server, local ones included ([Models](/docs/models/)).
+You need macOS or Linux with [uv](https://docs.astral.sh/uv/getting-started/installation/), and a
+model provider key: [OpenRouter](https://openrouter.ai/keys) by default, or any OpenAI-compatible
+server, local ones included ([Models](/docs/models/)).
 
 ## Run the server
 
-### 1. Install Nestor
+<div class="doc-steps">
+<ol>
+<li>
+
+**Install Nestor**
 
 ```bash quickstart
 uv tool install nestor-home
 ```
 
-### 2. Write a first configuration
+</li>
+<li>
+
+**Write a first configuration**
 
 ```bash quickstart
 mkdir nestor && cd nestor
 nestor init
 ```
 
-`nestor init` asks for names, the language, the time zone, the model and the channels to set up;
-Enter keeps each default.
-It then creates your admin login (a password of 10 characters or more).
+It asks for names, the language, the time zone, the model and the channels (Enter keeps each
+default), then creates your admin login, with a password of 10 characters or more. It writes
+`nestor.yaml` (the configuration), `.env` (the keys) and `state/` (the database), and never
+overwrites an existing one.
 
-It writes `nestor.yaml` (the configuration), `.env` (the keys) and `state/` (the database), and
-never overwrites an existing one.
+</li>
+<li>
 
-### 3. Add the model key
-
-Fill in `MODEL_API_KEY` in `.env`:
+**Add the model key** to `MODEL_API_KEY` in `.env`
 
 ```ini
 MODEL_API_KEY=sk-or-...
 ```
 
-### 4. Check and start
+</li>
+<li>
+
+**Check and start**
 
 ```bash quickstart
 nestor check
 nestor run
 ```
 
-`nestor check` names what is missing, such as an empty key. `nestor run` starts the server: leave it
-running.
+`nestor check` names what is missing, such as an empty key. Leave `nestor run` running.
 
-## Open the admin
+</li>
+<li>
 
-Open [http://localhost:8470](http://localhost:8470) and sign in with the login from step 2. Under
-**Chat**, write a message: Nestor answers in the page.
+**Write to it** in the admin
 
-## Talk to it
+Open [http://localhost:8470](http://localhost:8470), sign in with the login from step 2, open
+**Talk** and write a message. Nestor answers in the page.
 
-To talk to it from a device, open a second terminal in the same folder and create a pairing code
-for a terminal satellite:
+</li>
+</ol>
+</div>
+
+## Talk to it from a terminal
+
+A terminal can act as a satellite. In a second terminal, in the same folder, create a pairing code:
 
 ```bash
 nestor satellites add --room office --name Terminal
@@ -74,11 +85,11 @@ Pass the URI it prints (`nestor+http://…:8471/?code=…`) to the satellite:
 uvx nestor-satellite run --room office --text --no-voice --pairing-uri 'nestor+http://…'
 ```
 
-Type a message and press Enter. The answer prints in the terminal and the turn shows in the admin’s
+Type a message and press Enter. The answer prints in the terminal and the turn shows in the admin's
 journal. Later runs reconnect without a code.
 
 ## Next
 
-- Talk to it aloud, or from a messaging app: [Channels and voice](/docs/channels/).
-- Let it see who is home and drive the house: [Home and services](/docs/connections/).
+- Reach it from a messaging app: [Channels](/docs/channels/). Talk to it aloud: [Voice](/docs/voice/).
+- Let it see who is home and run the house: [Home Assistant](/docs/home/).
 - What happened during that turn: [How the agent works](/docs/agent/).

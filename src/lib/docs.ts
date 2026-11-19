@@ -10,8 +10,12 @@ import type { BrandKey } from "@/lib/brands";
 export const DOC_GROUPS = [
   { id: "start", pages: ["", "quickstart", "install"] },
   { id: "agent", pages: ["agent", "agent/memory", "agent/initiative", "agent/speakers", "agent/journal"] },
-  { id: "configure", pages: ["configuration", "models", "channels", "connections", "updates"] },
-  { id: "satellites", pages: ["satellites", "satellites/protocol", "satellites/schemas", "satellites/conformance"] },
+  { id: "configure", pages: ["configuration", "models", "channels", "voice", "updates"] },
+  { id: "connect", pages: ["home", "accounts", "tools", "executors"] },
+  {
+    id: "satellites",
+    pages: ["satellites", "satellites/cameras", "satellites/protocol", "satellites/schemas", "satellites/conformance"],
+  },
   { id: "sdks", pages: ["sdks/python", "sdks/typescript", "sdks/rust", "sdks/templates"] },
   { id: "project", pages: ["plugins", "contributing"] },
 ] as const;

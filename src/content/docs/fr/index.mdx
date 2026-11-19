@@ -1,0 +1,51 @@
+---
+title: Introduction
+description: Ce que Nestor fait pour un foyer, et par où commencer dans cette documentation.
+---
+
+import Card from "@/components/docs/Card.astro";
+import Cards from "@/components/docs/Cards.astro";
+import Steps from "@/components/docs/Steps.astro";
+
+Nestor est un assistant open source pour tout le foyer. Un serveur Python, à la maison, fait tourner
+un seul agent sur un modèle de langage, hébergé ou local. Chacun lui parle à sa façon : à voix haute
+par un satellite dans la cuisine, dans le chat de l’administration, sur Telegram dehors. Le projet
+est jeune : attendez-vous à des changements d’une version à l’autre.
+
+## Ce qu’il fait
+
+<Cards cols={3}>
+  <Card title="Il sait qui demande" href="/fr/docs/agent/speakers/" icon="mic">Les conversations et les souvenirs de chacun restent à part.</Card>
+  <Card title="Il se souvient" href="/fr/docs/agent/memory/" icon="brain">Il retrouve ce que vous lui avez dit, avec les dates.</Card>
+  <Card title="Il pilote la maison" href="/fr/docs/home/" brand="home-assistant">Par Home Assistant, et il sait qui est là.</Card>
+  <Card title="Il guette" href="/fr/docs/agent/initiative/" icon="sparkles">Il vous prévient quand le mail attendu arrive.</Card>
+  <Card title="Il trouve la bonne personne" href="/fr/docs/agent/initiative/" icon="chat">Dans sa pièce ou sur son téléphone, discret la nuit.</Card>
+  <Card title="Il tient un journal" href="/fr/docs/agent/journal/" icon="journal">Chaque action et sa raison, dans l’administration.</Card>
+</Cards>
+
+## Votre première heure
+
+<Steps>
+
+1. **Installer le serveur** avec uv, pip ou Docker : [Installer](/fr/docs/install/).
+2. **Avoir une première conversation**, dans l’administration puis dans un terminal :
+   [Démarrage rapide](/fr/docs/quickstart/).
+3. **Ajouter un canal**, Telegram par exemple, pour le joindre de partout :
+   [Canaux](/fr/docs/channels/).
+4. **Ajouter un satellite** dans une pièce, pour lui parler à voix haute :
+   [Satellites](/fr/docs/satellites/).
+
+</Steps>
+
+## La documentation
+
+<Cards cols={3}>
+  <Card title="Démarrer" href="/fr/docs/quickstart/" icon="rocket">Installer, puis une première conversation.</Card>
+  <Card title="Fonctionnement" href="/fr/docs/agent/" icon="bot">Un tour, la mémoire, l’initiative, le journal.</Card>
+  <Card title="Configurer" href="/fr/docs/configuration/" icon="settings">Le fichier de configuration, les modèles, les canaux, la voix.</Card>
+  <Card title="Connecter" href="/fr/docs/home/" icon="plug">Home Assistant, les comptes, les outils, les exécutants.</Card>
+  <Card title="Satellites" href="/fr/docs/satellites/" icon="satellite">Les appareils d’une pièce, et leur protocole.</Card>
+  <Card title="SDK" href="/fr/docs/sdks/python/" icon="code">Écrire un satellite en Python, TypeScript ou Rust.</Card>
+</Cards>
+
+Pour ajouter un outil, un modèle ou un canal à vous, écrivez un [plugin](/fr/docs/plugins/).

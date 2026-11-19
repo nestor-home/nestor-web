@@ -1,77 +1,70 @@
 ---
 title: Initiative
-description: Quand Nestor parle sans qu’on le lui demande. Réveils, veilles, tâches terminées, messages transmis, et le coursier qui les livre.
+description: Quand Nestor parle sans qu’on le lui demande. Rappels, veilles, tâches terminées, messages transmis, et le coursier qui les livre.
 ---
 
 import Initiative from "@/components/docs/diagrams/Initiative.astro";
 
-Nestor parle parfois le premier : un rappel demandé, un courrier qu’il guettait, une tâche terminée,
-une question de quelqu’un d’autre. Tous prennent le même chemin.
+Rappels, veilles, tâches terminées et messages de quelqu’un d’autre arrivent tous à une personne
+par le même chemin.
 
-<Initiative locale="fr" n={7} />
+<Initiative locale="fr" n={1} />
 
 ## Ce qui l’appelle
 
-**Les réveils.** « Rappelle-moi demain à 9 h d’appeler le plombier », « chaque jour de la semaine à
-8 h, donne-moi la météo ». L’agent appelle `schedule` avec une consigne qui se suffit et une heure,
-unique ou certains jours. À l’échéance, l’agent fait ce qu’elle dit, avec ses outils, et ce qu’il
-écrit arrive à qui l’a programmé, là où il se trouve, comme le résultat d’une tâche ; s’il n’y a
-rien à dire (un prix qui n’a pas baissé), rien n’est envoyé et le journal le note. Un réveil
-récurrent garde un fil : à chaque passage, l’agent relit ce que lui et les tâches qu’il a lancées
-ont déjà dit, et ne dit que ce qui est nouveau ou a changé. Un réveil manqué pendant un arrêt de
-Nestor s’exécute une fois au démarrage suivant.
+| Source      | Exemple                                                 | Outil                                          |
+| ----------- | ------------------------------------------------------- | ---------------------------------------------- |
+| **Rappel**  | « chaque jour de la semaine à 8 h, donne-moi la météo » | `schedule`                                     |
+| **Veille**  | « préviens-moi quand la banque écrit »                  | `create_watch`                                 |
+| **Tâche**   | « lis ce PDF et résume le contrat »                     | `delegate_task`, vers un [exécutant](/fr/docs/executors/) |
+| **Message** | « demande à Léa si elle a besoin de la voiture »        | `message_person`                               |
 
-**Les veilles.** « Préviens-moi quand la banque écrit » crée une veille. Un petit modèle lit chaque
-chose qui arrive (un mail, une entrée de flux, le changement d’une page, l’envoi d’un webhook) une
-fois, face à toutes les veilles, et annonce ce qui correspond à qui l’a demandé.
+Chacun a un titre court, affiché dans l’administration, et arrive à qui l’a demandé.
 
-**Les tâches.** Le résultat d’un exécutant est annoncé une fois à qui l’a demandé, même après un
-redémarrage, avec les fichiers qu’il a faits.
+- **Rappel** : une consigne exécutée à une heure, une fois ou certains jours, avec les outils de
+  l’agent. Un rappel récurrent garde un fil et ne dit que ce qui a changé. Un rappel manqué pendant
+  un arrêt s’exécute une fois au démarrage suivant.
+- **Veille** : un petit modèle lit chaque chose qui arrive une fois, face à toutes les veilles : un
+  mail d’un [compte connecté](/fr/docs/accounts/), une entrée de flux, le changement d’une page, un
+  webhook ([Outils](/fr/docs/tools/)).
+- **Tâche** : son résultat est annoncé une fois, même après un redémarrage, avec les fichiers
+  produits.
+- **Message** : s’il attend une réponse, il ouvre une question que les deux personnes voient
+  jusqu’à la réponse. `may_message` dit à qui une personne peut écrire par l’agent : tout le monde
+  par défaut (`"*"`), et toujours elle-même.
 
-**Les messages.** « Dis à Hugo que le dîner est à 20 h », « demande à Léa si elle a besoin de la
-voiture » : l’agent appelle `message_person`. Un message qui attend une réponse ouvre une question,
-que les deux voient jusqu’au retour de la réponse. Le réglage `may_message` de chaque personne dit à
-qui d’autre elle peut écrire par l’agent, tout le monde par défaut (`"*"`) ; chacun peut s’écrire à
-lui-même.
+## Où il arrive
 
-## Où et comment il arrive
+Le **coursier** décide et journalise sa raison. La présence vient de
+[Home Assistant](/fr/docs/home/).
 
-Le **coursier** décide d’abord, et journalise sa décision avec sa raison :
+| La personne                          | Nestor                                                      |
+| ------------------------------------ | ----------------------------------------------------------- |
+| a demandé l’écrit, ou est absente    | écrit là où elle lit (son `reach`)                          |
+| est dans une pièce avec un satellite | parle là                                                    |
+| est à la maison, sans pièce connue   | parle par `initiative.main_room`                            |
+| est dans une pièce sans satellite    | écrit                                                       |
+| n’a aucune présence connue           | écrit ; parle seulement dans une conversation orale en cours, ou à qui n’a nulle part où lire |
 
-- la personne a demandé l’écrit, ou elle est absente : un message là où elle lit (son `reach`, sur
-  Telegram par exemple) ;
-- elle est dans une pièce avec un satellite : dit là ; à la maison sans pièce connue : par le
-  satellite de `initiative.main_room`. Si personne ne réagit en trois minutes
-  (`initiative.follow_up_after_s`), un message suit par écrit ;
-- elle est dans une pièce sans satellite : un message ;
-- heures calmes (`initiative.quiet_hours`) : rien n’est dit sauf urgence, et le message part quand
-  même par écrit ;
-- aucune information de présence : un message ; dit à voix haute seulement dans une conversation
-  parlée encore en cours, ou à quelqu’un qui n’a nulle part où lire ;
-- quelque chose de privé (un mail pour quelqu’un) : la pièce entend seulement que quelque chose est
-  arrivé, et le contenu part aussitôt par écrit ;
-- un résultat avec des fichiers (un document fait par une tâche) : il part par écrit avec ses fichiers,
-  et la pièce entend ce qu’il apporte.
+| Cas              | Alors                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------- |
+| pas de réaction  | un message dit suit par écrit après `initiative.follow_up_after_s` (180 s)            |
+| heures calmes    | `initiative.quiet_hours` (`"22:30-07:30"`) : rien n’est dit sauf urgence, l’écrit part |
+| contenu privé    | la pièce entend que quelque chose est arrivé ; le contenu part par écrit              |
+| fichiers         | ils partent par écrit ; la pièce entend ce qu’ils apportent                           |
 
-Un message dit à voix haute est entendu par toute la pièce. Voir
-[Locuteurs](/fr/docs/agent/speakers/).
+Un message dit à voix haute est entendu par toute la pièce ([Locuteurs](/fr/docs/agent/speakers/)).
 
-Seule la réponse finale de l’agent part, jamais ce qu’il écrit avant d’utiliser ses outils (« je
-regarde »). Chacune finit dans le journal de trois façons :
+## Comment il se termine
 
-- transmise ;
-- rien à dire : une vérification qui n’a rien trouvé, un résultat qui ne change rien pour la
-  personne. Rien n’est envoyé, le journal garde la raison donnée par l’agent, et elle ne revient
-  jamais, même après un redémarrage ;
-- non transmise : aucun canal ne l’a prise, ou le modèle n’a pas pu l’écrire. Elle est retentée au
-  démarrage suivant.
+Seule la réponse finale de l’agent part, jamais « je regarde ». Le journal note l’une de trois
+issues :
 
-Ce qu’une personne a demandé (une tâche, un outil qui a continué en arrière-plan), un message qu’on
-a demandé de transmettre, une confirmation à demander et un échec sont toujours dits : pour eux,
-rien à dire compte comme non transmis. Seul ce que Nestor lance de lui-même (un réveil, une veille)
-peut finir en silence.
+| Issue         | Quand                                                      | Ensuite                                     |
+| ------------- | ---------------------------------------------------------- | ------------------------------------------- |
+| transmise     | elle est arrivée                                           | elle reste dans l’historique de la conversation |
+| rien à dire   | une vérification n’a rien trouvé de nouveau                | rien n’est envoyé, la raison est journalisée, jamais retentée |
+| non transmise | aucun canal ne l’a prise, ou le modèle n’a pas pu l’écrire | retentée au démarrage suivant               |
 
-Un message livré reste dans l’historique de la conversation avec ce qu’il concernait (le résultat de
-la tâche, le mail) : une réponse à ce message en a le contexte.
-
-La présence vient de Home Assistant : la pièce quand elle la connaît, présent ou absent sinon.
+Seul ce que Nestor lance de lui-même (un rappel, une veille) peut finir en « rien à dire ». Une
+demande, un message à transmettre, une confirmation et un échec sont toujours dits.

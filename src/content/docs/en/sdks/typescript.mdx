@@ -1,0 +1,170 @@
+---
+title: TypeScript SDK
+description: Write a satellite in TypeScript with @nestor-home/satellite, in a browser tab or in Node.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+[`@nestor-home/satellite`](https://www.npmjs.com/package/@nestor-home/satellite) handles pairing,
+the token, the manifest, the link and text, in browsers and Node 22.12 or later. Audio and the
+camera are separate entry points: a device that only writes never loads them.
+
+## Install
+
+<Steps>
+
+1. **Install the package** in your project:
+
+   ```bash
+   pnpm add @nestor-home/satellite
+   pnpm add @roamhq/wrtc   # in Node, to talk aloud: WebRTC, prebuilt for Linux, macOS and Windows x64
+   ```
+
+2. **Pair it** in Node with the pairing URI of an enrollment code, made under **Satellites** in the
+   admin or with `nestor satellites add --room salon`. Later runs reconnect.
+
+   ```bash
+   npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+   ```
+
+</Steps>
+
+| Entry point                     | Gives                                                             |
+| ------------------------------- | ----------------------------------------------------------------- |
+| `@nestor-home/satellite`        | pairing, the link, text, intents and observations                 |
+| `@nestor-home/satellite/voice`  | `browserVoice()`: audio in a browser                              |
+| `@nestor-home/satellite/node`   | `nodeVoice()`, `CommandSource`, `CommandSink`, `FileTokenStore`, `provisioningFromEnv()`, `languagesFromEnv()` |
+| `@nestor-home/satellite/video`  | `browserCamera()`, `patternCamera()`                              |
+| `@nestor-home/satellite/qr`     | `cameraQrScanner()`, with `zxing-wasm`                            |
+
+## The command
+
+In Node, `npx nestor-satellite run` turns this machine into a satellite: its microphone and
+speaker, its terminal, or both. Run it from a project where the SDK is installed, with
+`@roamhq/wrtc` to talk aloud.
+
+| Option          | Flag or variable                        | What it does                                                         |
+| --------------- | --------------------------------------- | -------------------------------------------------------------------- |
+| Core            | `--core`                                | the core's address, e.g. `http://nestor.local:8471` (default: the pairing URI's) |
+| Pairing URI     | `--pairing-uri`, `NESTOR_PAIRING_URI`   | pairs with an enrollment code made in Nestor                         |
+| Enrollment code | `--pairing-code`, `NESTOR_PAIRING_CODE` | the same code alone, with `--core`                                   |
+| Room            | `--room`                                | the room the device is in (required)                                 |
+| Id              | `--id`                                  | this device's id (default: the host name)                            |
+| Token           | `--token-file`                          | where the token is kept (default: `~/.config/nestor-satellite/<id>.json`) |
+| Text            | `--text`                                | sends the lines typed on stdin, prints the answers                   |
+| No voice        | `--no-voice`                            | leaves the microphone and speaker out                                |
+| Recorder        | `--input`                               | a command printing raw 48 kHz 16-bit mono PCM, or `none` (default: `arecord` on Linux, SoX's `rec` on macOS) |
+| Player          | `--output`                              | a command playing the same, or `none` (default: `aplay`, or SoX's `play`) |
+| STUN or TURN    | `--ice`                                 | a server, repeatable; needed only beyond the local network           |
+| Language        | `--locale`                              | what it speaks: `en` or `fr` (default: `LC_ALL`, `LANG`…)            |
+
+Without an enrollment code, it says a device code on its speaker and logs it: type it in the
+admin. `npx nestor-satellite --help` lists every flag.
+
+## A driver of your own
+
+A wall tablet tab that writes with the assistant, served over `https:` or `localhost`:
+
+```ts
+import { IDENTIFY, LocalStorageTokenStore, Manifest, Satellite } from "@nestor-home/satellite";
+
+const satellite = new Satellite({
+  core: location.origin,
+  manifest: Manifest.of({ id: "tablette-cuisine", model: "browser", room: "cuisine" }, IDENTIFY),
+  tokens: new LocalStorageTokenStore(),
+  // declares text.display and text.input
+  text: { display: (text, final) => show(text, final), input: true },
+  pairing: {
+    // the device code to type in Nestor; `code` is null once it is no longer needed
+    display: (code, text) => {
+      document.querySelector("#code")!.textContent = code ?? "";
+      document.querySelector("#status")!.textContent = text;
+    },
+  },
+  body: {
+    behavior: (behavior) => (document.body.dataset.behavior = behavior),
+    identify: () => document.body.animate([{ opacity: 0.2 }, { opacity: 1 }], { duration: 500, iterations: 6 }),
+  },
+});
+satellite.run();
+form.onsubmit = () => satellite.sendText(input.value); // a turn of the kitchen's conversation
+```
+
+In Node, the same `Satellite` takes a `FileTokenStore` (mode 600) and `nodeVoice({ source, sink })`
+with a `CommandSource` and a `CommandSink`. `run` reconnects when the link drops and pairs again if
+its token is refused. It rejects with `LinkReplaced` when a newer link of the same device takes
+over, and with `PairingError` when the core will never pair it.
+
+## Capabilities
+
+The manifest lists the body and sensors: `EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`,
+`PERSON_DETECTION`, `SPEECH_ACTIVITY`. The rest follows from the options; declaring it in the
+manifest throws a `ProtocolError`.
+
+| Option                                         | Declares          |
+| ---------------------------------------------- | ----------------- |
+| `text: { display: (text, final) => … }`        | `text.display`    |
+| `text: { input: true }`                        | `text.input`      |
+| a `voice` with a microphone (`source` in Node) | `audio.capture`   |
+| a `voice` with a speaker (`sink` in Node)      | `audio.playback`  |
+| `camera`                                       | `video.capture`   |
+| `onMedia: (active) => …`                       | `media.indicator` |
+| `updater`                                      | `device.update`   |
+
+- `satellite.sendText(text)` sends 1 to 4,000 typed characters. It returns `false` while the link
+  is down, and throws `CapabilityNotAllowed` if the household did not allow `text.input`.
+- `final` marks the last message of an answer.
+- The `iceServers` option of `browserVoice` or `nodeVoice` (STUN or TURN URLs) is needed only
+  beyond the local network.
+
+## Pairing options
+
+| Option                                                                 | Declares                                                |
+| ---------------------------------------------------------------------- | ------------------------------------------------------- |
+| always                                                                 | `enrollment.provisioning`                               |
+| `display: (code, text) => …`                                           | `device_code.display`                                   |
+| `speak: (sentence) => …`, or a `voice` with a speaker and no `display` | `device_code.speech`                                    |
+| `voice: true`                                                          | says the code with the bundled voice even with a screen |
+| `accepts: ["enrollment.input"]`                                        | `enrollment.input`                                      |
+| `scanner: cameraQrScanner({ wasmUrl })` (browsers)                     | `enrollment.qr`                                         |
+
+- `enrollment` takes a pairing URI or an enrollment code.
+- `await satellite.enroll(input.value)` sends a code typed on the device. A refused code is never
+  sent again.
+- `locale` sets the language it speaks.
+
+## Voice and camera
+
+`voice: browserVoice()` makes a tab talk aloud ([Voice](/docs/voice/)). The microphone opens only
+once Nestor allows audio, and browsers play sound only after a gesture, so call `run()` from a
+click. `browserVoice({ microphone: false })` has no microphone, `browserVoice({ element: null })`
+no speaker.
+
+`camera: browserCamera()` lets the people allowed watch through the tab, and with a voice call
+through it, only in sessions they open in Nestor ([Cameras and calls](/docs/satellites/cameras/)).
+`patternCamera()` draws a test pattern instead. Browsers open a camera only over `https:` or
+`localhost`, and Nestor lets a device film only over TLS, or on the core's machine. The SDK keeps
+the session rules itself and never listens on a port.
+
+## Updates
+
+The manifest names the software the device runs: `@nestor-home/satellite` and its version, unless
+`new Manifest(device, capabilities, { software })` names the package a driver is published as.
+
+A browser tab gets new code by reloading, so it declares no update. Elsewhere, an `updater`
+finds a newer version at its source (`newer`), installs it (`install`) and starts again on it
+(`restart`); going back when the new version is not welcomed within 60 s is its job too. The SDK
+ships none. The rules: [Updates](/docs/satellites/protocol/#10-updates) in the protocol.
+
+## Conformance
+
+Run the server's suite against the command, without a sound card:
+
+```bash
+uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
+  npx nestor-satellite run --core {url} --room salon --input none --output none --token-file {state}/token.json
+```
+
+[Conformance](/docs/satellites/conformance/) explains the placeholders and the report. The source,
+a browser example and the voice clips' licence are in
+[nestor-satellite-typescript](https://github.com/nestor-home/nestor-satellite-typescript).

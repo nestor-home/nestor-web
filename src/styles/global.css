@@ -609,3 +609,145 @@
     color: var(--ink-faint);
   }
 }
+
+/* the docs' building blocks (src/components/docs): steps, cards, callouts */
+@layer components {
+  .doc-steps > ol {
+    counter-reset: step;
+    list-style: none;
+    padding-left: 0;
+  }
+  .doc-steps > ol > li {
+    position: relative;
+    counter-increment: step;
+    padding-left: 2.75rem;
+    padding-bottom: 0.5rem;
+  }
+  .doc-steps > ol > li + li {
+    margin-top: 1.25rem;
+  }
+  .doc-steps > ol > li::before {
+    content: counter(step);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    width: 1.75rem;
+    height: 1.75rem;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-data);
+    font-size: 0.75rem;
+  }
+  .doc-steps > ol > li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 2.1rem;
+    bottom: -0.9rem;
+    left: 0.85rem;
+    width: 1px;
+    background: var(--rule);
+  }
+  .doc-steps > ol > li > :first-child {
+    margin-top: 0;
+  }
+  .doc-steps > ol > li > * + * {
+    margin-top: 0.75rem;
+  }
+
+  .doc-cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  @media (min-width: 40rem) {
+    .doc-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 64rem) {
+    .doc-cards.is-three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .doc-card {
+    display: grid;
+    align-content: start;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem;
+    border-radius: 0.9rem;
+    background: var(--paper-raised);
+    box-shadow: var(--lift);
+    text-decoration: none;
+    transition: box-shadow var(--duration) var(--ease);
+  }
+  .doc-prose a.doc-card {
+    text-decoration: none;
+  }
+  a.doc-card:hover {
+    box-shadow: var(--lift-hover);
+  }
+  .doc-card-mark {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    margin-bottom: 0.35rem;
+    border-radius: 0.6rem;
+    background: var(--paper-sunken);
+    color: var(--ink);
+  }
+  .doc-card-title {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  [data-area="docs"] .doc-card-title {
+    font-family: var(--font-data);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .doc-card-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+
+  .doc-callout {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--paper-sunken);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .doc-callout.is-warning {
+    background: color-mix(in oklab, var(--ember) 12%, var(--paper-sunken));
+  }
+  .doc-callout-icon {
+    margin-top: 0.25rem;
+    color: var(--ink-muted);
+  }
+  .doc-callout.is-warning .doc-callout-icon {
+    color: var(--ember);
+  }
+  .doc-callout-body > * + * {
+    margin-top: 0.5rem;
+  }
+
+  /* tables as reference grids */
+  .doc-prose table th {
+    font-family: var(--font-data);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+    text-align: left;
+  }
+  .doc-prose table :is(th, td) {
+    padding: 0.55rem 0.9rem 0.55rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+}

@@ -1,25 +1,40 @@
 ---
-
 title: Contribuer et publier
-description: Comment les changements arrivent dans les dépôts Nestor, et comment chacun publie ses versions.
+description: Comment un changement arrive dans les dépôts Nestor, et comment chacun publie ses versions.
 ---
 
+import Steps from "@/components/docs/Steps.astro";
+
 Tous les dépôts de [nestor-home](https://github.com/nestor-home) suivent le
-[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md) de l’organisation :
-
-- Chaque changement passe par une pull request, fusionnée quand sa vérification `ci` est au vert.
-- Le titre devient le commit fusionné : il suit les
-  [Conventional Commits](https://www.conventionalcommits.org/) (`feat: …`, `fix: …`). Un
-  changement cassant ajoute `!`.
-- Une pull request est un seul changement, avec ses tests et sa documentation. Les tests vérifient
-  un comportement réel.
-
+[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md) de l’organisation.
 Le `README.md` et l’`AGENTS.md` de chaque dépôt expliquent son installation et ses vérifications.
+
+## Proposer un changement
+
+<Steps>
+
+1. **Ouvrir une pull request**
+
+   Une pull request est un seul changement, avec ses tests et sa documentation. Les tests vérifient
+   un comportement réel.
+
+2. **Lui donner un titre**
+
+   Le titre devient le commit fusionné : il suit les
+   [Conventional Commits](https://www.conventionalcommits.org/) (`feat: …`, `fix: …`). Un
+   changement cassant ajoute `!`.
+
+3. **La fusionner**
+
+   Elle est fusionnée quand sa vérification `ci` est au vert.
+
+</Steps>
 
 ## Versions
 
 release-please garde ouverte une pull request avec la prochaine version et son journal des
-modifications. La fusionner étiquette et publie la version :
+modifications. La fusionner étiquette et publie la version. Avant la 1.0, un `feat` ou un
+changement cassant monte la version mineure, tout le reste le correctif.
 
 | Dépôt                                                                                     | Publié sous                                                  |
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -31,23 +46,28 @@ modifications. La fusionner étiquette et publie la version :
 | [nestor-character](https://github.com/nestor-home/nestor-character)                       | `@nestor-home/character` sur npm                             |
 | [nestor-web](https://github.com/nestor-home/nestor-web)                                   | ce site                                                      |
 
-Avant la 1.0, un `feat` ou un changement cassant monte la version mineure, tout le reste le
-correctif.
-
 ## Signaler
 
-Questions et idées vont dans les [Discussions](https://github.com/orgs/nestor-home/discussions),
-les bugs reproductibles dans les issues du dépôt. Pour une vulnérabilité, suivez la
-[politique de sécurité](https://github.com/nestor-home/.github/blob/main/SECURITY.md).
+| Quoi                  | Où                                                                                       |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| questions et idées    | les [Discussions](https://github.com/orgs/nestor-home/discussions)                       |
+| un bug reproductible  | les issues du dépôt                                                                      |
+| une vulnérabilité     | la [politique de sécurité](https://github.com/nestor-home/.github/blob/main/SECURITY.md) |
 
 ## Licence et langues
 
 Le serveur, les SDK, le satellite Reachy et le personnage sont sous licence MIT.
 
 Nestor parle anglais et français. Ce qu’il dit aux personnes n’est jamais dans le code : chaque
-phrase est un message [Project Fluent](https://projectfluent.org/), dans
-`src/nestor/locales/<langue>/` pour le serveur, `web/src/locales/<langue>/` pour l’administration et
-`src/locales/<langue>/` pour ce site. Une autre langue commence par un autre dossier de catalogues.
+phrase est un message [Project Fluent](https://projectfluent.org/).
+
+| Catalogues de       | Dossier                          |
+| ------------------- | -------------------------------- |
+| le serveur          | `src/nestor/locales/<langue>/`   |
+| l’administration    | `web/src/locales/<langue>/`      |
+| ce site             | `src/locales/<langue>/`          |
+
+Une autre langue commence par un autre dossier de catalogues.
 
 ## Cette documentation
 

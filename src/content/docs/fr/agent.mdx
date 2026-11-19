@@ -1,89 +1,63 @@
 ---
 title: Comment fonctionne l’agent
-description: Un seul agent pour tout le foyer. Ses parties, un tour pas à pas, et l’assemblage de ses consignes.
+description: Un seul agent pour tout le foyer. Ses parties, un tour pas à pas, ses outils, et comment ses consignes sont construites.
 ---
 
 import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
 import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
 import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 
-Parlez à Nestor dans la cuisine ou écrivez-lui du bureau : un seul agent répond, avec une seule
-mémoire.
+Un seul agent répond à tout le foyer, à l’oral comme à l’écrit, avec une seule mémoire.
 
 ## Les parties
 
 <SystemMap locale="fr" n={1} />
 
-Le **cœur** ne dépend d’aucun fournisseur. Modèles, Home Assistant, connecteurs, exécutants et canaux
-sont des **adaptateurs** derrière des contrats.
-
-Le **journal** fait foi. Chaque effet y est un événement, jusqu’à chaque décision de politique et
-sa raison. L’administration l’affiche en fils de conversation. Au redémarrage, Nestor y retrouve les
-conversations ouvertes, les tâches, les réveils et les messages non livrés.
+Le **cœur** ne dépend d’aucun fournisseur : modèles, Home Assistant, connecteurs, exécutants et
+canaux sont des **adaptateurs** derrière des contrats. Le [journal](/fr/docs/agent/journal/) note
+chaque effet et chaque décision ; au redémarrage, Nestor y retrouve les conversations ouvertes, les
+tâches, les rappels et les messages non livrés.
 
 ## Un tour
 
 <TurnFlow locale="fr" n={2} />
 
 Une **conversation** regroupe les tours proches dans le temps, comme Assist dans Home Assistant.
-Après cinq minutes de silence à voix haute, ou quatre heures par écrit, une nouvelle commence et le
-modèle ne relit plus les anciens tours. Chaque canal peut changer ce délai avec
-`conversation_ends_after_s`. Les souvenirs traversent les conversations.
+Une fois finie, le modèle ne relit plus ses tours ; les souvenirs, eux, restent. Elle n’a qu’un
+tour à la fois : des messages envoyés ensemble reçoivent leurs réponses dans l’ordre.
 
-Une conversation n’a qu’un tour à la fois. Deux messages envoyés ensemble reçoivent leurs
-réponses dans l’ordre, et un message que Nestor apporte de lui-même attend la fin de la réponse en
-cours.
-
-À l’oral, Nestor commence à parler pendant que le modèle écrit encore. Un petit acquiescement
-(« oui », « d’accord », « mm ») ne l’arrête pas ; tout autre mot l’arrête, comme 1,2 seconde de
-parole. Le journal garde alors ce qui a été entendu, pas ce qui était écrit : le modèle sait où il
-a été coupé. Les acquiescements qu’il connaît sont des mots français, et « ok ».
-
-Quand le modèle ou un service de voix tombe ou tarde, Nestor le dit, et le journal le note
-(`conversation.fallback`).
+À l’oral, Nestor parle pendant que le modèle écrit encore. Un acquiescement (« oui », « mm ») ne
+l’arrête pas ; tout autre mot l’arrête, comme 1,2 seconde de parole, et le journal garde ce qui a
+été entendu. Les acquiescements qu’il connaît sont des mots français, et « ok ». Quand le modèle ou
+un service de voix tombe ou tarde, Nestor le dit (`conversation.fallback`).
 
 ## Les outils
 
-Rien de long ne se passe pendant un tour. Les actions courtes sont des outils directs : allumer
-une lampe, retenir un fait, programmer un réveil. Un tour attend un outil 3 secondes à l’oral et
-20 secondes à l’écrit. Au-delà, l’outil continue en arrière-plan et le modèle apprend que le
-résultat suivra. Le tour se termine et Nestor reste disponible. Quand l’outil répond, son résultat
-revient dans la conversation et Nestor le dit à la personne, comme pour une tâche.
+Les actions courtes sont des outils directs : une lampe, un souvenir, un rappel. Un outil plus lent
+que l’attente du tour continue en arrière-plan ; son résultat revient plus tard dans la
+conversation et Nestor le dit à la personne. Un long résultat est mis de côté : le modèle en voit
+le début, la fin et la taille, et lit la suite avec `read_result` et `search_result`. Ce qui prend
+des minutes part chez un [exécutant](/fr/docs/executors/).
 
-```yaml
-agent:
-  spoken_tool_wait_s: 3
-  written_tool_wait_s: 20
-  tool_result_chars: 8000
-```
-
-Un résultat plus long que `tool_result_chars` est mis de côté, jamais dans le journal. Le modèle en
-voit le début, la fin et la taille, et lit la suite avec `read_result` et `search_result`.
-
-Ce qui prend des minutes part chez un **exécutant**, en tâche durable, et son résultat est annoncé
-une fois, à qui l’a demandé.
+| Réglage                                | Défaut                        | Effet                                   |
+| -------------------------------------- | ----------------------------- | --------------------------------------- |
+| `agent.spoken_tool_wait_s`             | 3                             | secondes d’attente d’un outil à l’oral  |
+| `agent.written_tool_wait_s`            | 20                            | secondes d’attente d’un outil à l’écrit |
+| `agent.tool_result_chars`              | 8000                          | au-delà, le résultat est mis de côté    |
+| `conversation_ends_after_s`, par canal | 5 min à l’oral, 4 h à l’écrit | silence qui termine une conversation    |
 
 ## Les consignes
 
 <PromptLayers locale="fr" n={3} />
 
-Chaque tour assemble ses consignes en couches, de la plus stable à la plus changeante. Un
-fournisseur qui met les prompts en cache y lit tout ce qui précède un point de cache, plus vite et
-moins cher. Un nouveau tour ne paie plein tarif que sa couche de tour et les nouveaux messages.
-
-Chaque module remplit ses sections : souvenirs, veilles et réveils dans la couche du foyer ;
-conversations passées, tâches en cours, questions ouvertes et actions en attente de confirmation
-dans la couche du tour.
-
-La couche du foyer dit aussi comment l’agent fonctionne en ce moment, tel que le signalent les
-parties dont il dépend : une recherche web sur des offres gratuites, par exemple. L’agent le dit à
-la personne quand cela touche à sa demande, pas à chaque réponse. Un plugin le signale par les
-`notes()` de son composant, en anglais, pour le modèle.
+La couche du foyer dit aussi comment l’agent fonctionne en ce moment, une recherche web sur des
+offres gratuites par exemple ; l’agent le mentionne quand cela touche à la demande. Un plugin le
+signale par les `notes()` de son composant, en anglais.
 
 ## Les modèles par rôle
 
-Nommez des profils de modèles dans `models` et faites pointer chaque rôle vers l’un d’eux. Un seul
-modèle ne demande rien de plus.
+Nommez des profils de modèles dans `models` et faites-y pointer les rôles. Un seul modèle ne demande
+rien de plus.
 
 ```yaml
 models:
@@ -101,16 +75,17 @@ models:
     model: anthropic/claude-sonnet-5.5
 
 agent:
-  spoken: rapide      # la voix : les premiers mots arrivent vite
-  written: soigne     # l’écrit laisse quelques secondes
-  titles: rapide      # titre chaque discussion
-watches:
-  model: rapide       # trie le courrier entrant selon les veilles
-memory:
-  consolidation: rapide  # résume chaque conversation une fois terminée
+  spoken: rapide
+  written: soigne
 ```
 
-Un rôle omis emprunte un modèle : `spoken` et `written` se remplacent, les veilles, la consolidation
-et les titres prennent `written`. `agent.transcription` et `agent.speech` écoutent et enregistrent
-les messages vocaux (voir [Canaux et voix](/fr/docs/channels/)). Chaque rôle et son défaut sont dans
+| Rôle                   | Sert à                                | S’il est omis   |
+| ---------------------- | ------------------------------------- | --------------- |
+| `agent.spoken`         | répondre à l’oral                     | `agent.written` |
+| `agent.written`        | répondre à l’écrit                    | `agent.spoken`  |
+| `agent.titles`         | titrer chaque discussion              | `agent.written` |
+| `watches.model`        | trier ce qui arrive selon les veilles | `agent.written` |
+| `memory.consolidation` | résumer chaque conversation finie     | `agent.written` |
+
+Les rôles de la voix sont dans [Voix](/fr/docs/voice/), tous les rôles dans
 [Modèles](/fr/docs/models/).
