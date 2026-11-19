@@ -209,6 +209,6 @@ test("the docs are served to language models: an index, every page in Markdown, 
       expect(text, path).not.toMatch(/^import |<\/?[A-Z][A-Za-z]*[\s>/]/m);
     }
     const full = await (await request.get(`${root}/llms-full.txt`)).text();
-    expect(full.split("\n---\n").length).toBe(pages.length);
+    expect(full.match(/^Source: /gm)?.length).toBe(pages.length);
   }
 });

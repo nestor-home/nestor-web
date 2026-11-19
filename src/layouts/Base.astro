@@ -64,7 +64,7 @@ const og = new URL(`/og/${card}-${locale}.png`, site).href;
     <meta property="og:locale" content={locale === "fr" ? "fr_FR" : "en_GB"} />
     <meta property="og:locale:alternate" content={locale === "fr" ? "en_GB" : "fr_FR"} />
     {markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
-    {graph && <script type="application/ld+json" is:inline set:html={JSON.stringify(graph)} />}
+    {graph && <script type="application/ld+json" is:inline set:html={JSON.stringify(graph).replaceAll("<", "\\u003c")} />}
     <meta name="twitter:card" content="summary_large_image" />
     <!-- audience (Umami, self-hosted, no cookie): counted on the public site only, never in dev or tests -->
     <script

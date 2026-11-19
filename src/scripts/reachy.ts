@@ -229,10 +229,10 @@ export async function mount(element: HTMLElement): Promise<void> {
   let time = 0;
   let shown: State | null = null;
   let running = false;
+  let pending = 0;
   const KEYS = Object.keys(pose) as (keyof Pose)[];
   const frame = (now: number) => {
-    if (!running) return;
-    requestAnimationFrame(frame);
+    pending = requestAnimationFrame(frame);
     const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
     last = now;
     time += dt;
@@ -257,7 +257,8 @@ export async function mount(element: HTMLElement): Promise<void> {
     if (wanted === running) return;
     running = wanted;
     last = 0;
-    if (running) requestAnimationFrame(frame);
+    if (running) pending = requestAnimationFrame(frame);
+    else cancelAnimationFrame(pending);
   };
   new IntersectionObserver(([entry]) => {
     onScreen = Boolean(entry?.isIntersecting);

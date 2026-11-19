@@ -67,3 +67,15 @@ describe("the data beside the page", () => {
     expect(graph.find((thing) => thing["@type"] === "BreadcrumbList")?.itemListElement).toHaveLength(1);
   });
 });
+
+describe("a breadcrumb", () => {
+  it("never names the same address twice", () => {
+    for (const slug of ["quickstart", "agent", "agent/memory"]) {
+      const graph = docGraph("en", { slug, title: "T", description: "d" }, { docs: "Docs", group: (id) => id })[
+        "@graph"
+      ] as Record<string, unknown>[];
+      const items = (graph.find((t) => t["@type"] === "BreadcrumbList")?.itemListElement ?? []) as { item: string }[];
+      expect(new Set(items.map((i) => i.item)).size, slug).toBe(items.length);
+    }
+  });
+});

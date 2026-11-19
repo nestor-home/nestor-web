@@ -32,7 +32,6 @@ export async function pages(locale: Locale): Promise<{ group: string; pages: Doc
   }));
 }
 
-/** One page as a Markdown document: its title, its description, its address, then its text. */
 /** One page of the docs, ready to be served as Markdown. */
 export interface DocPage {
   slug: string;
@@ -41,6 +40,7 @@ export interface DocPage {
   markdown: string;
 }
 
+/** One page as a Markdown document: its title, its description, its address, then its text. */
 export function pageDocument(locale: Locale, page: DocPage) {
   return `# ${page.title}\n\n> ${page.description}\n\nSource: ${SITE}${docHref(locale, page.slug)}\n\n${page.markdown}\n`;
 }

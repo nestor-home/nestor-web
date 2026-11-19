@@ -50,12 +50,13 @@ export function docGraph(
 ): Thing {
   const url = absolute(docHref(locale, page.slug));
   const group = DOC_GROUPS.find((g) => (g.pages as readonly string[]).includes(page.slug));
+  const root = absolute(docHref(locale, ""));
+  // the group's step leads to its first page; left out when that is the docs' root or the page itself
+  const first = group ? absolute(docHref(locale, group.pages[0])) : root;
   const trail = [
-    { name: names.docs, url: absolute(docHref(locale, "")) },
-    ...(group && page.slug !== ""
-      ? [{ name: names.group(group.id), url: absolute(docHref(locale, group.pages[0])) }]
-      : []),
-    ...(page.slug !== "" ? [{ name: page.title, url }] : []),
+    { name: names.docs, url: root },
+    ...(first !== root && first !== url && group ? [{ name: names.group(group.id), url: first }] : []),
+    ...(url !== root ? [{ name: page.title, url }] : []),
   ];
   return {
     "@context": "https://schema.org",

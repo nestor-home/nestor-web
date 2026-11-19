@@ -54,3 +54,16 @@ describe("a component the conversion does not know", () => {
     expect(() => toMarkdown("<Mystery>text</Mystery>")).toThrow(/Mystery/);
   });
 });
+
+describe("a code example", () => {
+  it("is kept exactly as written, imports, generics and links included", () => {
+    const code = "```python\nimport asyncio\nlinks: list[str] = []  # see [docs](/docs/)\n```";
+    const ts = "   ```ts\nconst all: Array<Satellite> = [];\n   ```";
+    const md = toMarkdown(
+      `import Steps from "x";\n\nBefore.\n\n${code}\n\n<Steps>\n\n1. **Run.**\n\n${ts}\n\n</Steps>`,
+    );
+    expect(md).toContain(code);
+    expect(md).toContain(ts);
+    expect(md).not.toMatch(/^import Steps/m);
+  });
+});
