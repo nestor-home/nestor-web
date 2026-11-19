@@ -21,10 +21,7 @@ const SPANS: Record<string, number> = { home: 5, messages: 7, mail: 7, web: 5, l
 
 <section id="works-with" class="section border-t border-rule" aria-labelledby="works-title">
   <div class="wrap">
-    <div data-reveal class="max-w-2xl">
-      <h2 id="works-title" class="display-2 text-ink">{t("int-title")}</h2>
-      <p class="lede mt-4">{t("int-text")}</p>
-    </div>
+    <h2 id="works-title" data-reveal class="display-2 max-w-2xl text-ink">{t("int-title")}</h2>
     <Bento class="mt-12">
       {
         INTEGRATIONS.map(({ group, items }) => (

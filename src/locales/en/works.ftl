@@ -7,7 +7,6 @@ int-group-web = Web, weather and maps.
 int-group-lists = Lists, notes and music.
 int-group-work = Work and long tasks.
 int-planned = planned
-int-text = What the home already uses, plugged in once, shared by the whole household.
 int-home-text = Through Home Assistant: lights, heating, music, and who is home.
 int-messages-text = It answers where each person already writes.
 int-mail-text = Mail, calendars and files, each account kept to its owner.
