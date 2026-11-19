@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.8.1](https://github.com/nestor-home/nestor-web/compare/v0.8.0...v0.8.1) (2026-11-19)
+
+
+### Bug Fixes
+
+* **deps:** update astro monorepo ([#140](https://github.com/nestor-home/nestor-web/issues/140)) ([e3b9190](https://github.com/nestor-home/nestor-web/commit/e3b91907ce3c9fef9ce156f6eb5c7aec1fe3842b))
+* **deps:** update dependency @lobehub/icons-static-svg to v1.104.0 ([#141](https://github.com/nestor-home/nestor-web/issues/141)) ([f791a0d](https://github.com/nestor-home/nestor-web/commit/f791a0d94825299a09c5739d6887bfc87f87560f))
+* **deps:** update dependency nestor-home to v0.16.1 ([#139](https://github.com/nestor-home/nestor-web/issues/139)) ([33f1caf](https://github.com/nestor-home/nestor-web/commit/33f1caf2b758d470fc3f9a65d6f857d0f3e3c9b9))
+* plain words on the home page, no slogans ([#137](https://github.com/nestor-home/nestor-web/issues/137)) ([cda925e](https://github.com/nestor-home/nestor-web/commit/cda925e600e5b41f80d1b4a6485a38ece37ccec7))
+
+
+### Documentation
+
+* nestor as a preview, and acknowledgements in english too ([#136](https://github.com/nestor-home/nestor-web/issues/136)) ([f4735d5](https://github.com/nestor-home/nestor-web/commit/f4735d5e483f1afe9e4090db2afd5b6bee9a9773))
+
 ## [0.8.0](https://github.com/nestor-home/nestor-web/compare/v0.7.8...v0.8.0) (2026-11-19)
 
 
