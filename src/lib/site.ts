@@ -3,6 +3,9 @@ import GUIDE from "@/content/docs/en/install.mdx?raw";
 import START from "@/content/docs/en/quickstart.md?raw";
 import { taggedCommands } from "@/lib/docs";
 
+/** The production origin (astro.config.mjs serves the site there). */
+export const SITE = "https://nestorhome.dev";
+
 export const ORG = "https://github.com/nestor-home";
 
 export const REPOS = {

@@ -68,8 +68,8 @@ const pages: { href: string; label: string; current: boolean }[] = [
         class="hidden size-9 place-items-center rounded-sm text-ink-muted hover:text-ink md:grid"
         aria-label={t("theme-toggle")}
       >
-        <Sun className="theme-icon-light size-4" strokeWidth={1.6} aria-hidden="true" />
-        <Moon className="theme-icon-dark size-4" strokeWidth={1.6} aria-hidden="true" />
+        <Sun className="only-light size-4" strokeWidth={1.6} aria-hidden="true" />
+        <Moon className="only-dark size-4" strokeWidth={1.6} aria-hidden="true" />
       </button>
       <a href={REPOS.nestor} class="hidden size-9 place-items-center rounded-sm text-ink-muted hover:text-ink md:grid" aria-label={t("nav-github")}>
         <Brand brand="github" class="size-4" decorative />
@@ -116,8 +116,8 @@ const pages: { href: string; label: string; current: boolean }[] = [
       <div class="flex items-center justify-between gap-2">
         <a href={alternates[other]} hreflang={other} lang={other} class="btn btn-line flex-1 justify-center">{t("lang-other-name")}</a>
         <button type="button" data-theme-toggle class="btn btn-line flex-1 justify-center" aria-label={t("theme-toggle")}>
-          <Sun className="theme-icon-light size-4" strokeWidth={1.6} aria-hidden="true" />
-          <Moon className="theme-icon-dark size-4" strokeWidth={1.6} aria-hidden="true" />
+          <Sun className="only-light size-4" strokeWidth={1.6} aria-hidden="true" />
+          <Moon className="only-dark size-4" strokeWidth={1.6} aria-hidden="true" />
         </button>
         <a href={REPOS.nestor} class="btn btn-line flex-1 justify-center" aria-label={t("nav-github")}>
           <Brand brand="github" class="size-4" decorative />
@@ -171,23 +171,6 @@ const pages: { href: string; label: string; current: boolean }[] = [
   @keyframes sheet-in {
     from {
       transform: translateX(100%);
-    }
-  }
-  :global(.theme-icon-dark) {
-    display: none;
-  }
-  :global(:root[data-theme="dark"] .theme-icon-dark) {
-    display: block;
-  }
-  :global(:root[data-theme="dark"] .theme-icon-light) {
-    display: none;
-  }
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme="light"]) .theme-icon-dark) {
-      display: block;
-    }
-    :global(:root:not([data-theme="light"]) .theme-icon-light) {
-      display: none;
     }
   }
 </style>

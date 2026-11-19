@@ -8,15 +8,15 @@ import Brand from "@/components/Brand.astro";
 import Planned from "@/components/Planned.astro";
 import Tile from "@/components/Tile.astro";
 import type { Translator } from "@/i18n";
-import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
+import { brandOf } from "@/lib/brands";
 import { INTEGRATIONS } from "@/lib/integrations";
 
 interface Props {
   t: Translator;
 }
 const { t } = Astro.props;
-// each group's share of a row: a wide one beside a narrow one, the narrow side switching every row
-const SPANS: Record<string, number> = { home: 5, messages: 7, mail: 7, web: 5, lists: 5, work: 7 };
+// each group's share of a row: a narrow one beside a wide one, the narrow side switching every row
+const span = (i: number) => ((Math.floor(i / 2) + i) % 2 ? 7 : 5);
 ---
 
 <section id="works-with" class="section border-t border-rule" aria-labelledby="works-title">
@@ -24,14 +24,14 @@ const SPANS: Record<string, number> = { home: 5, messages: 7, mail: 7, web: 5, l
     <h2 id="works-title" data-reveal class="display-2 max-w-2xl text-ink">{t("int-title")}</h2>
     <Bento class="mt-12">
       {
-        INTEGRATIONS.map(({ group, items }) => (
-          <Tile id={`int-${group}`} title={t(`int-group-${group}`)} text={t(`int-${group}-text`)} span={SPANS[group] ?? 6}>
+        INTEGRATIONS.map(({ group, items }, i) => (
+          <Tile id={`int-${group}`} title={t(`int-group-${group}`)} text={t(`int-${group}-text`)} span={span(i)}>
             <ul class="logos" data-reveal>
               {items.map(({ brand, status }, i) => {
-                const { name, hex } = BRANDS[brand] as BrandInfo;
+                const { name, hex } = brandOf(brand);
                 return (
-                  <li class="logo" style={`--i:${i};${hex ? `--brand:${hex}` : ""}`}>
-                    <span class="logo-mark">
+                  <li class="logo" style={`--i:${i};${hex ? `--brand:${hex}` : ""}`} data-stagger>
+                    <span class="logo-mark icon-tile is-raised" style="--tile: 3.5rem">
                       <Brand brand={brand} class="size-6" decorative />
                     </span>
                     <span class="logo-name">{name}</span>
@@ -50,6 +50,8 @@ const SPANS: Record<string, number> = { home: 5, messages: 7, mail: 7, web: 5, l
 
 <style>
   .logos {
+    --step: 50ms;
+    --rise: 6px;
     display: grid;
     width: 100%;
     grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
@@ -63,14 +65,6 @@ const SPANS: Record<string, number> = { home: 5, messages: 7, mail: 7, web: 5, l
     text-align: center;
   }
   .logo-mark {
-    display: grid;
-    width: 3.5rem;
-    height: 3.5rem;
-    place-items: center;
-    border-radius: 1rem;
-    background: var(--paper-raised);
-    box-shadow: var(--lift);
-    color: var(--ink);
     transition: color var(--duration) var(--ease);
   }
   .logo:hover .logo-mark {
@@ -82,19 +76,5 @@ const SPANS: Record<string, number> = { home: 5, messages: 7, mail: 7, web: 5, l
     font-size: var(--text-xs);
     line-height: 1.3;
     color: var(--ink-muted);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    :global(.js) .logos .logo {
-      opacity: 0;
-      transform: translateY(6px);
-      transition:
-        opacity 450ms var(--ease-out),
-        transform 450ms var(--ease-out);
-    }
-    :global(.js) .logos[data-shown] .logo {
-      opacity: 1;
-      transform: none;
-      transition-delay: calc(var(--i) * 50ms);
-    }
   }
 </style>

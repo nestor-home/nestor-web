@@ -34,7 +34,7 @@ const { t } = Astro.props;
     aspect-ratio: 9 / 18.5;
     padding: 0.6rem;
     border-radius: 2.8rem;
-    background: #15120f;
+    background: var(--device);
     box-shadow:
       0 0 0 1px rgb(255 255 255 / 0.05) inset,
       0 40px 80px -36px rgb(20 14 8 / 0.6);
@@ -52,7 +52,7 @@ const { t } = Astro.props;
     color: #fbf3e4;
   }
   .phone-grain {
-    color: #15120f;
+    color: var(--device);
     opacity: 0.18;
   }
   .phone-date {
@@ -74,7 +74,7 @@ const { t } = Astro.props;
     padding: 0.8rem 0.9rem 0.9rem;
     border-radius: 1.2rem;
     background: rgb(251 243 228 / 0.82);
-    color: #1d1913;
+    color: var(--day-ink);
     backdrop-filter: blur(14px);
     box-shadow: 0 12px 30px -16px rgb(0 0 0 / 0.5);
   }

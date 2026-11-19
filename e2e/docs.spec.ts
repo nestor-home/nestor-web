@@ -206,9 +206,11 @@ test("the docs are served to language models: an index, every page in Markdown, 
       expect(page.headers()["content-type"], path).toContain("text/markdown");
       const text = await page.text();
       expect(text, path).toMatch(/^# \S/);
-      expect(text, path).not.toMatch(/^import |<\/?[A-Z][A-Za-z]*[\s>/]/m);
+      // the prose has no import and no component left; code examples stay as written
+      const prose = text.replace(/^[ \t]*```[\s\S]*?^[ \t]*```/gm, "");
+      expect(prose, path).not.toMatch(/^import |<\/?[A-Z][A-Za-z]*[\s>/]/m);
     }
     const full = await (await request.get(`${root}/llms-full.txt`)).text();
-    expect(full.split("\n---\n").length).toBe(pages.length);
+    expect(full.match(/^Source: /gm)?.length).toBe(pages.length);
   }
 });

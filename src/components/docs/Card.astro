@@ -62,7 +62,7 @@ const Tag = href ? "a" : "div";
 <Tag class="doc-card" href={href}>
   {
     (Icon || brand) && (
-      <span class="doc-card-mark" aria-hidden="true">
+      <span class="doc-card-mark icon-tile" aria-hidden="true">
         {Icon ? <Icon className="size-4" strokeWidth={1.7} /> : brand && <Brand brand={brand} class="size-4" decorative />}
       </span>
     )

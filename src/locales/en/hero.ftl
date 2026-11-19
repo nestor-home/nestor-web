@@ -3,7 +3,6 @@ hero-line-2 = that lives
 hero-line-3 = at home.
 hero-lede = An open-source framework for the whole household’s assistant. It runs at home, with the model you choose, and answers aloud or in a message.
 hero-start = Get started
-hero-install-title = Install
 hero-fact-license = MIT license
 hero-fact-python = Python 3.12+
 hero-fact-sdks = SDKs in Python, TypeScript, Rust

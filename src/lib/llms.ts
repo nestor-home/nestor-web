@@ -3,13 +3,16 @@
  * set in one file (`/llms-full.txt`), per locale. The pages are the same Markdown the site renders: their imports
  * and components are turned into Markdown here, so nothing is written twice.
  */
+
 import { getCollection } from "astro:content";
-import { type Locale, translator } from "@/i18n";
+import type { APIRoute, GetStaticPaths } from "astro";
+import { href, type Locale, translator } from "@/i18n";
 import { DOC_GROUPS, docHref, parseDocId } from "@/lib/docs";
-import { markdownHref, SITE, toMarkdown } from "@/lib/markdown";
+import { markdownHref, toMarkdown } from "@/lib/markdown";
+import { SITE } from "@/lib/site";
 
 /** The pages of a locale, in reading order, with their title, description and Markdown. */
-export async function pages(locale: Locale) {
+export async function pages(locale: Locale): Promise<{ group: string; pages: DocPage[] }[]> {
   const entries = await getCollection("docs", (entry) => parseDocId(entry.id).locale === locale);
   return DOC_GROUPS.map((group) => ({
     group: group.id,
@@ -29,11 +32,16 @@ export async function pages(locale: Locale) {
   }));
 }
 
+/** One page of the docs, ready to be served as Markdown. */
+export interface DocPage {
+  slug: string;
+  title: string;
+  description: string;
+  markdown: string;
+}
+
 /** One page as a Markdown document: its title, its description, its address, then its text. */
-export function pageDocument(
-  locale: Locale,
-  page: { slug: string; title: string; description: string; markdown: string },
-) {
+export function pageDocument(locale: Locale, page: DocPage) {
   return `# ${page.title}\n\n> ${page.description}\n\nSource: ${SITE}${docHref(locale, page.slug)}\n\n${page.markdown}\n`;
 }
 
@@ -50,9 +58,20 @@ export async function index(locale: Locale): Promise<string> {
     lines.push("");
   }
   lines.push(`## ${t("llms-optional")}`, "");
-  lines.push(`- [${t("llms-full")}](${SITE}${locale === "en" ? "" : "/fr"}/llms-full.txt): ${t("llms-full-text")}`);
-  lines.push(`- [${t("llms-other")}](${SITE}${other === "en" ? "" : "/fr"}/llms.txt)`);
+  lines.push(`- [${t("llms-full")}](${SITE}${href(locale, "home")}llms-full.txt): ${t("llms-full-text")}`);
+  lines.push(`- [${t("llms-other")}](${SITE}${href(other, "home")}llms.txt)`);
   return `${lines.join("\n")}\n`;
+}
+
+/** The routes of each page as Markdown in a locale: `/docs/<slug>.md`, `/docs/index.md` for the first. */
+export function markdownRoutes(locale: Locale): { paths: GetStaticPaths; serve: APIRoute } {
+  return {
+    paths: async () =>
+      (await pages(locale))
+        .flatMap((g) => g.pages)
+        .map((page) => ({ params: { page: page.slug || "index" }, props: { page } })),
+    serve: ({ props }) => new Response(pageDocument(locale, props.page as DocPage), { headers: MARKDOWN }),
+  };
 }
 
 /** `/llms-full.txt`: every page, whole, in reading order. */

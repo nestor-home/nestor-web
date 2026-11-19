@@ -20,7 +20,7 @@ const steps = [
   <ol class="trace-steps">
     {
       steps.map((s, i) => (
-        <li class:list={["trace-step", s.hot && "is-hot"]} style={`--i:${i}`}>
+        <li class:list={["trace-step", s.hot && "is-hot"]} style={`--i:${i}`} data-stagger>
           <time class="trace-time tabular">{s.time}</time>
           <span class="trace-dot" aria-hidden="true" />
           <span class="min-w-0">
@@ -35,13 +35,14 @@ const steps = [
 
 <style>
   .trace {
+    --at: 300ms;
+    --step: 260ms;
+    --rise: 0;
     width: min(100%, 30rem);
     padding: 1.3rem 1.4rem 1.4rem;
     border-radius: 1.4rem;
     background: var(--paper-raised);
-    box-shadow:
-      0 0 0 1px var(--rule),
-      0 30px 60px -32px rgb(40 28 12 / 0.4);
+    box-shadow: var(--float);
   }
   .trace-head {
     padding-bottom: 0.9rem;
@@ -94,14 +95,4 @@ const steps = [
     color: var(--ember);
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    :global(.js) .trace .trace-step {
-      opacity: 0;
-      transition: opacity 400ms var(--ease-out);
-    }
-    :global(.js) .trace[data-shown] .trace-step {
-      opacity: 1;
-      transition-delay: calc(300ms + var(--i) * 260ms);
-    }
-  }
 </style>

@@ -40,8 +40,26 @@ const { t, slug, titles } = Astro.props;
   .docs-group + .docs-group {
     margin-top: 1.5rem;
   }
-  .docs-link[aria-current="page"] {
+  /* the navigation as paths: groups as folders, the page read marked like a cursor */
+  .docs-group :global(.label-mono) {
+    font-family: var(--font-data);
+    font-size: var(--text-xs);
+    font-weight: 500;
     color: var(--ink);
-    background: var(--paper-sunken);
+    text-transform: lowercase;
+  }
+  .docs-group :global(.label-mono)::after {
+    content: "/" / "";
+    color: var(--ink-faint);
+  }
+  .docs-link {
+    font-family: var(--font-data);
+    font-size: var(--text-xs);
+  }
+  .docs-link[aria-current="page"] {
+    color: var(--ember);
+  }
+  .docs-link[aria-current="page"]::before {
+    content: "▸ " / "";
   }
 </style>

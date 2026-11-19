@@ -141,7 +141,8 @@ export async function mount(element: HTMLElement): Promise<void> {
   if (!canvas) return;
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
+  // a high-density screen already smooths the edges: multisampling only below it
+  const renderer = new WebGLRenderer({ canvas, antialias: devicePixelRatio < 2, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = ACESFilmicToneMapping;
@@ -167,19 +168,20 @@ export async function mount(element: HTMLElement): Promise<void> {
   });
   scene.add(robot);
 
-  const turn = robot.getObjectByName("turn");
-  const head = robot.getObjectByName("head");
-  const left = robot.getObjectByName("antenna_left");
-  const right = robot.getObjectByName("antenna_right");
-  const yawAxis = axisOf(turn, new Vector3(0, 1, 0));
-  const leftAxis = axisOf(left, new Vector3(0, 0, 1));
-  const rightAxis = axisOf(right, new Vector3(0, 0, 1));
-  const rest = {
-    turn: turn?.quaternion.clone(),
-    head: head?.quaternion.clone(),
-    left: left?.quaternion.clone(),
-    right: right?.quaternion.clone(),
-  };
+  // each moving part, its pose at rest, and how the current pose turns it from there
+  const joints = (
+    [
+      ["turn", (p: Pose, axis: Vector3) => quat(axis, p.yaw), new Vector3(0, 1, 0)],
+      ["head", (p: Pose) => euler(p.pitch, p.roll), null],
+      ["antenna_left", (p: Pose, axis: Vector3) => quat(axis, p.left), new Vector3(0, 0, 1)],
+      ["antenna_right", (p: Pose, axis: Vector3) => quat(axis, p.right), new Vector3(0, 0, 1)],
+    ] as const
+  ).flatMap(([name, turnOf, fallback]) => {
+    const node = robot.getObjectByName(name);
+    if (!node) return [];
+    const axis = fallback ? axisOf(node, fallback) : new Vector3();
+    return [{ node, rest: node.quaternion.clone(), turnOf: (p: Pose) => turnOf(p, axis) }];
+  });
 
   // frame the robot by its own size: a little from the side, a little from above, with room around it
   const box = new Box3().setFromObject(robot);
@@ -201,56 +203,80 @@ export async function mount(element: HTMLElement): Promise<void> {
 
   const pose: Pose = { yaw: 0, pitch: 0, roll: 0, left: 0.1, right: 0.1 };
   const apply = () => {
-    if (turn && rest.turn) turn.quaternion.copy(rest.turn).multiply(quat(yawAxis, pose.yaw));
-    if (head && rest.head) head.quaternion.copy(rest.head).multiply(euler(pose.pitch, pose.roll));
-    if (left && rest.left) left.quaternion.copy(rest.left).multiply(quat(leftAxis, pose.left));
-    if (right && rest.right) right.quaternion.copy(rest.right).multiply(quat(rightAxis, pose.right));
+    for (const joint of joints) joint.node.quaternion.copy(joint.rest).multiply(joint.turnOf(pose));
+  };
+
+  // the page's lines and states, marked as the conversation goes
+  const lines = [...element.querySelectorAll<HTMLElement>("[data-line]")];
+  const chips = [...element.querySelectorAll<HTMLElement>("[data-chip]")];
+  const mark = (state: State) => {
+    const reached = lines.findIndex((line) => line.dataset.line === state);
+    lines.forEach((line, i) => {
+      line.toggleAttribute("data-on", reached >= 0 && i <= reached);
+    });
+    for (const chip of chips) chip.toggleAttribute("data-on", chip.dataset.chip === state);
   };
 
   if (still) {
+    mark("listening");
     Object.assign(pose, poseOf("listening", 2, 0));
     apply();
     renderer.render(scene, camera);
     return;
   }
 
-  element.dataset.playing = "";
-  let visible = true;
-  new IntersectionObserver(([entry]) => {
-    visible = Boolean(entry?.isIntersecting);
-  }).observe(element);
-
-  let last = performance.now();
+  let last = 0;
   let time = 0;
   let shown: State | null = null;
+  let running = false;
+  let pending = 0;
+  const KEYS = Object.keys(pose) as (keyof Pose)[];
   const frame = (now: number) => {
-    requestAnimationFrame(frame);
-    const dt = Math.min(0.05, (now - last) / 1000);
+    pending = requestAnimationFrame(frame);
+    const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
     last = now;
-    if (!visible || document.hidden) return;
     time += dt;
     const { state, since } = stateAt(time);
     if (state !== shown) {
       shown = state;
       element.dataset.state = state;
-      if (state === "idle") delete element.dataset.playing;
-      else element.dataset.playing = "";
+      element.toggleAttribute("data-playing", state !== "idle");
+      mark(state);
     }
     // ease toward the state's pose, so changes of state never jump
     const want = poseOf(state, since, time);
     const k = 1 - Math.exp(-dt * 7);
-    for (const key of Object.keys(pose) as (keyof Pose)[]) pose[key] += (want[key] - pose[key]) * k;
+    for (const key of KEYS) pose[key] += (want[key] - pose[key]) * k;
     apply();
     renderer.render(scene, camera);
   };
-  requestAnimationFrame(frame);
+  // drawn only while on screen and in a visible tab: no frame is asked for otherwise
+  let onScreen = false;
+  const update = () => {
+    const wanted = onScreen && !document.hidden;
+    if (wanted === running) return;
+    running = wanted;
+    last = 0;
+    if (running) pending = requestAnimationFrame(frame);
+    else cancelAnimationFrame(pending);
+  };
+  new IntersectionObserver(([entry]) => {
+    onScreen = Boolean(entry?.isIntersecting);
+    update();
+  }).observe(element);
+  document.addEventListener("visibilitychange", update);
 }
 
+// reused every frame: a turn about one axis, and the head's pitch and roll
+const turnBy = new Quaternion();
+const tilt = new Euler(0, 0, 0, "XYZ");
+const tiltBy = new Quaternion();
+
 function quat(axis: Vector3, angle: number): Quaternion {
-  return new Quaternion().setFromAxisAngle(axis, angle);
+  return turnBy.setFromAxisAngle(axis, angle);
 }
 
 /** The head's pitch (about its side axis, x) and roll (about its facing axis, z), in its own frame. */
 function euler(pitch: number, roll: number): Quaternion {
-  return new Quaternion().setFromEuler(new Euler(pitch, 0, roll, "XYZ"));
+  return tiltBy.setFromEuler(tilt.set(pitch, 0, roll));
 }

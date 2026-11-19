@@ -12,6 +12,7 @@ import { LOCALES, type Locale, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 import { docHref, neighbours, parseDocId } from "@/lib/docs";
 import { markdownHref } from "@/lib/markdown";
+import { docGraph } from "@/lib/seo";
 import { REPOS } from "@/lib/site";
 
 interface Props {
@@ -39,6 +40,12 @@ const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
   description={entry.data.description}
   card="docs"
   area="docs"
+  markdown={markdownHref(locale, slug)}
+  graph={docGraph(
+    locale,
+    { slug, title: entry.data.title, description: entry.data.description },
+    { docs: t("nav-docs"), group: (id) => t(`docs-group-${id}`) },
+  )}
 >
   <div class="wrap docs-grid pt-8 pb-20 lg:pt-12">
     <aside class="docs-side hidden lg:block">
@@ -191,6 +198,14 @@ const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
   }
   .docs-step:hover {
     border-color: var(--rule-strong);
+  }
+  .docs-toc :is(.label-mono, .toc-link) {
+    font-family: var(--font-data);
+    font-size: var(--text-xs);
+  }
+  .toc-link::before {
+    content: "# " / "";
+    color: var(--ink-faint);
   }
   .toc-link[data-active] {
     color: var(--ink);

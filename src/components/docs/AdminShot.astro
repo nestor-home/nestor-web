@@ -18,8 +18,8 @@ const src = (theme: "light" | "dark") => `/docs/admin/${name}-${theme}-${locale}
 ---
 
 <figure class="admin-shot">
-  <img class="admin-shot-light" src={src("light")} alt={alt} width="1600" height="1000" loading="lazy" decoding="async" />
-  <img class="admin-shot-dark" src={src("dark")} alt={alt} width="1600" height="1000" loading="lazy" decoding="async" />
+  <img class="only-light" src={src("light")} alt={alt} width="1600" height="1000" loading="lazy" decoding="async" />
+  <img class="only-dark" src={src("dark")} alt={alt} width="1600" height="1000" loading="lazy" decoding="async" />
   {caption && <figcaption>{caption}</figcaption>}
 </figure>
 
@@ -27,9 +27,7 @@ const src = (theme: "light" | "dark") => `/docs/admin/${name}-${theme}-${locale}
   .admin-shot {
     overflow: hidden;
     border-radius: 0.9rem;
-    box-shadow:
-      0 0 0 1px var(--rule),
-      0 24px 50px -32px rgb(20 14 8 / 0.55);
+    box-shadow: var(--float);
   }
   .admin-shot img {
     display: block;
@@ -42,23 +40,5 @@ const src = (theme: "light" | "dark") => `/docs/admin/${name}-${theme}-${locale}
     background: var(--paper-raised);
     font-size: var(--text-sm);
     color: var(--ink-muted);
-  }
-  /* the picture of the theme being read: the pinned one, else the system's */
-  .admin-shot-dark {
-    display: none !important;
-  }
-  :global(:root[data-theme="dark"]) .admin-shot-dark {
-    display: block !important;
-  }
-  :global(:root[data-theme="dark"]) .admin-shot-light {
-    display: none !important;
-  }
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme="light"])) .admin-shot-dark {
-      display: block !important;
-    }
-    :global(:root:not([data-theme="light"])) .admin-shot-light {
-      display: none !important;
-    }
   }
 </style>

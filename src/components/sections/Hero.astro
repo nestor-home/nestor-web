@@ -32,27 +32,27 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
         <Nestor state="speaking" look="left" size={168} />
       </div>
 
-      <div class="hero-obj hero-voice" style="--i:0">
+      <div class="hero-obj hero-voice" style="--i:0" data-stagger>
         <p class="hero-obj-where"><Brand brand="satellites" class="size-3.5" decorative />{t("hero-voice-where")}</p>
         <p class="hero-wave">{[4, 8, 13, 9, 15, 11, 6, 10, 5].map((h) => <span style={`--h:${h}`} />)}</p>
         <p class="hero-voice-said">{t("hero-voice-said")}</p>
         <p class="hero-who">{t("hero-voice-who")}</p>
       </div>
 
-      <div class="hero-obj hero-screen" style="--i:1">
+      <div class="hero-obj hero-screen" style="--i:1" data-stagger>
         <p class="hero-obj-where"><MonitorSmartphone className="size-3.5" strokeWidth={1.7} />{t("hero-screen-where")}</p>
         <p class="hero-screen-text">{t("hero-screen-text")}</p>
       </div>
 
-      <div class="hero-obj hero-robot" style="--i:2">
-        <span class="hero-robot-mark"><Bot className="size-6" strokeWidth={1.6} /></span>
+      <div class="hero-obj hero-robot" style="--i:2" data-stagger>
+        <span class="icon-tile" style="--tile: 2.8em"><Bot className="size-6" strokeWidth={1.6} /></span>
         <span>
           <span class="block font-medium text-ink">{t("hero-robot-name")}</span>
           <span class="block text-xs text-ink-muted">{t("hero-robot-does")}</span>
         </span>
       </div>
 
-      <div class="hero-obj hero-note" style="--i:3">
+      <div class="hero-obj hero-note" style="--i:3" data-stagger>
         <p class="hero-note-app"><Brand brand="telegram" class="size-3.5" decorative />{t("hero-note-app")}</p>
         <p class="hero-note-text">{t("hero-note-text")}</p>
       </div>
@@ -81,6 +81,9 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
 <style>
   /* the stage: everything placed in percent of a square-ish box, sized by its own width */
   .hero-stage {
+    --at: 250ms;
+    --step: 180ms;
+    --rise: 10px;
     position: relative;
     container-type: inline-size;
     width: 100%;
@@ -129,9 +132,7 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
   .hero-obj {
     position: absolute;
     font-size: clamp(0.7rem, 2.6cqw, 0.9rem);
-    box-shadow:
-      0 0 0 1px var(--rule),
-      0 24px 50px -28px rgb(40 28 12 / 0.45);
+    box-shadow: var(--float);
   }
   .hero-obj-where {
     display: flex;
@@ -148,8 +149,8 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
     width: 44cqw;
     padding: 1em 1.1em 1.1em;
     border-radius: 1.2em;
-    background: radial-gradient(120% 90% at 50% 0%, #2a2219, #15120f 70%);
-    color: #f3ecdf;
+    background: radial-gradient(120% 90% at 50% 0%, var(--device-glow), var(--device) 70%);
+    color: var(--device-text);
     color-scheme: dark;
     box-shadow: 0 24px 50px -24px rgb(20 14 8 / 0.6);
   }
@@ -191,7 +192,7 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
     width: 38cqw;
     padding: 0.9em 1em 1em;
     border-radius: 1em;
-    border: 0.45em solid #15120f;
+    border: 0.45em solid var(--device);
     background: var(--paper-raised);
   }
   .hero-screen-text {
@@ -213,16 +214,6 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
     padding: 0.8em 1em;
     border-radius: 1.1em;
     background: var(--paper-raised);
-  }
-  .hero-robot-mark {
-    display: grid;
-    width: 2.8em;
-    height: 2.8em;
-    flex: none;
-    place-items: center;
-    border-radius: 0.8em;
-    background: var(--paper-sunken);
-    color: var(--ink);
   }
 
   /* and Léa's phone, out of the house */
@@ -248,18 +239,6 @@ const facts = ["hero-fact-license", "hero-fact-python", "hero-fact-sdks"];
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    :global(.js) .hero-stage .hero-obj {
-      opacity: 0;
-      transform: translateY(10px);
-      transition:
-        opacity 600ms var(--ease-out),
-        transform 600ms var(--ease-out);
-    }
-    :global(.js) .hero-stage[data-shown] .hero-obj {
-      opacity: 1;
-      transform: none;
-      transition-delay: calc(250ms + var(--i) * 180ms);
-    }
     :global(.js) .hero-stage .hero-links {
       opacity: 0;
       transition: opacity 900ms var(--ease-out) 900ms;

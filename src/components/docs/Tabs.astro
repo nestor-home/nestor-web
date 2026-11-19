@@ -6,7 +6,7 @@
  */
 import Brand from "@/components/Brand.astro";
 import { type Locale, translator } from "@/i18n";
-import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
+import { brandOf } from "@/lib/brands";
 import { choiceId, TAB_SETS, type TabSet } from "@/lib/docs";
 
 interface Props {
@@ -22,7 +22,7 @@ const t = translator(locale);
     {
       TAB_SETS[set].map((choice, i) => {
         const id = choiceId(set, choice);
-        const b = BRANDS[choice] as BrandInfo;
+        const b = brandOf(choice);
         return (
           <button
             type="button"

@@ -40,38 +40,47 @@ if (sheet && opener) {
   sheet.addEventListener("click", (event) => {
     if (event.target === sheet) sheet.close();
   });
-  // a link to a section of this page closes it first, then, once the page scrolls again, goes to the section
-  for (const link of sheet.querySelectorAll("a")) {
-    link.addEventListener("click", (event) => {
-      const url = new URL(link.href);
-      const target = url.pathname === location.pathname && url.hash ? document.querySelector(url.hash) : null;
-      if (target) {
-        event.preventDefault();
-        sheet.addEventListener(
-          "close",
-          () => {
-            history.pushState(null, "", url.hash);
-            requestAnimationFrame(() => target.scrollIntoView());
-          },
-          { once: true },
-        );
-      }
-      sheet.close();
-    });
-  }
+  // a link closes it at once: the page scrolls again before the browser goes to the section
+  for (const link of sheet.querySelectorAll("a")) link.addEventListener("click", () => sheet.close());
   sheet.addEventListener("close", () => opener.focus({ preventScroll: true }));
   matchMedia("(min-width: 48rem)").addEventListener("change", () => sheet.close());
 }
 
-/* dither textures */
+/* dither textures: drawn once near the screen, again when their size or the theme changes; a page has
+   twenty of them, most far below the fold */
 const canvases = [...document.querySelectorAll<HTMLCanvasElement>("canvas[data-dither]")];
+const near = new Set<Element>();
+const stale = new Set<Element>(canvases);
+const draw = (canvas: Element) => {
+  if (!near.has(canvas) || !stale.delete(canvas)) return;
+  drawDither(canvas as HTMLCanvasElement);
+};
 function redrawAll() {
-  for (const canvas of canvases) drawDither(canvas);
+  for (const canvas of canvases) {
+    stale.add(canvas);
+    draw(canvas);
+  }
 }
+const nearby = new IntersectionObserver(
+  (entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) near.add(entry.target);
+      else near.delete(entry.target);
+      draw(entry.target);
+    }
+  },
+  { rootMargin: "300px" },
+);
 const resize = new ResizeObserver((entries) => {
-  for (const entry of entries) drawDither(entry.target as HTMLCanvasElement);
+  for (const entry of entries) {
+    stale.add(entry.target);
+    draw(entry.target);
+  }
 });
-for (const canvas of canvases) resize.observe(canvas);
+for (const canvas of canvases) {
+  nearby.observe(canvas);
+  resize.observe(canvas);
+}
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
 
 /* header hairline once the page moves */

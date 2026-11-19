@@ -6,11 +6,11 @@
 import {
   AppWindow,
   ArrowRight,
-  type Bot,
   Cctv,
   Cpu,
   Eye,
   Keyboard,
+  type LucideIcon,
   Mic,
   Monitor,
   Move,
@@ -29,7 +29,7 @@ const { t } = Astro.props;
 
 const CAPS = { hear: Mic, speak: Volume2, show: Monitor, type: Keyboard, move: Move, see: Eye } as const;
 type Cap = keyof typeof CAPS;
-const devices: { id: string; icon: typeof Bot; caps: Cap[] }[] = [
+const devices: { id: string; icon: LucideIcon; caps: Cap[] }[] = [
   { id: "speaker", icon: Speaker, caps: ["hear", "speak"] },
   { id: "tablet", icon: Tablet, caps: ["hear", "speak", "show", "type"] },
   { id: "any", icon: Cpu, caps: ["hear", "speak", "show", "move", "see"] },
@@ -43,8 +43,8 @@ const devices: { id: string; icon: typeof Bot; caps: Cap[] }[] = [
   <ul class="sats-grid">
     {
       devices.map(({ id, icon: Icon, caps }, i) => (
-        <li class="sat" style={`--i:${i}`}>
-          <span class="sat-mark" aria-hidden="true">
+        <li class="sat" style={`--i:${i}`} data-stagger>
+          <span class="sat-mark icon-tile is-device" aria-hidden="true">
             <Icon className="size-6" strokeWidth={1.5} />
           </span>
           <span class="sat-name">{t(`story-bodies-${id}`)}</span>
@@ -67,15 +67,12 @@ const devices: { id: string; icon: typeof Bot; caps: Cap[] }[] = [
   <figcaption class="sats-foot">
     <ul class="sats-legend">
       {
-        (Object.keys(CAPS) as Cap[]).map((c) => {
-          const C = CAPS[c];
-          return (
-            <li>
-              <C className="size-3.5" strokeWidth={1.8} aria-hidden="true" />
-              {t(`story-bodies-cap-${c}`)}
-            </li>
-          );
-        })
+        Object.entries(CAPS).map(([cap, Icon]) => (
+          <li>
+            <Icon className="size-3.5" strokeWidth={1.8} aria-hidden="true" />
+            {t(`story-bodies-cap-${cap}`)}
+          </li>
+        ))
       }
     </ul>
     <a href={docHref(t.locale, "satellites")} class="sats-link">
@@ -87,6 +84,7 @@ const devices: { id: string; icon: typeof Bot; caps: Cap[] }[] = [
 
 <style>
   .sats {
+    --step: 90ms;
     display: grid;
     width: min(100%, 34rem);
     gap: 1.2rem;
@@ -108,19 +106,10 @@ const devices: { id: string; icon: typeof Bot; caps: Cap[] }[] = [
     padding: 1rem;
     border-radius: 1.1rem;
     background: var(--paper-raised);
-    box-shadow:
-      0 0 0 1px var(--rule),
-      0 18px 36px -26px rgb(40 28 12 / 0.4);
+    box-shadow: var(--float);
   }
   .sat-mark {
-    display: grid;
-    width: 2.75rem;
-    height: 2.75rem;
-    place-items: center;
     margin-bottom: 0.6rem;
-    border-radius: 0.8rem;
-    background: radial-gradient(circle at 35% 30%, #3a332b, #15120f 75%);
-    color: #f3ecdf;
   }
   .sat-name {
     font-size: var(--text-sm);
@@ -178,18 +167,4 @@ const devices: { id: string; icon: typeof Bot; caps: Cap[] }[] = [
     text-underline-offset: 0.25em;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    :global(.js) .sats .sat {
-      opacity: 0;
-      transform: translateY(8px);
-      transition:
-        opacity 500ms var(--ease-out),
-        transform 500ms var(--ease-out);
-    }
-    :global(.js) .sats[data-shown] .sat {
-      opacity: 1;
-      transform: none;
-      transition-delay: calc(var(--i) * 90ms);
-    }
-  }
 </style>

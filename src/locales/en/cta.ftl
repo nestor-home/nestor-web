@@ -13,3 +13,4 @@ cta-run-text = Install, run, then write to it.
 cta-needs-title = What it takes.
 cta-needs-text = A machine that stays on, and a model.
 cta-need-voice = A microphone and a speaker, later
+cta-install-label = Install

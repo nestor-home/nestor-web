@@ -5,6 +5,7 @@
  * and plays the state the page marks as current. Without JavaScript, or with reduced motion, the dialogue reads
  * in full and the robot stays still.
  */
+import Bento from "@/components/Bento.astro";
 import Tile from "@/components/Tile.astro";
 import type { Translator } from "@/i18n";
 
@@ -18,7 +19,7 @@ const lines = [
   { id: "thought", state: "thinking" },
   { id: "answered", state: "speaking" },
 ];
-const states = ["listening", "thinking", "speaking"];
+const states = lines.map((line) => line.state);
 ---
 
 <section id="reachy" class="section border-t border-rule" aria-labelledby="reachy-title">
@@ -27,9 +28,9 @@ const states = ["listening", "thinking", "speaking"];
       <h2 id="reachy-title" class="display-2 text-ink">{t("reachy-title")}</h2>
       <p class="lede mt-4">{t("reachy-lede")}</p>
     </div>
-    <div class="reachy-bento mt-12">
+    <Bento class="mt-12">
       <Tile id="reachy-scene" title={t("reachy-scene-title")} text={t("reachy-scene-text")} span={12}>
-        <div class="reachy" data-reachy data-state="listening">
+        <div class="reachy" data-reachy>
           <figure class="reachy-figure">
             <div class="reachy-stage">
               <canvas class="reachy-canvas" aria-label={t("reachy-canvas")} role="img"></canvas>
@@ -63,7 +64,7 @@ const states = ["listening", "thinking", "speaking"];
           </div>
         </div>
       </Tile>
-    </div>
+    </Bento>
   </div>
 </section>
 
@@ -86,9 +87,6 @@ const states = ["listening", "thinking", "speaking"];
 </script>
 
 <style>
-  .reachy-bento {
-    display: grid;
-  }
   .reachy {
     display: grid;
     width: 100%;
@@ -164,22 +162,12 @@ const states = ["listening", "thinking", "speaking"];
     background: var(--rule-strong);
     transition: background 300ms var(--ease-out);
   }
-  /* once the robot plays, the page follows its state: the current line and state stand out */
-  :global(.js) .reachy[data-playing] .reachy-line,
-  :global(.js) .reachy[data-playing] .reachy-state {
+  /* once the robot plays, the page follows its state (scripts/reachy.ts marks what is on): the lines said so far
+     and the current state stand out */
+  .reachy[data-playing] :is(.reachy-line, .reachy-state):not([data-on]) {
     opacity: 0.45;
   }
-  :global(.js) .reachy[data-playing][data-state="listening"] [data-line="listening"],
-  :global(.js) .reachy[data-playing][data-state="thinking"] :is([data-line="listening"], [data-line="thinking"]),
-  :global(.js) .reachy[data-playing][data-state="speaking"] .reachy-line,
-  :global(.js) .reachy[data-playing][data-state="listening"] [data-chip="listening"],
-  :global(.js) .reachy[data-playing][data-state="thinking"] [data-chip="thinking"],
-  :global(.js) .reachy[data-playing][data-state="speaking"] [data-chip="speaking"] {
-    opacity: 1;
-  }
-  .reachy[data-state="listening"] [data-chip="listening"] .reachy-dot,
-  .reachy[data-state="thinking"] [data-chip="thinking"] .reachy-dot,
-  .reachy[data-state="speaking"] [data-chip="speaking"] .reachy-dot {
+  .reachy-state[data-on] .reachy-dot {
     background: var(--ember);
   }
 </style>
