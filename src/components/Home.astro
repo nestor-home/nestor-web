@@ -1,6 +1,7 @@
 ---
 import Cta from "@/components/sections/Cta.astro";
 import Hero from "@/components/sections/Hero.astro";
+import Reachy from "@/components/sections/Reachy.astro";
 import Story from "@/components/sections/Story.astro";
 import Works from "@/components/sections/Works.astro";
 import { type Locale, pageMeta, translator } from "@/i18n";
@@ -15,6 +16,7 @@ const t = translator(Astro.props.locale);
 <Base locale={t.locale} {...pageMeta(t, "home")}>
   <Hero t={t} />
   <Story t={t} />
+  <Reachy t={t} />
   <Works t={t} />
   <Cta t={t} />
 </Base>

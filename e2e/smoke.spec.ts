@@ -402,3 +402,18 @@ test("integrations are grouped by what they bring, and those not shipped yet say
   await expect(list.getByRole("listitem").filter({ hasText: "Spotify" })).toContainText("planned");
   await expect(list.getByRole("listitem").filter({ hasText: "Telegram" })).not.toContainText("planned");
 });
+
+test("Reachy goes through the conversation, and its words follow", async ({ page }) => {
+  const failed: string[] = [];
+  page.on("pageerror", (e) => failed.push(String(e)));
+  page.on("requestfailed", (r) => failed.push(r.url()));
+  await page.goto("/");
+  const scene = page.locator("[data-reachy]");
+  await scene.scrollIntoViewIfNeeded();
+  // the model loads once the section is near, then the states play in turn
+  await expect(scene).toHaveAttribute("data-state", "thinking", { timeout: 15_000 });
+  await expect(scene.locator('[data-chip="thinking"]')).toHaveCSS("opacity", "1");
+  await expect(scene.locator('[data-chip="speaking"]')).not.toHaveCSS("opacity", "1");
+  await expect(scene).toHaveAttribute("data-state", "speaking", { timeout: 10_000 });
+  expect(failed).toEqual([]);
+});
