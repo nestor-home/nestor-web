@@ -1,0 +1,71 @@
+---
+/** What stays on the machine that runs Nestor: the journal, the memories, the files, the voices, the keys. */
+import { AudioLines, Brain, Folder, KeyRound, Lock, ScrollText } from "lucide-react";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const rows = [
+  { id: "journal", icon: ScrollText },
+  { id: "memories", icon: Brain },
+  { id: "files", icon: Folder },
+  { id: "voices", icon: AudioLines },
+  { id: "keys", icon: KeyRound },
+];
+---
+
+<figure class="obj local" data-reveal>
+  <figcaption class="local-head">
+    <span>{t("story-local-machine")}</span>
+    <Lock className="size-4" strokeWidth={1.7} aria-hidden="true" />
+  </figcaption>
+  <ul class="local-rows">
+    {
+      rows.map(({ id, icon: Icon }) => (
+        <li class="local-row">
+          <Icon className="size-4 shrink-0 text-ink-muted" strokeWidth={1.7} aria-hidden="true" />
+          {t(`story-local-${id}`)}
+        </li>
+      ))
+    }
+  </ul>
+</figure>
+
+<style>
+  .local {
+    width: min(100%, 20rem);
+    padding: 0.5rem;
+    border-radius: 1.1rem;
+    background: var(--paper-raised);
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 24px 50px -30px rgb(40 28 12 / 0.45);
+  }
+  .local-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0.7rem;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .local-rows {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .local-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 0.6rem;
+    font-size: var(--text-sm);
+    color: var(--ink);
+  }
+  .local-row:nth-child(odd) {
+    background: color-mix(in oklab, var(--paper-sunken) 55%, transparent);
+  }
+</style>

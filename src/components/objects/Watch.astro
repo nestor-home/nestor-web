@@ -30,7 +30,7 @@ const mails = [
         <li class:list={["watch-mail", m.kept && "is-kept"]} style={`--i:${i}`}>
           <Brand brand="gmail" class="size-4 shrink-0" decorative />
           <span class="min-w-0 flex-1">
-            <span class:list={["block truncate", m.kept ? "text-ink" : "text-ink-muted"]}>{t(`story-watch-${m.id}`)}</span>
+            <span class:list={["block", m.kept ? "text-ink" : "text-ink-muted"]}>{t(`story-watch-${m.id}`)}</span>
             <span class="block text-xs text-ink-muted tabular">{m.time}</span>
           </span>
           <span class="watch-verdict">{t(m.kept ? "story-watch-kept" : "story-watch-dropped")}</span>

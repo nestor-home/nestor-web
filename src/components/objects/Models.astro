@@ -1,0 +1,81 @@
+---
+/** The language models Nestor runs on: those of a provider, those on the household's own machine (lib/providers.ts). */
+import Brand from "@/components/Brand.astro";
+import type { Translator } from "@/i18n";
+import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
+import { PROVIDERS } from "@/lib/providers";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+const available = PROVIDERS.model.filter((p) => p.status === "available");
+// those of a provider first, then those that run at home
+const groups = (["cloud", "here"] as const).map((id) => ({
+  id,
+  items: available.filter((p) => Boolean(p.local) === (id === "here")),
+}));
+---
+
+<figure class="obj models" data-reveal>
+  {
+    groups.map(({ id, items }) => (
+      <div class="models-group">
+        <figcaption class="models-label">{t(`story-models-${id}`)}</figcaption>
+        <ul class="models-list">
+          {items.map(({ brand }, i) => (
+            <li class="models-item" style={`--i:${i}`}>
+              <Brand brand={brand} class="size-4 shrink-0" decorative />
+              {(BRANDS[brand] as BrandInfo).name}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</figure>
+
+<style>
+  .models {
+    display: grid;
+    width: min(100%, 34rem);
+    gap: 1.1rem;
+  }
+  .models-label {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  .models-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .models-item {
+    display: inline-flex;
+    height: 2.4rem;
+    align-items: center;
+    gap: 0.5rem;
+    padding-inline: 0.85rem;
+    border-radius: 999px;
+    background: var(--paper-raised);
+    box-shadow: var(--lift);
+    font-size: var(--text-sm);
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .models .models-item {
+      opacity: 0;
+      transform: translateY(6px);
+      transition:
+        opacity 450ms var(--ease-out),
+        transform 450ms var(--ease-out);
+    }
+    :global(.js) .models[data-shown] .models-item {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(var(--i) * 60ms);
+    }
+  }
+</style>

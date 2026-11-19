@@ -63,6 +63,8 @@ const STORY = [
       "Anything that listens can be a satellite.",
       "At home, it speaks in the right room.",
       "And you always know why.",
+      "The model you choose.",
+      "Everything stays at home.",
     ],
   },
   {
@@ -74,15 +76,17 @@ const STORY = [
       "Tout ce qui écoute peut devenir un satellite.",
       "À la maison, il parle dans la bonne pièce.",
       "Et vous savez toujours pourquoi.",
+      "Le modèle de votre choix.",
+      "Tout reste chez vous.",
     ],
   },
 ];
 
 for (const { path, titles } of STORY) {
-  test(`${path} tells one request in six chapters, in order`, async ({ page }) => {
+  test(`${path} tells one request in eight tiles, in order`, async ({ page }) => {
     await page.goto(path);
-    await expect(page.locator("#story > .chapter")).toHaveCount(6);
-    await expect(page.locator("#story > .chapter").getByRole("heading", { level: 2 })).toHaveText(titles);
+    await expect(page.locator("#story .tile")).toHaveCount(8);
+    await expect(page.locator("#story .tile-title")).toHaveText(titles);
   });
 }
 
@@ -250,7 +254,7 @@ test.describe("without JavaScript", () => {
       .locator("[data-reveal]")
       .evaluateAll((nodes) => nodes.filter((n) => Number(getComputedStyle(n).opacity) < 1).length);
     expect(hidden).toBe(0);
-    await expect(page.locator("#story > .chapter")).toHaveCount(6);
+    await expect(page.locator("#story .tile")).toHaveCount(8);
     expect(await unseen(page)).toEqual([]);
     const ways = page.getByRole("group", { name: "Install" }).locator(".copy-command");
     await expect(ways.filter({ visible: true })).toContainText("uv tool install nestor-home");
