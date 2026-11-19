@@ -280,11 +280,10 @@
     text-decoration-color: var(--ember);
   }
 
-  /* a section of the home page: its vertical rhythm, laid out only once it nears the screen */
+  /* a section of the home page: its vertical rhythm. Always laid out: the header links to each section,
+     and a section sized by a guess (content-visibility) would move the one a link jumps to */
   .section {
     padding-block: var(--section-space);
-    content-visibility: auto;
-    contain-intrinsic-size: auto 1200px;
   }
 
   /* reveals: on by default without JavaScript; the script opts in, reduced motion opts out */
