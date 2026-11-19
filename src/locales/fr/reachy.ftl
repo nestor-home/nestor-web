@@ -1,7 +1,7 @@
 reachy-title = Un corps pour Nestor.
 reachy-lede = Reachy Mini, le petit robot de Pollen Robotics, devient un satellite : Nestor entend et parle par lui, et sa tête suit la conversation.
 reachy-scene-title = Au salon, avec Tom.
-reachy-scene-text = Le même Nestor que sur votre téléphone, dans un corps qui écoute, réfléchit et répond. Ses gestes viennent des états de la conversation, pas d’un script.
+reachy-scene-text = Le même Nestor que sur votre téléphone, avec une tête et deux antennes.
 reachy-canvas = Reachy Mini, en 3D, qui suit la conversation
 reachy-credit = Modèle Reachy Mini © Pollen Robotics, CC BY-SA-NC
 reachy-asked-who = Tom, au salon

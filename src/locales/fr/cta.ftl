@@ -11,5 +11,5 @@ cta-build-protocol-text = La spécification ouverte des satellites.
 cta-run-title = Cinq minutes jusqu’au premier message.
 cta-run-text = Installez, lancez, puis écrivez-lui.
 cta-needs-title = Ce qu’il faut.
-cta-needs-text = Une machine qui reste allumée et un modèle. La voix vient quand vous voulez.
+cta-needs-text = Une machine qui reste allumée, et un modèle.
 cta-need-voice = Un micro et un haut-parleur, plus tard

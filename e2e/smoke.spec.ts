@@ -64,7 +64,7 @@ const STORY = [
       "At home, it speaks in the right room.",
       "And you always know why.",
       "The model you choose.",
-      "Everything stays at home.",
+      "Your data stays at home.",
     ],
   },
   {
@@ -77,7 +77,7 @@ const STORY = [
       "À la maison, il parle dans la bonne pièce.",
       "Et vous savez toujours pourquoi.",
       "Le modèle de votre choix.",
-      "Tout reste chez vous.",
+      "Vos données restent chez vous.",
     ],
   },
 ];
