@@ -1,39 +1,35 @@
 ---
-import { ArrowRight } from "lucide-react";
+/**
+ * How to start, as the last bento: the install (one tab per way, without a script), what it takes, then the
+ * three ways to build on it, each tile a link to its page of the docs.
+ */
+import { ArrowRight, Cpu, Mic, Sparkles } from "lucide-react";
+import Bento from "@/components/Bento.astro";
 import Brand from "@/components/Brand.astro";
 import CopyCommand from "@/components/CopyCommand.astro";
-import Tie from "@/components/Tie.astro";
+import Tile from "@/components/Tile.astro";
 import { href, type Translator } from "@/i18n";
+import { BRANDS } from "@/lib/brands";
 import { docHref } from "@/lib/docs";
-import { INSTALL, REPOS } from "@/lib/site";
+import { MANIFEST_SNIPPET, QUICK_INSTALL, REPOS, SATELLITE_SNIPPET } from "@/lib/site";
 
 interface Props {
   t: Translator;
 }
 const { t } = Astro.props;
-const needs = ["cta-need-machine", "cta-need-model", "cta-need-time"];
-const build = [
-  { id: "satellite", slug: "satellites" },
-  { id: "sdks", slug: "sdks/python" },
-  { id: "protocol", slug: "satellites/protocol" },
+const needs = [
+  { id: "machine", icon: Cpu },
+  { id: "model", icon: Sparkles },
+  { id: "voice", icon: Mic },
 ];
+const languages = ["python", "typescript", "rust"] as const;
 ---
 
 <section id="start" class="section border-t border-rule" aria-labelledby="cta-title">
-  <div class="wrap grid items-start gap-x-12 gap-y-10 lg:grid-cols-12">
-    <div class="lg:col-span-6">
-      <h2 id="cta-title" data-reveal class="display-1 text-ink">{t("cta-title")}</h2>
-      <ul data-reveal class="mt-8 grid gap-3">
-        {
-          needs.map((id) => (
-            <li class="flex gap-3 text-ink">
-              <Tie size={13} class="mt-1.5 shrink-0" />
-              <span>{t(id)}</span>
-            </li>
-          ))
-        }
-      </ul>
-      <div data-reveal class="mt-8 flex flex-wrap gap-3">
+  <div class="wrap">
+    <div data-reveal class="flex flex-wrap items-end justify-between gap-6">
+      <h2 id="cta-title" class="display-2 max-w-2xl text-ink">{t("cta-title")}</h2>
+      <div class="flex flex-wrap gap-3">
         <a href={href(t.locale, "docs")} class="btn btn-ink">
           {t("cta-install")}
           <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
@@ -43,60 +39,180 @@ const build = [
           {t("nav-github")}
         </a>
       </div>
-      <p data-reveal class="mt-6 text-sm text-ink-muted">{t("cta-early")}</p>
     </div>
-    <div data-reveal class="cta-terminal lg:col-span-6">
-      <p class="border-b border-rule px-4 py-2.5 text-sm text-ink-muted">{t("cta-terminal")}</p>
-      <div class="p-4">
-        <CopyCommand t={t} command={INSTALL.join("\n")} />
-      </div>
-    </div>
-  </div>
 
-  <div class="wrap mt-16 lg:mt-24">
-    <h3 data-reveal class="display-3 text-ink">{t("cta-build-title")}</h3>
-    <ul class="mt-6 grid gap-3 md:grid-cols-3">
-      {
-        build.map(({ id, slug }, i) => (
-          <li data-reveal style={`--i:${i}`}>
-            <a href={docHref(t.locale, slug)} class="cta-card">
-              <span class="font-serif text-xl text-ink">{t(`cta-build-${id}`)}</span>
-              <span class="mt-1.5 block text-ink-muted">{t(`cta-build-${id}-text`)}</span>
-              <ArrowRight className="mt-4 size-4 text-ink-faint" strokeWidth={1.6} aria-hidden="true" />
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <Bento class="mt-12">
+      <Tile id="cta-run" title={t("cta-run-title")} text={t("cta-run-text")} span={7}>
+        <!-- one tab per way, without a script: a radio, its label, then its commands -->
+        <div class="install" style={`--ways: ${QUICK_INSTALL.length}`} role="group" aria-label={t("hero-install-title")}>
+          {
+            QUICK_INSTALL.map((way, i) => (
+              <>
+                <input type="radio" name="install" id={`install-${way.id}`} class="sr-only" checked={i === 0} />
+                <label for={`install-${way.id}`} class="install-tab">
+                  {way.label}
+                </label>
+                <CopyCommand t={t} command={way.command} class="install-way" />
+              </>
+            ))
+          }
+        </div>
+      </Tile>
+      <Tile id="cta-needs" title={t("cta-needs-title")} text={t("cta-needs-text")} span={5}>
+        <ul class="needs">
+          {
+            needs.map(({ id, icon: Icon }) => (
+              <li class="need">
+                <span class="need-mark">
+                  <Icon className="size-4" strokeWidth={1.7} aria-hidden="true" />
+                </span>
+                {t(`cta-need-${id}`)}
+              </li>
+            ))
+          }
+        </ul>
+      </Tile>
+      <Tile
+        id="cta-satellite"
+        title={t("cta-build-satellite")}
+        text={t("cta-build-satellite-text")}
+        span={4}
+        href={docHref(t.locale, "satellites")}
+      >
+        <pre class="snippet" aria-hidden="true"><code>{SATELLITE_SNIPPET}</code></pre>
+      </Tile>
+      <Tile
+        id="cta-sdks"
+        title={t("cta-build-sdks")}
+        text={t("cta-build-sdks-text")}
+        span={4}
+        href={docHref(t.locale, "sdks/python")}
+      >
+        <ul class="langs">
+          {
+            languages.map((brand) => (
+              <li class="lang">
+                <span class="lang-mark">
+                  <Brand brand={brand} class="size-7" decorative />
+                </span>
+                <span class="lang-name">{BRANDS[brand].name}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </Tile>
+      <Tile
+        id="cta-protocol"
+        title={t("cta-build-protocol")}
+        text={t("cta-build-protocol-text")}
+        span={4}
+        href={docHref(t.locale, "satellites/protocol")}
+      >
+        <pre class="snippet" aria-hidden="true"><code>{MANIFEST_SNIPPET}</code></pre>
+      </Tile>
+    </Bento>
   </div>
 </section>
 
 <style>
-  .cta-terminal,
-  .cta-card {
-    border-radius: var(--radius-surface);
+  /* the install tabs: labels on the first row, the checked radio's commands under them */
+  .install {
+    display: grid;
+    width: min(100%, 34rem);
+    grid-template-columns: repeat(var(--ways, 2), max-content) 1fr;
+    column-gap: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+  .install-tab {
+    grid-row: 1;
+    cursor: pointer;
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.4rem;
+    color: var(--ink-muted);
+  }
+  .install-tab:hover {
+    color: var(--ink);
+  }
+  .install :global(.install-way) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+  }
+  .install input:not(:checked) + .install-tab + :global(.install-way) {
+    display: none;
+  }
+  .install input:checked + .install-tab {
     background: var(--paper-raised);
+    color: var(--ink);
     box-shadow: var(--lift);
   }
-  .cta-terminal {
+  .install input:focus-visible + .install-tab {
+    outline: 2px solid var(--ember);
+    outline-offset: 2px;
+  }
+
+  .needs {
+    display: grid;
+    width: min(100%, 22rem);
+    gap: 0.5rem;
+  }
+  .need {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 0.9rem;
+    background: var(--paper-raised);
+    box-shadow: var(--lift);
+    font-size: var(--text-sm);
+    color: var(--ink);
+  }
+  .need-mark {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+    place-items: center;
+    border-radius: 0.6rem;
+    background: var(--ember-soft);
+    color: var(--ink);
+  }
+
+  .snippet {
+    width: 100%;
     overflow: hidden;
+    padding: 1rem 1.1rem;
+    border-radius: 0.9rem;
+    background: #15120f;
+    color: #e9e1d2;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1.6;
+    white-space: pre;
   }
-  .cta-card {
-    display: block;
-    height: 100%;
-    padding: 1.25rem;
-    text-decoration: none;
-    transition:
-      box-shadow var(--duration) var(--ease),
-      transform var(--duration) var(--ease);
+
+  .langs {
+    display: flex;
+    gap: 1rem;
   }
-  .cta-card:hover {
-    box-shadow: var(--lift-hover);
-    transform: translateY(-1px);
+  .lang {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .cta-card:hover {
-      transform: none;
-    }
+  .lang-mark {
+    display: grid;
+    width: 4rem;
+    height: 4rem;
+    place-items: center;
+    border-radius: 1.1rem;
+    background: var(--paper-raised);
+    box-shadow: var(--lift);
+    color: var(--ink);
+  }
+  .lang-name {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
   }
 </style>

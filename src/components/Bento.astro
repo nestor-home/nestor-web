@@ -1,0 +1,22 @@
+---
+/** The grid the home page's tiles sit in: one column on a phone, twelve on a wide screen. */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div class:list={["bento", className]}><slot /></div>
+
+<style>
+  .bento {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  @media (min-width: 1024px) {
+    .bento {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+  }
+</style>

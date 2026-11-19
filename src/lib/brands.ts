@@ -55,7 +55,9 @@ import {
   siOpenstreetmap,
   siPhilipshue,
   siPypi,
+  siPython,
   siRss,
+  siRust,
   siSearxng,
   siSignal,
   siSonos,
@@ -63,6 +65,7 @@ import {
   siTado,
   siTelegram,
   siTodoist,
+  siTypescript,
   siUv,
   siVllm,
   siWhatsapp,
@@ -158,6 +161,10 @@ export const BRANDS = {
   hermes: lobe("Hermes", hermesagentSvg),
   codex: lobe("Codex", codexSvg),
   "claude-code": lobe("Claude Code", claudecodeSvg),
+  // the satellites' SDKs (the home page)
+  python: mark("Python", siPython),
+  typescript: mark("TypeScript", siTypescript),
+  rust: mark("Rust", siRust),
   // the ways to install the server (the documentation's installation page)
   uv: mark("uv", siUv),
   pip: mark("pip", siPypi),

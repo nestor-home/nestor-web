@@ -6,8 +6,9 @@
 import {
   AppWindow,
   ArrowRight,
-  Bot,
+  type Bot,
   Cctv,
+  Cpu,
   Eye,
   Keyboard,
   Mic,
@@ -31,7 +32,7 @@ type Cap = keyof typeof CAPS;
 const devices: { id: string; icon: typeof Bot; caps: Cap[] }[] = [
   { id: "speaker", icon: Speaker, caps: ["hear", "speak"] },
   { id: "tablet", icon: Tablet, caps: ["hear", "speak", "show", "type"] },
-  { id: "robot", icon: Bot, caps: ["hear", "speak", "move", "see"] },
+  { id: "any", icon: Cpu, caps: ["hear", "speak", "show", "move", "see"] },
   { id: "browser", icon: AppWindow, caps: ["hear", "speak", "show", "type"] },
   { id: "terminal", icon: SquareTerminal, caps: ["show", "type"] },
   { id: "camera", icon: Cctv, caps: ["see"] },

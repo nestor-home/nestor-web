@@ -5,7 +5,7 @@
  * in the right room, the journal's trace), then the models it runs on and what stays at home. Every tile is the
  * same frame: the object on a quiet grain, then one sentence in ink and one in grey.
  */
-import Dither from "@/components/Dither.astro";
+import Bento from "@/components/Bento.astro";
 import Local from "@/components/objects/Local.astro";
 import Models from "@/components/objects/Models.astro";
 import Phone from "@/components/objects/Phone.astro";
@@ -14,6 +14,7 @@ import Satellites from "@/components/objects/Satellites.astro";
 import Spoken from "@/components/objects/Spoken.astro";
 import Trace from "@/components/objects/Trace.astro";
 import Watch from "@/components/objects/Watch.astro";
+import Tile from "@/components/Tile.astro";
 import type { Translator } from "@/i18n";
 
 interface Props {
@@ -39,77 +40,14 @@ const chapters = [
       <h2 id="story-title" class="display-2 text-ink">{t("story-title")}</h2>
       <p class="lede mt-4">{t("story-lede")}</p>
     </div>
-    <div class="bento mt-12">
+    <Bento class="mt-12">
       {
         chapters.map(({ id, object: Object, span }) => (
-          <article class="tile" style={`--span:${span}`} aria-labelledby={`story-${id}`}>
-            <div class="tile-stage">
-              <Dither shape="ramp-down" from={0.22} to={0} dot={2} class="tile-grain absolute inset-x-0 top-0 h-2/3" />
-              <Object t={t} />
-            </div>
-            <p class="tile-words">
-              <strong id={`story-${id}`} class="tile-title">
-                {t(`story-${id}-title`)}
-              </strong>{" "}
-              {t(`story-${id}-text`)}
-            </p>
-          </article>
+          <Tile id={`story-${id}`} title={t(`story-${id}-title`)} text={t(`story-${id}-text`)} span={span}>
+            <Object t={t} />
+          </Tile>
         ))
       }
-    </div>
+    </Bento>
   </div>
 </section>
-
-<style>
-  .bento {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
-  }
-  @media (min-width: 1024px) {
-    .bento {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-    }
-    .tile {
-      grid-column: span var(--span) / span var(--span);
-    }
-  }
-  .tile {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 1.5rem;
-    background: var(--paper-sunken);
-    box-shadow: 0 0 0 1px var(--rule) inset;
-  }
-  .tile-stage {
-    position: relative;
-    display: flex;
-    flex: 1;
-    min-width: 0;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(1.5rem, 4vw, 2.75rem) clamp(1rem, 3vw, 2rem) 1.5rem;
-  }
-  .tile-stage > :global(.tile-grain) {
-    color: var(--ink-faint);
-    opacity: 0.35;
-  }
-  .tile-stage > :global(figure) {
-    position: relative;
-    min-width: 0;
-  }
-  .tile-words {
-    max-width: 36rem;
-    padding: 0 clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 1.75rem);
-    font-size: var(--text-base);
-    line-height: 1.55;
-    color: var(--ink-muted);
-    text-wrap: pretty;
-  }
-  .tile-title {
-    font-weight: 600;
-    color: var(--ink);
-  }
-</style>

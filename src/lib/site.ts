@@ -33,3 +33,24 @@ export const QUICK_INSTALL: readonly { id: string; label: string; command: strin
     command: DOCKER.filter((line) => !line.startsWith("$EDITOR")).join("\n"),
   },
 ];
+
+/** A satellite in a few lines, as the Python SDK's README writes one (nestor-satellite-python). */
+export const SATELLITE_SNIPPET = `satellite = Satellite(
+    "http://nestor.local:8471",
+    Manifest.of(Device("salon", "reachy-mini", "salon")),
+    tokens=TokenStore("~/.config/nestor/salon.json"),
+    source=Microphone(),
+    sink=Speaker(),
+)
+asyncio.run(satellite.run())`;
+
+/** A device's manifest, as the protocol gives it (docs/satellites/protocol, section 5), shortened. */
+export const MANIFEST_SNIPPET = `{
+  "protocol": "nestor.satellite/1",
+  "device": { "id": "salon", "model": "reachy-mini" },
+  "capabilities": [
+    { "name": "audio.capture" },
+    { "name": "audio.playback" },
+    { "name": "motion.head" }
+  ]
+}`;
