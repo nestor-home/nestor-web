@@ -1,0 +1,50 @@
+---
+title: Introduction
+description: What Nestor does for a household, and where to start in these docs.
+---
+
+import AdminShot from "@/components/docs/AdminShot.astro";
+import Card from "@/components/docs/Card.astro";
+import Cards from "@/components/docs/Cards.astro";
+import Steps from "@/components/docs/Steps.astro";
+
+Nestor is an open-source assistant for the whole household: one agent on a server at home, reached
+aloud through satellites, in the admin's chat or on Telegram. The project is young: expect changes
+between releases.
+
+<AdminShot name="today" locale="en" alt="The admin's Today page: what Nestor is doing, the rooms and who is in them, what waits for you" />
+
+## What it does
+
+<Cards cols={3}>
+  <Card title="Knows who asks" href="/docs/agent/speakers/" icon="mic">Each person's conversations and memories apart.</Card>
+  <Card title="Remembers" href="/docs/agent/memory/" icon="brain">What you told it, with dates.</Card>
+  <Card title="Runs the house" href="/docs/home/" brand="home-assistant">Through Home Assistant.</Card>
+  <Card title="Keeps watch" href="/docs/agent/initiative/" icon="sparkles">Tells you when the awaited mail arrives.</Card>
+  <Card title="Finds the right person" href="/docs/agent/initiative/" icon="chat">In their room or on their phone.</Card>
+  <Card title="Keeps a journal" href="/docs/agent/journal/" icon="journal">Every action and its reason.</Card>
+</Cards>
+
+## Your first hour
+
+<Steps>
+
+1. **Install the server**: [Installation](/docs/install/).
+2. **Have a first conversation**: [Quickstart](/docs/quickstart/).
+3. **Add a channel**, such as Telegram: [Channels](/docs/channels/).
+4. **Add a satellite** in a room: [Satellites](/docs/satellites/).
+
+</Steps>
+
+## The docs
+
+<Cards cols={3}>
+  <Card title="Start" href="/docs/quickstart/" icon="rocket">Install, then a first conversation.</Card>
+  <Card title="How it works" href="/docs/agent/" icon="bot">A turn, memory, initiative, the journal.</Card>
+  <Card title="Configure" href="/docs/configuration/" icon="settings">Configuration, models, channels, voice.</Card>
+  <Card title="Connect" href="/docs/home/" icon="plug">Home Assistant, accounts, tools, executors.</Card>
+  <Card title="Satellites" href="/docs/satellites/" icon="satellite">Devices in a room, and their protocol.</Card>
+  <Card title="SDKs" href="/docs/sdks/python/" icon="code">Python, TypeScript or Rust.</Card>
+</Cards>
+
+To add your own tool, model or channel, write a [plugin](/docs/plugins/).

@@ -29,7 +29,6 @@ export const GET: APIRoute = async ({ props }) => {
   const t = translator(locale);
   const titles: Record<Page, string> = {
     home: [t("hero-line-1"), t("hero-line-2"), t("hero-line-3")].join(" "),
-    developers: t("dev-title"),
     docs: t("docs-card"),
   };
   const title = titles[page];

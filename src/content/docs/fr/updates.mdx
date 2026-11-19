@@ -1,0 +1,65 @@
+---
+title: Mises à jour
+description: Comment Nestor apprend qu’une version sort, et comment mettre à jour le serveur, puis ses satellites.
+---
+
+import AdminShot from "@/components/docs/AdminShot.astro";
+import Steps from "@/components/docs/Steps.astro";
+
+Mettez à jour le serveur d’abord, puis les satellites : mis à jour avant, un satellite pourrait
+parler une version que le serveur refuse.
+
+<AdminShot name="system" locale="fr" alt="Système : ce qui est à surveiller, la version qui tourne et une nouvelle version" />
+
+## Nouvelles versions
+
+Nestor lit le flux `releases.json` une minute après son démarrage, puis chaque jour, sans rien
+envoyer d’autre que la requête.
+
+| Clé     | Défaut                                 | Rôle                                  |
+| ------- | -------------------------------------- | ------------------------------------- |
+| `check` | `true`                                 | `false` : ne jamais lire la liste     |
+| `feed`  | la dernière version publiée sur GitHub | l’adresse de la liste, pour un miroir |
+
+L’admin affiche alors **Nouvelle version** dans la barre latérale, avec les notes depuis votre
+version.
+
+## Mettre à jour le serveur
+
+Avec `uv tool` ou pip :
+
+<Steps>
+
+1. **Installer.** Cliquez sur **Installer**, puis confirmez.
+2. **Vérifier.** Nestor l’installe depuis PyPI avec vos extras et lance `nestor check`.
+3. **Redémarrer.** Une conversation en cours est coupée. Si une étape échoue, la version précédente
+   revient.
+
+</Steps>
+
+Avec Docker, la fenêtre donne les commandes (l’admin ne prend jamais le socket Docker) :
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Jusqu’à la première version stable, une version avec rupture peut demander de recréer `state/` et
+d’appairer de nouveau les satellites.
+
+## Mettre à jour un satellite
+
+Un satellite autorisé à `device.update` cherche chaque jour une version plus récente à sa source.
+
+<Steps>
+
+1. **Ouvrir.** Sa page affiche **Mise à jour disponible**, avec les notes que l’appareil a trouvées.
+2. **Installer.** L’appareil la récupère lui-même ; Nestor n’envoie que la version signalée.
+3. **Redémarrer.** Si la nouvelle version ne se connecte pas en une minute, l’appareil revient à la
+   précédente.
+
+</Steps>
+
+Il n’installe jamais une version plus ancienne, ni une qu’il n’a pas trouvée
+([protocole](/fr/docs/satellites/protocol/#10-mises-à-jour)). Si une version abandonne le protocole
+d’un satellite, mettez-le à jour sur l’appareil, après le serveur.

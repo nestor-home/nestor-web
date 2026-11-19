@@ -1,0 +1,165 @@
+---
+title: SDK Rust
+description: Écrire un satellite en Rust avec la crate nestor-satellite, ou installer sa commande.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+La crate [`nestor-satellite`](https://crates.io/crates/nestor-satellite) gère l’appairage, le lien
+et le texte ; il lui faut Rust 1.91+ et un compilateur C. L’audio et la caméra sont des features.
+
+## Installer
+
+<Steps>
+
+1. **Installer la commande**, ou prendre un binaire macOS ou Linux dans une
+   [release](https://github.com/nestor-home/nestor-satellite-rust/releases).
+
+   ```bash
+   cargo install nestor-satellite --features cli
+   ```
+
+2. **L’appairer** avec une URI d’appairage de l’admin ou de `nestor satellites add --room salon`. Les
+   lancements suivants se reconnectent.
+
+   ```bash
+   nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+   ```
+
+</Steps>
+
+Dans un pilote :
+
+```bash
+cargo add nestor-satellite --features audio
+cargo add tokio --features macros,rt-multi-thread
+```
+
+| Fonctionnalité | Ajoute                                                                                 |
+| -------------- | -------------------------------------------------------------------------------------- |
+| par défaut     | l’appairage, le lien, les intentions, les observations, le texte : sans WebRTC         |
+| `voice`        | l’audio en WebRTC (Opus) avec vos propres `AudioSource` et `AudioSink`, le code d’appareil dit à voix haute, les appels ; demande `cmake` |
+| `audio`        | `voice` avec le micro et le haut-parleur de la machine (cpal) ; sous Linux, ALSA (`apt install libasound2-dev pkg-config`) |
+| `video`        | `voice` avec une `Camera` filmée en VP8 (en Rust pur), et des photos en JPEG           |
+| `cli`          | la commande `nestor-satellite` (`audio` et `video`)                                    |
+
+## La commande
+
+`nestor-satellite run` fait de cette machine un satellite : micro et haut-parleur, terminal, ou les
+deux.
+
+| Option            | Flag ou variable                        | Effet                                                                    |
+| ----------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| Cœur              | `--core`, `NESTOR_CORE`                 | l’adresse du cœur, par exemple `http://nestor.local:8471` (par défaut : celle de l’URI d’appairage) |
+| URI d’appairage   | `--pairing-uri`, `NESTOR_PAIRING_URI`   | appaire avec un code d’enrôlement créé dans Nestor                       |
+| Code d’enrôlement | `--pairing-code`, `NESTOR_PAIRING_CODE` | le même code seul, avec `--core`                                         |
+| Pièce             | `--room`                                | la pièce où se trouve l’appareil (obligatoire)                           |
+| Texte             | `--text`                                | envoie les lignes tapées sur stdin, affiche les réponses                 |
+| Texte seul        | `--text-only`                           | l’écrit seul : ni micro, ni haut-parleur, ni WebRTC                      |
+| Cartes son        | `--input-device`, `--output-device`     | une partie du nom d’un périphérique (`nestor-satellite devices` les liste) |
+| Sans carte son    | `--null-audio`                          | envoie du silence et ignore la voix du cœur                              |
+| STUN ou TURN      | `--ice-server`                          | un serveur, répétable ; ne sert qu’au-delà du réseau local               |
+| Caméra            | `--camera`                              | filme quand une personne ouvre une session : `/dev/video0` (Linux) ou `test-pattern` |
+| Langue            | `--language`                            | la langue parlée : `en` ou `fr` (par défaut : d’après `LANG`)            |
+
+Sans code d’enrôlement, il dit et journalise un code d’appareil à taper dans l’admin. `--help` liste
+toutes les options.
+
+## Votre propre pilote
+
+Une enceinte avec un micro et une lumière (feature `audio`) :
+
+```rust
+use nestor_satellite::devices::{Microphone, Speaker};
+use nestor_satellite::{Behavior, Body, Device, IDENTIFY, Manifest, Satellite, TokenStore};
+
+struct Led;
+impl Body for Led {
+    fn behavior(&self, behavior: Behavior) {
+        println!("attitude: {behavior}"); // light the ring, from a task of its own
+    }
+    fn identify(&self) {
+        println!("blink"); // a person looks for this device: blink for a few seconds
+    }
+}
+
+#[tokio::main]
+async fn main() -> nestor_satellite::Result<()> {
+    let device = Device::new("enceinte-salon", "raspberry-pi-4", "salon")?;
+    let manifest = Manifest::new(device, [IDENTIFY])?;
+    let tokens = TokenStore::new("~/.config/nestor-satellite/enceinte-salon.json");
+    let satellite = Satellite::builder("http://nestor.local:8471", manifest, tokens).body(Led);
+    // The microphone declares audio.capture, the speaker audio.playback.
+    satellite.source(Microphone::new()).sink(Speaker::new()).build()?.run().await // pairs once, then reconnects
+}
+```
+
+`run` se reconnecte, s’appaire de nouveau si son jeton est refusé, et renvoie `Error::Replaced` quand
+un lien plus récent de l’appareil prend le relais. API : [docs.rs](https://docs.rs/nestor-satellite).
+
+## Capacités
+
+Le manifeste décrit corps et capteurs (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`, `PERSON_DETECTION`,
+`SPEECH_ACTIVITY`). Le reste découle du builder ; le déclarer dans le manifeste sans lui fait échouer
+`build` avec `Error::NotProvided`.
+
+| Builder                                                 | Déclare                              |
+| ------------------------------------------------------- | ------------------------------------ |
+| `.text_display(…)`, un `TextDisplay` ou `Fn(&str, bool)` | `text.display`                      |
+| `.text_input()`                                         | `text.input`                         |
+| `.source(…)`, un `AudioSource` (`voice`)                | `audio.capture`                      |
+| `.sink(…)`, un `AudioSink` (`voice`)                    | `audio.playback`                     |
+| `.null_audio()` (`voice`)                               | les deux, sans carte son (tests)     |
+| `.camera(…)`, une `Camera` (`video`)                    | `video.capture`                      |
+| `.media_indicator(…)`                                   | `media.indicator`                    |
+| `.updater(…)`, un `Updater`                             | `device.update`                      |
+
+- `satellite.observer().input_text(…)` envoie de 1 à 4 000 caractères ; `Ok(false)` quand le lien
+  est coupé, `Error::CapabilityNotAllowed` si `text.input` n’est pas autorisé.
+- `last` marque le dernier message d’une réponse.
+- `.ice_servers(…)` : seulement au-delà du réseau local.
+
+## Options d’appairage
+
+| Builder                                                                                         | Déclare                   |
+| ----------------------------------------------------------------------------------------------- | ------------------------- |
+| toujours (`.enrollment(Enrollment::parse(…)?)`, ou `NESTOR_PAIRING_URI` / `NESTOR_PAIRING_CODE`) | `enrollment.provisioning` |
+| `.display(…)`, un `Display` (`show_code`, `show_message`, `clear`)                              | `device_code.display`     |
+| un `.sink(…)` sans écran, ou `.voice(…)`                                                        | `device_code.speech`      |
+| `.accepts_enrollment(EnrollmentMethod::Input)`, codes passés à `satellite.enroller()`           | `enrollment.input`        |
+
+- Un code d’enrôlement refusé n’est plus jamais envoyé.
+- Pas de QR code, donc pas d’`enrollment.qr`.
+- `.language(…)` : la langue dans laquelle il parle (par défaut : `LANG`).
+
+## Voix et caméra
+
+Voir [Voix](/fr/docs/voice/) et [Caméras et appels](/fr/docs/satellites/cameras/).
+
+`Camera` est un trait. `V4l2Camera::new("/dev/video0")` lit une caméra Linux (webcam, ou caméra du
+Raspberry Pi par V4L2), `.with_size(1280, 720)` règle sa taille, `TestPattern::default()` dessine
+des barres de couleur. Le SDK applique les règles des sessions et n’écoute jamais sur un port. Un
+appareil ne filme qu’en TLS (`https://`) ou sur la machine du cœur.
+
+## Mises à jour
+
+Le manifeste nomme le logiciel : la crate `nestor-satellite`, ou le paquet du pilote avec
+`Manifest::with_software(Software::new(…)?)`.
+
+Un `Updater` (`.updater(…)`) trouve (`newer`) et installe (`install`). L’appareil vérifie à la
+connexion puis chaque jour, n’installe que ce qu’il a trouvé, et revient en arrière s’il n’est pas
+accueilli dans les 60 s ; le même programme redémarre alors avec les mêmes arguments (Unix), sauf
+si `.restart(…)` en décide autrement. Sans updater, l’admin montre seulement la version. Règles :
+[Mises à jour](/fr/docs/satellites/protocol/#10-mises-à-jour).
+
+## Conformité
+
+Sans carte son :
+
+```bash
+uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
+  nestor-satellite run --core {url} --room salon --null-audio --token-file {state}/token.json
+```
+
+Voir [Conformité](/fr/docs/satellites/conformance/). Code, exemples et licence des voix :
+[nestor-satellite-rust](https://github.com/nestor-home/nestor-satellite-rust).

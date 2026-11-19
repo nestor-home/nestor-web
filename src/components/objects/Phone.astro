@@ -1,0 +1,114 @@
+---
+/** Léa's phone, out of the house: the lock screen at the hour it comes, and Nestor's message on it. */
+import Brand from "@/components/Brand.astro";
+import Dither from "@/components/Dither.astro";
+import type { Translator } from "@/i18n";
+import { BRANDS } from "@/lib/brands";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+---
+
+<figure class="obj phone" data-reveal aria-label={t("story-found-phone")}>
+  <div class="phone-screen">
+    <Dither shape="ramp-up" from={0.3} to={0} dot={2} class="phone-grain absolute inset-0" />
+    <p class="phone-date">{t("story-found-date")}</p>
+    <p class="phone-clock tabular">16:47</p>
+    <div class="phone-note">
+      <p class="phone-app">
+        <Brand brand="telegram" class="size-[1.05rem] shrink-0" decorative />
+        <span>{BRANDS.telegram.name}</span>
+        <span class="ml-auto">{t("story-found-now")}</span>
+      </p>
+      <p class="phone-from">{t("nestor-label")}</p>
+      <p class="phone-text">{t("story-found-message")}</p>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .phone {
+    width: min(100%, 16rem);
+    aspect-ratio: 9 / 18.5;
+    padding: 0.6rem;
+    border-radius: 2.8rem;
+    background: #15120f;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.05) inset,
+      0 40px 80px -36px rgb(20 14 8 / 0.6);
+  }
+  .phone-screen {
+    position: relative;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    padding: 2.6rem 0.75rem 0.75rem;
+    border-radius: 2.25rem;
+    background: linear-gradient(to bottom, #2c2546 0%, #a24a31 70%, #e8915f 100%);
+    color: #fbf3e4;
+  }
+  .phone-grain {
+    color: #15120f;
+    opacity: 0.18;
+  }
+  .phone-date {
+    position: relative;
+    font-size: var(--text-sm);
+    opacity: 0.8;
+  }
+  .phone-clock {
+    position: relative;
+    font-family: var(--font-display);
+    font-size: var(--text-7xl);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .phone-note {
+    position: relative;
+    width: 100%;
+    margin-top: auto;
+    padding: 0.8rem 0.9rem 0.9rem;
+    border-radius: 1.2rem;
+    background: rgb(251 243 228 / 0.82);
+    color: #1d1913;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 30px -16px rgb(0 0 0 / 0.5);
+  }
+  .phone-app {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--text-xs);
+    color: #62584c;
+  }
+  .phone-from {
+    margin-top: 0.4rem;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .phone-text {
+    margin-top: 0.1rem;
+    font-size: var(--text-sm);
+    line-height: 1.35;
+  }
+
+  /* when it comes into view: the message drops onto the lock screen */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .phone .phone-note {
+      opacity: 0;
+      transform: translateY(-1.5rem) scale(0.96);
+      transition:
+        opacity 500ms var(--ease-out),
+        transform 600ms cubic-bezier(0.2, 1.2, 0.3, 1);
+    }
+    :global(.js) .phone[data-shown] .phone-note {
+      opacity: 1;
+      transform: none;
+      transition-delay: 700ms;
+    }
+  }
+</style>

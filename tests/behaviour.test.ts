@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { related } from "@/islands/Architecture";
 import { nextIndex } from "@/lib/tabs";
 
 describe("the tab lists", () => {
@@ -19,19 +18,5 @@ describe("the tab lists", () => {
     expect(nextIndex("ArrowUp", 1, 3)).toBeNull();
     expect(nextIndex("ArrowDown", 0, 3, "both")).toBe(1);
     expect(nextIndex("ArrowLeft", 0, 3, "both")).toBe(2);
-  });
-});
-
-describe("the architecture diagram", () => {
-  it("lights what a part talks to", () => {
-    expect([...related("connectors")].sort()).toEqual(["agent", "connectors", "initiative", "journal"]);
-  });
-
-  it("lights the outer parts that reach a module of the core", () => {
-    const agent = related("agent");
-    for (const outer of ["channels", "satellites", "home", "connectors", "executors", "providers"] as const) {
-      expect(agent.has(outer)).toBe(true);
-    }
-    expect(related("memory").has("providers")).toBe(false);
   });
 });

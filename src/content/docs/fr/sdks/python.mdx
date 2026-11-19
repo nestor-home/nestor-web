@@ -1,0 +1,172 @@
+---
+title: SDK Python
+description: Écrire un satellite en Python avec nestor-satellite, ou lancer sa commande sur n’importe quelle machine.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+[`nestor-satellite`](https://pypi.org/project/nestor-satellite/) gère l’appairage, le lien et le
+texte, sous Python 3.12+. L’audio et la caméra sont des extras.
+
+## Installer
+
+<Steps>
+
+1. **Installer le paquet**
+
+   ```bash
+   pip install 'nestor-satellite[voice,sounddevice]'   # a microphone and a speaker
+   pip install nestor-satellite                        # a device that only writes
+   ```
+
+2. **L’appairer** avec une URI d’appairage de l’admin ou de `nestor satellites add --room salon`. Les
+   lancements suivants se reconnectent.
+
+   ```bash
+   nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+   ```
+
+</Steps>
+
+| Extra         | Ajoute                                                          |
+| ------------- | --------------------------------------------------------------- |
+| `voice`       | l’audio en WebRTC, et le code d’appareil dit à voix haute       |
+| `sounddevice` | le micro et le haut-parleur de la machine (PortAudio)           |
+| `video`       | une caméra filmée en WebRTC, et des photos                      |
+| `opencv`      | une caméra lue par OpenCV (V4L2 sous Linux)                     |
+| `qr`          | les URI d’appairage lues sur un QR code montré à la caméra      |
+
+## La commande
+
+`nestor-satellite run` fait de cette machine un satellite : micro et haut-parleur, terminal, ou les
+deux.
+
+| Option              | Flag ou variable                        | Effet                                                                    |
+| ------------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| Cœur                | `--core`                                | l’adresse du cœur, par exemple `http://nestor.local:8471` (par défaut : celle de l’URI d’appairage) |
+| URI d’appairage     | `--pairing-uri`, `NESTOR_PAIRING_URI`   | appaire avec un code d’enrôlement créé dans Nestor                       |
+| Code d’enrôlement   | `--pairing-code`, `NESTOR_PAIRING_CODE` | le même code seul, avec `--core`                                         |
+| Pièce               | `--room`                                | la pièce où se trouve l’appareil (obligatoire)                           |
+| Texte               | `--text`                                | envoie les lignes tapées sur stdin, affiche les réponses                 |
+| Sans voix           | `--no-voice`                            | retire le micro et le haut-parleur (aucun extra nécessaire)              |
+| Cartes son          | `--input-device`, `--output-device`     | un périphérique PortAudio, par nom ou par numéro                         |
+| Caméra              | `--camera`                              | filme quand une personne ouvre une session, lit les QR codes (`0` sous macOS, `/dev/video0` sous Linux ; extras `video` et `qr`) |
+| Langue              | `--lang`                                | la langue parlée : `en` ou `fr` (par défaut : celle de l’environnement)  |
+| Mises à jour        | `--managed`                             | une personne peut le mettre à jour depuis Nestor (voir [Mises à jour](#mises-à-jour)) |
+
+Sans code d’enrôlement, il dit et journalise un code d’appareil à taper dans l’admin. `--help` liste
+toutes les options.
+
+## Votre propre pilote
+
+Une enceinte avec un micro, une lumière et une sortie texte :
+
+```python
+import asyncio
+
+from nestor_satellite import EXPRESSION, IDENTIFY, Body, Device, Manifest, Satellite, TokenStore
+from nestor_satellite.devices import Microphone, Speaker
+
+
+class Led(Body):
+    def behavior(self, behavior):
+        print("attitude:", behavior)  # idle, listening, thinking, speaking
+
+    def expression(self, expression, intensity):
+        print("expression:", expression, intensity)
+
+    def identify(self):
+        print("blink!")  # a person is telling devices apart
+
+
+satellite = Satellite(
+    "http://nestor.local:8471",
+    Manifest.of(Device("enceinte-salon", "raspberry-pi-4", "salon"), EXPRESSION, IDENTIFY),
+    tokens=TokenStore("~/.config/nestor-satellite/enceinte-salon.json"),
+    body=Led(),
+    source=Microphone(),  # audio.capture, with the voice extra
+    sink=Speaker(),  # audio.playback
+    text_display=lambda text, final: print(text),  # text.display
+    text_input=True,  # text.input: satellite.send_text("…")
+)
+asyncio.run(satellite.run())  # pairs the first time, then stays connected and reconnects
+```
+
+`run` se reconnecte, s’appaire de nouveau si son jeton est refusé, s’arrête quand un lien plus récent
+du même appareil le remplace, et lève `PairingFailed` quand réessayer ne sert à rien.
+
+## Capacités
+
+Le manifeste décrit corps et capteurs (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`, `PERSON_DETECTION`,
+`SPEECH_ACTIVITY`). Le reste découle des arguments ; le déclarer dans le manifeste lève `ValueError`.
+
+| Argument                                     | Déclare           |
+| -------------------------------------------- | ----------------- |
+| `text_display=` une fonction `(text, final)` | `text.display`    |
+| `text_input=True`                            | `text.input`      |
+| `source=` un `AudioSource` (`Microphone()`)  | `audio.capture`   |
+| `sink=` un `AudioSink` (`Speaker()`)         | `audio.playback`  |
+| `camera=` une `Camera`                       | `video.capture`   |
+| `on_media=` une fonction `(active)`          | `media.indicator` |
+| `updater=` un `Updater`                      | `device.update`   |
+
+- `satellite.send_text("…")` envoie de 1 à 4 000 caractères ; `False` quand le lien est coupé,
+  `CapabilityNotAllowed` si `text.input` n’est pas autorisé.
+- `final` marque le dernier message d’une réponse.
+- `ice_servers=` (URL STUN ou TURN) : seulement au-delà du réseau local.
+
+## Options d’appairage
+
+| Argument                                                              | Déclare                   |
+| --------------------------------------------------------------------- | ------------------------- |
+| toujours                                                              | `enrollment.provisioning` |
+| `display=` un `Display` (`show(text, code)`, `clear()`)               | `device_code.display`     |
+| `voice=` une fonction qui dit une phrase, ou un `sink` sans `display` | `device_code.speech`      |
+| `enrolls_by=[PairingMethod.INPUT]`                                    | `enrollment.input`        |
+| `camera=` une `Camera` (extra `qr`)                                   | `enrollment.qr`           |
+
+- `enrollment=` : une URI d’appairage ou un code (par défaut : `NESTOR_PAIRING_URI`, puis
+  `NESTOR_PAIRING_CODE`).
+- `await satellite.enroll("K7QF-2M9X")` envoie un code tapé : `ACCEPTED`, `REFUSED`, `NOT_PENDING`
+  ou `INVALID`. Un code refusé n’est plus jamais envoyé.
+- `locale="fr"` : la langue dans laquelle il parle.
+
+## Voix et caméra
+
+Voir [Voix](/fr/docs/voice/) et [Caméras et appels](/fr/docs/satellites/cameras/).
+
+| Caméra            | Lit                                                       |
+| ----------------- | --------------------------------------------------------- |
+| `PiCamera()`      | la caméra du Raspberry Pi (Picamera2, fournie par le système) |
+| `OpenCvCamera(0)` | une caméra par OpenCV (extra `opencv`)                    |
+| `AvCamera(…)`     | une caméra par FFmpeg                                     |
+| `PatternCamera()` | une mire, pour essayer                                    |
+
+Le SDK applique les règles des sessions et n’écoute jamais sur un port. Un appareil ne filme qu’en
+TLS (`https://`) ou sur la machine du cœur.
+
+## Mises à jour
+
+Le manifeste nomme le logiciel : `nestor-satellite`, ou `software=Software.of("mon-satellite")`
+(version lue dans le paquet installé).
+
+Un `Updater` trouve (`newer`), installe (`install`) et peut lier les notes (`notes`).
+`PypiUpdater("mon-satellite", module="mon_satellite")` couvre les installations PyPI par uv ou pip.
+Sans updater, l’admin montre seulement la version.
+
+`nestor-satellite run --managed` installe la version demandée dans son environnement et se relance ;
+s’il n’est pas accueilli dans les 60 s, il revient à la précédente. Lancez-le quand même sous un
+gestionnaire de services. Règles : [Mises à jour](/fr/docs/satellites/protocol/#10-mises-à-jour).
+
+## Conformité
+
+Avec la commande du [modèle Python](/fr/docs/sdks/templates/), sans carte son :
+
+```bash
+uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
+  my-satellite run --core {url} --room salon --token-file {state}/token.json --null-audio
+```
+
+Voir [Conformité](/fr/docs/satellites/conformance/). Code et licence des voix :
+[nestor-satellite-python](https://github.com/nestor-home/nestor-satellite-python) ; un pilote
+complet : [nestor-reachy](https://github.com/nestor-home/nestor-reachy).

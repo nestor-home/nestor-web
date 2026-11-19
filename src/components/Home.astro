@@ -1,11 +1,9 @@
 ---
-import Abilities from "@/components/sections/Abilities.astro";
-import Bodies from "@/components/sections/Bodies.astro";
 import Cta from "@/components/sections/Cta.astro";
 import Hero from "@/components/sections/Hero.astro";
-import Loop from "@/components/sections/Loop.astro";
-import Trust from "@/components/sections/Trust.astro";
-import TieRule from "@/components/TieRule.astro";
+import Reachy from "@/components/sections/Reachy.astro";
+import Story from "@/components/sections/Story.astro";
+import Works from "@/components/sections/Works.astro";
 import { type Locale, pageMeta, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 
@@ -17,10 +15,8 @@ const t = translator(Astro.props.locale);
 
 <Base locale={t.locale} {...pageMeta(t, "home")}>
   <Hero t={t} />
-  <Loop t={t} />
-  <TieRule />
-  <Bodies t={t} />
-  <Abilities t={t} />
-  <Trust t={t} />
+  <Story t={t} />
+  <Reachy t={t} />
+  <Works t={t} />
   <Cta t={t} />
 </Base>

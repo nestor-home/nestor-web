@@ -1,0 +1,72 @@
+---
+/**
+ * One card of `<Cards>`: a mark (a brand, or one of the docs' icons), a title, one or two lines of text, and
+ * the whole card a link when `href` is given.
+ */
+import {
+  BookOpen,
+  Bot,
+  Brain,
+  Cable,
+  Cpu,
+  FileCode,
+  Home,
+  KeyRound,
+  type LucideIcon,
+  MessagesSquare,
+  Mic,
+  Plug,
+  RadioTower,
+  Rocket,
+  ScrollText,
+  Settings,
+  Sparkles,
+  Terminal,
+  Wrench,
+} from "lucide-react";
+import Brand from "@/components/Brand.astro";
+import type { BrandKey } from "@/lib/brands";
+
+const ICONS = {
+  book: BookOpen,
+  bot: Bot,
+  brain: Brain,
+  cable: Cable,
+  cpu: Cpu,
+  code: FileCode,
+  home: Home,
+  key: KeyRound,
+  chat: MessagesSquare,
+  mic: Mic,
+  plug: Plug,
+  satellite: RadioTower,
+  rocket: Rocket,
+  journal: ScrollText,
+  settings: Settings,
+  sparkles: Sparkles,
+  terminal: Terminal,
+  wrench: Wrench,
+} satisfies Record<string, LucideIcon>;
+
+interface Props {
+  title: string;
+  href?: string;
+  icon?: keyof typeof ICONS;
+  brand?: BrandKey;
+}
+const { title, href, icon, brand } = Astro.props;
+const Icon = icon ? ICONS[icon] : undefined;
+const Tag = href ? "a" : "div";
+---
+
+<Tag class="doc-card" href={href}>
+  {
+    (Icon || brand) && (
+      <span class="doc-card-mark" aria-hidden="true">
+        {Icon ? <Icon className="size-4" strokeWidth={1.7} /> : brand && <Brand brand={brand} class="size-4" decorative />}
+      </span>
+    )
+  }
+  <span class="doc-card-title">{title}</span>
+  <span class="doc-card-text"><slot /></span>
+</Tag>

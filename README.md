@@ -4,8 +4,8 @@ The website of [Nestor](https://github.com/nestor-home/nestor), the open-source 
 persistent personal agents at home, in English at `/` and in French at `/fr/`.
 It lives at https://nestorhome.dev.
 
-Astro (static output), one React island, Tailwind v4 on the admin's design tokens, Project Fluent
-for the words, Shiki for the code, real captures of the admin for the pictures.
+Astro (static output), Tailwind v4 on the admin's design tokens, Project Fluent
+for the words, Shiki for the code. The home page draws what it shows in HTML: no screenshots, no video.
 
 ```bash
 pnpm install
@@ -15,8 +15,7 @@ pnpm lint && pnpm typecheck && pnpm test
 pnpm build && pnpm e2e         # Playwright on the built site: 3 widths, 2 themes, 2 languages
 ```
 
-Node 22.23.4 or later (`.nvmrc`), pnpm 12. See [AGENTS.md](AGENTS.md) for the conventions and
-how to refresh the captures, the recordings and the code examples.
+Node 22.23.4 or later (`.nvmrc`), pnpm 12. See [AGENTS.md](AGENTS.md) for the conventions.
 
 ## Production
 

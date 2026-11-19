@@ -1,0 +1,159 @@
+---
+title: TypeScript SDK
+description: Write a satellite in TypeScript with @nestor-home/satellite, in a browser tab or in Node.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+[`@nestor-home/satellite`](https://www.npmjs.com/package/@nestor-home/satellite) handles pairing,
+the link and text, in browsers and Node 22.12+. Audio and the camera are separate entry points.
+
+## Install
+
+<Steps>
+
+1. **Install the package** in your project:
+
+   ```bash
+   pnpm add @nestor-home/satellite
+   pnpm add @roamhq/wrtc   # in Node, to talk aloud: WebRTC, prebuilt for Linux, macOS and Windows x64
+   ```
+
+2. **Pair it** in Node with a pairing URI from the admin or `nestor satellites add --room salon`.
+   Later runs reconnect.
+
+   ```bash
+   npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+   ```
+
+</Steps>
+
+| Entry point                     | Gives                                                             |
+| ------------------------------- | ----------------------------------------------------------------- |
+| `@nestor-home/satellite`        | pairing, the link, text, intents and observations                 |
+| `@nestor-home/satellite/voice`  | `browserVoice()`: audio in a browser                              |
+| `@nestor-home/satellite/node`   | `nodeVoice()`, `CommandSource`, `CommandSink`, `FileTokenStore`, `provisioningFromEnv()`, `languagesFromEnv()` |
+| `@nestor-home/satellite/video`  | `browserCamera()`, `patternCamera()`                              |
+| `@nestor-home/satellite/qr`     | `cameraQrScanner()`, with `zxing-wasm`                            |
+
+## The command
+
+In Node, `npx nestor-satellite run`, from a project with the SDK (and `@roamhq/wrtc` to talk aloud),
+makes this machine a satellite: microphone and speaker, terminal, or both.
+
+| Option          | Flag or variable                        | What it does                                                         |
+| --------------- | --------------------------------------- | -------------------------------------------------------------------- |
+| Core            | `--core`                                | the core's address, e.g. `http://nestor.local:8471` (default: the pairing URI's) |
+| Pairing URI     | `--pairing-uri`, `NESTOR_PAIRING_URI`   | pairs with an enrollment code made in Nestor                         |
+| Enrollment code | `--pairing-code`, `NESTOR_PAIRING_CODE` | the same code alone, with `--core`                                   |
+| Room            | `--room`                                | the room the device is in (required)                                 |
+| Text            | `--text`                                | sends the lines typed on stdin, prints the answers                   |
+| No voice        | `--no-voice`                            | leaves the microphone and speaker out                                |
+| Recorder        | `--input`                               | a command printing raw 48 kHz 16-bit mono PCM, or `none` (default: `arecord` on Linux, SoX's `rec` on macOS) |
+| Player          | `--output`                              | a command playing the same, or `none` (default: `aplay`, or SoX's `play`) |
+| STUN or TURN    | `--ice`                                 | a server, repeatable; needed only beyond the local network           |
+| Language        | `--locale`                              | what it speaks: `en` or `fr` (default: `LC_ALL`, `LANG`…)            |
+
+Without an enrollment code, it says and logs a device code to type in the admin. `--help` lists
+every flag.
+
+## A driver of your own
+
+A wall tablet tab, served over `https:` or `localhost`:
+
+```ts
+import { IDENTIFY, LocalStorageTokenStore, Manifest, Satellite } from "@nestor-home/satellite";
+
+const satellite = new Satellite({
+  core: location.origin,
+  manifest: Manifest.of({ id: "tablette-cuisine", model: "browser", room: "cuisine" }, IDENTIFY),
+  tokens: new LocalStorageTokenStore(),
+  // declares text.display and text.input
+  text: { display: (text, final) => show(text, final), input: true },
+  pairing: {
+    // the device code to type in Nestor; `code` is null once it is no longer needed
+    display: (code, text) => {
+      document.querySelector("#code")!.textContent = code ?? "";
+      document.querySelector("#status")!.textContent = text;
+    },
+  },
+  body: {
+    behavior: (behavior) => (document.body.dataset.behavior = behavior),
+    identify: () => document.body.animate([{ opacity: 0.2 }, { opacity: 1 }], { duration: 500, iterations: 6 }),
+  },
+});
+satellite.run();
+form.onsubmit = () => satellite.sendText(input.value); // a turn of the kitchen's conversation
+```
+
+In Node, use a `FileTokenStore` (mode 600) and `nodeVoice({ source, sink })` with a `CommandSource`
+and a `CommandSink`. `run` reconnects and pairs again if its token is refused; it rejects with
+`LinkReplaced` when a newer link of the device takes over, `PairingError` when pairing can never
+succeed.
+
+## Capabilities
+
+The manifest lists body and sensors (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`, `PERSON_DETECTION`,
+`SPEECH_ACTIVITY`). The rest comes from the options; declaring it in the manifest throws a
+`ProtocolError`.
+
+| Option                                         | Declares          |
+| ---------------------------------------------- | ----------------- |
+| `text: { display: (text, final) => … }`        | `text.display`    |
+| `text: { input: true }`                        | `text.input`      |
+| a `voice` with a microphone (`source` in Node) | `audio.capture`   |
+| a `voice` with a speaker (`sink` in Node)      | `audio.playback`  |
+| `camera`                                       | `video.capture`   |
+| `onMedia: (active) => …`                       | `media.indicator` |
+| `updater`                                      | `device.update`   |
+
+- `satellite.sendText(text)` sends 1 to 4,000 characters; `false` while the link is down,
+  `CapabilityNotAllowed` if `text.input` was not allowed.
+- `final` marks an answer's last message.
+- `iceServers` of `browserVoice` or `nodeVoice` (STUN or TURN URLs): only beyond the local network.
+
+## Pairing options
+
+| Option                                                                 | Declares                                                |
+| ---------------------------------------------------------------------- | ------------------------------------------------------- |
+| always                                                                 | `enrollment.provisioning`                               |
+| `display: (code, text) => …`                                           | `device_code.display`                                   |
+| `speak: (sentence) => …`, or a `voice` with a speaker and no `display` | `device_code.speech`                                    |
+| `voice: true`                                                          | says the code with the bundled voice even with a screen |
+| `accepts: ["enrollment.input"]`                                        | `enrollment.input`                                      |
+| `scanner: cameraQrScanner({ wasmUrl })` (browsers)                     | `enrollment.qr`                                         |
+
+- `enrollment`: a pairing URI or an enrollment code.
+- `await satellite.enroll(input.value)` sends a typed code. A refused code is never sent again.
+- `locale`: the language it speaks.
+
+## Voice and camera
+
+`voice: browserVoice()` makes a tab talk aloud ([Voice](/docs/voice/)). Browsers play sound only
+after a gesture: call `run()` from a click. `browserVoice({ microphone: false })` has no microphone,
+`browserVoice({ element: null })` no speaker.
+
+`camera: browserCamera()` films ([Cameras and calls](/docs/satellites/cameras/));
+`patternCamera()` draws a test pattern. A device films only over TLS or on the core's machine. The
+SDK enforces the session rules and never listens on a port.
+
+## Updates
+
+The manifest names the software: `@nestor-home/satellite`, or the driver's package with
+`new Manifest(device, capabilities, { software })`.
+
+A browser tab updates by reloading. Elsewhere, an `updater` finds (`newer`), installs (`install`)
+and restarts (`restart`), and rolls back if not welcomed within 60 s. The SDK ships none. Rules:
+[Updates](/docs/satellites/protocol/#10-updates).
+
+## Conformance
+
+Without a sound card:
+
+```bash
+uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
+  npx nestor-satellite run --core {url} --room salon --input none --output none --token-file {state}/token.json
+```
+
+See [Conformance](/docs/satellites/conformance/). Source, a browser example and the voice clips'
+licence: [nestor-satellite-typescript](https://github.com/nestor-home/nestor-satellite-typescript).

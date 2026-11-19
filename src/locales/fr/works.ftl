@@ -1,0 +1,16 @@
+int-title = Il s’entend avec ce que vous avez déjà.
+int-lede = Les logos appartiennent à leurs propriétaires.
+int-group-home = Maison.
+int-group-messages = Messagerie.
+int-group-mail = Mail, agenda et fichiers.
+int-group-web = Web, météo et cartes.
+int-group-lists = Listes, notes et musique.
+int-group-work = Travail et tâches longues.
+int-planned = bientôt
+int-text = Ce que la maison utilise déjà, branché une fois, partagé par tout le foyer.
+int-home-text = Par Home Assistant : lumières, chauffage, musique, et qui est à la maison.
+int-messages-text = Il répond là où chacun écrit déjà.
+int-mail-text = Mails, agendas et fichiers, chaque compte reste à son propriétaire.
+int-web-text = Recherche, pages, météo, trajets et flux.
+int-lists-text = Listes et notes, par le serveur MCP du service.
+int-work-text = Les tâches longues partent chez un agent : Claude Code, Codex, Hermes.

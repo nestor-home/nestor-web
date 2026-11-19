@@ -1,0 +1,10 @@
+---
+/** A grid of `<Card>`s: where to go next, or the parts of a topic at a glance. */
+interface Props {
+  /** columns on a wide screen */
+  cols?: 2 | 3;
+}
+const { cols = 2 } = Astro.props;
+---
+
+<div class:list={["doc-cards", cols === 3 && "is-three"]}><slot /></div>

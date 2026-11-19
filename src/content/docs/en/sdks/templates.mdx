@@ -1,0 +1,66 @@
+---
+title: Templates
+description: Start a satellite from a repository that already pairs, passes the conformance suite and releases.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+Each template is a working satellite (microphone, speaker, status light) that pairs, runs the
+[conformance suite](/docs/satellites/conformance/) in CI and prepares its releases.
+
+| Language   | Repository                                                                                                  | Built on                                 | Publishes to | Needs                                                               |
+| ---------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ------------ | ------------------------------------------------------------------- |
+| Python     | [nestor-satellite-template-python](https://github.com/nestor-home/nestor-satellite-template-python)         | [Python SDK](/docs/sdks/python/)         | PyPI         | uv; on Linux, PortAudio                                             |
+| TypeScript | [nestor-satellite-template-typescript](https://github.com/nestor-home/nestor-satellite-template-typescript) | [TypeScript SDK](/docs/sdks/typescript/), in Node | npm  | Node 22.12 or later, pnpm; `arecord`/`aplay` on Linux, SoX on macOS |
+| Rust       | [nestor-satellite-template-rust](https://github.com/nestor-home/nestor-satellite-template-rust)             | [Rust SDK](/docs/sdks/rust/)             | crates.io    | Rust 1.91 or later, a C compiler, `cmake`; on Linux, ALSA           |
+
+## Start one
+
+<Steps>
+
+1. **Create your repository** with **Use this template** on GitHub, or:
+
+   ```bash
+   gh repo create my-satellite --template nestor-home/nestor-satellite-template-python --public --clone
+   ```
+
+2. **Rename `my-satellite`** (`my_satellite` in Python); the README lists where.
+
+3. **Plug in your hardware** at `TODO(hardware)`. Declare only what the device has.
+
+4. **Pair it** with a pairing URI from the admin or `nestor satellites add --room salon` (commands
+   below). Later runs need only `--core` and `--room`.
+
+</Steps>
+
+```bash
+# Python
+uv run my-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+# TypeScript
+pnpm build && pnpm start run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+# Rust
+cargo run -- run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+```
+
+No sound card: `--null-audio` (Python, Rust) or `--input none --output none` (TypeScript).
+
+## Test it
+
+Conformance runs against the server version in `.nestor-version`:
+
+| Language   | Checks and conformance                                                                |
+| ---------- | ------------------------------------------------------------------------------------- |
+| Python     | `uv run ruff check && uv run ruff format --check && uv run ty check && uv run pytest` |
+| TypeScript | `pnpm lint && pnpm typecheck && pnpm test && pnpm conformance`                        |
+| Rust       | `cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test`        |
+
+CI runs the same on every pull request, ending with one `ci` job to require in branch rules.
+
+## Release it
+
+release-please turns Conventional Commits titles into a release pull request. Replace its
+nestor-home workflow with the commented job below it; register a trusted publisher, then uncomment
+the publish job (steps in the README).
+
+Once on PyPI, the Python template's `--managed` lets a person update the device from Nestor;
+TypeScript and Rust need an `updater` ([Updates](/docs/satellites/protocol/#10-updates)).

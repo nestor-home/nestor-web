@@ -1,0 +1,113 @@
+---
+title: Satellites
+description: Ce qu’est un satellite, ce qu’il peut déclarer, et comment l’appairer et le mettre à jour.
+---
+
+import AdminShot from "@/components/docs/AdminShot.astro";
+import Card from "@/components/docs/Card.astro";
+import Cards from "@/components/docs/Cards.astro";
+import Steps from "@/components/docs/Steps.astro";
+
+Un satellite est un appareil appairé à Nestor (enceinte, tablette, robot, onglet de navigateur,
+terminal, caméra), à qui l’on écrit ou parle. Il se connecte au canal `satellites` sur le port 8471,
+auquel il faut une [voix](/fr/docs/voice/) pour parler.
+
+<AdminShot name="satellites" locale="fr" alt="Les satellites en attente d’appairage, et ceux appairés" />
+
+## Fonctionnement
+
+Un satellite s’appaire une fois, déclare ses capacités, puis tient un WebSocket avec le serveur ;
+l’audio passe en WebRTC. Le serveur envoie des intentions, pas des mouvements, et seulement celles que
+l’appareil a déclarées.
+
+## Capacités
+
+L’appareil les déclare, une personne les autorise. Toutes sont facultatives.
+
+| Capacité                  | L’appareil…                                                   |
+| ------------------------- | ------------------------------------------------------------- |
+| `text.input`              | envoie ce qu’une personne a tapé                              |
+| `text.display`            | affiche les réponses de l’assistant                           |
+| `audio.capture`           | envoie son micro au serveur                                   |
+| `audio.playback`          | joue la voix du serveur                                       |
+| `audio.speech_activity`   | signale quand quelqu’un commence et arrête de parler          |
+| `vision.person_detection` | signale une personne qu’il voit                               |
+| `expression.emotion`      | montre une émotion (`intent.expression`)                      |
+| `motion.head`             | bouge la tête au rythme de la parole (`intent.beat`)          |
+| `device.identify`         | se fait remarquer quand quelqu’un le cherche                  |
+| `device.update`           | installe une version plus récente de son logiciel sur demande |
+| `video.capture`           | filme, pendant les sessions qu’une personne ouvre             |
+| `media.indicator`         | montre qu’il filme ou qu’il est en appel                      |
+
+Voir aussi [Caméras et appels](/fr/docs/satellites/cameras/).
+
+## Appairage
+
+Une personne prouve son intention avec l’un de deux codes :
+
+- un **code d’appareil** : six chiffres affichés par l’appareil, tapés dans l’admin ;
+- un **code d’enrôlement** créé dans l’admin (`K7QF-2M9X`), donné à l’appareil, le plus souvent en URI
+  d’appairage : `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
+
+| Méthode                   | La personne…                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------ |
+| `device_code.display`     | lit le code sur l’écran de l’appareil et le tape dans l’administration                     |
+| `device_code.speech`      | entend l’appareil dire son code et le tape dans l’administration                           |
+| `enrollment.input`        | tape le code d’enrôlement sur l’appareil                                                   |
+| `enrollment.provisioning` | met l’URI d’appairage dans la configuration de l’appareil (option, environnement, fichier) |
+| `enrollment.qr`           | montre le QR code de l’URI d’appairage à la caméra de l’appareil                           |
+
+Tout appareil accepte `enrollment.provisioning` ; les SDK déclarent les autres selon le matériel.
+
+## Ajouter un satellite
+
+<Steps>
+
+1. **Commencer un ajout**
+
+   Admin › **La maison** › **Ajouter un satellite**, ou pendant que Nestor tourne :
+
+   ```bash
+   nestor satellites add --room salon --name "Enceinte du salon"   # affiche le code et l’URI d’appairage
+   ```
+
+2. **Donner sa preuve à l’appareil**
+
+   Code d’enrôlement : donnez son URI à l’appareil.
+
+   ```bash
+   NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
+   ```
+
+   Code d’appareil : approuvez-le. **Identifier** fait clignoter ou sonner un appareil en attente.
+
+   ```bash
+   nestor satellites approve 042917                                       # le code présenté par l’appareil
+   nestor satellites approve 042917 --only audio.capture,audio.playback   # accorde moins de capacités
+   ```
+
+</Steps>
+
+Pour désappairer un appareil : `nestor satellites revoke enceinte-salon`.
+
+## Mises à jour
+
+Avec `device.update`, depuis sa page dans l’admin : voir
+[Mises à jour](/fr/docs/updates/#mettre-à-jour-un-satellite).
+
+## Prêts à l’emploi
+
+<Cards cols={2}>
+  <Card title="SDK Python" href="/fr/docs/sdks/python/" brand="python">`nestor-satellite run` avec le micro et le haut-parleur de cette machine.</Card>
+  <Card title="SDK TypeScript" href="/fr/docs/sdks/typescript/" brand="typescript">La même commande, ou un onglet de navigateur.</Card>
+  <Card title="SDK Rust" href="/fr/docs/sdks/rust/" brand="rust">La même commande, en un seul binaire.</Card>
+  <Card title="nestor-reachy" href="https://github.com/nestor-home/nestor-reachy" icon="bot">Reachy Mini, en simulation pour l’instant.</Card>
+</Cards>
+
+## Écrire le vôtre
+
+<Cards cols={3}>
+  <Card title="Protocole" href="/fr/docs/satellites/protocol/" icon="book">Les règles que suit tout satellite.</Card>
+  <Card title="Schémas" href="/fr/docs/satellites/schemas/" icon="code">Le schéma JSON de chaque message.</Card>
+  <Card title="Conformité" href="/fr/docs/satellites/conformance/" icon="wrench">Vérifier un satellite en ligne de commande.</Card>
+</Cards>

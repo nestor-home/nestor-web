@@ -7,13 +7,10 @@ description: Le standard que tout satellite implémente, quel que soit son langa
 import PairingFlow from "@/components/docs/diagrams/PairingFlow.astro";
 import PairingStates from "@/components/docs/diagrams/PairingStates.astro";
 
-Voici le standard que tout satellite implémente, en version 1 ([historique](#13-historique)). La
-[suite de conformité](/fr/docs/satellites/conformance/) boîte noire du cœur y confronte les SDK et
-les pilotes.
-
-Un **satellite** est un appareil appairé à un serveur Nestor (le **cœur**). Il parle avec
-l’assistant par écrit, à voix haute ou les deux, remonte des observations et exécute les intentions
-du cœur.
+Le standard que tout satellite implémente, en version 1 ([historique](#13-historique)). Un
+**satellite** est un appareil appairé à un serveur Nestor (le **cœur**) : il parle avec l’assistant
+par écrit, à voix haute ou les deux, remonte des observations et exécute les intentions du cœur. La
+[suite de conformité](/fr/docs/satellites/conformance/) y confronte les SDK et les pilotes.
 
 DOIT, NE DOIT PAS, DEVRAIT, NE DEVRAIT PAS et PEUT s’entendent au sens de la
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY). Les
@@ -23,7 +20,7 @@ schémas JSON sont servis à `https://nestorhome.dev/schemas/satellite/1/<messag
 
 ## 1. Vue d’ensemble
 
-Un satellite passe par trois phases, dans cet ordre :
+Trois phases, dans cet ordre :
 
 1. **L’appairage**, une fois : une personne prouve qu’elle voulait appairer l’appareil
    ([section 2](#2-méthodes-dappairage)), et le cœur lui remet un jeton ([section 3](#3-appairage)).
@@ -297,6 +294,36 @@ observations et exécuter des intentions.
 | `4401`            | le jeton est refusé                                       | l’oublie et s’appaire à nouveau (P8) |
 | `4409`            | un lien plus récent de cet appareil a remplacé celui-ci   | s’arrête : l’autre lien fait foi     |
 
+### 7.1 Messages
+
+Le `payload` de chaque message porte ces champs. Un message qui nomme une capacité n’est envoyé que
+par un appareil, ou à un appareil, qui y est autorisé.
+
+| `type`                        | De       | `payload`                                                                                         | Capacité                  |
+| ----------------------------- | -------- | ------------------------------------------------------------------------------------------------- | ------------------------- |
+| `hello`                       | appareil | `manifest`, `token`                                                                               |                           |
+| `welcome`                     | cœur     | `device_id`, `room`, `capabilities`, `voice` (`true` par défaut)                                  |                           |
+| `ack`                         | appareil | `of` : l’`id` de l’intention                                                                      |                           |
+| `input.text`                  | appareil | `text` (1 à 4 000 caractères)                                                                     | `text.input`              |
+| `observation.speech.activity` | appareil | `active` : commencé (`true`) ou arrêté                                                            | `audio.speech_activity`   |
+| `observation.person.detected` | appareil | `count`, `confidence` (0 à 1)                                                                     | `vision.person_detection` |
+| `update.status`               | appareil | `state`, `version`, `notes` (section 10)                                                          | `device.update`           |
+| `media.snapshot`              | appareil | `of`, `jpeg` (base64, 4 000 000 caractères au plus)                                               | `video.capture`           |
+| `intent.behavior`             | cœur     | `behavior` : `idle`, `listening`, `thinking` ou `speaking`, montré jusqu’au suivant               |                           |
+| `intent.expression`           | cœur     | `expression` : `joy`, `sigh`, `thoughtful`, `whisper`, `excited` ou `ahem` ; `intensity` (0 à 1, 1 par défaut) | `expression.emotion` |
+| `intent.beat`                 | cœur     | rien : un mot est joué                                                                            | `motion.head`             |
+| `intent.identify`             | cœur     | rien (section 6)                                                                                  | `device.identify`         |
+| `intent.text`                 | cœur     | `text` (16 000 caractères au plus), `final` (`true` par défaut)                                   | `text.display`            |
+| `intent.update`               | cœur     | `version` (section 10)                                                                            | `device.update`           |
+| `intent.media.open`           | cœur     | `session`, `video`, `audio`, `max_s` (1 à 3 600)                                                  | M1                        |
+| `intent.media.close`          | cœur     | `session`                                                                                         |                           |
+| `intent.media.snapshot`       | cœur     | rien                                                                                              | `video.capture`           |
+
+```json
+{"type": "intent.expression", "id": "…", "at": "2026-10-30T12:00:00+00:00",
+ "payload": {"expression": "joy", "intensity": 1.0}}
+```
+
 ## 8. Texte
 
 - **T1.** Un appareil autorisé à `text.input` envoie ce qu’une personne a tapé en `input.text`.
@@ -314,8 +341,7 @@ observations et exécuter des intentions.
 ## 9. Audio et vidéo
 
 - **A1.** Un appareil autorisé à `audio.capture` ou `audio.playback` (dans `welcome`), quand
-  `welcome` indique `voice`, propose une
-  connexion WebRTC une fois accueilli : `POST /satellites/{device_id}/audio` avec
+  `welcome` indique `voice`, propose une connexion WebRTC une fois accueilli : `POST /satellites/{device_id}/audio` avec
   `Authorization: Bearer <jeton>` et `{"sdp", "type"}` ; le cœur répond `{"sdp", "type", "pc_id"}`.
   Les candidats ICE suivent en `PATCH` sur le même chemin. Un mauvais jeton reçoit `401` ; un
   appareil sans lien ou non autorisé à l’audio, `403` ; le `pc_id` d’un autre appareil, `403`.
@@ -330,8 +356,8 @@ observations et exécuter des intentions.
 ### 9.1 Sessions
 
 Une personne peut regarder ce que filme un appareil, ou appeler par un appareil qui entend et joue
-du son : parler à travers lui et entendre la pièce, avec sa vidéo s’il filme. Le cœur est le seul
-interlocuteur de l’appareil ; il relaie vers la personne, qui ne joint jamais l’appareil.
+du son. Le cœur est le seul interlocuteur de l’appareil : il relaie vers la personne, qui ne joint
+jamais l’appareil.
 
 - **M1.** Un appareil n’ouvre de connexion média que sur `intent.media.open {session, video, audio,
   max_s}` reçu par son lien, et seulement pour ce qu’on lui a accordé : la vidéo avec

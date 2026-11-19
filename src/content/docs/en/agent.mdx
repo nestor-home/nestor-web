@@ -1,77 +1,53 @@
 ---
 title: How the agent works
-description: One agent for the whole household. Its parts, a turn step by step, and how its instructions are built.
+description: One agent for the whole household. Its parts, a turn step by step, its tools, and how its instructions are built.
 ---
 
 import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
 import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
 import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 
-Speak to Nestor in the kitchen or write from the office: one agent answers, with one memory.
-
 ## The parts
 
 <SystemMap locale="en" n={1} />
 
-The **core** depends on no vendor. Models, Home Assistant, connectors, executors and channels are
-**adapters** behind contracts.
-
-The **journal** is the source of truth. Every effect is an event in it, down to each policy decision
-and its reason. The admin shows it as conversation threads. A restart rebuilds from it the open
-conversations, tasks, wake-ups and undelivered messages.
+The **core** depends on no vendor; everything else is an **adapter** behind a contract. A restart
+rebuilds open conversations, tasks, reminders and undelivered messages from the
+[journal](/docs/agent/journal/).
 
 ## A turn
 
 <TurnFlow locale="en" n={2} />
 
-A **conversation** groups turns close in time, as in Home Assistant's Assist. After five minutes of
-silence aloud, or four hours in writing, a new one starts and the model stops rereading the old
-turns. Each channel can change this with `conversation_ends_after_s`. Memories cross conversations.
+A **conversation** groups turns close in time. Once it ends, the model no longer rereads it;
+memories stay. Messages sent together are answered in order.
 
-A conversation has one turn at a time. Two messages sent together are answered in order, and a
-message Nestor brings by itself waits for the answer being written. Aloud, the person can always
-cut in.
+Aloud, Nestor speaks while the model still writes. Any word stops it, or 1.2 s of speech, except an
+acknowledgement (French ones and "ok"). When the model or a voice service fails, Nestor says so
+(`conversation.fallback`).
 
 ## Tools
 
-Nothing long happens inside a turn. Short actions are direct tools: turn on a light, remember a
-fact, set a wake-up. A turn waits for a tool 3 seconds aloud and 20 seconds in writing. Past
-that, the tool keeps running in the background and the model is told its result will follow. The
-turn ends and Nestor stays available. When the tool answers, its result comes back to the
-conversation and Nestor tells the person, as for a task.
+A tool slower than the turn's wait goes on in the background, and Nestor tells the result later. A
+long result is stored aside, read with `read_result` and `search_result`. Work of minutes goes to an [executor](/docs/executors/).
 
-```yaml
-agent:
-  spoken_tool_wait_s: 3
-  written_tool_wait_s: 20
-  tool_result_chars: 8000
-```
-
-A result longer than `tool_result_chars` is stored aside, never in the journal. The model sees its
-start, its end and its size, and reads the rest with `read_result` and `search_result`.
-
-Work that takes minutes goes to an **executor** as a durable task, and its result is announced
-once, to whoever asked.
+| Setting                                  | Default                     | What it does                            |
+| ---------------------------------------- | --------------------------- | --------------------------------------- |
+| `agent.spoken_tool_wait_s`               | 3                           | seconds a spoken turn waits for a tool  |
+| `agent.written_tool_wait_s`              | 20                          | seconds a written turn waits for a tool |
+| `agent.tool_result_chars`                | 8000                        | longer results are stored aside         |
+| `conversation_ends_after_s`, per channel | 5 min aloud, 4 h in writing | silence that ends a conversation        |
 
 ## The instructions
 
 <PromptLayers locale="en" n={3} />
 
-Each turn builds its instructions in layers, from the most stable to the most variable. A provider
-that caches prompts reads everything before a cache point from its cache, faster and cheaper. A new
-turn pays in full only for its turn layer and the new messages.
-
-Each module fills its own sections: memories, watches and wake-ups in the household layer; past
-conversations, running tasks, open questions and actions waiting for a confirmation in the turn
-layer.
-
-The household layer also says how the agent runs right now, as the parts it relies on report it: a
-web search on free tiers, for instance. The agent tells the person when it bears on what they ask,
-not in every answer. A plugin says so through its component's `notes()`, in English, for the model.
+The household layer also says how the agent runs right now (a web search on free tiers, say), from
+each component's `notes()`. The agent mentions it when it bears on the request.
 
 ## Models by role
 
-Name model profiles in `models` and point each role to one. A single model needs nothing more.
+Point roles at profiles in `models`. A single model needs nothing more.
 
 ```yaml
 models:
@@ -89,16 +65,16 @@ models:
     model: anthropic/claude-sonnet-5.5
 
 agent:
-  spoken: quick      # the voice: the first words come fast
-  written: careful   # writing allows a few seconds
-  titles: quick      # titles each chat
-watches:
-  model: quick       # sorts incoming mail against the watches
-memory:
-  consolidation: quick  # summarizes each conversation once it is over
+  spoken: quick
+  written: careful
 ```
 
-A role left out borrows a model: `spoken` and `written` stand in for each other, the watches, the
-consolidation and the titles take `written`. `agent.transcription` and `agent.speech` hear and
-record voice messages (see [Channels and voice](/docs/channels/)). Every role and its default is on
-[Models](/docs/models/).
+| Role                   | Does                                     | When left out   |
+| ---------------------- | ---------------------------------------- | --------------- |
+| `agent.spoken`         | answers aloud                            | `agent.written` |
+| `agent.written`        | answers in writing                       | `agent.spoken`  |
+| `agent.titles`         | titles each chat                         | `agent.written` |
+| `watches.model`        | sorts incoming items against the watches | `agent.written` |
+| `memory.consolidation` | summarises each finished conversation    | `agent.written` |
+
+All roles: [Models](/docs/models/).

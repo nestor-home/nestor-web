@@ -1,0 +1,157 @@
+---
+title: Voice
+description: The transcription and speech models that let Nestor hear and speak, the satellites’ voice block, and how a spoken turn goes.
+---
+
+import Providers from "@/components/docs/Providers.astro";
+import ProviderSetup from "@/components/docs/ProviderSetup.astro";
+
+Talking aloud takes a `transcription` model to hear and a `speech` model to speak, for satellites
+and voice messages.
+
+## Install
+
+Install `nestor-home[voice]` ([Install](/docs/install/)); the Docker image has it.
+
+## Choose providers
+
+One provider to hear, one to speak, the same or not.
+
+<Providers kind="speech" locale="en">
+<ProviderSetup kind="speech" brand="elevenlabs">
+
+One key for both: Scribe v2 Realtime hears, v4 Turbo speaks.
+
+```ini
+ELEVENLABS_API_KEY=sk_...
+```
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+  voice:
+    type: speech
+    provider: elevenlabs
+    api_key: ${ELEVENLABS_API_KEY}
+    voice_id: GPAQQPp9dazaB2bl4zg9
+
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      transcription: ears
+      speech: voice
+```
+
+`voice_id` is any voice of your library. Transcription expects English unless `language` says
+(`fr`, `de`…). Voice messages go through `file_model` (`scribe_v2`).
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="openai">
+
+Any `/audio/transcriptions` and `/audio/speech` API: OpenAI, Groq or Mistral to hear, OpenAI to
+speak.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: openai-compatible
+    base_url: https://api.groq.com/openai/v1
+    api_key: ${GROQ_API_KEY}
+    model: whisper-large-v3-turbo
+  voice:
+    type: speech
+    provider: openai-compatible
+    base_url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+    model: gpt-4o-mini-tts
+    voice: alloy
+```
+
+Transcription hears the household's language unless `language` says otherwise. It hears a turn
+once it ends, which delays the first words.
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="nvidia">
+
+Parakeet TDT v3 hears 25 European languages locally, no key. Needs `nestor-home[voice,voice-id]`, a
+0.5 GB download and about 1 GB of memory.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: sherpa-onnx
+    model: parakeet-v3
+```
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="kokoro">
+
+Kokoro speaks locally through an OpenAI-compatible server (Kokoro-FastAPI, speaches), no key.
+
+```yaml
+models:
+  voice:
+    type: speech
+    provider: openai-compatible
+    base_url: http://localhost:8880/v1
+    model: kokoro
+    voice: ff_siwis
+```
+
+`ff_siwis` speaks French; `af_heart` and `bm_george` English.
+
+</ProviderSetup>
+<ProviderSetup kind="speech" brand="whisper">
+
+Whisper hears locally through an OpenAI-compatible server (speaches, whisper.cpp), no key.
+
+```yaml
+models:
+  ears:
+    type: transcription
+    provider: openai-compatible
+    base_url: http://localhost:8000/v1
+    model: Systran/faster-whisper-small
+```
+
+</ProviderSetup>
+</Providers>
+
+## The voice block
+
+Without it, satellites are text only.
+
+```yaml
+channels:
+  - kind: satellites
+    host: 0.0.0.0
+    voice:
+      transcription: ears
+      speech: voice
+```
+
+| Key              | Default | What it does                                                                  |
+| ---------------- | ------- | ----------------------------------------------------------------------------- |
+| `transcription`  |         | the `transcription` model that hears people                                   |
+| `speech`         |         | the `speech` model that speaks                                                |
+| `style`          |         | how the assistant writes for this voice, such as its expression tags          |
+| `fallback_clips` |         | a folder with `stt.wav` and `tts.wav`, in the same voice, played when the speech model is down |
+| `quiet_s`        | `0.5`   | the silence, in seconds, before a message Nestor brings by itself is spoken   |
+
+## Voice messages
+
+`agent.transcription` hears them. With a speech model, on a channel that sends them, the answer is a
+voice message too (`agent.speech`). Each role defaults to the only model of its type
+([Roles](/docs/models/#roles)).
+
+## How a spoken turn goes
+
+- Nestor speaks while the model writes: give `agent.spoken` a fast model.
+- A satellite with a screen shows the words as they are said.
+- Interruptions, failures and the rest: [A turn](/docs/agent/#a-turn).

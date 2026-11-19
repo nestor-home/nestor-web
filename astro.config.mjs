@@ -15,8 +15,12 @@ export default defineConfig({
   build: { format: "directory", inlineStylesheets: "auto" },
   // pages that moved, for the links already published
   redirects: {
+    "/developers/": "/docs/",
+    "/fr/developpeurs/": "/fr/docs/",
     "/docs/providers/": "/docs/models/",
     "/fr/docs/providers/": "/fr/docs/models/",
+    "/docs/connections/": "/docs/home/",
+    "/fr/docs/connections/": "/fr/docs/home/",
   },
   integrations: [
     serverFiles(),
@@ -26,7 +30,6 @@ export default defineConfig({
       i18n: { defaultLocale: "en", locales: { en: "en", fr: "fr" } },
     }),
   ],
-  image: { responsiveStyles: false },
   // the docs' code takes the identity's colours through CSS variables (.doc-prose in global.css)
   markdown: { shikiConfig: { theme: "css-variables" } },
   vite: { plugins: [tailwindcss()] },

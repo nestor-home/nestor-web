@@ -1,0 +1,91 @@
+---
+/**
+ * One frame of the home page's bentos: what it shows (the slot) on a quiet grain, then one sentence in ink
+ * (`title`, the tile's name) and one in grey (`text`). `span` is its share of a twelve-column row on a wide
+ * screen; `href` makes the whole tile a link.
+ */
+import Dither from "@/components/Dither.astro";
+
+interface Props {
+  id: string;
+  title: string;
+  text: string;
+  span: number;
+  href?: string;
+}
+const { id, title, text, span, href } = Astro.props;
+const Frame = href ? "a" : "article";
+---
+
+<Frame class:list={["tile", href && "is-link"]} style={`--span:${span}`} href={href} aria-labelledby={id}>
+  <div class="tile-stage">
+    <Dither shape="ramp-down" from={0.22} to={0} dot={2} class="tile-grain absolute inset-x-0 top-0 h-2/3" />
+    <slot />
+  </div>
+  <div class="tile-words">
+    <h3 id={id} class="tile-title">{title}</h3>
+    {" "}<p class="tile-text">{text}</p>
+  </div>
+</Frame>
+
+<style>
+  .tile {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    background: var(--paper-sunken);
+    box-shadow: 0 0 0 1px var(--rule) inset;
+  }
+  @media (min-width: 1024px) {
+    .tile {
+      grid-column: span var(--span) / span var(--span);
+    }
+  }
+  .tile.is-link {
+    transition: box-shadow var(--duration) var(--ease);
+  }
+  .tile.is-link:hover {
+    box-shadow: 0 0 0 1px var(--rule-strong) inset;
+  }
+  .tile.is-link:focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: 3px;
+  }
+  .tile-stage {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.5rem, 4vw, 2.75rem) clamp(1rem, 3vw, 2rem) 1.5rem;
+  }
+  .tile-stage > :global(.tile-grain) {
+    color: var(--ink-faint);
+    opacity: 0.35;
+  }
+  .tile-stage > :global(:not(.tile-grain)) {
+    position: relative;
+    min-width: 0;
+  }
+  .tile-words {
+    max-width: 36rem;
+    padding: 0 clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 1.75rem);
+    font-size: var(--text-base);
+    line-height: 1.55;
+    color: var(--ink-muted);
+    text-wrap: pretty;
+  }
+  /* the name and its sentence read as one line of text */
+  .tile-title,
+  .tile-text {
+    display: inline;
+  }
+  .tile-title {
+    font: inherit;
+    font-weight: 600;
+    color: var(--ink);
+  }
+</style>

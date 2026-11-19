@@ -1,6 +1,6 @@
 /**
  * Components hold no sentence: every visible word comes from the Fluent catalogues. This guard
- * reads the markup of the Astro components and the JSX of the islands and fails on any text node
+ * reads the markup of the Astro components and fails on any text node
  * or human-facing attribute (alt, aria-label, title, placeholder) written as a literal.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -20,15 +20,6 @@ describe("components", () => {
     const offenders = files("src/components", /\.astro$/)
       .concat(files("src/layouts", /\.astro$/))
       .flatMap((file) => literals(readFileSync(file, "utf8")).map((text) => `${file}: ${text}`));
-    expect(offenders).toEqual([]);
-  });
-
-  it("islands contain no hard-coded sentences", () => {
-    const offenders = files("src/islands", /\.tsx$/).flatMap((file) => {
-      // the markup each component returns, nothing around it
-      const jsx = [...readFileSync(file, "utf8").matchAll(/return \(([\s\S]*?)\n\s*\);/g)].map((m) => m[1]).join("\n");
-      return literals(jsx).map((text) => `${file}: ${text}`);
-    });
     expect(offenders).toEqual([]);
   });
 

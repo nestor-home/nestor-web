@@ -1,11 +1,9 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { axe, renderAll, scrollThrough, watch } from "./helpers";
 
 const PAGES = [
   { path: "/", lang: "en", title: /lives/ },
   { path: "/fr/", lang: "fr", title: /habite/ },
-  { path: "/developers/", lang: "en", title: /Build with Nestor/ },
-  { path: "/fr/developpeurs/", lang: "fr", title: /Construire avec Nestor/ },
 ];
 const WIDTHS = [390, 768, 1440];
 
@@ -31,9 +29,9 @@ test("each language links to the other, with canonical and hreflang", async ({ p
   await page.getByRole("link", { name: "Lire cette page en français" }).click();
   await expect(page).toHaveURL(/\/fr\/$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-  await page.goto("/developers/");
-  await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute("href", /\/fr\/developpeurs\/$/);
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /\/og\/developers-en\.png$/);
+  await page.goto("/docs/");
+  await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute("href", /\/fr\/docs\/$/);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /\/og\/docs-en\.png$/);
 });
 
 test("the skip link reaches the content from the keyboard", async ({ page }) => {
@@ -55,117 +53,248 @@ test("the theme toggle switches the page and remembers it", async ({ page }) => 
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(after);
 });
 
-test("the story's stage follows the step being read", async ({ page }) => {
+const STORY = [
+  {
+    path: "/",
+    titles: [
+      "You say it, once.",
+      "It keeps an eye on it.",
+      "It finds you, wherever you are.",
+      "Anything that listens can be a satellite.",
+      "At home, it speaks in the right room.",
+      "And you always know why.",
+      "The model you choose.",
+      "Everything stays at home.",
+    ],
+  },
+  {
+    path: "/fr/",
+    titles: [
+      "Vous le dites, une fois.",
+      "Il garde un œil dessus.",
+      "Il vous trouve, où que vous soyez.",
+      "Tout ce qui écoute peut devenir un satellite.",
+      "À la maison, il parle dans la bonne pièce.",
+      "Et vous savez toujours pourquoi.",
+      "Le modèle de votre choix.",
+      "Tout reste chez vous.",
+    ],
+  },
+];
+
+for (const { path, titles } of STORY) {
+  test(`${path} tells one request in eight tiles, in order`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator("#story .tile")).toHaveCount(8);
+    await expect(page.locator("#story .tile-title")).toHaveText(titles);
+  });
+}
+
+/** Each object, and what it shows last once it has played: the answer, the kept mail, the
+    notification, the last body, why this room, the journal's reason. */
+const OBJECTS = [
+  { object: ".spoken", last: ".spoken-answer", text: "I’ll watch your mail" },
+  { object: ".watch", last: ".watch-mail.is-kept", text: "for Mom" },
+  { object: ".phone", last: ".phone-note", text: "Friday’s trip is on" },
+  { object: ".sats", last: ".sat:last-child", text: "A camera" },
+  { object: ".room", last: ".room-why:last-child", text: "Someone in her room, says Home Assistant" },
+  { object: ".trace", last: ".trace-why", text: "Mom is out, says Home Assistant" },
+  { object: ".models", last: ".models-group:last-child .models-item:last-child", text: "llama.cpp" },
+  { object: ".local", last: ".local-row:last-child", text: "Keys, encrypted" },
+];
+
+/** The story's words drawn too faint to read (an element and its ancestors' opacity under one
+    half), and the last thing each object shows when it is not fully there (faded or still moving). */
+function unseen(page: Page): Promise<string[]> {
+  return page.locator("#story").evaluate(
+    (story, lasts) => {
+      const opacity = (el: Element) => {
+        let o = 1;
+        for (let n: Element | null = el; n; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
+        return o;
+      };
+      const words = [...story.querySelectorAll("*")].filter((el) =>
+        [...el.childNodes].some((c) => c.nodeType === Node.TEXT_NODE && c.textContent?.trim()),
+      );
+      const faint = words.filter((el) => opacity(el) < 0.5).map((el) => `faint: ${el.textContent?.trim()}`);
+      const partial = lasts.flatMap((selector) =>
+        [...story.querySelectorAll(selector)]
+          .filter((el) => opacity(el) < 1 || getComputedStyle(el).transform !== "none")
+          .map(() => `not shown: ${selector}`),
+      );
+      return [...faint, ...partial];
+    },
+    OBJECTS.map((o) => o.last),
+  );
+}
+
+test("scrolling to a chapter plays its object to the end", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  const stage = page.locator("[data-stage]");
-  await page.evaluate(() => document.querySelector('li[data-step="2"]')?.scrollIntoView({ block: "center" }));
-  await expect(stage).toHaveAttribute("data-step", "2");
-  await page.evaluate(() => document.querySelector('li[data-step="4"]')?.scrollIntoView({ block: "center" }));
-  await expect(stage).toHaveAttribute("data-step", "4");
+  const trace = page.locator("#story .trace");
+  // below the fold, the journal waits for the reader
+  await expect(trace).not.toHaveAttribute("data-shown");
+  expect(
+    await trace
+      .locator(".trace-step")
+      .last()
+      .evaluate((el) => getComputedStyle(el).opacity),
+  ).toBe("0");
+  for (const { object, last, text } of OBJECTS) {
+    const shown = page.locator(`#story ${object}`);
+    await shown.scrollIntoViewIfNeeded();
+    await expect(shown).toHaveAttribute("data-shown", "");
+    const end = shown.locator(last);
+    await expect(end).toContainText(text);
+    await expect
+      .poll(() =>
+        end.evaluate((el) => {
+          let o = 1;
+          for (let n: Element | null = el; n; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
+          return o === 1 && getComputedStyle(el).transform === "none";
+        }),
+      )
+      .toBe(true);
+  }
+  expect(await unseen(page)).toEqual([]);
 });
 
-test("moving the person changes the delivery decision", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  await page.evaluate(() => document.querySelector('li[data-step="3"]')?.scrollIntoView({ block: "center" }));
-  const story = page.locator("#story");
-  const step = page.locator('li[data-step="3"]');
-  await expect(step.getByText("Says it aloud, on the office speaker.")).toBeVisible();
-  const out = step.getByRole("button", { name: "Out" });
-  await out.click();
-  await expect(out).toHaveAttribute("aria-pressed", "true");
-  await expect(story).toHaveAttribute("data-where", "out");
-  await expect(step.getByText("Writes to her phone.")).toBeVisible();
-  await step.getByRole("button", { name: "Asleep" }).click();
-  await expect(step.getByText("Keeps it for the morning: quiet hours.")).toBeVisible();
-  await expect(page.locator("[data-stage] svg.nestor")).toHaveAttribute("data-state", "sleeping");
-});
+for (const { path } of PAGES) {
+  test(`${path} at 375px: the story's objects stay within the page`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(path);
+    await scrollThrough(page);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    const outside = await page.locator("#story .obj").evaluateAll((objects) =>
+      objects
+        .map((o) => [o.className, o.getBoundingClientRect()] as const)
+        .filter(([, r]) => r.left < 0 || r.right > window.innerWidth)
+        .map(([name]) => name),
+    );
+    expect(outside).toEqual([]);
+  });
+}
 
-test("a device added to the constellation pairs, links to Nestor and carries the conversation", async ({ page }) => {
-  await page.goto("/#bodies");
-  const sky = page.locator("#bodies [data-constellation]");
-  const phone = sky.getByRole("button", { name: "An old phone" });
-  await expect(phone).toHaveAttribute("aria-pressed", "false");
-  await expect(sky.getByText("Wake me up at seven.")).toBeHidden();
-  await phone.click();
-  await expect(phone).toHaveAttribute("data-pairing", "");
-  await expect(phone).toHaveAttribute("aria-pressed", "true", { timeout: 3000 });
-  await expect(sky.locator('line[data-dev="phone"]')).toHaveAttribute("data-on", "");
-  await expect(sky.getByText("Wake me up at seven.")).toBeVisible();
-  await phone.click();
-  await expect(phone).toHaveAttribute("aria-pressed", "false");
-});
-
-test("the journal's events can be read one by one", async ({ page }) => {
-  await page.goto("/developers/#journal");
-  const decision = page.getByRole("tab", { name: /The decision/ });
-  await decision.click();
-  await expect(page.locator("#ev-5")).toContainText("delivery-in-room");
-});
-
-test("choosing a part of the architecture explains it", async ({ page }) => {
-  await page.goto("/developers/#system");
-  const connectors = page.getByRole("button", { name: "Connectors", exact: true });
-  await connectors.click();
-  await expect(connectors).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("#arch-detail").getByRole("heading", { name: "Connectors" })).toBeVisible();
-  await expect(page.locator("#arch-detail")).toContainText("CredentialVault");
-});
-
-test("the SDK tabs work with the arrow keys", async ({ page }) => {
-  await page.goto("/developers/#satellites");
-  const python = page.getByRole("tab", { name: "Python" });
-  await python.click();
-  await page.keyboard.press("ArrowRight");
-  const ts = page.getByRole("tab", { name: "TypeScript" });
-  await expect(ts).toHaveAttribute("aria-selected", "true");
-  await expect(ts).toBeFocused();
-  await expect(page.locator("#satellites").getByRole("tabpanel")).toContainText("LocalStorageTokenStore"); // the TypeScript SDK page’s first example
-});
-
-test("a quickstart command is copied", async ({ page, context, browserName }) => {
+test("the install box shows the documentation's commands, one way at a time, and copies them", async ({
+  page,
+  context,
+  browserName,
+}) => {
   test.skip(browserName !== "chromium");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.goto("/developers/#start");
-  await page.locator("#start").getByRole("button", { name: "Copy" }).nth(0).click();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    "docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init",
-  );
-  await expect(page.locator("#start").getByRole("button", { name: "Copied" })).toBeVisible();
+  /** every line of code a page of the documentation holds */
+  const documented = async (path: string) => {
+    await page.goto(path);
+    const blocks = await page.locator(".doc-prose pre").evaluateAll((pres) => pres.map((p) => p.textContent ?? ""));
+    return blocks.flatMap((block) => block.split("\n").map((line) => line.replace(/\s+#.*$/, "").trim()));
+  };
+  const quickstart = await documented("/docs/quickstart/");
+  const install = await documented("/docs/install/");
+
+  await page.goto("/");
+  const box = page.getByRole("group", { name: "Install" });
+  const ways = box.locator(".copy-command");
+  await expect(box.getByRole("radio", { name: "uv", exact: true })).toBeChecked();
+  await expect(ways.filter({ visible: true })).toHaveCount(1);
+  await expect(ways.filter({ visible: true })).toContainText("uv tool install nestor-home");
+  await ways.filter({ visible: true }).getByRole("button", { name: "Copy" }).click();
+  const uv = (await page.evaluate(() => navigator.clipboard.readText())).split("\n");
+  expect(uv[0]).toBe("uv tool install nestor-home");
+  expect(uv.at(-1)).toBe("nestor run");
+  expect(uv.filter((line) => !quickstart.includes(line))).toEqual([]);
+  await expect(ways.filter({ visible: true }).getByRole("button", { name: "Copied" })).toBeVisible();
+
+  // the other way, from the keyboard
+  await box.getByRole("radio", { name: "uv", exact: true }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(box.getByRole("radio", { name: "Docker" })).toBeChecked();
+  await expect(ways.filter({ visible: true })).toHaveCount(1);
+  await ways.filter({ visible: true }).getByRole("button", { name: "Copy" }).click();
+  const docker = (await page.evaluate(() => navigator.clipboard.readText())).split("\n");
+  expect(docker.length).toBeGreaterThan(1);
+  expect(docker.every((line) => line.startsWith("docker run "))).toBe(true);
+  expect(docker.filter((line) => !install.includes(line))).toEqual([]);
+});
+
+test("the last section leads to the guide and to the three ways to build on Nestor", async ({ page, request }) => {
+  for (const root of ["/", "/fr/"]) {
+    await page.goto(root);
+    const start = page.locator("#start");
+    await expect(start.locator("a.btn-ink")).toHaveAttribute("href", `${root}docs/`);
+    const cards = await start.locator("a.tile").evaluateAll((links) => links.map((a) => a.getAttribute("href")));
+    expect(cards).toEqual([`${root}docs/satellites/`, `${root}docs/sdks/python/`, `${root}docs/satellites/protocol/`]);
+    for (const href of cards) expect((await request.get(href ?? "")).status(), href ?? "").toBe(200);
+  }
+});
+
+test("moving through the page never shifts the layout", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.evaluate(() => {
+    (window as unknown as { cls: number }).cls = 0;
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries() as unknown as { value: number; hadRecentInput: boolean }[]) {
+        if (!entry.hadRecentInput) (window as unknown as { cls: number }).cls += entry.value;
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  await scrollThrough(page);
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(() => (window as unknown as { cls: number }).cls)).toBeLessThan(0.02);
+});
+
+test.describe("without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+  test("the home page reads in full, and the install box still changes way", async ({ page }) => {
+    await page.goto("/");
+    const hidden = await page
+      .locator("[data-reveal]")
+      .evaluateAll((nodes) => nodes.filter((n) => Number(getComputedStyle(n).opacity) < 1).length);
+    expect(hidden).toBe(0);
+    await expect(page.locator("#story .tile")).toHaveCount(8);
+    expect(await unseen(page)).toEqual([]);
+    const ways = page.getByRole("group", { name: "Install" }).locator(".copy-command");
+    await expect(ways.filter({ visible: true })).toContainText("uv tool install nestor-home");
+    await page.getByRole("group", { name: "Install" }).getByText("Docker", { exact: true }).click();
+    await expect(ways.filter({ visible: true })).toHaveCount(1);
+    await expect(ways.filter({ visible: true })).toContainText("docker run");
+  });
 });
 
 test("under reduced motion everything is shown, nothing moves by itself", async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: "reduce" });
   const page = await context.newPage();
   await page.goto("/");
+  // before any scroll: every object already shows all it has
+  expect(await unseen(page)).toEqual([]);
   await scrollThrough(page);
   const hidden = await page
     .locator("[data-reveal]")
     .evaluateAll((nodes) => nodes.filter((n) => Number(getComputedStyle(n).opacity) < 1).length);
   expect(hidden).toBe(0);
-  const playing = await page
-    .locator("video")
-    .evaluateAll((v) => v.filter((x) => !(x as HTMLVideoElement).paused).length);
-  expect(playing).toBe(0);
+  expect(await unseen(page)).toEqual([]);
+  // nothing runs on its own: every animation has ended at once
+  await expect
+    .poll(() => page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length))
+    .toBe(0);
   await context.close();
 });
 
 test("the home page loads no framework, and every picture has a text", async ({ page }) => {
+  const scripts = () =>
+    page.evaluate(() =>
+      (performance.getEntriesByType("resource") as PerformanceResourceTiming[])
+        .filter((e) => e.initiatorType === "script" || e.name.endsWith(".js"))
+        .reduce((total, e) => total + e.decodedBodySize, 0),
+    );
   await page.goto("/");
+  // uncompressed, at load: only the site script
+  const atLoad = await scripts();
+  expect(atLoad).toBeLessThan(12_000);
+  expect(atLoad).toBeGreaterThan(3_000);
+  // the 3D robot is the one library, fetched only once its section comes near
   await scrollThrough(page);
-  const { js } = await page.evaluate(() => {
-    const entries = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
-    const sum = (filter: (e: PerformanceResourceTiming) => boolean) =>
-      entries.filter(filter).reduce((total, e) => total + e.decodedBodySize, 0);
-    return {
-      js: sum((e) => e.initiatorType === "script" || e.name.endsWith(".js")),
-      images: entries.filter((e) => e.initiatorType === "img").length,
-    };
-  });
-  // uncompressed: only the site script (React is for the developers' architecture diagram)
-  expect(js).toBeLessThan(30_000);
-  expect(js).toBeGreaterThan(3_000);
+  expect(await scripts()).toBeLessThan(atLoad + 700_000);
   const alts = await page.locator("img").evaluateAll((imgs) => imgs.filter((i) => !(i as HTMLImageElement).alt).length);
   expect(alts).toBe(0);
 });
@@ -181,134 +310,38 @@ for (const { path } of PAGES) {
   });
 }
 
-test.describe("Nestor in the page", () => {
-  test.use({ viewport: { width: 1440, height: 900 } });
-
-  test("looks toward the pointer", async ({ page }) => {
-    await page.goto("/");
-    const nestor = page.locator("#hero-nestor");
-    await expect(nestor).toHaveAttribute("data-running", "true");
-    const gx = () => nestor.evaluate((el) => Number((el as SVGElement).style.getPropertyValue("--nestor-gx")));
-    await page.mouse.move(20, 450);
-    await expect.poll(gx).toBeLessThan(-1);
-    await page.mouse.move(1420, 450);
-    await expect.poll(gx).toBeGreaterThan(1);
-  });
-
-  test("pauses while the tab is hidden, and wakes up when it comes back", async ({ page }) => {
-    await page.goto("/");
-    const nestor = page.locator("#hero-nestor");
-    await expect(nestor).toHaveAttribute("data-running", "true");
-    const setHidden = (hidden: boolean) =>
-      page.evaluate((value) => {
-        Object.defineProperty(document, "hidden", { value, configurable: true });
-        document.dispatchEvent(new Event("visibilitychange"));
-      }, hidden);
-    await setHidden(true);
-    await expect(nestor).toHaveAttribute("data-running", "false");
-    await setHidden(false);
-    await expect(nestor).toHaveAttribute("data-running", "true");
-  });
-
-  test("docks in the margin after the hero, takes the mood of the step, and can be hidden", async ({ page }) => {
-    await page.goto("/");
-    const dock = page.locator("[data-dock]");
-    await expect(dock).not.toHaveAttribute("data-shown", "");
-    await page.evaluate(() => document.querySelector('li[data-step="3"]')?.scrollIntoView({ block: "center" }));
-    await expect(dock).toHaveAttribute("data-shown", "");
-    await expect(dock.locator("svg.nestor")).toHaveAttribute("data-state", "speaking");
-    const box = await dock.boundingBox();
-    // the text column ends where the wrap's padding begins; the dock stays to its right
-    const textRight = await page
-      .locator("main .wrap")
-      .first()
-      .evaluate((el) => {
-        const rect = el.getBoundingClientRect();
-        return rect.right - Number.parseFloat(getComputedStyle(el).paddingRight);
-      });
-    expect(box?.x ?? 0).toBeGreaterThanOrEqual(textRight);
-    await dock.hover();
-    await page.getByRole("button", { name: "Hide Nestor" }).click();
-    await expect(dock).toBeHidden();
-  });
-
-  test("moves nothing by itself under reduced motion", async ({ browser }) => {
-    const context = await browser.newContext({ reducedMotion: "reduce", viewport: { width: 1440, height: 900 } });
-    const page = await context.newPage();
-    await page.goto("/");
-    const nestor = page.locator("#hero-nestor");
-    await page.mouse.move(20, 450);
-    const before = await nestor.evaluate((el) => el.outerHTML);
-    await page.mouse.move(1420, 800);
-    await page.waitForTimeout(1500);
-    expect(await nestor.evaluate((el) => el.outerHTML)).toBe(before);
-    await expect(nestor).not.toHaveAttribute("data-live", "");
-    await page.evaluate(() => window.scrollTo(0, 3000));
-    await expect(page.locator("[data-dock]")).toBeHidden();
-    await context.close();
-  });
-
-  test("never shifts the layout", async ({ page }) => {
-    await page.goto("/");
-    await page.evaluate(() => {
-      (window as unknown as { cls: number }).cls = 0;
-      new PerformanceObserver((list) => {
-        for (const entry of list.getEntries() as unknown as { value: number; hadRecentInput: boolean }[]) {
-          if (!entry.hadRecentInput) (window as unknown as { cls: number }).cls += entry.value;
-        }
-      }).observe({ type: "layout-shift", buffered: true });
-    });
-    await page.mouse.move(300, 300);
-    await page.mouse.move(1200, 700, { steps: 8 });
-    await scrollThrough(page);
-    await page.waitForTimeout(500);
-    expect(await page.evaluate(() => (window as unknown as { cls: number }).cls)).toBeLessThan(0.02);
-  });
-});
-
-test("one navigation on every page, with the current page marked", async ({ page }) => {
-  for (const [path, current] of [
-    ["/", "Product"],
-    ["/developers/", "Developers"],
-    ["/docs/", "Docs"],
-  ] as const) {
+test("one navigation on every page: the home page's sections, then the docs, marked when read", async ({ page }) => {
+  for (const path of ["/", "/docs/"]) {
     await page.goto(path);
     const nav = page.getByRole("navigation", { name: "Main" }).first();
-    await expect(nav.getByRole("link")).toHaveText(["Product", "Developers", "Docs"]);
-    await expect(nav.getByRole("link", { name: current })).toHaveAttribute("aria-current", "page");
+    await expect(nav.getByRole("link")).toHaveText(["Uses", "Satellites", "Integrations", "Install", "Docs"]);
+    await expect(nav.getByRole("link", { name: "Integrations" })).toHaveAttribute("href", "/#works-with");
+    await expect(nav.locator("[aria-current]")).toHaveCount(path === "/" ? 0 : 1);
   }
+  await page.getByRole("navigation", { name: "Main" }).first().getByRole("link", { name: "Integrations" }).click();
+  await expect(page).toHaveURL(/\/#works-with$/);
+  await expect(page.locator("#works-with")).toBeInViewport();
 });
 
 test("on a phone, the menu is a sheet that keeps focus and closes with Escape", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
-  await page.goto("/developers/");
+  await page.goto("/");
   const button = page.getByRole("button", { name: "Menu" });
   await button.click();
   const sheet = page.getByRole("dialog", { name: "Menu" });
   await expect(sheet).toBeVisible();
-  await expect(sheet.getByRole("link", { name: "Developers" })).toHaveAttribute("aria-current", "page");
+  await expect(sheet.getByRole("link", { name: "Docs" })).toBeVisible();
   for (let i = 0; i < 12; i++) await page.keyboard.press("Tab");
   expect(await sheet.evaluate((d) => d.contains(document.activeElement))).toBe(true);
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe("hidden");
   await page.keyboard.press("Escape");
   await expect(sheet).toBeHidden();
   await expect(button).toBeFocused();
-});
-
-test("the developers' page lists its sections, and marks the one being read", async ({ page }) => {
-  await page.goto("/developers/");
-  const sub = page.getByRole("navigation", { name: "On this page" });
-  await sub.getByRole("link", { name: "Journal" }).click();
-  await expect(page).toHaveURL(/#journal$/);
-  await expect(sub.getByRole("link", { name: "Journal" })).toHaveAttribute("data-active", "");
-});
-
-test("Nestor answers in the hero: it listens, then speaks", async ({ page }) => {
-  await page.goto("/");
-  const nestor = page.locator("#hero-nestor");
-  await expect(nestor).toHaveAttribute("data-state", "listening", { timeout: 4000 });
-  await expect(nestor).toHaveAttribute("data-state", "speaking", { timeout: 6000 });
-  await expect(page.locator("[data-hero-stage]")).toHaveAttribute("data-phase", "say");
+  // a section of the page closes the sheet and shows it
+  await button.click();
+  await sheet.getByRole("link", { name: "Install", exact: true }).click();
+  await expect(sheet).toBeHidden();
+  await expect(page.locator("#start")).toBeInViewport();
 });
 
 /* No content runs out of its box: a block whose content is wider than itself must scroll on its
@@ -321,8 +354,13 @@ const BOXED = [
   "/fr/docs/install/",
   "/fr/docs/configuration/",
   "/docs/models/",
-  "/docs/connections/",
+  "/docs/accounts/",
+  "/fr/docs/executors/",
+  "/docs/voice/",
+  "/fr/docs/home/",
   "/docs/agent/",
+  "/docs/agent/journal/",
+  "/fr/docs/plugins/",
   "/fr/docs/agent/memory/",
   "/fr/docs/agent/initiative/",
   "/docs/satellites/protocol/",
@@ -355,11 +393,33 @@ for (const path of BOXED) {
   }
 }
 
-test("integrations not shipped yet say so, on both pages", async ({ page }) => {
-  for (const path of ["/", "/developers/"]) {
-    await page.goto(path);
-    const list = page.locator(".integrations");
-    await expect(list.getByRole("listitem").filter({ hasText: "Spotify" })).toContainText("planned");
-    await expect(list.getByRole("listitem").filter({ hasText: "Telegram" })).not.toContainText("planned");
-  }
+test("integrations are grouped by what they bring, and those not shipped yet say so", async ({ page }) => {
+  await page.goto("/");
+  const list = page.locator("#works-with");
+  await expect(list.getByRole("heading", { level: 3 })).toHaveText([
+    "Home.",
+    "Messages.",
+    "Mail, calendar and files.",
+    "Web, weather and maps.",
+    "Lists, notes and music.",
+    "Work and long tasks.",
+  ]);
+  await expect(list.getByRole("listitem").filter({ hasText: "Home Assistant" })).toBeVisible();
+  await expect(list.getByRole("listitem").filter({ hasText: "Spotify" })).toContainText("planned");
+  await expect(list.getByRole("listitem").filter({ hasText: "Telegram" })).not.toContainText("planned");
+});
+
+test("Reachy goes through the conversation, and its words follow", async ({ page }) => {
+  const failed: string[] = [];
+  page.on("pageerror", (e) => failed.push(String(e)));
+  page.on("requestfailed", (r) => failed.push(r.url()));
+  await page.goto("/");
+  const scene = page.locator("[data-reachy]");
+  await scene.scrollIntoViewIfNeeded();
+  // the model loads once the section is near, then the states play in turn
+  await expect(scene).toHaveAttribute("data-state", "thinking", { timeout: 15_000 });
+  await expect(scene.locator('[data-chip="thinking"]')).toHaveCSS("opacity", "1");
+  await expect(scene.locator('[data-chip="speaking"]')).not.toHaveCSS("opacity", "1");
+  await expect(scene).toHaveAttribute("data-state", "speaking", { timeout: 10_000 });
+  expect(failed).toEqual([]);
 });

@@ -1,0 +1,163 @@
+---
+title: Rust SDK
+description: Write a satellite in Rust with the nestor-satellite crate, or install its command.
+---
+
+import Steps from "@/components/docs/Steps.astro";
+
+The [`nestor-satellite`](https://crates.io/crates/nestor-satellite) crate handles pairing, the link
+and text; it needs Rust 1.91+ and a C compiler. Audio and the camera are features.
+
+## Install
+
+<Steps>
+
+1. **Install the command**, or take a macOS or Linux binary from a
+   [release](https://github.com/nestor-home/nestor-satellite-rust/releases).
+
+   ```bash
+   cargo install nestor-satellite --features cli
+   ```
+
+2. **Pair it** with a pairing URI from the admin or `nestor satellites add --room salon`. Later runs
+   reconnect.
+
+   ```bash
+   nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
+   ```
+
+</Steps>
+
+In a driver:
+
+```bash
+cargo add nestor-satellite --features audio
+cargo add tokio --features macros,rt-multi-thread
+```
+
+| Feature | Adds                                                                                  |
+| ------- | ------------------------------------------------------------------------------------- |
+| default | pairing, the link, intents, observations, text: no WebRTC                             |
+| `voice` | WebRTC audio (Opus) with your own `AudioSource` and `AudioSink`, the device code said aloud, calls; needs `cmake` |
+| `audio` | `voice` with the machine's microphone and speaker (cpal); on Linux, ALSA (`apt install libasound2-dev pkg-config`) |
+| `video` | `voice` with a `Camera` filmed in VP8 (pure Rust), and still pictures in JPEG         |
+| `cli`   | the `nestor-satellite` command (`audio` and `video`)                                  |
+
+## The command
+
+`nestor-satellite run` makes this machine a satellite: microphone and speaker, terminal, or both.
+
+| Option          | Flag or variable                        | What it does                                                         |
+| --------------- | --------------------------------------- | -------------------------------------------------------------------- |
+| Core            | `--core`, `NESTOR_CORE`                 | the core's address, e.g. `http://nestor.local:8471` (default: the pairing URI's) |
+| Pairing URI     | `--pairing-uri`, `NESTOR_PAIRING_URI`   | pairs with an enrollment code made in Nestor                         |
+| Enrollment code | `--pairing-code`, `NESTOR_PAIRING_CODE` | the same code alone, with `--core`                                   |
+| Room            | `--room`                                | the room the device is in (required)                                 |
+| Text            | `--text`                                | sends the lines typed on stdin, prints the answers                   |
+| Text only       | `--text-only`                           | writing alone: no microphone, speaker or WebRTC                      |
+| Sound cards     | `--input-device`, `--output-device`     | part of a device's name (`nestor-satellite devices` lists them)      |
+| No sound card   | `--null-audio`                          | sends silence and drops the core's voice                             |
+| STUN or TURN    | `--ice-server`                          | a server, repeatable; needed only beyond the local network           |
+| Camera          | `--camera`                              | films when a person opens a session: `/dev/video0` (Linux) or `test-pattern` |
+| Language        | `--language`                            | what it speaks: `en` or `fr` (default: from `LANG`)                  |
+
+Without an enrollment code, it says and logs a device code to type in the admin. `--help` lists
+every flag.
+
+## A driver of your own
+
+A speaker with a microphone and a light (`audio` feature):
+
+```rust
+use nestor_satellite::devices::{Microphone, Speaker};
+use nestor_satellite::{Behavior, Body, Device, IDENTIFY, Manifest, Satellite, TokenStore};
+
+struct Led;
+impl Body for Led {
+    fn behavior(&self, behavior: Behavior) {
+        println!("attitude: {behavior}"); // light the ring, from a task of its own
+    }
+    fn identify(&self) {
+        println!("blink"); // a person looks for this device: blink for a few seconds
+    }
+}
+
+#[tokio::main]
+async fn main() -> nestor_satellite::Result<()> {
+    let device = Device::new("enceinte-salon", "raspberry-pi-4", "salon")?;
+    let manifest = Manifest::new(device, [IDENTIFY])?;
+    let tokens = TokenStore::new("~/.config/nestor-satellite/enceinte-salon.json");
+    let satellite = Satellite::builder("http://nestor.local:8471", manifest, tokens).body(Led);
+    // The microphone declares audio.capture, the speaker audio.playback.
+    satellite.source(Microphone::new()).sink(Speaker::new()).build()?.run().await // pairs once, then reconnects
+}
+```
+
+`run` reconnects, pairs again if its token is refused, and returns `Error::Replaced` when a newer
+link of the device takes over. API: [docs.rs](https://docs.rs/nestor-satellite).
+
+## Capabilities
+
+The manifest lists body and sensors (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`, `PERSON_DETECTION`,
+`SPEECH_ACTIVITY`). The rest comes from the builder; declaring it in the manifest without it fails
+`build` with `Error::NotProvided`.
+
+| Builder                                                 | Declares                           |
+| ------------------------------------------------------- | ---------------------------------- |
+| `.text_display(…)`, a `TextDisplay` or `Fn(&str, bool)` | `text.display`                     |
+| `.text_input()`                                         | `text.input`                       |
+| `.source(…)`, an `AudioSource` (`voice`)                | `audio.capture`                    |
+| `.sink(…)`, an `AudioSink` (`voice`)                    | `audio.playback`                   |
+| `.null_audio()` (`voice`)                               | both, without a sound card (tests) |
+| `.camera(…)`, a `Camera` (`video`)                      | `video.capture`                    |
+| `.media_indicator(…)`                                   | `media.indicator`                  |
+| `.updater(…)`, an `Updater`                             | `device.update`                    |
+
+- `satellite.observer().input_text(…)` sends 1 to 4,000 characters; `Ok(false)` while the link is
+  down, `Error::CapabilityNotAllowed` if `text.input` was not allowed.
+- `last` marks an answer's last message.
+- `.ice_servers(…)`: only beyond the local network.
+
+## Pairing options
+
+| Builder                                                                                        | Declares                  |
+| ---------------------------------------------------------------------------------------------- | ------------------------- |
+| always (`.enrollment(Enrollment::parse(…)?)`, or `NESTOR_PAIRING_URI` / `NESTOR_PAIRING_CODE`) | `enrollment.provisioning` |
+| `.display(…)`, a `Display` (`show_code`, `show_message`, `clear`)                              | `device_code.display`     |
+| a `.sink(…)` and no display, or `.voice(…)`                                                    | `device_code.speech`      |
+| `.accepts_enrollment(EnrollmentMethod::Input)`, codes handed to `satellite.enroller()`         | `enrollment.input`        |
+
+- A refused enrollment code is never sent again.
+- No QR codes, so no `enrollment.qr`.
+- `.language(…)`: the language it speaks (default: `LANG`).
+
+## Voice and camera
+
+See [Voice](/docs/voice/) and [Cameras and calls](/docs/satellites/cameras/).
+
+`Camera` is a trait. `V4l2Camera::new("/dev/video0")` reads a Linux camera (webcam, or the Raspberry
+Pi camera through V4L2), `.with_size(1280, 720)` sets its size, `TestPattern::default()` draws colour
+bars. The SDK enforces the session rules and never listens on a port. A device films only over TLS
+(`https://`) or on the core's machine.
+
+## Updates
+
+The manifest names the software: the `nestor-satellite` crate, or the driver's package with
+`Manifest::with_software(Software::new(…)?)`.
+
+An `Updater` (`.updater(…)`) finds (`newer`) and installs (`install`). The device checks on connect
+and daily, installs only what it found, and rolls back if not welcomed within 60 s; then the same
+program restarts with the same arguments (Unix) unless `.restart(…)` says otherwise. Without one, the
+admin only shows the version. Rules: [Updates](/docs/satellites/protocol/#10-updates).
+
+## Conformance
+
+Without a sound card:
+
+```bash
+uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
+  nestor-satellite run --core {url} --room salon --null-audio --token-file {state}/token.json
+```
+
+See [Conformance](/docs/satellites/conformance/). Source, examples and the voice clips' licence:
+[nestor-satellite-rust](https://github.com/nestor-home/nestor-satellite-rust).

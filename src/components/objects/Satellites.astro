@@ -1,0 +1,195 @@
+---
+/**
+ * The bodies Nestor can have: anything that hears, speaks, shows, moves or sees can be a satellite. Each device
+ * says where it stands and what it can do, the legend names the capabilities, and the link goes to the SDKs.
+ */
+import {
+  AppWindow,
+  ArrowRight,
+  type Bot,
+  Cctv,
+  Cpu,
+  Eye,
+  Keyboard,
+  Mic,
+  Monitor,
+  Move,
+  Speaker,
+  SquareTerminal,
+  Tablet,
+  Volume2,
+} from "lucide-react";
+import type { Translator } from "@/i18n";
+import { docHref } from "@/lib/docs";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+
+const CAPS = { hear: Mic, speak: Volume2, show: Monitor, type: Keyboard, move: Move, see: Eye } as const;
+type Cap = keyof typeof CAPS;
+const devices: { id: string; icon: typeof Bot; caps: Cap[] }[] = [
+  { id: "speaker", icon: Speaker, caps: ["hear", "speak"] },
+  { id: "tablet", icon: Tablet, caps: ["hear", "speak", "show", "type"] },
+  { id: "any", icon: Cpu, caps: ["hear", "speak", "show", "move", "see"] },
+  { id: "browser", icon: AppWindow, caps: ["hear", "speak", "show", "type"] },
+  { id: "terminal", icon: SquareTerminal, caps: ["show", "type"] },
+  { id: "camera", icon: Cctv, caps: ["see"] },
+];
+---
+
+<figure class="obj sats" data-reveal>
+  <ul class="sats-grid">
+    {
+      devices.map(({ id, icon: Icon, caps }, i) => (
+        <li class="sat" style={`--i:${i}`}>
+          <span class="sat-mark" aria-hidden="true">
+            <Icon className="size-6" strokeWidth={1.5} />
+          </span>
+          <span class="sat-name">{t(`story-bodies-${id}`)}</span>
+          <span class="sat-room">{t(`story-bodies-${id}-room`)}</span>
+          <span class="sat-caps">
+            {caps.map((c) => {
+              const C = CAPS[c];
+              return (
+                <span class="sat-cap" title={t(`story-bodies-cap-${c}`)}>
+                  <C className="size-3.5" strokeWidth={1.8} aria-hidden="true" />
+                  <span class="sr-only">{t(`story-bodies-cap-${c}`)}</span>
+                </span>
+              );
+            })}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+  <figcaption class="sats-foot">
+    <ul class="sats-legend">
+      {
+        (Object.keys(CAPS) as Cap[]).map((c) => {
+          const C = CAPS[c];
+          return (
+            <li>
+              <C className="size-3.5" strokeWidth={1.8} aria-hidden="true" />
+              {t(`story-bodies-cap-${c}`)}
+            </li>
+          );
+        })
+      }
+    </ul>
+    <a href={docHref(t.locale, "satellites")} class="sats-link">
+      {t("story-bodies-link")}
+      <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
+    </a>
+  </figcaption>
+</figure>
+
+<style>
+  .sats {
+    display: grid;
+    width: min(100%, 34rem);
+    gap: 1.2rem;
+  }
+  .sats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  @media (min-width: 560px) {
+    .sats-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .sat {
+    display: grid;
+    align-content: start;
+    gap: 0.2rem;
+    padding: 1rem;
+    border-radius: 1.1rem;
+    background: var(--paper-raised);
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 18px 36px -26px rgb(40 28 12 / 0.4);
+  }
+  .sat-mark {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    margin-bottom: 0.6rem;
+    border-radius: 0.8rem;
+    background: radial-gradient(circle at 35% 30%, #3a332b, #15120f 75%);
+    color: #f3ecdf;
+  }
+  .sat-name {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .sat-room {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  .sat-caps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.6rem;
+  }
+  .sat-cap {
+    display: grid;
+    width: 1.6rem;
+    height: 1.6rem;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--ember-soft);
+    color: var(--ink);
+  }
+  .sats-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem 1.5rem;
+  }
+  .sats-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  .sats-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .sats-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--ember);
+    text-underline-offset: 0.25em;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .sats .sat {
+      opacity: 0;
+      transform: translateY(8px);
+      transition:
+        opacity 500ms var(--ease-out),
+        transform 500ms var(--ease-out);
+    }
+    :global(.js) .sats[data-shown] .sat {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(var(--i) * 90ms);
+    }
+  }
+</style>

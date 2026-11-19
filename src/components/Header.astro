@@ -3,7 +3,7 @@
  * The one global navigation, identical on every page: the logo (home), the site's pages, then the
  * utilities (language, theme, GitHub) and one call to action. On small screens the pages and the
  * utilities move into a sheet (a modal <dialog>: focus kept inside, Escape closes, the page below
- * neither scrolls nor takes focus). In-page sections have their own bar (SubNav.astro).
+ * neither scrolls nor takes focus).
  */
 import { ArrowRight, Menu, Moon, Sun, X } from "lucide-react";
 import Brand from "@/components/Brand.astro";
@@ -20,10 +20,15 @@ interface Props {
 }
 const { t, alternates, current } = Astro.props;
 const other = t.locale === "en" ? "fr" : "en";
-const pages: { page: Page; label: string }[] = [
-  { page: "home", label: t("nav-product") },
-  { page: "developers", label: t("nav-developers") },
-  { page: "docs", label: t("nav-docs") },
+// the home page's sections, reached from any page, then the docs
+const home = href(t.locale, "home");
+const pages: { href: string; label: string; current: boolean }[] = [
+  ...["story", "reachy", "works-with", "start"].map((id) => ({
+    href: `${home}#${id}`,
+    label: t(`nav-${id}`),
+    current: false,
+  })),
+  { href: href(t.locale, "docs"), label: t("nav-docs"), current: current === "docs" },
 ];
 ---
 
@@ -35,11 +40,11 @@ const pages: { page: Page; label: string }[] = [
     <nav aria-label={t("nav-label")} class="hidden md:block">
       <ul class="flex items-center gap-1 text-sm text-ink-muted">
         {
-          pages.map(({ page, label }) => (
+          pages.map(({ href: to, label, current: here }) => (
             <li>
               <a
-                href={href(t.locale, page)}
-                aria-current={current === page ? "page" : undefined}
+                href={to}
+                aria-current={here ? "page" : undefined}
                 class="nav-link rounded-sm px-2.5 py-1.5 transition-colors hover:text-ink"
               >
                 {label}
@@ -88,15 +93,15 @@ const pages: { page: Page; label: string }[] = [
     <nav aria-label={t("nav-label")} class="px-4 py-2">
       <ul class="flex flex-col">
         {
-          pages.map(({ page, label }) => (
+          pages.map(({ href: to, label, current: here }) => (
             <li>
               <a
-                href={href(t.locale, page)}
-                aria-current={current === page ? "page" : undefined}
+                href={to}
+                aria-current={here ? "page" : undefined}
                 class="sheet-link flex items-center justify-between border-b border-rule py-3 text-lg text-ink"
               >
                 {label}
-                {current === page && <span class="size-1.5 rounded-full bg-ember" aria-hidden="true" />}
+                {here && <span class="size-1.5 rounded-full bg-ember" aria-hidden="true" />}
               </a>
             </li>
           ))

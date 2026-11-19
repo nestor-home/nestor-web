@@ -16,8 +16,7 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "test": "vitest run",
-    "e2e": "playwright test",
-    "media": "node scripts/capture-admin.mjs && node scripts/encode-media.mjs"
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/mdx": "8.1.6",
@@ -33,7 +32,8 @@
     "lucide-react": "1.75.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "simple-icons": "16.38.0"
+    "simple-icons": "16.38.0",
+    "three": "0.187.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
@@ -47,11 +47,10 @@
     "@types/node": "26.6.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@types/three": "^0.187.0",
     "axe-core": "4.14.1",
     "lefthook": "2.2.2",
     "satori": "0.63.2",
-    "sharp": "0.35.5",
-    "shiki": "4.6.0",
     "tailwindcss": "4.3.5",
     "typescript": "5.9.3",
     "vitest": "5.1.1"

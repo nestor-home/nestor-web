@@ -1,0 +1,185 @@
+---
+/**
+ * One satellite as a use case: Reachy Mini, in 3D, going through a conversation. The words and the states on
+ * the right are the page's own; the robot (src/scripts/reachy.ts) is loaded only once the section comes near
+ * and plays the state the page marks as current. Without JavaScript, or with reduced motion, the dialogue reads
+ * in full and the robot stays still.
+ */
+import Tile from "@/components/Tile.astro";
+import type { Translator } from "@/i18n";
+
+interface Props {
+  t: Translator;
+}
+const { t } = Astro.props;
+// the conversation, in the order it plays: who says what, and the state the robot is in meanwhile
+const lines = [
+  { id: "asked", state: "listening" },
+  { id: "thought", state: "thinking" },
+  { id: "answered", state: "speaking" },
+];
+const states = ["listening", "thinking", "speaking"];
+---
+
+<section id="reachy" class="section border-t border-rule" aria-labelledby="reachy-title">
+  <div class="wrap">
+    <div data-reveal class="max-w-2xl">
+      <h2 id="reachy-title" class="display-2 text-ink">{t("reachy-title")}</h2>
+      <p class="lede mt-4">{t("reachy-lede")}</p>
+    </div>
+    <div class="reachy-bento mt-12">
+      <Tile id="reachy-scene" title={t("reachy-scene-title")} text={t("reachy-scene-text")} span={12}>
+        <div class="reachy" data-reachy data-state="listening">
+          <figure class="reachy-figure">
+            <div class="reachy-stage">
+              <canvas class="reachy-canvas" aria-label={t("reachy-canvas")} role="img"></canvas>
+            </div>
+            <figcaption class="reachy-credit">{t("reachy-credit")}</figcaption>
+          </figure>
+          <div class="reachy-side">
+            <ol class="reachy-lines">
+              {
+                lines.map(({ id, state }) => (
+                  <li class="reachy-line" data-line={state}>
+                    <span class="reachy-who">{t(`reachy-${id}-who`)}</span>
+                    <span class="reachy-said">{t(`reachy-${id}`)}</span>
+                  </li>
+                ))
+              }
+            </ol>
+            <ul class="reachy-states">
+              {
+                states.map((state) => (
+                  <li class="reachy-state" data-chip={state}>
+                    <span class="reachy-dot" aria-hidden="true"></span>
+                    <span>
+                      <strong class="font-medium text-ink">{t(`reachy-state-${state}`)}</strong>{" "}
+                      {t(`reachy-state-${state}-does`)}
+                    </span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </Tile>
+    </div>
+  </div>
+</section>
+
+<script>
+  // the robot loads once its section is near, never before
+  const scene = document.querySelector<HTMLElement>("[data-reachy]");
+  if (scene) {
+    const near = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        near.disconnect();
+        import("@/scripts/reachy").then(({ mount }) => mount(scene)).catch(() => {
+          // no WebGL or the model failed: the dialogue still reads
+        });
+      },
+      { rootMargin: "400px" },
+    );
+    near.observe(scene);
+  }
+</script>
+
+<style>
+  .reachy-bento {
+    display: grid;
+  }
+  .reachy {
+    display: grid;
+    width: 100%;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .reachy {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+  }
+  .reachy-stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 1.1rem;
+    background: radial-gradient(70% 60% at 50% 70%, var(--paper-raised), transparent 75%);
+  }
+  .reachy-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .reachy-credit {
+    margin-top: 0.4rem;
+    text-align: center;
+    font-size: var(--text-2xs);
+    color: var(--ink-muted);
+  }
+  .reachy-side {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .reachy-lines {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .reachy-line {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    background: var(--paper-raised);
+    box-shadow: var(--lift);
+    transition: opacity 400ms var(--ease-out);
+  }
+  .reachy-who {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  .reachy-said {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .reachy-states {
+    display: grid;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .reachy-state {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    transition: opacity 400ms var(--ease-out);
+  }
+  .reachy-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    border-radius: 999px;
+    background: var(--rule-strong);
+    transition: background 300ms var(--ease-out);
+  }
+  /* once the robot plays, the page follows its state: the current line and state stand out */
+  :global(.js) .reachy[data-playing] .reachy-line,
+  :global(.js) .reachy[data-playing] .reachy-state {
+    opacity: 0.45;
+  }
+  :global(.js) .reachy[data-playing][data-state="listening"] [data-line="listening"],
+  :global(.js) .reachy[data-playing][data-state="thinking"] :is([data-line="listening"], [data-line="thinking"]),
+  :global(.js) .reachy[data-playing][data-state="speaking"] .reachy-line,
+  :global(.js) .reachy[data-playing][data-state="listening"] [data-chip="listening"],
+  :global(.js) .reachy[data-playing][data-state="thinking"] [data-chip="thinking"],
+  :global(.js) .reachy[data-playing][data-state="speaking"] [data-chip="speaking"] {
+    opacity: 1;
+  }
+  .reachy[data-state="listening"] [data-chip="listening"] .reachy-dot,
+  .reachy[data-state="thinking"] [data-chip="thinking"] .reachy-dot,
+  .reachy[data-state="speaking"] [data-chip="speaking"] .reachy-dot {
+    background: var(--ember);
+  }
+</style>

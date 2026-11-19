@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "@fluent/syntax";
 import { describe, expect, it } from "vitest";
-import { href, LOCALES, localePath, markup, sourcesOf, translator } from "@/i18n";
+import { href, LOCALES, sourcesOf, translator } from "@/i18n";
 
 const ids = (locale: (typeof LOCALES)[number]) =>
   new Set(
@@ -39,12 +39,27 @@ describe("the catalogues", () => {
     }
     expect(asked.size).toBeGreaterThan(50);
     for (const locale of LOCALES) {
-      const t = translator(locale);
+      const held = ids(locale);
       expect(
-        [...asked].filter((id) => !t.has(id)),
+        [...asked].filter((id) => !held.has(id.split(".")[0] ?? id)),
         locale,
       ).toEqual([]);
     }
+  });
+
+  it("hold nothing the site no longer asks for", () => {
+    const source = files("src", /\.(astro|ts)$/)
+      .map((file) => readFileSync(file, "utf8"))
+      .join("\n");
+    // ids written whole (`t("copy")`, a list of ids) and ids built from a part (`t(\`story-${id}-title\`)`)
+    const built = [...source.matchAll(/\bt\(`([a-z0-9-]*)\$\{[^}]+\}([a-z0-9-]*)`/g)].map(
+      (match) => new RegExp(`^${match[1]}[a-z0-9-]+${match[2]}$`),
+    );
+    expect(built.length).toBeGreaterThan(10);
+    const unused = [...ids("en")].filter(
+      (id) => !new RegExp(`["'\`]${id}["'\`]`).test(source) && !built.some((pattern) => pattern.test(id)),
+    );
+    expect(unused).toEqual([]);
   });
 
   it("refuse a message that does not exist instead of printing its id", () => {
@@ -52,29 +67,19 @@ describe("the catalogues", () => {
   });
 
   it("format variables in the reader's language", () => {
-    expect(translator("en")("loop-step", { n: 3, total: 5 })).toBe("Step 3 of 5");
-    expect(translator("fr")("loop-step", { n: 3, total: 5 })).toBe("Étape 3 sur 5");
-  });
-});
-
-describe("light markup in messages", () => {
-  it("escapes HTML before adding emphasis and code", () => {
-    expect(markup("a <b> **strong** *em* `code`")).toBe(
-      "a &lt;b&gt; <strong>strong</strong> <em>em</em> <code>code</code>",
+    expect(translator("en")("providers-planned-note", { name: "Piper" })).toBe(
+      "Piper is planned: Nestor does not support it yet.",
     );
+    expect(translator("fr")("docs-meta-title", { title: "Modèles" })).toBe("Modèles · Documentation de Nestor");
   });
 });
 
 describe("addresses", () => {
   it("serve English at the root and French under /fr/", () => {
-    expect(localePath("en", "/")).toBe("/");
-    expect(localePath("fr", "/")).toBe("/fr/");
-  });
-
-  it("give each page its own address in each language", () => {
-    expect(href("en", "developers", "start")).toBe("/developers/#start");
-    expect(href("fr", "developers")).toBe("/fr/developpeurs/");
+    expect(href("en", "home")).toBe("/");
     expect(href("fr", "home")).toBe("/fr/");
+    expect(href("en", "docs")).toBe("/docs/");
+    expect(href("fr", "docs")).toBe("/fr/docs/");
   });
 });
 

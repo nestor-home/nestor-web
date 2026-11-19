@@ -1,8 +1,7 @@
 ---
 /**
- * The character on a page of the site: Nestor's drawing (`@nestor-home/character`) with a starting
- * state, a gaze, and an optional sequence played once in view (`script="listening@0,speaking@900"`,
- * run by the site script).
+ * The character on a page of the site: Nestor's drawing (`@nestor-home/character`) in a state, with
+ * a gaze.
  */
 import { type NestorState, renderNestor } from "@nestor-home/character";
 import "@nestor-home/character/nestor.css";
@@ -16,20 +15,9 @@ interface Props {
   size?: number;
   label?: string | undefined;
   class?: string | undefined;
-  script?: string | undefined;
-  id?: string | undefined;
   ground?: boolean;
 }
-const {
-  state = "idle",
-  look = "center",
-  size = 120,
-  label,
-  class: className,
-  script,
-  id,
-  ground = false,
-} = Astro.props;
+const { state = "idle", look = "center", size = 120, label, class: className, ground = false } = Astro.props;
 const LOOK: Record<Look, [number, number, number]> = {
   center: [0, 0, 0],
   left: [-4, 0.5, -0.5],
@@ -38,11 +26,7 @@ const LOOK: Record<Look, [number, number, number]> = {
   down: [0, 3.5, 0],
 };
 const [gx, gy, turn] = LOOK[look];
-const attributes: Record<string, string> = { style: `--nestor-gx:${gx};--nestor-gy:${gy};--nestor-turn:${turn}` };
-if (script) {
-  attributes["data-script"] = script;
-  attributes["data-inview-once"] = "";
-}
+const attributes = { style: `--nestor-gx:${gx};--nestor-gy:${gy};--nestor-turn:${turn}` };
 const markup = renderNestor({
   state,
   size,
@@ -50,7 +34,6 @@ const markup = renderNestor({
   attributes,
   ...(label ? { label } : {}),
   ...(className ? { className } : {}),
-  ...(id ? { id } : {}),
 });
 ---
 

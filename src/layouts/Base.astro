@@ -6,7 +6,6 @@ import "@fontsource/ibm-plex-mono/500.css";
 import "@/styles/global.css";
 import frauncesLatin from "@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url";
 import instrumentLatin from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
-import Dock from "@/components/Dock.astro";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import { LOCALES, type Locale, type Page, translator } from "@/i18n";
@@ -21,10 +20,10 @@ interface Props {
   card: Page;
   /** the 404 is not canonical and has no alternates */
   indexable?: boolean;
-  /** the docked Nestor of the long pages */
-  dock?: boolean;
+  /** the docs read in their own mode: mono headings, code on ink, a dot grid */
+  area?: "docs" | undefined;
 }
-const { locale, alternates, title, description, card, indexable = true, dock = indexable } = Astro.props;
+const { locale, alternates, title, description, card, indexable = true, area } = Astro.props;
 const t = translator(locale);
 const site = Astro.site ?? new URL("https://nestorhome.dev");
 const canonical = new URL(alternates[locale], site).href;
@@ -32,7 +31,7 @@ const og = new URL(`/og/${card}-${locale}.png`, site).href;
 ---
 
 <!doctype html>
-<html lang={locale} class="no-js">
+<html lang={locale} class="no-js" data-area={area}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -92,7 +91,6 @@ const og = new URL(`/og/${card}-${locale}.png`, site).href;
       <slot />
     </main>
     <Footer t={t} alternates={alternates} />
-    {dock && <Dock t={t} />}
     <script>
       import "@/scripts/site";
     </script>

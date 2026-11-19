@@ -11,6 +11,7 @@ import Nestor from "@/components/Nestor.astro";
 import { LOCALES, type Locale, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
 import { docHref, neighbours, parseDocId } from "@/lib/docs";
+import { markdownHref } from "@/lib/markdown";
 import { REPOS } from "@/lib/site";
 
 interface Props {
@@ -37,7 +38,7 @@ const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
   title={t("docs-meta-title", { title: entry.data.title })}
   description={entry.data.description}
   card="docs"
-  dock={false}
+  area="docs"
 >
   <div class="wrap docs-grid pt-8 pb-20 lg:pt-12">
     <aside class="docs-side hidden lg:block">
@@ -59,6 +60,7 @@ const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
 
       <header class="flex items-start justify-between gap-6">
         <div class="min-w-0">
+          <p class="docs-path" aria-hidden="true">{`~/docs/${slug || "index"}.md`}</p>
           <h1 class="docs-title text-ink">{entry.data.title}</h1>
           <p class="lede mt-4">{entry.data.description}</p>
         </div>
@@ -94,9 +96,13 @@ const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
             )
           }
         </div>
-        <p class="mt-6">
+        <p class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
           <a href={edit} class="link inline-flex items-center gap-1 font-mono text-xs text-ink-muted">
             {t("docs-edit")}
+            <ArrowUpRight className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
+          </a>
+          <a href={markdownHref(locale, slug)} class="link inline-flex items-center gap-1 font-mono text-xs text-ink-muted">
+            {t("docs-markdown")}
             <ArrowUpRight className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
           </a>
         </p>
@@ -157,10 +163,18 @@ const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
   .docs-article {
     max-width: 46rem;
   }
+  .docs-path {
+    margin-bottom: 0.9rem;
+    font-family: var(--font-data);
+    font-size: var(--text-xs);
+    color: var(--ember);
+  }
   .docs-title {
-    font-size: clamp(2.1rem, 4.4vw, 3.2rem);
-    line-height: 1.04;
-    letter-spacing: -0.025em;
+    font-family: var(--font-data);
+    font-size: clamp(1.9rem, 3.8vw, 2.7rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
     overflow-wrap: anywhere;
   }
   .docs-menu summary {

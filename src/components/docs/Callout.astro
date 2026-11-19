@@ -1,0 +1,15 @@
+---
+/** A short aside in a page: a note (worth knowing) or a warning (could lose data or break something). */
+import { Info, TriangleAlert } from "lucide-react";
+
+interface Props {
+  kind?: "note" | "warning";
+}
+const { kind = "note" } = Astro.props;
+const Icon = kind === "warning" ? TriangleAlert : Info;
+---
+
+<aside class:list={["doc-callout", `is-${kind}`]}>
+  <Icon className="doc-callout-icon size-4 shrink-0" strokeWidth={1.8} aria-hidden="true" />
+  <div class="doc-callout-body"><slot /></div>
+</aside>

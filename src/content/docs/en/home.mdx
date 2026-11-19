@@ -1,0 +1,71 @@
+---
+title: Home Assistant
+description: Connect Home Assistant so Nestor knows who is home and acts on the devices you expose.
+---
+
+import AdminShot from "@/components/docs/AdminShot.astro";
+import Steps from "@/components/docs/Steps.astro";
+
+Home Assistant gives Nestor **presence** and the **devices** it exposes to assistants. One address and
+one token cover both.
+
+<AdminShot name="house" locale="en" alt="The house: the household, where each person is, the rooms and their satellites" />
+
+## Set up
+
+<Steps>
+
+1. **Create a token.** Profile › **Security** › long-lived access token.
+
+2. **Expose devices.** Add the **Model Context Protocol Server** integration, then pick entities in
+   **Settings › Voice assistants › Expose**. Presence does not need it.
+
+3. **Add the secrets** to `.env`.
+
+   ```ini
+   HOME_ASSISTANT_URL=http://homeassistant.local:8123
+   HOME_ASSISTANT_TOKEN=eyJ...
+   ```
+
+4. **Uncomment `home`** in `nestor.yaml`.
+
+   ```yaml
+   home:
+     kind: home-assistant
+     url: ${HOME_ASSISTANT_URL}
+     token: ${HOME_ASSISTANT_TOKEN}
+     people:
+       alex: person.alex # each household id, with its person entity
+   ```
+
+</Steps>
+
+## What Nestor sees and does
+
+| What                        | Where it comes from                                                                | Key                 |
+| --------------------------- | ---------------------------------------------------------------------------------- | ------------------- |
+| Who is home                 | each person's `person.*` entity                                                    | `people`            |
+| Which room a person is in   | a room tracker per person (Bermuda, ESPresense)                                    | `rooms`             |
+| Which rooms are occupied    | sensors with an area; by default every occupancy, presence or motion sensor        | `occupancy_sensors` |
+| Devices it controls | the entities exposed to assistants, through Home Assistant's MCP server (`/api/mcp`) | none                |
+
+## Sensitive actions
+
+A sensitive action waits for the person's go-ahead ([Speakers](/docs/agent/speakers/)): its
+domain, device class or name contains one of these values, ignoring case:
+
+| Key              | Default                                   |
+| ---------------- | ----------------------------------------- |
+| `domains`        | `lock`, `alarm_control_panel`             |
+| `device_classes` | `garage`, `gate`, `door`                  |
+| `names`          | `lock`, `alarm`, `garage`, `gate`, `door` |
+
+Reading a state never is. A list you set replaces its default; add names in your language:
+
+```yaml
+home:
+  kind: home-assistant
+  # …
+  sensitive:
+    names: [lock, garage, door, porte, portail]
+```

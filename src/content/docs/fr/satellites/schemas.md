@@ -4,17 +4,14 @@ title: Schémas
 description: Le schéma JSON de chaque message du protocole, et comment un SDK tient sa copie à jour.
 ---
 
-Chaque message de `nestor.satellite/1` a un schéma JSON (draft 2020-12), servi à son `$id` :
+Chaque message de [`nestor.satellite/1`](/fr/docs/satellites/protocol/) a un schéma JSON (draft
+2020-12) à son `$id`, issu de la version du serveur que ce site épingle :
 
 ```text
 https://nestorhome.dev/schemas/satellite/1/<message>.json
 ```
 
-Les schémas viennent de la version du serveur que le site épingle.
-
-## Messages
-
-L’appairage, en HTTP :
+## Appairage
 
 | Schéma                                                               | Corps de                                                             |
 | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -25,7 +22,9 @@ L’appairage, en HTTP :
 | [`pairing.error`](/schemas/satellite/1/pairing.error.json)           | tout refus                                                           |
 | [`manifest`](/schemas/satellite/1/manifest.json)                     | le manifeste de l’appareil, dans une demande et dans `hello`         |
 
-Sur le lien, le WebSocket `/satellites/{device_id}/link` :
+## Lien
+
+Sur le WebSocket `/satellites/{device_id}/link` :
 
 | Schéma                                                                                 | Envoyé par | Sens                                               |
 | -------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------- |
@@ -42,12 +41,16 @@ Sur le lien, le WebSocket `/satellites/{device_id}/link` :
 | [`observation.speech.activity`](/schemas/satellite/1/observation.speech.activity.json) | appareil   | quelqu’un commence ou arrête de parler             |
 | [`observation.person.detected`](/schemas/satellite/1/observation.person.detected.json) | appareil   | une personne est vue                               |
 | [`update.status`](/schemas/satellite/1/update.status.json)                             | appareil   | où en est son logiciel                             |
+| [`intent.media.open`](/schemas/satellite/1/intent.media.open.json)                     | cœur       | ouvrir une session média                           |
+| [`intent.media.close`](/schemas/satellite/1/intent.media.close.json)                   | cœur       | terminer une session média                         |
+| [`intent.media.snapshot`](/schemas/satellite/1/intent.media.snapshot.json)             | cœur       | prendre une image fixe                             |
+| [`media.snapshot`](/schemas/satellite/1/media.snapshot.json)                           | appareil   | l’image, en JPEG et en base64                      |
 
-## Garder une copie dans un SDK
+## Une copie dans un SDK
 
-Un SDK vérifie chaque message qu’il envoie avec sa propre copie : `src/nestor_satellite/schemas/` en
-Python, `schemas/` en TypeScript et en Rust. Rafraîchissez-la depuis la version du serveur que vise
-le SDK, puis corrigez le code jusqu’à ce que les tests passent :
+Chaque SDK vérifie ce qu’il envoie avec sa copie (`src/nestor_satellite/schemas/` en Python,
+`schemas/` en TypeScript et Rust). Rafraîchissez-la depuis la version du serveur visée, puis corrigez
+le code jusqu’à ce que les tests passent :
 
 ```bash
 uvx --from nestor-home==<version> nestor satellites schemas --out schemas/

@@ -1,56 +1,218 @@
 ---
-import { ArrowRight } from "lucide-react";
+/**
+ * How to start, as the last bento: the install (one tab per way, without a script), what it takes, then the
+ * three ways to build on it, each tile a link to its page of the docs.
+ */
+import { ArrowRight, Cpu, Mic, Sparkles } from "lucide-react";
+import Bento from "@/components/Bento.astro";
 import Brand from "@/components/Brand.astro";
 import CopyCommand from "@/components/CopyCommand.astro";
-import Dither from "@/components/Dither.astro";
-import Nestor from "@/components/Nestor.astro";
-import Tie from "@/components/Tie.astro";
+import Tile from "@/components/Tile.astro";
 import { href, type Translator } from "@/i18n";
-import { INSTALL, REPOS } from "@/lib/site";
+import { BRANDS } from "@/lib/brands";
+import { docHref } from "@/lib/docs";
+import { MANIFEST_SNIPPET, QUICK_INSTALL, REPOS, SATELLITE_SNIPPET } from "@/lib/site";
 
 interface Props {
   t: Translator;
 }
 const { t } = Astro.props;
+const needs = [
+  { id: "machine", icon: Cpu },
+  { id: "model", icon: Sparkles },
+  { id: "voice", icon: Mic },
+];
+const languages = ["python", "typescript", "rust"] as const;
 ---
 
-<section id="start" class="section relative overflow-hidden border-t border-rule" aria-labelledby="cta-title" data-mood="idle" data-say={t("char-ready")}>
-  <Dither shape="ramp-up" from={0} to={0.3} dot={3} class="absolute inset-x-0 bottom-0 h-16 text-ink/10" />
-  <div class="wrap relative grid items-center gap-12 lg:grid-cols-12">
-    <div class="lg:col-span-6">
-      <h2 id="cta-title" data-reveal class="display-1 text-ink">{t("cta-title")}</h2>
-      <p data-reveal class="lede mt-8">{t("cta-text")}</p>
-      <div data-reveal class="mt-8 flex flex-wrap gap-3">
+<section id="start" class="section border-t border-rule" aria-labelledby="cta-title">
+  <div class="wrap">
+    <div data-reveal class="flex flex-wrap items-end justify-between gap-6">
+      <h2 id="cta-title" class="display-2 max-w-2xl text-ink">{t("cta-title")}</h2>
+      <div class="flex flex-wrap gap-3">
         <a href={href(t.locale, "docs")} class="btn btn-ink">
           {t("cta-install")}
           <ArrowRight className="size-4" strokeWidth={1.6} aria-hidden="true" />
         </a>
-        <a href={href(t.locale, "developers")} class="btn btn-line">{t("cta-developers")}</a>
         <a href={REPOS.nestor} class="btn btn-line">
           <Brand brand="github" class="size-4" decorative />
           {t("nav-github")}
         </a>
       </div>
-      <p data-reveal class="mt-6 flex items-center gap-2 font-mono text-xs text-ink-muted">
-        <Tie size={13} />
-        {t("cta-early")}
-      </p>
     </div>
-    <div class="relative lg:col-span-6">
-      <Nestor size={110} state="idle" look="down" script="idle@0,laughing@600,idle@1700" class="cta-nestor" />
-      <div data-reveal class="corner-marks border border-rule-strong bg-paper-raised">
-        <p class="border-b border-rule px-4 py-2.5 font-mono text-2xs text-ink-muted">{t("cta-terminal")}</p>
-        <div class="flex flex-col gap-2 p-4">
-          {INSTALL.map((command) => <CopyCommand t={t} command={command} />)}
+
+    <Bento class="mt-12">
+      <Tile id="cta-run" title={t("cta-run-title")} text={t("cta-run-text")} span={7}>
+        <!-- one tab per way, without a script: a radio, its label, then its commands -->
+        <div class="install" style={`--ways: ${QUICK_INSTALL.length}`} role="group" aria-label={t("hero-install-title")}>
+          {
+            QUICK_INSTALL.map((way, i) => (
+              <>
+                <input type="radio" name="install" id={`install-${way.id}`} class="sr-only" checked={i === 0} />
+                <label for={`install-${way.id}`} class="install-tab">
+                  {way.label}
+                </label>
+                <CopyCommand t={t} command={way.command} class="install-way" />
+              </>
+            ))
+          }
         </div>
-      </div>
-    </div>
+      </Tile>
+      <Tile id="cta-needs" title={t("cta-needs-title")} text={t("cta-needs-text")} span={5}>
+        <ul class="needs">
+          {
+            needs.map(({ id, icon: Icon }) => (
+              <li class="need">
+                <span class="need-mark">
+                  <Icon className="size-4" strokeWidth={1.7} aria-hidden="true" />
+                </span>
+                {t(`cta-need-${id}`)}
+              </li>
+            ))
+          }
+        </ul>
+      </Tile>
+      <Tile
+        id="cta-satellite"
+        title={t("cta-build-satellite")}
+        text={t("cta-build-satellite-text")}
+        span={4}
+        href={docHref(t.locale, "satellites")}
+      >
+        <pre class="snippet" aria-hidden="true"><code>{SATELLITE_SNIPPET}</code></pre>
+      </Tile>
+      <Tile
+        id="cta-sdks"
+        title={t("cta-build-sdks")}
+        text={t("cta-build-sdks-text")}
+        span={4}
+        href={docHref(t.locale, "sdks/python")}
+      >
+        <ul class="langs">
+          {
+            languages.map((brand) => (
+              <li class="lang">
+                <span class="lang-mark">
+                  <Brand brand={brand} class="size-7" decorative />
+                </span>
+                <span class="lang-name">{BRANDS[brand].name}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </Tile>
+      <Tile
+        id="cta-protocol"
+        title={t("cta-build-protocol")}
+        text={t("cta-build-protocol-text")}
+        span={4}
+        href={docHref(t.locale, "satellites/protocol")}
+      >
+        <pre class="snippet" aria-hidden="true"><code>{MANIFEST_SNIPPET}</code></pre>
+      </Tile>
+    </Bento>
   </div>
 </section>
 
 <style>
-  .cta-nestor {
-    display: block;
-    margin: 0 1.5rem -0.6rem auto;
+  /* the install tabs: labels on the first row, the checked radio's commands under them */
+  .install {
+    display: grid;
+    width: min(100%, 34rem);
+    grid-template-columns: repeat(var(--ways, 2), max-content) 1fr;
+    column-gap: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+  .install-tab {
+    grid-row: 1;
+    cursor: pointer;
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.4rem;
+    color: var(--ink-muted);
+  }
+  .install-tab:hover {
+    color: var(--ink);
+  }
+  .install :global(.install-way) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+  }
+  .install input:not(:checked) + .install-tab + :global(.install-way) {
+    display: none;
+  }
+  .install input:checked + .install-tab {
+    background: var(--paper-raised);
+    color: var(--ink);
+    box-shadow: var(--lift);
+  }
+  .install input:focus-visible + .install-tab {
+    outline: 2px solid var(--ember);
+    outline-offset: 2px;
+  }
+
+  .needs {
+    display: grid;
+    width: min(100%, 22rem);
+    gap: 0.5rem;
+  }
+  .need {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 0.9rem;
+    background: var(--paper-raised);
+    box-shadow: var(--lift);
+    font-size: var(--text-sm);
+    color: var(--ink);
+  }
+  .need-mark {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+    place-items: center;
+    border-radius: 0.6rem;
+    background: var(--ember-soft);
+    color: var(--ink);
+  }
+
+  .snippet {
+    width: 100%;
+    overflow: hidden;
+    padding: 1rem 1.1rem;
+    border-radius: 0.9rem;
+    background: #15120f;
+    color: #e9e1d2;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1.6;
+    white-space: pre;
+  }
+
+  .langs {
+    display: flex;
+    gap: 1rem;
+  }
+  .lang {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+  }
+  .lang-mark {
+    display: grid;
+    width: 4rem;
+    height: 4rem;
+    place-items: center;
+    border-radius: 1.1rem;
+    background: var(--paper-raised);
+    box-shadow: var(--lift);
+    color: var(--ink);
+  }
+  .lang-name {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
   }
 </style>

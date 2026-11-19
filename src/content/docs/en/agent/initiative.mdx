@@ -1,72 +1,64 @@
 ---
 title: Initiative
-description: When Nestor speaks without being asked. Wake-ups, watches, finished tasks, messages passed on, and the courier that delivers them.
+description: When Nestor speaks without being asked. Reminders, watches, finished tasks, messages passed on, and the courier that delivers them.
 ---
 
+import AdminShot from "@/components/docs/AdminShot.astro";
 import Initiative from "@/components/docs/diagrams/Initiative.astro";
 
-Nestor sometimes speaks first: a reminder you asked for, a mail it watched for, a finished task, a
-question from someone else. All of them take the same road.
+<Initiative locale="en" n={1} />
 
-<Initiative locale="en" n={7} />
+<AdminShot name="ongoing" locale="en" alt="Ongoing: what waits for an answer, the tasks running, the reminders and watches" />
 
 ## What calls for it
 
-**Wake-ups.** "Remind me tomorrow at 9 to call the plumber", "every weekday at 8, tell me the
-weather". The agent calls `schedule` with a self-contained instruction and a time, once or on chosen
-days. When due, the agent does what it says, with its tools, and what it writes reaches whoever set
-it, where they are, like a task's result; when there is nothing to tell (a price that did not drop),
-nothing is sent and the journal says so. A recurring wake-up keeps a thread: each time it runs, the
-agent reads what it and the tasks it started told before, and tells only what is new or changed. A
-wake-up missed while Nestor was stopped runs once at the next start.
+| Source       | Example                                   | Tool                                       |
+| ------------ | ----------------------------------------- | ------------------------------------------ |
+| **Reminder** | "every weekday at 8, tell me the weather" | `schedule`                                 |
+| **Watch**    | "tell me when the bank writes"            | `create_watch`                             |
+| **Task**     | "read this PDF and sum up the contract"   | `delegate_task`, to an [executor](/docs/executors/) |
+| **Message**  | "ask Léa if she needs the car"            | `message_person`                           |
 
-**Watches.** "Tell me when the bank writes" creates a watch. A small model reads each incoming item
-(a mail, a feed entry, a page change, a webhook post) once against all watches and announces a match
-to whoever asked.
+Each has a title, shown in the admin, and reaches whoever asked.
 
-**Tasks.** An executor's result is announced once to whoever asked, even after a restart, with the
-files it made.
+- **Reminder**: runs once or on chosen days. A recurring one tells only what changed; one missed
+  during a stop runs at the next start.
+- **Watch**: a small model reads each item once: mail from a [connected account](/docs/accounts/),
+  a feed, a page, a webhook ([Tools](/docs/tools/)).
+- **Task**: its result and files are announced once, even after a restart.
+- **Message**: one expecting a reply stays an open question for both people. `may_message` limits
+  whom a person may write to (default `"*"`, always themselves).
 
-**Messages.** "Tell Hugo dinner is at eight", "ask Léa if she needs the car": the agent calls
-`message_person`. A message that expects a reply opens a question, which both see until the answer
-comes back. Each person's `may_message` lists whom else they may write to through the agent,
-everyone by default (`"*"`); anyone may write to themselves.
+## Where it arrives
 
-## Where and how it arrives
+The **courier** decides, from [Home Assistant](/docs/home/) presence, and journals why.
 
-The **courier** decides first and journals its decision with the reason:
+| The person                    | Nestor                                                        |
+| ----------------------------- | ------------------------------------------------------------- |
+| asked for writing, or is away | writes where they read (their `reach`)                        |
+| is in a room with a satellite | speaks there                                                  |
+| is home, in no known room     | speaks through `initiative.main_room`                         |
+| is in a room without one      | writes                                                        |
+| has no presence at all        | writes; speaks only into an ongoing spoken conversation, or to someone with nowhere to write |
 
-- the person asked for writing, or is away: a message where they read (their `reach`, on Telegram
-  for instance);
-- they are in a room with a satellite: spoken there; home in no known room: by the satellite of
-  `initiative.main_room`. If nobody reacts within three minutes
-  (`initiative.follow_up_after_s`), it follows in writing;
-- they are in a room without a satellite: a message;
-- quiet hours (`initiative.quiet_hours`): nothing spoken unless urgent, and the message still goes
-  in writing;
-- no presence at all: a message; said aloud only back into a spoken conversation still going on,
-  or to someone with nowhere to write;
-- something private (a mail for someone): the room only hears that something came, and the content
-  is written at once;
-- a result with files (a document a task made): written with its files, and the room hears what it
-  brings.
+| Case            | Then                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------- |
+| no reaction     | a spoken message follows in writing after `initiative.follow_up_after_s` (180 s)       |
+| quiet hours     | `initiative.quiet_hours` (`"22:30-07:30"`): nothing spoken unless urgent, still written |
+| private content | the room hears that something came; the content is written                            |
+| files           | written with the files; the room hears what they bring                                 |
 
-A message spoken aloud is heard by everyone in the room. See [Speakers](/docs/agent/speakers/).
+A spoken message is heard by everyone in the room ([Speakers](/docs/agent/speakers/)).
 
-Only the agent's final answer goes out, never what it writes before using its tools ("let me
-check"). Each one ends in the journal in one of three ways:
+## How it ends
 
-- passed on;
-- nothing to tell: a check that found nothing, a result that changes nothing for them. Nothing is
-  sent, the journal keeps the agent's reason, and it is never brought back, even after a restart;
-- not passed on: no channel took it, or the model could not write it. It is tried again at the next
-  start.
+Only the agent's final answer goes out, never "let me check".
 
-What a person asked for (a task, a tool that went on in the background), a message someone asked to
-pass on, a confirmation to ask for and a failure are always told: for them, nothing to tell counts as
-not passed on. Only what Nestor starts by itself (a wake-up, a watch) may end in silence.
+| Outcome         | When                                                | Then                                   |
+| --------------- | --------------------------------------------------- | -------------------------------------- |
+| passed on       | it reached the person                               | it stays in the conversation's history |
+| nothing to tell | a check found nothing new                           | nothing sent, the reason journaled, never retried |
+| not passed on   | no channel took it, or the model could not write it | tried again at the next start          |
 
-A delivered message stays in the conversation's history together with what it was about (the task's
-result, the mail), so a reply to it has that context.
-
-Presence comes from Home Assistant: a room when it knows, home or away otherwise.
+Only a reminder or a watch may end with nothing to tell. A request, a message, a confirmation and
+a failure are always told.
