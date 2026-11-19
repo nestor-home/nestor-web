@@ -7,36 +7,29 @@ import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
 import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
 import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 
-One agent answers the whole household, aloud or in writing, with one memory.
-
 ## The parts
 
 <SystemMap locale="en" n={1} />
 
-The **core** depends on no vendor: models, Home Assistant, connectors, executors and channels are
-**adapters** behind contracts. The [journal](/docs/agent/journal/) records every effect and
-decision; a restart rebuilds open conversations, tasks, reminders and undelivered messages from it.
+The **core** depends on no vendor; everything else is an **adapter** behind a contract. A restart
+rebuilds open conversations, tasks, reminders and undelivered messages from the
+[journal](/docs/agent/journal/).
 
 ## A turn
 
 <TurnFlow locale="en" n={2} />
 
-A **conversation** groups turns close in time, as in Home Assistant's Assist. Once it ends, the
-model no longer rereads its turns; memories carry over. It has one turn at a time: messages sent
-together are answered in order.
+A **conversation** groups turns close in time. Once it ends, the model no longer rereads it;
+memories stay. Messages sent together are answered in order.
 
-Aloud, Nestor speaks while the model is still writing. An acknowledgement ("ok", "mm") does not
-stop it; any other word does, as does 1.2 seconds of speech, and the journal keeps what was heard.
-The acknowledgements it knows are French ones, with "ok". When the model or a voice service fails
-or stalls, Nestor says so (`conversation.fallback`).
+Aloud, Nestor speaks while the model still writes. Any word stops it, or 1.2 s of speech, except an
+acknowledgement (French ones and "ok"). When the model or a voice service fails, Nestor says so
+(`conversation.fallback`).
 
 ## Tools
 
-Short actions are direct tools: a light, a memory, a reminder. A tool slower than the turn's wait
-goes on in the background; its result comes back to the conversation later and Nestor tells the
-person. A long result is stored aside: the model sees its start, end and size, and reads the rest
-with `read_result` and `search_result`. Work that takes minutes goes to an
-[executor](/docs/executors/).
+A tool slower than the turn's wait goes on in the background, and Nestor tells the result later. A
+long result is stored aside, read with `read_result` and `search_result`. Work of minutes goes to an [executor](/docs/executors/).
 
 | Setting                                  | Default                     | What it does                            |
 | ---------------------------------------- | --------------------------- | --------------------------------------- |
@@ -49,13 +42,12 @@ with `read_result` and `search_result`. Work that takes minutes goes to an
 
 <PromptLayers locale="en" n={3} />
 
-The household layer also says how the agent runs right now, such as a web search on free tiers;
-the agent mentions it when it bears on the request. A plugin reports it through its component's
-`notes()`, in English.
+The household layer also says how the agent runs right now (a web search on free tiers, say), from
+each component's `notes()`. The agent mentions it when it bears on the request.
 
 ## Models by role
 
-Name model profiles in `models` and point roles at them. A single model needs nothing more.
+Point roles at profiles in `models`. A single model needs nothing more.
 
 ```yaml
 models:
@@ -85,4 +77,4 @@ agent:
 | `watches.model`        | sorts incoming items against the watches | `agent.written` |
 | `memory.consolidation` | summarises each finished conversation    | `agent.written` |
 
-Voice roles are on [Voice](/docs/voice/), every role on [Models](/docs/models/).
+All roles: [Models](/docs/models/).

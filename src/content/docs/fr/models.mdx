@@ -6,19 +6,18 @@ description: Le modèle de langage avec lequel pense l’agent, un par rôle si 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-L’agent pense avec un modèle de langage de votre choix, hébergé ou local. Choisissez-en un qui gère
-les appels d’outils.
+Tout modèle de langage, hébergé ou local, qui gère les appels d’outils.
 
 ## Choisir un fournisseur
 
-`nestor init` écrit un profil sous `models`, nommé `main`. Pour changer de fournisseur, remplacez-le
-par un bloc ci-dessous et lancez `nestor check`. La clé va dans `.env`, en `MODEL_API_KEY` ; les
-serveurs locaux n’en demandent pas.
+`nestor init` écrit un profil, `models.main`. Pour changer de fournisseur, remplacez-le par un bloc
+ci-dessous, puis `nestor check`. La clé va dans `.env`, en `MODEL_API_KEY` ; les serveurs locaux
+n’en demandent pas.
 
 <Providers kind="model" locale="fr">
 <ProviderSetup kind="model" brand="openrouter">
 
-Une seule clé pour les modèles de nombreux éditeurs. Le choix par défaut, et le fournisseur testé.
+Le choix par défaut, et le fournisseur testé.
 
 ```ini
 MODEL_API_KEY=sk-or-...
@@ -88,8 +87,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="gemini">
 
-L’API Gemini de Google, nativement : un PDF envoyé est lu en entier, pages et images comprises, et
-Gemini met de lui-même en cache la partie stable du prompt.
+En natif : PDF lus en entier, prompt mis en cache par Gemini.
 
 ```ini
 MODEL_API_KEY=...
@@ -104,14 +102,12 @@ models:
     model: gemini-flash-latest
 ```
 
-`extra_body` est fusionné dans chaque requête, pour `generationConfig` (`thinkingConfig`,
-`maxOutputTokens`).
+`extra_body` porte `generationConfig` (`thinkingConfig`, `maxOutputTokens`).
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="anthropic">
 
-L’API Messages d’Anthropic, nativement : la partie stable du prompt et la conversation passent par
-son cache de prompt, et un PDF envoyé est lu en entier, pages et images comprises.
+En natif : prompt et conversation en cache, PDF lus en entier.
 
 ```ini
 MODEL_API_KEY=sk-ant-...
@@ -126,8 +122,8 @@ models:
     model: claude-haiku-5-5
 ```
 
-`effort` (de `low` à `max`) règle combien Claude réfléchit avant de répondre, `max_tokens` la
-réponse la plus longue, réflexion comprise (64000).
+`effort` (de `low` à `max`) règle combien Claude réfléchit ; `max_tokens` plafonne la réponse,
+réflexion comprise (64000).
 
 </ProviderSetup>
 <ProviderSetup kind="model" brand="ollama">
@@ -146,7 +142,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="model" brand="lm-studio">
 
-Démarrez le serveur de LM Studio. `model` est l’identifiant du modèle chargé.
+`model` est l’identifiant du modèle chargé.
 
 ```yaml
 models:
@@ -188,19 +184,16 @@ models:
 </ProviderSetup>
 </Providers>
 
-Un modèle local répond plus lentement, et la voix le ressent en premier. Avec Docker, un serveur de
-modèle sur l’hôte est à `http://host.docker.internal:<port>/v1` ; sous Linux, faites-le écouter sur
-toutes les interfaces (`OLLAMA_HOST=0.0.0.0` pour Ollama, `--host 0.0.0.0` pour llama.cpp).
+Un modèle local est plus lent, et la voix le ressent en premier. Depuis Docker, utilisez
+`http://host.docker.internal:<port>/v1` ; sous Linux, faites écouter le serveur sur toutes les
+interfaces (`OLLAMA_HOST=0.0.0.0`, `--host 0.0.0.0` pour llama.cpp).
 
 ## Types
 
-Chaque modèle dit son `type` (`language`, `embedding`, `transcription`, `speech`, `speaker`, `image`)
-et son `provider`. Un réglage ne propose que les modèles de son type. Entendre et parler sont sur
-[Voix](/fr/docs/voice/), reconnaître qui parle sur [Locuteurs](/fr/docs/agent/speakers/).
+Chaque modèle a un `type` (`language`, `embedding`, `transcription`, `speech`, `speaker`, `image`)
+et un `provider`. Voir [Voix](/fr/docs/voice/) et [Locuteurs](/fr/docs/agent/speakers/).
 
 ## Rôles
-
-Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
 
 | Rôle                   | Ce qu’il fait                                               | Sans réglage                    |
 | ---------------------- | ----------------------------------------------------------- | ------------------------------- |
@@ -213,7 +206,7 @@ Avec plusieurs profils, chaque rôle nomme celui qu’il utilise :
 | `agent.speech`         | répond à un message vocal par un autre                      | le seul modèle de synthèse      |
 | `agent.images`         | dessine les images                                          | le seul modèle d’images         |
 
-Un modèle rapide pour la voix, un plus solide pour le reste :
+Un modèle rapide pour la voix, un plus solide à l’écrit :
 
 ```yaml
 models:
@@ -245,14 +238,13 @@ agent:
 | `vision`         | `openai-compatible`            | `true` pour un modèle qui lit les images : il voit alors les photos envoyées |
 | `cache_control`  | `openai-compatible`            | le cache de prompt du fournisseur, actif par défaut pour OpenRouter et Anthropic |
 
-Les modèles `anthropic` et `gemini` voient les images et lisent les PDF sans qu’on le dise.
+`anthropic` et `gemini` voient les images et lisent les PDF d’eux-mêmes.
 
 ## Modèle de secours
 
-Quand un modèle échoue avant de répondre (fournisseur en panne, surchargé, clé refusée), son
-`fallback` répond à sa place, dans tous ses rôles, et le journal dit lequel a pris le relais. Un
-modèle de secours peut avoir le sien. Il reçoit la requête sans les images ni les documents qu’il ne
-sait pas lire.
+Quand un modèle échoue avant de répondre, son `fallback` répond, dans tous ses rôles, et le journal
+le dit. Un modèle de secours peut avoir le sien, et ne reçoit pas les images ni les documents qu’il
+ne sait pas lire.
 
 ```yaml
 models:
@@ -269,12 +261,12 @@ models:
     model: gemini-flash-latest
 ```
 
-Un modèle qui échoue après avoir commencé à répondre n’est pas remplacé : la réponse recommencerait.
+Un modèle qui échoue en cours de réponse n’est pas remplacé.
 
 ## Recherche par le sens
 
-Un modèle d’embedding retrouve les souvenirs par le sens : « que mange Léa ? » trouve « Léa est
-végétarienne ». Nommez-le dans `memory.embedder` :
+Un modèle d’embedding retrouve les souvenirs par le sens (« que mange Léa ? » trouve « Léa est
+végétarienne ») :
 
 ```yaml
 models:
@@ -296,14 +288,12 @@ memory:
 | `send_dimensions`                 | `true` demande cette taille à un modèle qui sait raccourcir ses vecteurs |
 | `query_prefix`, `document_prefix` | pour un modèle qui attend un préfixe (`query: `)                   |
 
-Tout point `/embeddings` compatible OpenAI convient. Changer de modèle réindexe en tâche de fond.
-Voir [Mémoire](/fr/docs/agent/memory/).
+Tout point `/embeddings` compatible OpenAI convient ([Mémoire](/fr/docs/agent/memory/)).
 
 ## Images
 
-Avec un modèle d’images, Nestor dessine ce qu’on lui demande et l’envoie avec sa réponse là où la
-conversation montre les images : la discussion de l’admin, les messageries. Une image demandée à
-voix haute reste dans le journal de l’admin.
+Nestor envoie les images qu’il dessine dans le chat de l’administration et les messageries. Une
+image demandée à voix haute reste dans le journal de l’administration.
 
 ```yaml
 models:
@@ -316,6 +306,5 @@ models:
     endpoint: chat
 ```
 
-`endpoint: images`, par défaut, parle à `/images/generations` (OpenAI, Gemini, serveurs locaux) ;
-`chat` parle à Chat Completions, comme les modèles d’images d’OpenRouter. `size` fixe la taille quand
-le modèle en prend une (`1024x1024`).
+`endpoint: images` (par défaut) utilise `/images/generations` ; `chat` utilise Chat Completions,
+comme sur OpenRouter. `size` fixe la taille quand le modèle en prend une (`1024x1024`).

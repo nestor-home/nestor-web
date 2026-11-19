@@ -6,9 +6,8 @@ description: Écrire un satellite en TypeScript avec @nestor-home/satellite, dan
 import Steps from "@/components/docs/Steps.astro";
 
 [`@nestor-home/satellite`](https://www.npmjs.com/package/@nestor-home/satellite) gère l’appairage,
-le jeton, le manifeste, le lien et le texte, dans les navigateurs et sous Node 22.12 ou plus récent.
-L’audio et la caméra sont des points d’entrée à part : un appareil qui ne fait qu’écrire ne les
-charge jamais.
+le lien et le texte, dans les navigateurs et sous Node 22.12+. L’audio et la caméra sont des points
+d’entrée à part.
 
 ## Installer
 
@@ -21,9 +20,8 @@ charge jamais.
    pnpm add @roamhq/wrtc   # in Node, to talk aloud: WebRTC, prebuilt for Linux, macOS and Windows x64
    ```
 
-2. **L’appairer** sous Node avec l’URI d’appairage d’un code d’enrôlement, créé sous **Satellites**
-   dans l’administration ou avec `nestor satellites add --room salon`. Les lancements suivants se
-   reconnectent.
+2. **L’appairer** sous Node avec une URI d’appairage de l’admin ou de
+   `nestor satellites add --room salon`. Les lancements suivants se reconnectent.
 
    ```bash
    npx nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
@@ -41,9 +39,8 @@ charge jamais.
 
 ## La commande
 
-Sous Node, `npx nestor-satellite run` fait de cette machine un satellite : son micro et son
-haut-parleur, son terminal, ou les deux. Lancez-la depuis un projet où le SDK est installé, avec
-`@roamhq/wrtc` pour parler à voix haute.
+Sous Node, `npx nestor-satellite run`, depuis un projet avec le SDK (et `@roamhq/wrtc` pour parler),
+fait de cette machine un satellite : micro et haut-parleur, terminal, ou les deux.
 
 | Option            | Flag ou variable                        | Effet                                                                    |
 | ----------------- | --------------------------------------- | ------------------------------------------------------------------------ |
@@ -51,8 +48,6 @@ haut-parleur, son terminal, ou les deux. Lancez-la depuis un projet où le SDK e
 | URI d’appairage   | `--pairing-uri`, `NESTOR_PAIRING_URI`   | appaire avec un code d’enrôlement créé dans Nestor                       |
 | Code d’enrôlement | `--pairing-code`, `NESTOR_PAIRING_CODE` | le même code seul, avec `--core`                                         |
 | Pièce             | `--room`                                | la pièce où se trouve l’appareil (obligatoire)                           |
-| Identifiant       | `--id`                                  | l’identifiant de l’appareil (par défaut : le nom de la machine)          |
-| Jeton             | `--token-file`                          | où garder le jeton (par défaut : `~/.config/nestor-satellite/<id>.json`) |
 | Texte             | `--text`                                | envoie les lignes tapées sur stdin, affiche les réponses                 |
 | Sans voix         | `--no-voice`                            | retire le micro et le haut-parleur                                       |
 | Enregistreur      | `--input`                               | une commande qui produit du PCM brut 48 kHz 16 bits mono, ou `none` (par défaut : `arecord` sous Linux, `rec` de SoX sous macOS) |
@@ -60,12 +55,12 @@ haut-parleur, son terminal, ou les deux. Lancez-la depuis un projet où le SDK e
 | STUN ou TURN      | `--ice`                                 | un serveur, répétable ; ne sert qu’au-delà du réseau local               |
 | Langue            | `--locale`                              | la langue parlée : `en` ou `fr` (par défaut : `LC_ALL`, `LANG`…)         |
 
-Sans code d’enrôlement, il dit un code d’appareil sur son haut-parleur et l’écrit dans son journal :
-tapez-le dans l’administration. `npx nestor-satellite --help` liste toutes les options.
+Sans code d’enrôlement, il dit et journalise un code d’appareil à taper dans l’admin. `--help` liste
+toutes les options.
 
 ## Votre propre pilote
 
-Un onglet de tablette murale qui écrit avec l’assistant, servi en `https:` ou sur `localhost` :
+Un onglet de tablette murale, servi en `https:` ou sur `localhost` :
 
 ```ts
 import { IDENTIFY, LocalStorageTokenStore, Manifest, Satellite } from "@nestor-home/satellite";
@@ -92,17 +87,16 @@ satellite.run();
 form.onsubmit = () => satellite.sendText(input.value); // a turn of the kitchen's conversation
 ```
 
-Sous Node, le même `Satellite` prend un `FileTokenStore` (mode 600) et
-`nodeVoice({ source, sink })` avec un `CommandSource` et un `CommandSink`. `run` se reconnecte
-quand le lien tombe et s’appaire de nouveau si son jeton est refusé. Il est rejeté avec
-`LinkReplaced` quand un lien plus récent du même appareil prend le relais, et avec `PairingError`
-quand le cœur ne l’appairera jamais.
+Sous Node, prenez un `FileTokenStore` (mode 600) et `nodeVoice({ source, sink })` avec un
+`CommandSource` et un `CommandSink`. `run` se reconnecte et s’appaire de nouveau si son jeton est
+refusé ; il est rejeté avec `LinkReplaced` quand un lien plus récent de l’appareil prend le relais,
+`PairingError` quand l’appairage ne peut pas aboutir.
 
 ## Capacités
 
-Le manifeste décrit le corps et les capteurs : `EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`,
-`PERSON_DETECTION`, `SPEECH_ACTIVITY`. Le reste découle des options ; le déclarer dans le manifeste
-lève une `ProtocolError`.
+Le manifeste décrit corps et capteurs (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`, `PERSON_DETECTION`,
+`SPEECH_ACTIVITY`). Le reste découle des options ; le déclarer dans le manifeste lève une
+`ProtocolError`.
 
 | Option                                          | Déclare           |
 | ----------------------------------------------- | ----------------- |
@@ -114,11 +108,11 @@ lève une `ProtocolError`.
 | `onMedia: (active) => …`                        | `media.indicator` |
 | `updater`                                       | `device.update`   |
 
-- `satellite.sendText(text)` envoie de 1 à 4 000 caractères tapés. Il renvoie `false` quand le lien
-  est coupé et lève `CapabilityNotAllowed` si le foyer n’a pas autorisé `text.input`.
+- `satellite.sendText(text)` envoie de 1 à 4 000 caractères ; `false` quand le lien est coupé,
+  `CapabilityNotAllowed` si `text.input` n’est pas autorisé.
 - `final` marque le dernier message d’une réponse.
-- L’option `iceServers` de `browserVoice` ou `nodeVoice` (des URL STUN ou TURN) ne sert qu’au-delà
-  du réseau local.
+- `iceServers` de `browserVoice` ou `nodeVoice` (URL STUN ou TURN) : seulement au-delà du réseau
+  local.
 
 ## Options d’appairage
 
@@ -131,46 +125,37 @@ lève une `ProtocolError`.
 | `accepts: ["enrollment.input"]`                                              | `enrollment.input`                                       |
 | `scanner: cameraQrScanner({ wasmUrl })` (navigateurs)                        | `enrollment.qr`                                          |
 
-- `enrollment` prend une URI d’appairage ou un code d’enrôlement.
-- `await satellite.enroll(input.value)` envoie un code tapé sur l’appareil. Un code refusé n’est
-  plus jamais envoyé.
-- `locale` règle la langue dans laquelle il parle.
+- `enrollment` : une URI d’appairage ou un code d’enrôlement.
+- `await satellite.enroll(input.value)` envoie un code tapé. Un code refusé n’est plus jamais envoyé.
+- `locale` : la langue dans laquelle il parle.
 
 ## Voix et caméra
 
-`voice: browserVoice()` fait parler un onglet à voix haute ([Voix](/fr/docs/voice/)). Le micro
-s’ouvre seulement quand Nestor autorise l’audio, et les navigateurs ne jouent du son qu’après un
-geste : appelez `run()` depuis un clic. `browserVoice({ microphone: false })` n’a pas de micro,
-`browserVoice({ element: null })` pas de haut-parleur.
+`voice: browserVoice()` fait parler un onglet ([Voix](/fr/docs/voice/)). Les navigateurs ne jouent
+du son qu’après un geste : appelez `run()` depuis un clic. `browserVoice({ microphone: false })` n’a
+pas de micro, `browserVoice({ element: null })` pas de haut-parleur.
 
-`camera: browserCamera()` permet aux personnes autorisées de regarder par l’onglet, et avec une
-voix d’appeler par lui, seulement dans les sessions qu’elles ouvrent dans Nestor
-([Caméras et appels](/fr/docs/satellites/cameras/)). `patternCamera()` dessine une mire à la place.
-Les navigateurs n’ouvrent une caméra qu’en `https:` ou sur `localhost`, et Nestor ne laisse filmer
-un appareil qu’en TLS, ou sur la machine du cœur. Le SDK applique lui-même les règles des sessions
-et n’écoute jamais sur un port.
+`camera: browserCamera()` filme ([Caméras et appels](/fr/docs/satellites/cameras/)) ;
+`patternCamera()` dessine une mire. Un appareil ne filme qu’en TLS ou sur la machine du cœur. Le SDK
+applique les règles des sessions et n’écoute jamais sur un port.
 
 ## Mises à jour
 
-Le manifeste nomme le logiciel que fait tourner l’appareil : `@nestor-home/satellite` et sa
-version, sauf si `new Manifest(device, capabilities, { software })` nomme le paquet sous lequel un
-pilote est publié.
+Le manifeste nomme le logiciel : `@nestor-home/satellite`, ou le paquet du pilote avec
+`new Manifest(device, capabilities, { software })`.
 
-Un onglet de navigateur reçoit son nouveau code en se rechargeant : il ne déclare aucune mise à
-jour. Ailleurs, un `updater` trouve une version plus récente à sa source (`newer`), l’installe
-(`install`) et redémarre dessus (`restart`) ; revenir à la précédente si la nouvelle n’est pas
-accueillie dans les 60 s lui revient aussi. Le SDK n’en fournit aucun. Les règles :
-[Mises à jour](/fr/docs/satellites/protocol/#10-mises-à-jour) dans le protocole.
+Un onglet se met à jour en se rechargeant. Ailleurs, un `updater` trouve (`newer`), installe
+(`install`) et redémarre (`restart`), et revient en arrière s’il n’est pas accueilli dans les 60 s.
+Le SDK n’en fournit aucun. Règles : [Mises à jour](/fr/docs/satellites/protocol/#10-mises-à-jour).
 
 ## Conformité
 
-Lancez la suite du serveur contre la commande, sans carte son :
+Sans carte son :
 
 ```bash
 uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
   npx nestor-satellite run --core {url} --room salon --input none --output none --token-file {state}/token.json
 ```
 
-[Conformité](/fr/docs/satellites/conformance/) explique les marqueurs et le rapport. Le code, un
-exemple pour navigateur et la licence des enregistrements de voix sont dans
-[nestor-satellite-typescript](https://github.com/nestor-home/nestor-satellite-typescript).
+Voir [Conformité](/fr/docs/satellites/conformance/). Code, exemple pour navigateur et licence des
+voix : [nestor-satellite-typescript](https://github.com/nestor-home/nestor-satellite-typescript).

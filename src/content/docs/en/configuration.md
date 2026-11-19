@@ -4,8 +4,7 @@ title: Configuration
 description: The map of nestor.yaml, the files beside it, and how a change takes effect.
 ---
 
-Nestor is set in one file, `nestor.yaml`, which `nestor init` writes ([Quickstart](/docs/quickstart/)).
-This page lists what each section sets and which page explains it.
+Nestor is set in one file, `nestor.yaml`, written by `nestor init`.
 
 ## The files
 
@@ -15,9 +14,8 @@ This page lists what each section sets and which page explains it.
 | `.env`        | the keys the configuration calls with `${NAME}`, readable by you only        | `nestor init`, then you          |
 | `state/`      | the database: journal, memories, accounts, paired devices, the secrets vault | Nestor (its `data_dir`)          |
 
-Nestor reads the configuration from the current folder, or from `nestor -c <file>`. A variable set
-in the environment wins over `.env`. Back up `state/` and `.env` together: one holds the secrets,
-the other their key.
+Nestor reads the current folder, or `nestor -c <file>`. The environment wins over `.env`. Back up
+`state/` and `.env` together: one holds the secrets, the other their key.
 
 ## The sections
 
@@ -61,11 +59,11 @@ household:
 | `reach`       | where Nestor writes to them when it does not say it aloud, such as `telegram:123456789`                                       |
 | `may_message` | the people they may have Nestor write to; `"*"`, everyone, by default. They can always write to themselves                    |
 
-Satellites have no account: anyone in the room can talk to them ([Speakers](/docs/agent/speakers/)).
+Satellites have no account ([Speakers](/docs/agent/speakers/)).
 
 ## Language and time
 
-Nestor speaks English and keeps UTC by default. In French:
+English and UTC by default. In French:
 
 ```yaml
 persona:
@@ -74,7 +72,7 @@ persona:
   timezone: Europe/Paris # quiet hours, reminders, dates in memories
 ```
 
-The voice hears the language its transcription model sets ([Voice](/docs/voice/)).
+The voice hears the language of its [transcription model](/docs/voice/).
 
 ## Keys and secrets
 
@@ -83,14 +81,13 @@ The voice hears the language its transcription model sets ([Voice](/docs/voice/)
 | `${NAME}`        | `.env`, or the environment       |
 | `${secret:name}` | the vault, encrypted in `state/` |
 
-Store a secret from the admin, or with `nestor secrets set` (typed without echo):
+Store a secret from the admin, or:
 
 ```bash
 nestor secrets set openrouter   # then, in nestor.yaml: api_key: ${secret:openrouter}
 ```
 
-`NESTOR_SECRET_KEY`, in `.env`, opens the vault. Never change it: the stored secrets would become
-unreadable.
+`NESTOR_SECRET_KEY`, in `.env`, opens the vault. Never change it, or the secrets become unreadable.
 
 ## The admin
 
@@ -100,8 +97,7 @@ unreadable.
 | `port`       | `8470`      | its port                                                                 |
 | `public_url` |             | its address behind a reverse proxy, such as `https://nestor.example.org` |
 
-Admin accounts live in `state/`. Invite someone from the **Accounts** page: you get a link to send
-them. Each account has a role:
+Invite someone from **Accounts**: you get a link to send. Each account has a role:
 
 | Role   | May                                                                     |
 | ------ | ----------------------------------------------------------------------- |
@@ -112,13 +108,12 @@ them. Each account has a role:
 
 ## Applying a change
 
-Nestor reads its configuration at start. Check it, then restart:
+Nestor reads its configuration at start:
 
 ```bash
 nestor check     # validates the file and builds every part, without starting them
 nestor restart   # restarts the running instance
 ```
 
-The admin’s **Configuration** page edits the same file. It validates each change, keeps the
-previous version in `state/config-history/`, stores typed keys in the vault, and says when to
-restart.
+The admin's **Configuration** page edits the same file, keeps the previous version in
+`state/config-history/`, stores typed keys in the vault, and says when to restart.

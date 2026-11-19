@@ -4,13 +4,12 @@ title: Conformité
 description: Vérifier en ligne de commande qu’un satellite, quel que soit son langage, respecte le protocole.
 ---
 
-La suite boîte noire du serveur lance votre satellite une fois par scénario, face à un faux cœur
-fait du vrai service d’appairage et de la vraie passerelle. Chaque vérification nomme la
-[règle du protocole](/fr/docs/satellites/protocol/#12-conformité) qu’elle prouve.
+Une suite boîte noire lance votre satellite une fois par scénario face à un faux cœur (vrais
+appairage et passerelle). Chaque vérification nomme sa [règle du protocole](/fr/docs/satellites/protocol/#12-conformité).
 
 ## La lancer
 
-uvx lance la suite avec l’extra `voice` du serveur, sans rien installer :
+Rien à installer ; sans l’extra `voice`, les vérifications audio échouent.
 
 ```bash
 uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance [--deadline SECONDES] -- <commande>
@@ -24,10 +23,8 @@ uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance [--dead
 | `{state}`    | dans la commande, remplacé par un dossier neuf pour le jeton et ce que garde le satellite |
 | `--deadline` | secondes laissées par étape, 15 par défaut                                                |
 
-Les scénarios avec un code d’enrôlement le donnent dans `NESTOR_PAIRING_URI` (règle P1) ; les
-autres retirent la variable. Sans l’extra `voice`, les vérifications audio échouent.
-
-Avec les commandes des SDK, sans carte son :
+Les scénarios d’enrôlement fixent `NESTOR_PAIRING_URI` (règle P1) ; les autres la retirent. Les SDK,
+sans carte son :
 
 ```bash
 # TypeScript, depuis un projet où @nestor-home/satellite et @roamhq/wrtc sont installés
@@ -41,8 +38,7 @@ uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
 
 ## Résultat
 
-Une ligne par vérification, puis un bilan, dans la langue de `LC_ALL`, `LC_MESSAGES` ou `LANG`
-(anglais ou français).
+Une ligne par vérification, puis un bilan, en anglais ou en français (`LC_ALL`, `LC_MESSAGES`, `LANG`).
 
 ```text
 OK     demande à être appairé
@@ -62,8 +58,7 @@ OK     ouvre son lien avec son jeton, un hello d'abord, comme l'appareil appair�
 
 ## En intégration continue
 
-Lancez la même commande dans un job, après avoir construit le satellite ; seul uv est nécessaire.
-Épinglez la version du serveur et montez-la avec celle du protocole.
+Lancez la même commande après le build ; seul uv est nécessaire. Épinglez la version du serveur.
 
-Dans des tests Python, `check_satellite(driver)` de `nestor.adapters.channels.satellites.conformance`
-renvoie les résultats. `driver` est une fonction coroutine qui prend un `Launch`, ou une commande.
+Dans des tests Python, `check_satellite(driver)` (`nestor.adapters.channels.satellites.conformance`)
+renvoie les résultats ; `driver` est une commande ou une fonction coroutine qui prend un `Launch`.

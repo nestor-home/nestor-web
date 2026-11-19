@@ -4,12 +4,9 @@ title: Démarrage rapide
 description: De rien à une première conversation avec Nestor sur votre ordinateur, par écrit, en une dizaine de minutes.
 ---
 
-Le plus court chemin vers une première réponse : uv, un modèle hébergé, l’écrit seul. Les autres
-voies sont dans [Installer](/fr/docs/install/).
-
-Il vous faut macOS ou Linux avec [uv](https://docs.astral.sh/uv/getting-started/installation/), et
-une clé de fournisseur de modèle : [OpenRouter](https://openrouter.ai/keys) par défaut, ou tout
-serveur compatible OpenAI, local compris ([Modèles](/fr/docs/models/)).
+Il vous faut macOS ou Linux avec [uv](https://docs.astral.sh/uv/getting-started/installation/) et
+une clé de modèle ([OpenRouter](https://openrouter.ai/keys) par défaut, ou [tout serveur compatible
+OpenAI](/fr/docs/models/)). Autres voies : [Installer](/fr/docs/install/).
 
 ## Lancer le serveur
 
@@ -33,10 +30,8 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-Il demande les noms, la langue, le fuseau horaire, le modèle et les canaux (Entrée garde chaque
-valeur proposée), puis crée votre identifiant d’administration, avec un mot de passe de 10
-caractères au moins. Il écrit `nestor.yaml` (la configuration), `.env` (les clés) et `state/` (la
-base de données), sans jamais écraser l’existant.
+Répondez aux questions (Entrée garde la valeur proposée) et choisissez un mot de passe d’administration
+de 10 caractères au moins. Il écrit `nestor.yaml`, `.env` (clés) et `state/` (base), sans rien écraser.
 
 </li>
 <li>
@@ -57,15 +52,14 @@ nestor check
 nestor run
 ```
 
-`nestor check` nomme ce qui manque, une clé vide par exemple. Laissez `nestor run` tourner.
+`nestor check` nomme ce qui manque. Laissez `nestor run` tourner.
 
 </li>
 <li>
 
 **Lui écrire** dans l’administration
 
-Ouvrez [http://localhost:8470](http://localhost:8470), connectez-vous avec l’identifiant de
-l’étape 2, ouvrez **Parler** et écrivez un message. Nestor répond dans la page.
+Ouvrez [http://localhost:8470](http://localhost:8470), connectez-vous, ouvrez **Parler** et écrivez.
 
 </li>
 </ol>
@@ -73,25 +67,22 @@ l’étape 2, ouvrez **Parler** et écrivez un message. Nestor répond dans la p
 
 ## Lui parler depuis un terminal
 
-Un terminal peut servir de satellite. Dans un second terminal, dans le même dossier, créez un code
-d’appairage :
+Dans un second terminal, même dossier, créez un code d’appairage :
 
 ```bash
 nestor satellites add --room bureau --name Terminal
 ```
 
-Passez l’URI affichée (`nestor+http://…:8471/?code=…`) au satellite :
+Passez l’URI affichée au satellite :
 
 ```bash
 uvx nestor-satellite run --room bureau --text --no-voice --pairing-uri 'nestor+http://…'
 ```
 
-Tapez un message, puis Entrée. La réponse s’affiche dans le terminal et le tour apparaît dans le
-journal de l’administration. Les lancements suivants se reconnectent sans code.
+Tapez un message, puis Entrée. Les lancements suivants se reconnectent sans code.
 
 ## Ensuite
 
-- Le joindre depuis une messagerie : [Canaux](/fr/docs/channels/). Lui parler à voix haute :
-  [Voix](/fr/docs/voice/).
-- Lui faire voir qui est là et piloter la maison : [Home Assistant](/fr/docs/home/).
-- Ce qui s’est passé pendant ce tour : [Comment fonctionne l’agent](/fr/docs/agent/).
+- [Canaux](/fr/docs/channels/) et [Voix](/fr/docs/voice/)
+- [Home Assistant](/fr/docs/home/)
+- [Comment fonctionne l’agent](/fr/docs/agent/)

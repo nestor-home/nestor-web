@@ -4,9 +4,7 @@ title: Configuration
 description: La carte de nestor.yaml, les fichiers posés à côté, et comment un changement prend effet.
 ---
 
-Nestor se règle dans un seul fichier, `nestor.yaml`, qu’écrit `nestor init`
-([Démarrage rapide](/fr/docs/quickstart/)). Cette page dit ce que règle chaque section et quelle
-page l’explique.
+Nestor se règle dans un seul fichier, `nestor.yaml`, écrit par `nestor init`.
 
 ## Les fichiers
 
@@ -16,9 +14,8 @@ page l’explique.
 | `.env`        | les clés que la configuration appelle par `${NOM}`, lisible par vous seul     | `nestor init`, puis vous                 |
 | `state/`      | la base : journal, souvenirs, comptes, appareils appairés, coffre des secrets | Nestor (son `data_dir`)                  |
 
-Nestor lit la configuration dans le dossier courant, ou celle que nomme `nestor -c <fichier>`. Une
-variable de l’environnement l’emporte sur `.env`. Sauvegardez `state/` et `.env` ensemble : l’un
-garde les secrets, l’autre leur clé.
+Nestor lit le dossier courant, ou `nestor -c <fichier>`. L’environnement l’emporte sur `.env`.
+Sauvegardez `state/` et `.env` ensemble : l’un garde les secrets, l’autre leur clé.
 
 ## Les sections
 
@@ -62,12 +59,11 @@ household:
 | `reach`       | où Nestor lui écrit quand il ne le dit pas à voix haute, par exemple `telegram:123456789`                                        |
 | `may_message` | les personnes à qui elle peut faire écrire Nestor ; `"*"`, tout le monde, par défaut. Elle peut toujours s’écrire à elle-même    |
 
-Les satellites n’ont pas de compte : tout le monde dans la pièce peut leur parler
-([Locuteurs](/fr/docs/agent/speakers/)).
+Les satellites n’ont pas de compte ([Locuteurs](/fr/docs/agent/speakers/)).
 
 ## Langue et heure
 
-Par défaut, Nestor parle anglais et vit en UTC. En français :
+Anglais et UTC par défaut. En français :
 
 ```yaml
 persona:
@@ -76,7 +72,7 @@ persona:
   timezone: Europe/Paris # heures calmes, rappels, dates des souvenirs
 ```
 
-La voix entend la langue que fixe son modèle de transcription ([Voix](/fr/docs/voice/)).
+La voix entend la langue de son [modèle de transcription](/fr/docs/voice/).
 
 ## Clés et secrets
 
@@ -85,14 +81,14 @@ La voix entend la langue que fixe son modèle de transcription ([Voix](/fr/docs/
 | `${NOM}`        | `.env`, ou l’environnement       |
 | `${secret:nom}` | le coffre, chiffré dans `state/` |
 
-Rangez un secret depuis l’administration, ou avec `nestor secrets set` (saisi sans écho) :
+Rangez un secret depuis l’administration, ou :
 
 ```bash
 nestor secrets set openrouter   # puis, dans nestor.yaml : api_key: ${secret:openrouter}
 ```
 
-`NESTOR_SECRET_KEY`, dans `.env`, ouvre le coffre. Ne le changez jamais : les secrets rangés
-deviendraient illisibles.
+`NESTOR_SECRET_KEY`, dans `.env`, ouvre le coffre. Ne le changez jamais, sinon les secrets
+deviennent illisibles.
 
 ## Administration
 
@@ -102,8 +98,7 @@ deviendraient illisibles.
 | `port`       | `8470`      | son port                                                                        |
 | `public_url` |             | son adresse derrière un proxy inverse, par exemple `https://nestor.example.org` |
 
-Les comptes de l’administration vivent dans `state/`. Invitez quelqu’un depuis la page **Comptes** :
-vous recevez un lien à lui envoyer. Chaque compte a un rôle :
+Invitez quelqu’un depuis **Comptes** : vous recevez un lien à lui envoyer. Chaque compte a un rôle :
 
 | Rôle           | Peut                                                                          |
 | -------------- | ----------------------------------------------------------------------------- |
@@ -114,13 +109,12 @@ vous recevez un lien à lui envoyer. Chaque compte a un rôle :
 
 ## Appliquer un changement
 
-Nestor lit sa configuration au démarrage. Vérifiez-la, puis redémarrez :
+Nestor lit sa configuration au démarrage :
 
 ```bash
 nestor check     # valide le fichier et construit chaque partie, sans la démarrer
 nestor restart   # redémarre l'instance en marche
 ```
 
-La page **Configuration** de l’administration modifie le même fichier. Elle valide chaque
-changement, garde la version précédente dans `state/config-history/`, range dans le coffre les
-clés tapées, et dit quand redémarrer.
+La page **Configuration** de l’administration modifie le même fichier, garde la version précédente
+dans `state/config-history/`, range les clés tapées dans le coffre et dit quand redémarrer.

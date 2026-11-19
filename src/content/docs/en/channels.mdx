@@ -6,32 +6,27 @@ description: How people reach Nestor, from the admin’s chat, a messaging app o
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-People reach Nestor through `channels`. All share one agent and one memory: a question asked in the
-kitchen can go on from the admin. To talk aloud, see [Voice](/docs/voice/).
+All `channels` share one agent and one memory. To talk aloud, see [Voice](/docs/voice/).
 
 ## Choose channels
 
 <Providers kind="channel" locale="en">
 <ProviderSetup kind="channel" brand="chat">
 
-The admin’s **Chat**. `nestor init` adds it:
+The admin's **Chat**, added by `nestor init`:
 
 ```yaml
 channels:
   - kind: web
 ```
 
-Each chat is a thread with its own [title](/docs/models/#roles); the memory is shared. Answers
-stream in with the tools Nestor uses, **Stop** ends one, and an answer goes on when you leave the
-page. A task’s result lands in the chat that asked for it.
-
-Open to admin accounts linked to a person of the household; the owner `nestor init` creates is
-linked to the first one.
+Each chat has its own [title](/docs/models/#roles). **Stop** ends an answer; leaving the page does
+not. A task's result lands in the chat that asked. Open to admin accounts linked to a person.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="telegram">
 
-Create a bot with [@BotFather](https://t.me/BotFather) and put its token in `.env`:
+Create a bot with [@BotFather](https://t.me/BotFather), token in `.env`:
 
 ```ini
 TELEGRAM_BOT_TOKEN=123456:ABC-...
@@ -43,13 +38,13 @@ channels:
     token: ${TELEGRAM_BOT_TOKEN}
 ```
 
-To find your user id, write to the bot: the server’s log prints the id of each stranger it ignores.
+Your user id: write to the bot, the log prints each ignored id.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="discord">
 
-In the [Developer Portal](https://discord.com/developers/applications), create an application, add a
-bot, turn on its **Message Content** intent and invite it to your server.
+In the [Developer Portal](https://discord.com/developers/applications): an application, a bot with
+the **Message Content** intent, invited to your server.
 
 ```yaml
 channels:
@@ -57,14 +52,14 @@ channels:
     token: ${DISCORD_BOT_TOKEN}
 ```
 
-It answers direct messages, and messages that mention it in a server.
+Answers direct messages and mentions.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="slack">
 
-Create a Slack app with Socket Mode, an app-level token (`connections:write`) and a bot token with
-`chat:write`, `files:read`, `files:write`, `im:history` and `app_mentions:read`, subscribed to
-`message.im` and `app_mention`. No public address is needed.
+A Slack app with Socket Mode (no public address), an app-level token (`connections:write`) and a
+bot token with `chat:write`, `files:read`, `files:write`, `im:history` and `app_mentions:read`,
+subscribed to `message.im` and `app_mention`.
 
 ```yaml
 channels:
@@ -73,12 +68,12 @@ channels:
     bot_token: ${SLACK_BOT_TOKEN}
 ```
 
-It answers direct messages and mentions.
+Answers direct messages and mentions.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="matrix">
 
-Create an account for the bot on a homeserver, take its access token, and invite it to a room.
+A bot account on a homeserver, its access token, invited to a room.
 
 ```yaml
 channels:
@@ -87,13 +82,13 @@ channels:
     token: ${MATRIX_TOKEN}
 ```
 
-Encrypted rooms are not read: create the room without encryption.
+Encrypted rooms are not read.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="signal">
 
-Register a number with [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api), in
-its `normal` or `native` mode.
+A number registered with [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api)
+(`normal` or `native` mode).
 
 ```yaml
 channels:
@@ -102,14 +97,14 @@ channels:
     number: "+33612345678"
 ```
 
-It answers direct messages and groups. A voice message is answered in writing.
+Answers direct messages and groups; voice messages in writing.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="whatsapp">
 
-A WhatsApp Business number through Meta’s Cloud API. In Meta’s app dashboard, add WhatsApp, take the
-number’s id, a system user’s permanent token and the app’s secret. Point the webhook at
-`https://<your host>/whatsapp` (proxied to port 8473) with a verify token you choose.
+A WhatsApp Business number on Meta's Cloud API: the number's id, a system user's permanent token,
+the app's secret. Webhook: `https://<your host>/whatsapp` (proxied to port 8473), with a verify
+token you choose.
 
 ```yaml
 channels:
@@ -120,13 +115,13 @@ channels:
     app_secret: ${WHATSAPP_APP_SECRET}
 ```
 
-Every message is checked against Meta’s signature. A business may write freely only within 24 hours
-of the person’s last message: a later reminder may be refused.
+Meta's signature is checked. Outside 24 hours after the person's last message, Meta may refuse a
+reminder.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="email">
 
-A mailbox of Nestor’s own: members write to it, the answer comes back in the thread.
+Nestor's own mailbox; answers come back in the thread.
 
 ```yaml
 channels:
@@ -138,13 +133,11 @@ channels:
     smtp_host: smtp.example.org
 ```
 
-Only mail your server authenticated (DMARC, or DKIM and SPF) is answered, since anyone can write a
-`From` header. Turn `require_authenticated` off only for a local bridge that adds no such header.
+Only authenticated mail (DMARC, or DKIM and SPF) is answered. Turn `require_authenticated` off only
+for a local bridge.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="satellites">
-
-Devices people type on, talk to, or both.
 
 ```yaml
 channels:
@@ -152,16 +145,14 @@ channels:
     host: 0.0.0.0
 ```
 
-`host: 0.0.0.0` opens port 8471 to your network. To talk aloud, add a [voice](/docs/voice/). Then
-[pair them](/docs/satellites/). Anyone in the room can talk to a satellite
-([Speakers](/docs/agent/speakers/)).
+`host: 0.0.0.0` opens port 8471 to your network. Add a [voice](/docs/voice/), then
+[pair devices](/docs/satellites/).
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="api">
 
-Nestor answers `POST /v1/chat/completions` like a model: Open WebUI, LibreChat, a script, or Home
-Assistant through a conversation integration that takes a base URL (Extended OpenAI Conversation).
-Each key belongs to an account:
+Nestor answers `POST /v1/chat/completions` like a model, for Open WebUI, LibreChat, a script or
+Home Assistant (Extended OpenAI Conversation). Each key belongs to an account:
 
 ```yaml
 channels:
@@ -170,29 +161,26 @@ channels:
       mathis: ${NESTOR_API_KEY}
 ```
 
-Point the client at `http://<nestor>:8472/v1`, model `nestor`, with that key. `host: 0.0.0.0` opens
-it to other machines. Nestor keeps its own conversation: only your last message counts, pictures
-included.
+Client: `http://<nestor>:8472/v1`, model `nestor`. `host: 0.0.0.0` opens it to other machines. Only
+your last message counts: Nestor keeps its own conversation.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="ntfy">
 
-Notifications on your phone through [ntfy](https://ntfy.sh). Subscribe to a topic in the ntfy app:
+Phone notifications through [ntfy](https://ntfy.sh), one way:
 
 ```yaml
 channels:
   - kind: ntfy
 ```
 
-On the public server, anyone who knows a topic can read it: pick one nobody would guess, or use your
-own server with `url` and `token`. Nobody answers through it. Each file goes as its own notification; ntfy.sh keeps attachments
-3 hours, 15 MB at most.
+On the public server, anyone who knows the topic reads it: pick one nobody would guess, or set your
+own `url` and `token`. ntfy.sh keeps attachments 3 hours, 15 MB at most.
 
 </ProviderSetup>
 <ProviderSetup kind="channel" brand="webhook">
 
-Each message Nestor sends by itself is posted as JSON: to a Home Assistant automation, n8n, a
-script.
+Posts each message Nestor sends by itself as JSON (Home Assistant, n8n, a script).
 
 ```yaml
 channels:
@@ -201,17 +189,15 @@ channels:
     secret: ${WEBHOOK_SECRET}
 ```
 
-The body is `{"to", "text", "attachments"}`; each attachment carries its `kind` (`image`, `voice`,
-`audio`, `file`), `name` and content. With `secret`, `X-Nestor-Signature: sha256=…` signs it, as
-GitHub signs its webhooks.
+Body: `{"to", "text", "attachments"}`, each attachment with `kind` (`image`, `voice`, `audio`,
+`file`), `name` and content. With `secret`, signed in `X-Nestor-Signature: sha256=…`, like GitHub.
 
 </ProviderSetup>
 </Providers>
 
 ## Who is who
 
-Each person lists, in `household`, the account Nestor knows them by on each channel
-([Configuration](/docs/configuration/#the-household)). Channels that only send take a `reach`.
+Each person's [`accounts`](/docs/configuration/#the-household); send-only channels take a `reach`.
 
 | Channel    | In `accounts` or `reach`                        |
 | ---------- | ----------------------------------------------- |
@@ -229,9 +215,8 @@ Each person lists, in `household`, the account Nestor knows them by on each chan
 
 ## Photos and voice messages
 
-Messaging channels, the admin’s chat included, pass on files with their caption. Nestor keeps them
-with its journal, where the admin shows them. The chat takes up to 10 files of 20 MB each per
-message.
+Messaging channels and the admin's chat pass files on; the admin shows them in the journal. The
+chat takes 10 files of 20 MB per message.
 
 | Received        | What Nestor does                                                                                       |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
@@ -240,13 +225,10 @@ message.
 | PDF, text file  | the model reads its text in parts; a scan has no text, and the model says so. `anthropic` and `gemini` read the last two PDFs whole, scans included |
 | any other file  | names it to the model, which says it cannot open it                                                     |
 
-What Nestor sends goes with its answer, under its name: the [pictures](/docs/models/#pictures) it
-draws, the documents and audio files a task makes. Every messaging channel and the admin’s chat send
-them.
+Every messaging channel sends files with the answer: [pictures](/docs/models/#pictures), a task's
+documents and audio.
 
 ## Mentions
-
-On every channel, a message can name with `@` what it is about:
 
 | Written    | Names                                     | Nestor                                  |
 | ---------- | ----------------------------------------- | --------------------------------------- |
@@ -255,26 +237,20 @@ On every channel, a message can name with `@` what it is about:
 | `@hermes`  | an [executor](/docs/executors/), by name  | hands it that part of the work          |
 | `@gmail`   | a service of a [connected account](/docs/accounts/) | uses that account’s tools for it |
 
-A Google account answers to `@gmail` or `@calendar`, an IMAP mailbox to `@mail`, Linear’s MCP server
-to `@linear`. When two accounts share a name, the least of the address that tells them apart follows
-it: `@calendar-alex`, or `@calendar-alex-gmail`.
+Services: `@gmail` or `@calendar` (Google), `@mail` (IMAP), `@linear` (its MCP server). Two accounts
+with one name are told apart by their address: `@calendar-alex`, `@calendar-alex-gmail`.
 
-- Case and accents do not count. Names answer to aliases: a person’s or a room’s name (`@Léa`,
-  `@living-room`), an account’s address or its start.
+- Case and accents do not count; names, addresses and their start work as aliases.
 - A name that matches nothing, or an e-mail address, stays a word.
-- Each person names only what they may use: their own accounts and the household’s.
-
-The admin’s chat suggests names as you type `@`. Each name is logged with the turn and told to the
-model.
+- Each person names only what they may use.
 
 ## When a conversation ends
 
-After a silence, the next message starts a new conversation and the last one goes to
-[memory](/docs/agent/memory/).
+After a silence, the next message starts a new conversation.
 
 | Channel | Silence   |
 | ------- | --------- |
 | aloud   | 5 minutes |
 | written | 4 hours   |
 
-Set `conversation_ends_after_s` on a channel to change it.
+Change it with `conversation_ends_after_s` on the channel.

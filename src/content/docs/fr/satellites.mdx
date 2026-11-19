@@ -7,23 +7,19 @@ import Card from "@/components/docs/Card.astro";
 import Cards from "@/components/docs/Cards.astro";
 import Steps from "@/components/docs/Steps.astro";
 
-Un satellite est un appareil appairé au serveur Nestor : une enceinte, une tablette murale, un
-robot comme Reachy Mini, un onglet de navigateur, un terminal, une caméra. On tape dessus, on lui
-parle, ou les deux. Il se connecte au canal `satellites` sur le port 8471, auquel il faut une
-[voix](/fr/docs/voice/) pour parler.
+Un satellite est un appareil appairé à Nestor (enceinte, tablette, robot, onglet de navigateur,
+terminal, caméra), à qui l’on écrit ou parle. Il se connecte au canal `satellites` sur le port 8471,
+auquel il faut une [voix](/fr/docs/voice/) pour parler.
 
 ## Fonctionnement
 
-Un satellite s’appaire une fois, déclare ses capacités, puis tient un WebSocket avec le serveur.
-L’audio passe en WebRTC.
-
-Le serveur envoie des intentions, pas des mouvements. Avec `intent.expression` et `joy`, un robot
-bouge ses antennes ; une simple enceinte ne le reçoit pas, car elle n’a pas déclaré
-`expression.emotion`.
+Un satellite s’appaire une fois, déclare ses capacités, puis tient un WebSocket avec le serveur ;
+l’audio passe en WebRTC. Le serveur envoie des intentions, pas des mouvements, et seulement celles que
+l’appareil a déclarées.
 
 ## Capacités
 
-L’appareil déclare ce qu’il sait faire, une personne l’autorise. Toutes sont facultatives.
+L’appareil les déclare, une personne les autorise. Toutes sont facultatives.
 
 | Capacité                  | L’appareil…                                                   |
 | ------------------------- | ------------------------------------------------------------- |
@@ -40,15 +36,15 @@ L’appareil déclare ce qu’il sait faire, une personne l’autorise. Toutes s
 | `video.capture`           | filme, pendant les sessions qu’une personne ouvre             |
 | `media.indicator`         | montre qu’il filme ou qu’il est en appel                      |
 
-Filmer et appeler ont leur page : [Caméras et appels](/fr/docs/satellites/cameras/).
+Voir aussi [Caméras et appels](/fr/docs/satellites/cameras/).
 
 ## Appairage
 
-Une personne prouve qu’elle veut appairer l’appareil, avec l’un de deux codes :
+Une personne prouve son intention avec l’un de deux codes :
 
-- un **code d’appareil** : six chiffres que présente l’appareil, tapés dans l’administration ;
-- un **code d’enrôlement** créé dans l’administration (`K7QF-2M9X`), donné à l’appareil, le plus
-  souvent en URI d’appairage : `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
+- un **code d’appareil** : six chiffres affichés par l’appareil, tapés dans l’admin ;
+- un **code d’enrôlement** créé dans l’admin (`K7QF-2M9X`), donné à l’appareil, le plus souvent en URI
+  d’appairage : `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
 
 | Méthode                   | La personne…                                                                               |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
@@ -58,7 +54,7 @@ Une personne prouve qu’elle veut appairer l’appareil, avec l’un de deux co
 | `enrollment.provisioning` | met l’URI d’appairage dans la configuration de l’appareil (option, environnement, fichier) |
 | `enrollment.qr`           | montre le QR code de l’URI d’appairage à la caméra de l’appareil                           |
 
-Tout appareil accepte `enrollment.provisioning`. Les SDK déclarent les autres selon le matériel.
+Tout appareil accepte `enrollment.provisioning` ; les SDK déclarent les autres selon le matériel.
 
 ## Ajouter un satellite
 
@@ -66,8 +62,7 @@ Tout appareil accepte `enrollment.provisioning`. Les SDK déclarent les autres s
 
 1. **Commencer un ajout**
 
-   Dans l’administration, ouvrez **La maison**, puis **Ajouter un satellite**, et choisissez une
-   méthode. Ou, en ligne de commande pendant que Nestor tourne :
+   Admin › **La maison** › **Ajouter un satellite**, ou pendant que Nestor tourne :
 
    ```bash
    nestor satellites add --room salon --name "Enceinte du salon"   # affiche le code et l’URI d’appairage
@@ -75,14 +70,13 @@ Tout appareil accepte `enrollment.provisioning`. Les SDK déclarent les autres s
 
 2. **Donner sa preuve à l’appareil**
 
-   Avec un code d’enrôlement, donnez son URI à l’appareil :
+   Code d’enrôlement : donnez son URI à l’appareil.
 
    ```bash
    NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
    ```
 
-   Avec un code d’appareil, tapez le code que présente l’appareil. **Identifier** fait clignoter ou
-   sonner un appareil en attente, pour distinguer les appareils.
+   Code d’appareil : approuvez-le. **Identifier** fait clignoter ou sonner un appareil en attente.
 
    ```bash
    nestor satellites approve 042917                                       # le code présenté par l’appareil
@@ -95,16 +89,16 @@ Pour désappairer un appareil : `nestor satellites revoke enceinte-salon`.
 
 ## Mises à jour
 
-Un satellite autorisé à `device.update` se met à jour depuis sa page dans l’administration. Voir
+Avec `device.update`, depuis sa page dans l’admin : voir
 [Mises à jour](/fr/docs/updates/#mettre-à-jour-un-satellite).
 
 ## Prêts à l’emploi
 
 <Cards cols={2}>
-  <Card title="SDK Python" href="/fr/docs/sdks/python/" brand="python">`nestor-satellite run` : le micro et le haut-parleur de cette machine.</Card>
-  <Card title="SDK TypeScript" href="/fr/docs/sdks/typescript/" brand="typescript">La même commande, ou un satellite dans un onglet de navigateur.</Card>
+  <Card title="SDK Python" href="/fr/docs/sdks/python/" brand="python">`nestor-satellite run` avec le micro et le haut-parleur de cette machine.</Card>
+  <Card title="SDK TypeScript" href="/fr/docs/sdks/typescript/" brand="typescript">La même commande, ou un onglet de navigateur.</Card>
   <Card title="SDK Rust" href="/fr/docs/sdks/rust/" brand="rust">La même commande, en un seul binaire.</Card>
-  <Card title="nestor-reachy" href="https://github.com/nestor-home/nestor-reachy" icon="bot">Reachy Mini en simulation, tant que sa politique de sécurité n’est pas validée sur le matériel.</Card>
+  <Card title="nestor-reachy" href="https://github.com/nestor-home/nestor-reachy" icon="bot">Reachy Mini, en simulation pour l’instant.</Card>
 </Cards>
 
 ## Écrire le vôtre

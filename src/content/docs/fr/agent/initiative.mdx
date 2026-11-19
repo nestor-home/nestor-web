@@ -5,9 +5,6 @@ description: Quand Nestor parle sans qu’on le lui demande. Rappels, veilles, t
 
 import Initiative from "@/components/docs/diagrams/Initiative.astro";
 
-Rappels, veilles, tâches terminées et messages de quelqu’un d’autre arrivent tous à une personne
-par le même chemin.
-
 <Initiative locale="fr" n={1} />
 
 ## Ce qui l’appelle
@@ -19,24 +16,20 @@ par le même chemin.
 | **Tâche**   | « lis ce PDF et résume le contrat »                     | `delegate_task`, vers un [exécutant](/fr/docs/executors/) |
 | **Message** | « demande à Léa si elle a besoin de la voiture »        | `message_person`                               |
 
-Chacun a un titre court, affiché dans l’administration, et arrive à qui l’a demandé.
+Chacun a un titre, affiché dans l’administration, et arrive à qui l’a demandé.
 
-- **Rappel** : une consigne exécutée à une heure, une fois ou certains jours, avec les outils de
-  l’agent. Un rappel récurrent garde un fil et ne dit que ce qui a changé. Un rappel manqué pendant
-  un arrêt s’exécute une fois au démarrage suivant.
-- **Veille** : un petit modèle lit chaque chose qui arrive une fois, face à toutes les veilles : un
-  mail d’un [compte connecté](/fr/docs/accounts/), une entrée de flux, le changement d’une page, un
-  webhook ([Outils](/fr/docs/tools/)).
-- **Tâche** : son résultat est annoncé une fois, même après un redémarrage, avec les fichiers
-  produits.
-- **Message** : s’il attend une réponse, il ouvre une question que les deux personnes voient
-  jusqu’à la réponse. `may_message` dit à qui une personne peut écrire par l’agent : tout le monde
-  par défaut (`"*"`), et toujours elle-même.
+- **Rappel** : une fois ou certains jours. Récurrent, il ne dit que ce qui a changé ; manqué
+  pendant un arrêt, il s’exécute au démarrage suivant.
+- **Veille** : un petit modèle lit chaque élément une fois : mail d’un
+  [compte connecté](/fr/docs/accounts/), flux, page, webhook ([Outils](/fr/docs/tools/)).
+- **Tâche** : son résultat et ses fichiers sont annoncés une fois, même après un redémarrage.
+- **Message** : s’il attend une réponse, il reste une question ouverte pour les deux personnes.
+  `may_message` limite à qui une personne peut écrire (`"*"` par défaut, toujours elle-même).
 
 ## Où il arrive
 
-Le **coursier** décide et journalise sa raison. La présence vient de
-[Home Assistant](/fr/docs/home/).
+Le **coursier** décide, d’après la présence de [Home Assistant](/fr/docs/home/), et journalise
+pourquoi.
 
 | La personne                          | Nestor                                                      |
 | ------------------------------------ | ----------------------------------------------------------- |
@@ -57,8 +50,7 @@ Un message dit à voix haute est entendu par toute la pièce ([Locuteurs](/fr/do
 
 ## Comment il se termine
 
-Seule la réponse finale de l’agent part, jamais « je regarde ». Le journal note l’une de trois
-issues :
+Seule la réponse finale de l’agent part, jamais « je regarde ».
 
 | Issue         | Quand                                                      | Ensuite                                     |
 | ------------- | ---------------------------------------------------------- | ------------------------------------------- |
@@ -66,5 +58,5 @@ issues :
 | rien à dire   | une vérification n’a rien trouvé de nouveau                | rien n’est envoyé, la raison est journalisée, jamais retentée |
 | non transmise | aucun canal ne l’a prise, ou le modèle n’a pas pu l’écrire | retentée au démarrage suivant               |
 
-Seul ce que Nestor lance de lui-même (un rappel, une veille) peut finir en « rien à dire ». Une
-demande, un message à transmettre, une confirmation et un échec sont toujours dits.
+Seuls un rappel ou une veille peuvent finir en « rien à dire ». Une demande, un message, une
+confirmation et un échec sont toujours dits.

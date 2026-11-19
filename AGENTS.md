@@ -29,15 +29,16 @@ src/
 │                     favicon*, robots.txt
 ├── content/docs/     the documentation: one Markdown file per page and locale
 ├── components/
-│   ├── Home.astro        the home page: the hero (title, quick install), the story of one request
-│   │                     in five chapters, what it works with, how to start and three links to build
-│   ├── sections/         one file per section: Hero, Story, Works, Cta
-│   ├── objects/          what each chapter of the story shows, drawn in HTML: Spoken (the request
-│   │                     said in the kitchen), Watch (a watch reading the mail), Phone (Léa's lock
-│   │                     screen), Room (a satellite speaking in Grandma's room), Trace (the journal)
+│   ├── Home.astro        the home page: hero, what Nestor does (bento), Reachy in 3D, integrations,
+│   │                     how to start
+│   ├── sections/         one file per section: Hero, Story, Reachy, Works, Cta
+│   ├── objects/          what each tile of the story shows, drawn in HTML: Spoken, Watch, Phone,
+│   │                     Satellites, Room, Trace, Models, Local
+│   ├── Tile.astro, Bento.astro  the one frame of every bento, and its grid
 │   ├── Nestor.astro      the character (one drawing, its states, a gaze)
-│   ├── docs/             the documentation's pieces: tabs, provider mosaics, diagrams
-│   └── *.astro           shared pieces: Header, Footer, Brand, Integrations, CopyCommand, Dither, Tie…
+│   ├── docs/             the documentation's pieces: steps, cards, callouts, tabs, provider mosaics,
+│   │                     diagrams
+│   └── *.astro           shared pieces: Header, Footer, Brand, CopyCommand, Dither, Tie…
 ├── layouts/          Base (head, header, footer) and Docs (sidebar, text, sections, prev/next)
 ├── scripts/site.ts   the one global script: theme, the menu sheet, dither canvases, the header's
 │                     hairline, the section being read in a table of contents, reveals (which also
@@ -53,16 +54,19 @@ public/redirect/      the OAuth relay page, copied from the server package at bu
 
 ## Two places, one job each
 
-The home page is about **use**: the promise and the final experience of Nestor, including what is
-planned, told through moments almost every household lives (no niche scenarios, no invented brands,
-shops, prices or dates). It goes in this order: the title with the quick install; the story of one
-request in five chapters (you say it once, it keeps an eye on it, it finds Léa wherever she is, at
-home it speaks in the right room, you always know why), each a title, a paragraph and one object
-drawn in HTML (`components/objects/`); what it works with (logos, almost no words); how to start,
-then three links to build on it (a satellite, the SDKs, the protocol). There are no pictures of the
-admin and no film: an object shows what the household sees, in the page's own words and theme.
-No contract names, no benchmarks, no internal status, no vendor comparisons; honesty
-lives in one place (the "early project" line near the install).
+The home page is about **use**: the promise and the final experience of Nestor, told through moments
+almost every household lives (no niche scenarios, no invented brands, shops, prices or dates), and
+people named by their role (Mom, Grandma, "you"), never by a first name the reader does not know. It
+goes in this order: the hero (title, lede, buttons; Nestor in the middle with a few of its bodies and
+messages around it); what Nestor does in a home, as one bento (`components/sections/Story.astro`:
+each tile an object drawn in HTML from `components/objects/`, then one sentence in ink and one in
+grey); a satellite's use case (Reachy Mini in 3D, `sections/Reachy.astro`, `scripts/reachy.ts`, the
+model in `public/models/` built by `scripts/reachy-model/`, credited CC BY-SA-NC to Pollen Robotics);
+what it works with (a bento of logo groups); how to start (a bento: install, what it takes, three ways
+to build on it). Every bento uses `Tile.astro` in `Bento.astro`, the same frame everywhere. The header
+lists the home page's sections, then the docs. No pictures of the admin, no film. No contract names,
+no benchmarks, no internal status, no vendor comparisons; nothing presented as working that is not.
+The 3D library (three.js) is the page's only library, loaded only when its section comes near.
 
 Everything else belongs to the **documentation** (`/docs/`, `/fr/docs/`): how it works (the agent,
 its memory, the journal and its events), how to do things (install, configure, pair, write a
@@ -73,19 +77,27 @@ Before adding a section to the home page, check the docs do not already say it; 
 
 ## The documentation
 
-- The structure follows the large AI open-source projects (Pydantic AI, the OpenAI Agents SDK,
-  Ollama), in `DOC_GROUPS` (`src/lib/docs.ts`), which is the reading order and the sidebar:
-  **Start** (Introduction: what Nestor does for you, then a "where to start" table; Quickstart: one
-  path, from nothing to a first conversation; Installation: every way, in tabs), **How it works**
-  (concepts, with diagrams), **Configure** (one task per page: the configuration file, models,
-  channels and voice, home and services), then **Satellites**, **SDKs** and **Project** (plugins,
-  contributing), for developers. Each fact has one page; others link to it rather than repeat it.
+- The structure, in `DOC_GROUPS` (`src/lib/docs.ts`, the reading order and the sidebar): **Start**
+  (Introduction with cards, Quickstart, Installation), **How it works** (concepts, diagram first),
+  **Configure** (configuration, models, channels, voice, updates), **Connect** (Home Assistant,
+  accounts, tools, executors), **Satellites** (with cameras, the protocol, schemas, conformance),
+  **SDKs**, **Project**. One subject per page, short pages; each fact has one page, others link to it.
+- Short and visual, like Raycast's or Linear's docs: procedures are `<Steps>` (a Markdown ordered
+  list inside), "where next" and "the parts of X" are `<Cards>`/`<Card>`, options, defaults, events,
+  capabilities and commands are tables, a rare aside is a `<Callout>` (all in
+  `src/components/docs/`). Prose only for what a structure cannot say.
+- The docs have their own mode (`area="docs"` on `Base`): mono headings with their Markdown marks,
+  code on ink with its language, the navigation as paths, a dot grid.
+- For language models (llmstxt.org): `/llms.txt` and `/fr/llms.txt` index the pages, each page is
+  also served as Markdown beside it (`/docs/<slug>.md`, `/docs/index.md` for the first), and
+  `/llms-full.txt` holds them all; `src/lib/markdown.ts` turns the components into Markdown, so a
+  new component needs its rule there (`tests/markdown.test.ts`).
 - A page opens with one or two sentences saying what it gives the reader, then goes in the order
   they will act. Every option shown exists in the server (read its code before writing), and every
   command is run before it is written.
 - One Markdown file per page and locale in `src/content/docs/<locale>/` (`index.md` for the first
   page; `.mdx` only where a page holds a component). Provider mosaics (`Providers.astro`, on
-  `models.mdx` and `channels.mdx`) take their tiles from `lib/providers.ts` (models, speech, and
+  `models.mdx`, `channels.mdx` and `voice.mdx`) take their tiles from `lib/providers.ts` (models, speech, and
   channels, whose messaging services are the home page's list in `lib/integrations.ts`); each
   available one's setup is a `<ProviderSetup>` in the page, and `tests/docs.test.ts` checks both
   languages give one to each. Choices shown one at a time (the ways to install) are `<Tabs set>` with

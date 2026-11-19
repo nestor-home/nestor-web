@@ -5,17 +5,13 @@ description: Le schéma JSON de chaque message du protocole, et comment un SDK t
 ---
 
 Chaque message de [`nestor.satellite/1`](/fr/docs/satellites/protocol/) a un schéma JSON (draft
-2020-12), servi à son `$id` :
+2020-12) à son `$id`, issu de la version du serveur que ce site épingle :
 
 ```text
 https://nestorhome.dev/schemas/satellite/1/<message>.json
 ```
 
-Les schémas viennent de la version du serveur que ce site épingle.
-
 ## Appairage
-
-En HTTP :
 
 | Schéma                                                               | Corps de                                                             |
 | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -52,9 +48,9 @@ Sur le WebSocket `/satellites/{device_id}/link` :
 
 ## Une copie dans un SDK
 
-Un SDK vérifie chaque message qu’il envoie avec sa propre copie : `src/nestor_satellite/schemas/` en
-Python, `schemas/` en TypeScript et en Rust. Rafraîchissez-la depuis la version du serveur que vise
-le SDK, puis corrigez le code jusqu’à ce que les tests passent :
+Chaque SDK vérifie ce qu’il envoie avec sa copie (`src/nestor_satellite/schemas/` en Python,
+`schemas/` en TypeScript et Rust). Rafraîchissez-la depuis la version du serveur visée, puis corrigez
+le code jusqu’à ce que les tests passent :
 
 ```bash
 uvx --from nestor-home==<version> nestor satellites schemas --out schemas/

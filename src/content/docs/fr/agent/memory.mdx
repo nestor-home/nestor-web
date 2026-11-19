@@ -8,17 +8,14 @@ import HybridSearch from "@/components/docs/diagrams/HybridSearch.astro";
 import MemoryTurn from "@/components/docs/diagrams/MemoryTurn.astro";
 
 Nestor garde des **souvenirs**, des faits durables (« Léa est végétarienne »), et des **épisodes**,
-le sujet de chaque conversation passée. Les deux se reconstruisent depuis le journal. La mémoire est
-généreuse : une ligne ignorée coûte peu, un souvenir qui manque coûte une mauvaise réponse.
+le sujet de chaque conversation passée, tous reconstruits depuis le journal.
 
 ## Ce que porte un tour
 
 <MemoryTurn locale="fr" n={1} />
 
-Les derniers souvenirs sont datés, pour que le modèle garde le plus récent de deux qui se
-contredisent, et mis en cache avec la couche du foyer. La couche du tour ajoute les plus anciens que
-trouvent les trois derniers messages de qui parle, et ses épisodes, que seuls leurs participants
-voient. Des outils atteignent le reste :
+Les souvenirs sont datés : de deux qui se contredisent, le modèle garde le plus récent. Seuls leurs
+participants voient les épisodes. Des outils atteignent le reste :
 
 | Outil               | Effet                                                                     |
 | ------------------- | ------------------------------------------------------------------------- |
@@ -32,11 +29,9 @@ voient. Des outils atteignent le reste :
 
 <HybridSearch locale="fr" n={2} />
 
-**Par les mots**, l’index plein texte de SQLite classe les résultats, sans tenir compte des accents.
-**Par le sens**, un modèle d’embedding transforme la question en vecteur et
-[sqlite-vec](https://github.com/asg017/sqlite-vec) renvoie les plus proches. La fusion par rang
-réciproque réunit les deux listes. La recherche par le sens est facultative : faites pointer
-`memory.embedder` vers un modèle d’embedding.
+Les mots passent par l’index plein texte de SQLite (accents ignorés), le sens par un modèle
+d’embedding et [sqlite-vec](https://github.com/asg017/sqlite-vec). La recherche par le sens est
+facultative : faites pointer `memory.embedder` vers un modèle d’embedding.
 
 ```yaml
 models:
@@ -50,17 +45,15 @@ memory:
   embedder: embed
 ```
 
-Tout serveur d’embeddings compatible OpenAI convient, local compris (`llama-server --embeddings` de
-llama.cpp). Les vecteurs se calculent en arrière-plan, et s’y recalculent après un changement de
-modèle.
+Tout serveur d’embeddings compatible OpenAI convient, `llama-server --embeddings` par exemple. Les
+vecteurs se recalculent en arrière-plan après un changement de modèle.
 
 ## Quand une conversation est finie
 
 <Consolidation locale="fr" n={3} />
 
-Quand le silence d’une conversation dépasse le délai de tous les médiums de son lieu, le modèle de
-consolidation écrit son épisode (quelques phrases et sujets) et garde les faits durables que l’agent
-a manqués. Après un arrêt, Nestor rattrape au démarrage suivant.
+Quand une conversation se termine, le modèle de consolidation écrit son épisode et garde les faits
+durables que l’agent a manqués. Après un arrêt, Nestor rattrape au démarrage suivant.
 
 ## Réglages
 

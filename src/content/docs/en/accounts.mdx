@@ -5,8 +5,8 @@ description: Connect mail, calendars, files, contacts and tasks from Google, Mic
 
 import Steps from "@/components/docs/Steps.astro";
 
-Connect accounts in the admin, under **Connections**: pick a service, then the person it belongs to,
-or the whole household. A person's account serves only them; a household account serves everyone.
+Connect accounts in the admin, under **Connections**, for one person (serves only them) or the
+whole household (serves everyone).
 
 ## Services
 
@@ -17,13 +17,11 @@ or the whole household. A person's account serves only them; a household account
 | CalDAV and CardDAV | the calendars and contacts of iCloud, Fastmail, Nextcloud…                 | `@calendar`, `@contacts`                               | a login and an app password |
 | IMAP               | any mailbox                                                                | `@mail`                                                | a login and an app password |
 
-None of them sends, deletes or changes a mail, a file or a contact. They read, and add events and
-tasks after asking (see [Writes](#writes)).
+None of them sends, deletes or changes a mail, a file or a contact; events and tasks are added after
+asking ([Writes](#writes)).
 
-Google and Microsoft 365 sign in with OAuth and PKCE. Tokens and passwords are kept encrypted in
-`state/` (AES-256-GCM, under `NESTOR_SECRET_KEY`), renewed when they expire, and revoked at the
-provider when you disconnect, where it offers that. The model never sees them and the journal holds
-none.
+Secrets are encrypted in `state/` (AES-256-GCM, `NESTOR_SECRET_KEY`), renewed, and revoked on
+disconnect where the provider allows. The model and the journal never see them.
 
 ## Google
 
@@ -35,30 +33,27 @@ none.
 | Contacts | find people by name, address, phone or company                                        |
 | Tasks    | list the open tasks of the default list, add one, tick one off                        |
 
-Google signs in with the household's own OAuth client, made once in about ten minutes. The admin
-shows each step with its links. In short, in the [Google Cloud console](https://console.cloud.google.com/):
+Google needs your own OAuth client, made once in the
+[Google Cloud console](https://console.cloud.google.com/); the admin links each step.
 
 <Steps>
 
-1. **Enable the APIs.** Create a project and enable the Gmail, Google Calendar, Google Drive, People
-   and Google Tasks APIs. An API left disabled only takes away its tools.
+1. **Enable the APIs.** In a new project: Gmail, Google Calendar, Google Drive, People and Google
+   Tasks. A disabled API only removes its tools.
 
-2. **Configure consent.** In **Google Auth Platform**, set an **External** audience and add the scopes
-   `openid`, `email`, and, under `https://www.googleapis.com/auth/`, `gmail.readonly`,
-   `calendar.events`, `drive.readonly`, `contacts.readonly` and `tasks`.
+2. **Configure consent.** **Google Auth Platform**: **External** audience, scopes `openid`, `email`,
+   and, under `https://www.googleapis.com/auth/`, `gmail.readonly`, `calendar.events`,
+   `drive.readonly`, `contacts.readonly`, `tasks`.
 
-3. **Publish the app** (**In production**), or Google ends the authorisation after 7 days. The app
-   serves only you, so it needs no verification.
+3. **Publish the app** (**In production**), or the authorisation ends after 7 days. No verification
+   needed.
 
-4. **Create the client.** A **Web application** client, with the redirect URI the admin shows. Paste
-   its ID and secret into the admin and click **Connect**. When Google says it has not verified the
-   app, choose **Advanced**, then **Go to Nestor**.
+4. **Create the client.** **Web application**, with the redirect URI the admin shows. Paste its ID and
+   secret into the admin, **Connect**. On the "not verified" screen: **Advanced** › **Go to Nestor**.
 
 </Steps>
 
 ## Microsoft 365
-
-Work, school and personal accounts, through Microsoft Graph.
 
 | Service     | What Nestor can do                                                                                     |
 | ----------- | ------------------------------------------------------------------------------------------------------ |
@@ -67,36 +62,33 @@ Work, school and personal accounts, through Microsoft Graph.
 | OneDrive    | search files, read a Word, Excel or PowerPoint document, an OpenDocument file, a PDF or a text file    |
 | To Do       | list the open tasks of the default list, add one, tick one off                                         |
 
-Microsoft signs in with the household's own app registration, made once in about ten minutes. The
-admin shows each step. In short, in the Azure portal's
-[App registrations](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade):
+Microsoft needs your own app registration, made once in
+[App registrations](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
+(Azure portal); work, school and personal accounts work.
 
 <Steps>
 
 1. **Register an app** for **Accounts in any organizational directory and personal Microsoft
    accounts**, with a **Web** redirect URI: the one the admin shows.
 
-2. **Add permissions.** In **API permissions**, add these delegated Microsoft Graph permissions:
-   `offline_access`, `openid`, `email`, `User.Read`, `Mail.Read`, `MailboxSettings.Read`,
-   `Calendars.ReadWrite`, `Files.Read` and `Tasks.ReadWrite`. A work account's administrator may have
-   to grant them.
+2. **Add permissions.** **API permissions**, delegated Microsoft Graph: `offline_access`, `openid`,
+   `email`, `User.Read`, `Mail.Read`, `MailboxSettings.Read`, `Calendars.ReadWrite`, `Files.Read`,
+   `Tasks.ReadWrite`. A work account's administrator may have to grant them.
 
-3. **Create a secret.** In **Certificates & secrets**, create a client secret and copy its **Value**.
-   It expires after 24 months at most: create the next one before then.
+3. **Create a secret.** **Certificates & secrets** › client secret, copy its **Value**. It expires
+   within 24 months: renew it before.
 
-4. **Connect.** Paste the **Application (client) ID** and the secret into the admin, then click
-   **Connect**.
+4. **Connect.** Paste the **Application (client) ID** and the secret into the admin.
 
 </Steps>
 
 ## CalDAV and CardDAV
 
-Nestor lists the events of every calendar and adds one, to the calendar named or the first that
-accepts it. It finds contacts by name, address, phone or company.
+Events of every calendar, added to the calendar named or the first that accepts it; contacts by
+name, address, phone or company.
 
-Fill in the CalDAV server, the CardDAV server when it is another one, the login and an app password.
-Nestor finds the calendars and address books from the server's address, or its well-known address.
-Addresses are `https://`; plain `http://` works only on the machine Nestor runs on.
+Give the CalDAV server, the CardDAV server if different, the login and an app password. Addresses are
+`https://`; `http://` works only on Nestor's own machine.
 
 | Provider  | CalDAV                                       | CardDAV                        | Login                  | App password                                                                                   |
 | --------- | -------------------------------------------- | ------------------------------ | ---------------------- | ---------------------------------------------------------------------------------------------- |
@@ -104,39 +96,36 @@ Addresses are `https://`; plain `http://` works only on the machine Nestor runs 
 | Fastmail  | `https://caldav.fastmail.com`                | `https://carddav.fastmail.com` | your Fastmail address  | **Settings**, **Privacy & Security**, **Manage app passwords**, with CalDAV and CardDAV access |
 | Nextcloud | `https://<your Nextcloud>/remote.php/dav`    | the same                       | your user name         | **Personal settings**, **Security**, **Create new app password**                               |
 
-For another server (Synology, Radicale, Baïkal), use the addresses its documentation gives.
+Other servers (Synology, Radicale, Baïkal): see their documentation.
 
 ## IMAP
 
-Any mailbox, read only: Nestor searches and reads mail, and new mail feeds the
-[watches](#mail-and-watches). Use an app password; the admin gives the servers of common providers.
-Personal Outlook accounts no longer accept passwords over IMAP: connect them with Microsoft 365.
+Any mailbox, read only, with an app password; the admin knows common providers' servers. Personal
+Outlook accounts refuse IMAP passwords: use Microsoft 365.
 
 ## Mentions
 
-In a message, a service's name points the agent to that account: "add the dentist to `@calendar`".
-When two accounts share a name, the least of the address that tells them apart follows it:
-`@calendar-alex`, or `@calendar-alex-gmail` when the names match too. See
-[Mentions](/docs/channels/#mentions).
+A service's name points the agent to that account: "add the dentist to `@calendar`". Two accounts
+with the same name get the least of their address that tells them apart: `@calendar-alex`,
+`@calendar-alex-gmail`. See [Mentions](/docs/channels/#mentions).
 
 ## Writes
 
-Adding an event, adding a task or ticking one off asks the person first while the connection's **Ask
-for confirmation before writing** is on, which it is by default (see
-[Speakers](/docs/agent/speakers/)). On the same page, each tool has its own switch.
+Adding an event or a task, or ticking one off, asks the person first while the connection's **Ask
+for confirmation before writing** is on (the default; [Speakers](/docs/agent/speakers/)). Each tool
+also has its own switch.
 
 ## Mail and watches
 
-Ask for a **watch**: "tell me when the plumber replies". A model (`watches.model`) sorts each new
-message of the connected Gmail, Outlook and IMAP mailboxes against the open watches, and tells the
-person who asked, where they are (see [Initiative](/docs/agent/initiative/)). What comes in is data:
-the model that reads it is told never to follow instructions it contains.
-Watches also follow [feeds, pages and webhooks](/docs/tools/#feeds-pages-and-webhooks).
+A **watch** ("tell me when the plumber replies"): a model (`watches.model`) sorts each new Gmail,
+Outlook and IMAP message against open watches and tells whoever asked
+([Initiative](/docs/agent/initiative/)). Instructions inside a mail are never followed. Watches also
+follow [feeds, pages and webhooks](/docs/tools/#feeds-pages-and-webhooks).
 
 ## Settings
 
 `connectors` in `nestor.yaml` lists the services the admin offers (`kind`: `google`, `microsoft`,
-`dav`, `imap`); without it, every installed one. Google and Microsoft 365 take these optional keys:
+`dav`, `imap`); default: all installed. Optional keys for Google and Microsoft 365:
 
 | Key               | Default                         | What it does                                  |
 | ----------------- | ------------------------------- | --------------------------------------------- |

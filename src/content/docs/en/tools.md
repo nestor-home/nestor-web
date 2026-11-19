@@ -4,13 +4,11 @@ title: Tools
 description: Give the agent web search, web pages, weather, maps and any MCP server, and give the watches feeds, pages and webhooks.
 ---
 
-Tools are what the agent calls during a turn: a search, a page, the weather, a route, a service's
-MCP server. Each is optional.
+Tools are what the agent calls during a turn. Each is optional.
 
 ## Web, weather and maps
 
-Each of these tools is one line in `tools`. `nestor init` writes the four free search engines and
-`web-pages`.
+One line each in `tools`. `nestor init` writes the four free search engines and `web-pages`.
 
 | Tool                | Plugin                                     | Key needed              | What it gives                                                         |
 | ------------------- | ------------------------------------------ | ----------------------- | --------------------------------------------------------------------- |
@@ -34,33 +32,27 @@ tools:
 
 ### Search
 
-Every engine in `tools` serves the agent's one `web_search`. Engines with a key come first, in the
-configuration's order, then the free tiers in turn. A search moves to the next engine when one is
-busy or refuses it.
+All engines serve one `web_search`: those with a key first, in order, then the free tiers in turn,
+moving on when one is busy or refuses.
 
-Free tiers may be slow, limited or closed at times. The agent knows when it searches on them only,
-and says so when a search fails. Their `api_key` raises the limits (not yet tried with real keys).
-`searxng` is an engine you host, at its `url`, with the JSON format allowed in its settings.
+Free tiers can be slow, limited or closed; the agent says so when a search fails. Their `api_key`
+raises the limits (untested with real keys). `searxng` needs the JSON format allowed in its settings.
 
 ### Pages, places and journeys
 
-- `web-pages` reads public addresses only: the agent never reads one on your network, even through a
-  link.
-- `openstreetmap` gives a place's opening hours, website and phone when OpenStreetMap knows them, and
-  journeys by car, bike or on foot, without traffic or public transport. It uses the OpenStreetMap
-  community's public servers, which accept one search a second; `nominatim_url` and `routing_url`
-  point to your own.
+- `web-pages` reads public addresses only, never one on your network, even through a link.
+- `openstreetmap` gives opening hours, website and phone when known, and journeys by car, bike or on
+  foot, without traffic or public transport. Its public servers accept one search a second;
+  `nominatim_url` and `routing_url` point to your own.
 
 ## MCP servers
 
-Services that publish a remote [Model Context Protocol](https://modelcontextprotocol.io) server
-connect in the admin, under **Connections**, with the **MCP server** connector. Pick a known server
-(GitHub, Linear, Notion, Todoist, Atlassian, Asana, Sentry, Cloudflare, Stripe, Vercel, Canva,
-Hugging Face) or type any server's address, then approve access on the service's page.
+Remote [Model Context Protocol](https://modelcontextprotocol.io) servers connect in the admin, under
+**Connections** › **MCP server**: pick a known one (GitHub, Linear, Notion, Todoist, Atlassian, Asana,
+Sentry, Cloudflare, Stripe, Vercel, Canva, Hugging Face) or type an address, then approve access.
 
-Nestor follows the MCP authorization flow, with OAuth and PKCE: it finds the server's authorization
-server and registers itself there, so there is no app to create. The tokens
-are kept encrypted, like an [account's](/docs/accounts/#services).
+Nestor registers itself with the server's OAuth (PKCE), so there is usually no app to create. Tokens
+are encrypted like an [account's](/docs/accounts/#services).
 
 | The server                                                         | What to do                                                                                                                                           |
 | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -68,16 +60,15 @@ are kept encrypted, like an [account's](/docs/accounts/#services).
 | registers no client (GitHub, Asana)                                | create an OAuth app at the service with the redirect address the admin shows, then type its ID and secret. GitHub also takes a personal access token |
 | asks for no authorization (Hugging Face, a server on your network) | nothing: it connects at once                                                                                                                         |
 
-A connection belongs to one person or to the household. Its tools carry the service's name
-(`linear_list_issues`). The server's annotations tell reading from writing, and a write asks the
-person first unless the connection's settings say otherwise. You switch tools off one by one on the
-connection's page. In a message, `@linear` points the agent to that server
-([Mentions](/docs/channels/#mentions)).
+A connection belongs to one person or the household. Tools carry the service's name
+(`linear_list_issues`); a write (per the server's annotations) asks the person first unless the
+connection's settings say otherwise, and each tool can be switched off. `@linear` points the agent to
+it ([Mentions](/docs/channels/#mentions)).
 
 ### A server in the configuration
 
-A server written in `tools` serves the whole household with a fixed token. Use it for a server on your
-network, or to set the risk of each tool:
+A server in `tools` serves the household with a fixed token: for a server on your network, or to
+set each tool's risk.
 
 ```yaml
 tools:
@@ -99,9 +90,8 @@ Without `risks` or `sensitive`, no tool of the server asks for a confirmation.
 
 ## Feeds, pages and webhooks
 
-Watches follow what you list under `inbound`, as well as [mail](/docs/accounts/#mail-and-watches).
-The agent knows each source by the name you give it: "tell me when Linux 7 is out on Kernel", "tell me
-when the lamp drops under 50 €". A new feed or page is added here, not by the agent.
+Watches follow the sources under `inbound` (and [mail](/docs/accounts/#mail-and-watches)), by the
+name you give them: "tell me when the lamp drops under 50 €". Only you add a source, not the agent.
 
 ```yaml
 inbound:
@@ -123,9 +113,8 @@ inbound:
 | `web-page` | a page's content, as `read_page` reads it | 1 h (`every_s`, at least 300)   | a change, with what changed; versions between two reads are not seen |
 | `webhook`  | JSON posted to `POST /hooks/<name>`       | on each post                    | the post, of the hook's `kind`                                       |
 
-Feeds and pages on your own network are refused. For a page, the model judges whether a change is the
-one awaited ("under 50 €").
+Feeds and pages on your network are refused.
 
-A webhook listens on port 8474 of 127.0.0.1 (`host`, `port`): put a reverse proxy in front. A post is
-signed with its hook's secret (`X-Hub-Signature-256: sha256=…`, as GitHub signs) or bears it
-(`Authorization: Bearer <secret>`), up to 64 KB (`max_bytes`).
+Webhooks listen on 127.0.0.1:8474 (`host`, `port`), behind a reverse proxy. A post (64 KB max,
+`max_bytes`) is signed with the hook's secret (`X-Hub-Signature-256: sha256=…`, like GitHub) or bears
+it (`Authorization: Bearer <secret>`).

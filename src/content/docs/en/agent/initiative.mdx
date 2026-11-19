@@ -5,8 +5,6 @@ description: When Nestor speaks without being asked. Reminders, watches, finishe
 
 import Initiative from "@/components/docs/diagrams/Initiative.astro";
 
-Reminders, watches, finished tasks and messages from someone else all reach a person the same way.
-
 <Initiative locale="en" n={1} />
 
 ## What calls for it
@@ -18,23 +16,19 @@ Reminders, watches, finished tasks and messages from someone else all reach a pe
 | **Task**     | "read this PDF and sum up the contract"   | `delegate_task`, to an [executor](/docs/executors/) |
 | **Message**  | "ask Léa if she needs the car"            | `message_person`                           |
 
-Each has a short title, shown in the admin, and reaches whoever asked for it.
+Each has a title, shown in the admin, and reaches whoever asked.
 
-- **Reminder**: an instruction run at a time, once or on chosen days, with the agent's tools. A
-  recurring one keeps a thread and tells only what changed. One missed during a stop runs once at
-  the next start.
-- **Watch**: a small model reads each incoming item once against all watches: mail from a
-  [connected account](/docs/accounts/), a feed entry, a page change, a webhook
-  ([Tools](/docs/tools/)).
-- **Task**: its result is announced once, even after a restart, with the files it made.
-- **Message**: one that expects a reply opens a question both people see until it is answered.
-  `may_message` lists whom a person may write to through the agent: everyone by default (`"*"`),
-  and always themselves.
+- **Reminder**: runs once or on chosen days. A recurring one tells only what changed; one missed
+  during a stop runs at the next start.
+- **Watch**: a small model reads each item once: mail from a [connected account](/docs/accounts/),
+  a feed, a page, a webhook ([Tools](/docs/tools/)).
+- **Task**: its result and files are announced once, even after a restart.
+- **Message**: one expecting a reply stays an open question for both people. `may_message` limits
+  whom a person may write to (default `"*"`, always themselves).
 
 ## Where it arrives
 
-The **courier** decides and journals the reason. Presence comes from
-[Home Assistant](/docs/home/).
+The **courier** decides, from [Home Assistant](/docs/home/) presence, and journals why.
 
 | The person                    | Nestor                                                        |
 | ----------------------------- | ------------------------------------------------------------- |
@@ -55,8 +49,7 @@ A spoken message is heard by everyone in the room ([Speakers](/docs/agent/speake
 
 ## How it ends
 
-Only the agent's final answer goes out, never "let me check". The journal records one of three
-outcomes:
+Only the agent's final answer goes out, never "let me check".
 
 | Outcome         | When                                                | Then                                   |
 | --------------- | --------------------------------------------------- | -------------------------------------- |
@@ -64,5 +57,5 @@ outcomes:
 | nothing to tell | a check found nothing new                           | nothing sent, the reason journaled, never retried |
 | not passed on   | no channel took it, or the model could not write it | tried again at the next start          |
 
-Only what Nestor starts itself (a reminder, a watch) may end with nothing to tell. A request, a
-message to pass on, a confirmation and a failure are always told.
+Only a reminder or a watch may end with nothing to tell. A request, a message, a confirmation and
+a failure are always told.

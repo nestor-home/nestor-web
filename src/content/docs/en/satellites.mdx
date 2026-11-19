@@ -7,22 +7,18 @@ import Card from "@/components/docs/Card.astro";
 import Cards from "@/components/docs/Cards.astro";
 import Steps from "@/components/docs/Steps.astro";
 
-A satellite is a device paired with the Nestor server: a speaker, a wall tablet, a robot like
-Reachy Mini, a browser tab, a terminal, a camera. People type on it, talk to it, or both. It
-connects to the `satellites` channel on port 8471, which needs a [voice](/docs/voice/) to talk
-aloud.
+A satellite is a device paired with Nestor (speaker, tablet, robot, browser tab, terminal, camera)
+that people type or talk to. It connects to the `satellites` channel on port 8471, which needs a
+[voice](/docs/voice/) to talk aloud.
 
 ## How it works
 
-A satellite pairs once, declares its capabilities, then holds a WebSocket to the server. Audio goes
-over WebRTC.
-
-The server sends intents, not motions. Given `intent.expression` with `joy`, a robot moves its
-antennas; a plain speaker never gets it, since it did not declare `expression.emotion`.
+A satellite pairs once, declares its capabilities, then holds a WebSocket to the server; audio goes
+over WebRTC. The server sends intents, not motions, and only those the device declared.
 
 ## Capabilities
 
-The device declares what it can do and a person allows it. All are optional.
+The device declares them, a person allows them. All are optional.
 
 | Capability                | The device…                                             |
 | ------------------------- | ------------------------------------------------------- |
@@ -39,15 +35,15 @@ The device declares what it can do and a person allows it. All are optional.
 | `video.capture`           | films, in the sessions a person opens                   |
 | `media.indicator`         | shows that it films or is in a call                     |
 
-Filming and calls have their own page: [Cameras and calls](/docs/satellites/cameras/).
+See also [Cameras and calls](/docs/satellites/cameras/).
 
 ## Pairing
 
-A person proves they meant to pair the device, with one of two codes:
+A person proves intent with one of two codes:
 
-- a **device code**: six digits the device presents, typed in the admin;
-- an **enrollment code** made in the admin (`K7QF-2M9X`), given to the device, usually as a
-  pairing URI: `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
+- a **device code**: six digits shown by the device, typed in the admin;
+- an **enrollment code** made in the admin (`K7QF-2M9X`), given to the device, usually as a pairing
+  URI: `nestor+http://nestor.local:8471/?code=K7QF2M9X`.
 
 | Method                    | The person…                                                                  |
 | ------------------------- | ---------------------------------------------------------------------------- |
@@ -57,7 +53,7 @@ A person proves they meant to pair the device, with one of two codes:
 | `enrollment.provisioning` | puts the pairing URI in the device’s configuration (flag, environment, file) |
 | `enrollment.qr`           | shows the pairing URI’s QR code to the device’s camera                       |
 
-Every device supports `enrollment.provisioning`. The SDKs declare the others from the hardware.
+Every device supports `enrollment.provisioning`; the SDKs declare the rest from the hardware.
 
 ## Add a satellite
 
@@ -65,8 +61,7 @@ Every device supports `enrollment.provisioning`. The SDKs declare the others fro
 
 1. **Start an addition**
 
-   In the admin, open **The house**, then **Add a satellite**, and pick a method. Or, from the
-   command line while Nestor runs:
+   Admin › **The house** › **Add a satellite**, or while Nestor runs:
 
    ```bash
    nestor satellites add --room salon --name "Living room speaker"   # prints the code and the pairing URI
@@ -74,14 +69,13 @@ Every device supports `enrollment.provisioning`. The SDKs declare the others fro
 
 2. **Give the device its proof**
 
-   With an enrollment code, give the device its URI:
+   Enrollment code: give the device its URI.
 
    ```bash
    NESTOR_PAIRING_URI='nestor+http://nestor.local:8471/?code=K7QF2M9X' nestor-satellite run --room salon
    ```
 
-   With a device code, type the code the device presents. **Identify** makes a waiting device blink
-   or chime, to tell devices apart.
+   Device code: approve it. **Identify** makes a waiting device blink or chime.
 
    ```bash
    nestor satellites approve 042917                                       # the code the device presents
@@ -94,16 +88,16 @@ To unpair a device: `nestor satellites revoke enceinte-salon`.
 
 ## Updates
 
-A satellite allowed `device.update` is updated from its page in the admin. See
+With `device.update`, from its page in the admin: see
 [Updates](/docs/updates/#update-a-satellite).
 
 ## Ready to run
 
 <Cards cols={2}>
-  <Card title="Python SDK" href="/docs/sdks/python/" brand="python">`nestor-satellite run`: this machine’s microphone and speaker.</Card>
-  <Card title="TypeScript SDK" href="/docs/sdks/typescript/" brand="typescript">The same command, or a satellite in a browser tab.</Card>
+  <Card title="Python SDK" href="/docs/sdks/python/" brand="python">`nestor-satellite run` with this machine’s mic and speaker.</Card>
+  <Card title="TypeScript SDK" href="/docs/sdks/typescript/" brand="typescript">The same command, or a browser tab.</Card>
   <Card title="Rust SDK" href="/docs/sdks/rust/" brand="rust">The same command, as a single binary.</Card>
-  <Card title="nestor-reachy" href="https://github.com/nestor-home/nestor-reachy" icon="bot">Reachy Mini in simulation, until its safety policy is validated on hardware.</Card>
+  <Card title="nestor-reachy" href="https://github.com/nestor-home/nestor-reachy" icon="bot">Reachy Mini, in simulation for now.</Card>
 </Cards>
 
 ## Build your own

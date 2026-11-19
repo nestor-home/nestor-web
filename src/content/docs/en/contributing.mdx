@@ -5,9 +5,9 @@ description: How a change reaches the Nestor repositories, and how each one is r
 
 import Steps from "@/components/docs/Steps.astro";
 
-Every [nestor-home](https://github.com/nestor-home) repository follows the organization’s
-[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md). Each repository’s
-`README.md` and `AGENTS.md` explain its setup and checks.
+Every [nestor-home](https://github.com/nestor-home) repository follows the
+[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md) guide; its
+`README.md` and `AGENTS.md` give its setup and checks.
 
 ## Make a change
 
@@ -15,25 +15,23 @@ Every [nestor-home](https://github.com/nestor-home) repository follows the organ
 
 1. **Open a pull request**
 
-   One pull request is one change, with its tests and documentation. Tests check real behaviour.
+   One change, with its tests and documentation. Tests check real behaviour.
 
 2. **Title it**
 
-   The title becomes the squashed commit, so it follows
-   [Conventional Commits](https://www.conventionalcommits.org/): `feat: …`, `fix: …`. A breaking
-   change adds `!`.
+   It becomes the squashed commit: [Conventional Commits](https://www.conventionalcommits.org/)
+   (`feat: …`, `fix: …`, `!` for a breaking change).
 
 3. **Merge it**
 
-   It is merged once its `ci` check is green.
+   Once its `ci` check is green.
 
 </Steps>
 
 ## Releases
 
-release-please keeps a pull request open with the next version and its changelog. Merging it tags
-and publishes the release. Before 1.0, a `feat` or a breaking change raises the minor version,
-anything else the patch.
+release-please keeps a release pull request open; merging it tags and publishes. Before 1.0, `feat`
+or a breaking change raises the minor version, anything else the patch.
 
 | Repository                                                                                | Published as                                                |
 | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
@@ -55,10 +53,10 @@ anything else the patch.
 
 ## Licence and languages
 
-The server, the SDKs, the Reachy satellite and the character are under the MIT licence.
+The server, the SDKs, the Reachy satellite and the character are MIT-licensed.
 
-Nestor speaks English and French. What it says to people is never in the code: each sentence is a
-[Project Fluent](https://projectfluent.org/) message.
+Nestor speaks English and French; every sentence for people is a
+[Project Fluent](https://projectfluent.org/) message, never in the code.
 
 | Catalogues of       | Folder                            |
 | ------------------- | --------------------------------- |
@@ -66,9 +64,9 @@ Nestor speaks English and French. What it says to people is never in the code: e
 | the admin           | `web/src/locales/<language>/`     |
 | this site           | `src/locales/<language>/`         |
 
-Another language starts as another folder of catalogues.
+A new language is a new folder.
 
 ## This documentation
 
-Each page is a Markdown file in [nestor-web](https://github.com/nestor-home/nestor-web), under
-`src/content/docs/`, with a link to edit it.
+Each page is a Markdown file in [nestor-web](https://github.com/nestor-home/nestor-web)
+(`src/content/docs/`), with an edit link.

@@ -5,27 +5,26 @@ description: Connect Home Assistant so Nestor knows who is home and acts on the 
 
 import Steps from "@/components/docs/Steps.astro";
 
-Home Assistant gives Nestor **presence** (who is home, and in which room when it knows) and **devices**
-(what it exposes to assistants, through its MCP server). One address and one token cover both.
+Home Assistant gives Nestor **presence** and the **devices** it exposes to assistants. One address and
+one token cover both.
 
 ## Set up
 
 <Steps>
 
-1. **Create a token.** In Home Assistant, open your profile, **Security**, and create a long-lived
-   access token.
+1. **Create a token.** Profile › **Security** › long-lived access token.
 
-2. **Expose devices.** Add the **Model Context Protocol Server** integration, then pick the entities
-   in **Settings › Voice assistants › Expose**. Presence works without it.
+2. **Expose devices.** Add the **Model Context Protocol Server** integration, then pick entities in
+   **Settings › Voice assistants › Expose**. Presence does not need it.
 
-3. **Add the secrets** to `.env`:
+3. **Add the secrets** to `.env`.
 
    ```ini
    HOME_ASSISTANT_URL=http://homeassistant.local:8123
    HOME_ASSISTANT_TOKEN=eyJ...
    ```
 
-4. **Turn on `home`** in `nestor.yaml` (`nestor init` wrote it, commented out):
+4. **Uncomment `home`** in `nestor.yaml`.
 
    ```yaml
    home:
@@ -47,13 +46,10 @@ Home Assistant gives Nestor **presence** (who is home, and in which room when it
 | Which rooms are occupied    | sensors with an area; by default every occupancy, presence or motion sensor        | `occupancy_sensors` |
 | Devices it controls | the entities exposed to assistants, through Home Assistant's MCP server (`/api/mcp`) | none                |
 
-The admin's **Home** page shows who is where, the rooms, the people Home Assistant knows and its
-actions.
-
 ## Sensitive actions
 
-Some actions wait for the person's go-ahead (see [Speakers](/docs/agent/speakers/)). An action is
-sensitive when its domain, device class or name contains one of these values, ignoring case:
+A sensitive action waits for the person's go-ahead ([Speakers](/docs/agent/speakers/)): its
+domain, device class or name contains one of these values, ignoring case:
 
 | Key              | Default                                   |
 | ---------------- | ----------------------------------------- |
@@ -61,8 +57,7 @@ sensitive when its domain, device class or name contains one of these values, ig
 | `device_classes` | `garage`, `gate`, `door`                  |
 | `names`          | `lock`, `alarm`, `garage`, `gate`, `door` |
 
-Lights, heating and media are not, and reading the state never is. A list you set replaces its
-default; add names in your own language:
+Reading a state never is. A list you set replaces its default; add names in your language:
 
 ```yaml
 home:

@@ -5,15 +5,14 @@ description: Ajouter un outil, un modèle, un canal, un exécutant ou un connect
 
 import Steps from "@/components/docs/Steps.astro";
 
-Tout ce que Nestor branche est un plugin, y compris ses propres parties. Les vôtres se déclarent de
-la même façon, dans votre paquet, sans modifier le serveur. Un service qui a un serveur MCP n’en
-demande pas ([Serveurs MCP](/fr/docs/tools/#serveurs-mcp)), ni un appareil
-([Satellites](/fr/docs/satellites/)).
+Chaque partie de Nestor est un plugin ; les vôtres vivent dans votre paquet. Un serveur MCP
+([Serveurs MCP](/fr/docs/tools/#serveurs-mcp)) ou un appareil ([Satellites](/fr/docs/satellites/))
+n’en demande pas.
 
 ## Familles
 
-Un plugin, c’est une famille, un `kind` (le nom par lequel la configuration le choisit), une classe
-de réglages et une fonction qui construit la partie à partir de ses réglages.
+Un plugin, c’est une famille, un `kind` (son nom dans la configuration), une classe de réglages et
+une fonction `build`.
 
 | Famille     | Se configure sous | Construit                                                                                                 | Suite de contrat                                                                                                             |
 | ----------- | ----------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -26,11 +25,11 @@ de réglages et une fonction qui construit la partie à partir de ses réglages.
 | `connector` | `connectors`      | un `Connector` : un service auquel on connecte des comptes depuis l’administration                        |                                                                                                                              |
 
 Les contrats sont dans `nestor.modules` (`cognition`, `channels`, `identity`, `home`, `web`,
-`initiative`, `connectors`), les suites dans `nestor.testing`, livré avec le paquet.
+`initiative`, `connectors`), les suites dans `nestor.testing`.
 
 ## Écrire un plugin d’outils
 
-Celui-ci donne à l’agent un outil `bin_days`.
+Un outil `bin_days` :
 
 <Steps>
 
@@ -95,7 +94,7 @@ Celui-ci donne à l’agent un outil `bin_days`.
 
 3. **Le configurer**
 
-   Dans `nestor.yaml`, `kind` choisit le plugin et les autres clés sont ses réglages :
+   `kind` choisit le plugin, les autres clés sont ses réglages :
 
    ```yaml
    tools:
@@ -107,15 +106,13 @@ Celui-ci donne à l’agent un outil `bin_days`.
 
 4. **Le vérifier**
 
-   Installez le paquet là où tourne Nestor, puis vérifiez la configuration. Avec uvx, depuis le
-   dossier de `nestor.yaml` :
+   Depuis le dossier de `nestor.yaml` :
 
    ```bash
    uvx --from nestor-home --with-editable ./nestor-bins nestor check
    ```
 
-   Il répond `nestor.yaml: OK` et nomme ce qu’il a construit, sans rien démarrer. Une clé ou un
-   `kind` inconnu est refusé :
+   Il répond `nestor.yaml: OK` sans rien démarrer, ou refuse une clé ou un `kind` inconnu :
 
    ```text
    nestor: tools 'bins' (bins): colour: Extra inputs are not permitted
@@ -124,33 +121,30 @@ Celui-ci donne à l’agent un outil `bin_days`.
 
 </Steps>
 
-La page **Système** de l’administration liste chaque partie avec son état et le paquet d’où elle
-vient.
+La page **Système** de l’admin liste chaque partie, son état et son paquet.
 
 ## Ce dont un plugin dispose
 
-- **Les réglages** sont un modèle Pydantic. Un champ `SecretStr` reçoit une clé (`${NAME}` ou
-  `${secret:name}`, voir [Clés et secrets](/fr/docs/configuration/#clés-et-secrets)) ;
-  `RequiredSecret`, de `nestor.runtime`, refuse en plus une clé vide.
-- **`Services`** donne à `build` le dossier des données, la langue du foyer, et les modèles de
-  `models` par leur nom (`services.model(...)`).
-- **Le risque d’un outil** est `read`, `write` ou `sensitive`. Un appel sensible est d’abord
-  confirmé ([Actions sensibles](/fr/docs/agent/speakers/#actions-sensibles)). Un outil plus long que
-  l’attente du tour continue en arrière-plan ([Les outils](/fr/docs/agent/#les-outils)).
-- **La vie d’une partie** : `start` ouvre ce qu’il lui faut, `close` le libère, `health` dit si elle
-  peut servir, `notes` dit au modèle comment elle tourne en ce moment, en anglais.
-- **Les dépendances facultatives** s’importent dans `build`. `Plugin(..., requires="mon-paquet[extra]")`
-  nomme ce qui les installe : sans elles, une configuration qui utilise le plugin échoue au démarrage
-  avec cette commande. Trouver les plugins charge tous les entry points : le module qui contient
-  `plugin` n’importe que ce dont ses réglages ont besoin.
-- **Les mots destinés aux personnes** sont des messages Fluent dans un dossier `locales/<langue>/`
-  de votre paquet, chargés avec ceux de Nestor. Ce que lit le modèle reste en anglais.
-- **Vos propres événements** vont dans le journal comme ceux du serveur
+- **Réglages** : un modèle Pydantic. `SecretStr` reçoit une clé (`${NAME}` ou `${secret:name}`,
+  [Clés et secrets](/fr/docs/configuration/#clés-et-secrets)) ; `RequiredSecret` (`nestor.runtime`)
+  refuse en plus une clé vide.
+- **`Services`** : le dossier des données, la langue du foyer, les modèles par nom
+  (`services.model(...)`).
+- **Risque d’un outil** : `read`, `write` ou `sensitive` (confirmé d’abord,
+  [Actions sensibles](/fr/docs/agent/speakers/#actions-sensibles)). Un outil lent continue en
+  arrière-plan ([Les outils](/fr/docs/agent/#les-outils)).
+- **Cycle de vie** : `start`, `close`, `health`, et `notes` (comment elle tourne, en anglais, pour le
+  modèle).
+- **Dépendances facultatives** : importées dans `build` ; `Plugin(..., requires="mon-paquet[extra]")`
+  nomme la commande d’installation affichée quand elles manquent. Tous les entry points sont chargés :
+  le module qui contient `plugin` n’importe que ce dont ses réglages ont besoin.
+- **Mots destinés aux personnes** : messages Fluent dans `locales/<langue>/` de votre paquet. Ce que
+  lit le modèle reste en anglais.
+- **Événements** : journalisés comme ceux du serveur
   ([Déclarer un événement](/fr/docs/agent/journal/#déclarer-un-événement)).
 
-Un plugin de modèle dit aussi quel type de modèle il sert, et son entry point s’appelle
-`<fournisseur>-<type>`. La configuration le nomme alors par les deux : `type: language`,
-`provider: my-provider`.
+Un plugin de modèle nomme le type qu’il sert ; son entry point est `<fournisseur>-<type>`, configuré
+par `type: language`, `provider: my-provider`.
 
 ```python
 plugin = Plugin(Family.MODEL, "my-provider", MySettings, build, serves=LanguageModel)
@@ -158,8 +152,8 @@ plugin = Plugin(Family.MODEL, "my-provider", MySettings, build, serves=LanguageM
 
 ## Le tester
 
-Une suite de contrat est une classe de tests. Héritez-en et donnez-lui ce que sa docstring
-demande ; celle d’un exécutant veut un exécutant qui réussit, un lent et un qui échoue :
+Héritez d’une suite de contrat et fournissez ce que sa docstring demande ; pour un exécutant, un qui
+réussit, un lent et un qui échoue :
 
 ```python
 from nestor.modules.cognition import Executor
@@ -172,12 +166,11 @@ class TestMyExecutor(ExecutorContract):
     def failing_executor(self) -> Executor: ...
 ```
 
-Les tests sont des coroutines : pytest a besoin de pytest-asyncio, en mode `auto`. Les adaptateurs
-du serveur passent les mêmes suites.
+Les tests demandent pytest-asyncio en mode `auto`.
 
 ## Fournis avec le serveur
 
-Chaque partie livrée avec le serveur est un plugin de `nestor-home` :
+Plugins livrés dans `nestor-home` :
 
 | Famille     | `kind`                                                                                                                        | Se règle dans                                                         |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |

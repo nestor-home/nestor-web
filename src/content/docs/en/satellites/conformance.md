@@ -4,13 +4,12 @@ title: Conformance
 description: Check a satellite, written in any language, against the protocol from the command line.
 ---
 
-The server’s black-box suite runs your satellite once per scenario, against a fake core made of the
-real pairing service and gateway. Each check names the
-[protocol rule](/docs/satellites/protocol/#12-conformance) it proves.
+A black-box suite runs your satellite once per scenario against a fake core (the real pairing and
+gateway). Each check names its [protocol rule](/docs/satellites/protocol/#12-conformance).
 
 ## Run it
 
-uvx runs the suite with the server’s `voice` extra, without installing anything:
+Nothing to install; without the `voice` extra, audio checks fail.
 
 ```bash
 uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance [--deadline SECONDS] -- <command>
@@ -24,10 +23,8 @@ uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance [--dead
 | `{state}`    | in the command, replaced by a fresh folder for the token and what the satellite keeps |
 | `--deadline` | seconds allowed per step, 15 by default                                               |
 
-Scenarios with an enrollment code give it in `NESTOR_PAIRING_URI` (rule P1); the others remove the
-variable. Without the `voice` extra, the audio checks fail.
-
-With the SDKs’ commands, without a sound card:
+Enrollment scenarios set `NESTOR_PAIRING_URI` (rule P1); the others unset it. The SDKs, without a
+sound card:
 
 ```bash
 # TypeScript, from a project where @nestor-home/satellite and @roamhq/wrtc are installed
@@ -41,8 +38,7 @@ uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
 
 ## Output
 
-One line per check, then a summary, in the language of `LC_ALL`, `LC_MESSAGES` or `LANG` (English
-or French).
+One line per check, then a summary, in English or French (`LC_ALL`, `LC_MESSAGES`, `LANG`).
 
 ```text
 PASS  asks to pair
@@ -62,8 +58,7 @@ FAIL  acknowledges intent.behavior within 1 s (no ack with this intent's id)
 
 ## In CI
 
-Run the same command in a job after building the satellite; it needs only uv. Pin the server
-release and raise it with the protocol version.
+Run the same command after the build; it needs only uv. Pin the server release.
 
-In Python tests, `check_satellite(driver)` from `nestor.adapters.channels.satellites.conformance`
-returns the findings. `driver` is a coroutine function taking a `Launch`, or a command.
+In Python tests, `check_satellite(driver)` (`nestor.adapters.channels.satellites.conformance`) returns
+the findings; `driver` is a command or a coroutine function taking a `Launch`.

@@ -5,9 +5,9 @@ description: Comment un changement arrive dans les dépôts Nestor, et comment c
 
 import Steps from "@/components/docs/Steps.astro";
 
-Tous les dépôts de [nestor-home](https://github.com/nestor-home) suivent le
-[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md) de l’organisation.
-Le `README.md` et l’`AGENTS.md` de chaque dépôt expliquent son installation et ses vérifications.
+Tous les dépôts de [nestor-home](https://github.com/nestor-home) suivent le guide
+[CONTRIBUTING](https://github.com/nestor-home/.github/blob/main/CONTRIBUTING.md) ; leurs `README.md`
+et `AGENTS.md` donnent installation et vérifications.
 
 ## Proposer un changement
 
@@ -15,26 +15,23 @@ Le `README.md` et l’`AGENTS.md` de chaque dépôt expliquent son installation 
 
 1. **Ouvrir une pull request**
 
-   Une pull request est un seul changement, avec ses tests et sa documentation. Les tests vérifient
-   un comportement réel.
+   Un seul changement, avec ses tests et sa documentation. Les tests vérifient un comportement réel.
 
 2. **Lui donner un titre**
 
-   Le titre devient le commit fusionné : il suit les
-   [Conventional Commits](https://www.conventionalcommits.org/) (`feat: …`, `fix: …`). Un
-   changement cassant ajoute `!`.
+   Il devient le commit fusionné : [Conventional Commits](https://www.conventionalcommits.org/)
+   (`feat: …`, `fix: …`, `!` pour un changement cassant).
 
 3. **La fusionner**
 
-   Elle est fusionnée quand sa vérification `ci` est au vert.
+   Quand sa vérification `ci` est au vert.
 
 </Steps>
 
 ## Versions
 
-release-please garde ouverte une pull request avec la prochaine version et son journal des
-modifications. La fusionner étiquette et publie la version. Avant la 1.0, un `feat` ou un
-changement cassant monte la version mineure, tout le reste le correctif.
+release-please garde ouverte une pull request de release ; la fusionner étiquette et publie. Avant
+la 1.0, un `feat` ou un changement cassant monte la version mineure, tout le reste le correctif.
 
 | Dépôt                                                                                     | Publié sous                                                  |
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -58,8 +55,8 @@ changement cassant monte la version mineure, tout le reste le correctif.
 
 Le serveur, les SDK, le satellite Reachy et le personnage sont sous licence MIT.
 
-Nestor parle anglais et français. Ce qu’il dit aux personnes n’est jamais dans le code : chaque
-phrase est un message [Project Fluent](https://projectfluent.org/).
+Nestor parle anglais et français ; chaque phrase destinée aux personnes est un message
+[Project Fluent](https://projectfluent.org/), jamais dans le code.
 
 | Catalogues de       | Dossier                          |
 | ------------------- | -------------------------------- |
@@ -67,9 +64,9 @@ phrase est un message [Project Fluent](https://projectfluent.org/).
 | l’administration    | `web/src/locales/<langue>/`      |
 | ce site             | `src/locales/<langue>/`          |
 
-Une autre langue commence par un autre dossier de catalogues.
+Une nouvelle langue est un nouveau dossier.
 
 ## Cette documentation
 
-Chaque page est un fichier Markdown de [nestor-web](https://github.com/nestor-home/nestor-web),
-sous `src/content/docs/`, avec un lien pour la modifier.
+Chaque page est un fichier Markdown de [nestor-web](https://github.com/nestor-home/nestor-web)
+(`src/content/docs/`), avec un lien pour la modifier.

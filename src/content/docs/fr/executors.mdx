@@ -7,8 +7,7 @@ import Card from "@/components/docs/Card.astro";
 import Cards from "@/components/docs/Cards.astro";
 
 Ce qui prend des minutes va à un **exécutant**, un agent qui travaille en arrière-plan. Nestor suit la
-tâche, prévient la personne quand elle est faite et envoie avec le résultat les fichiers produits, là
-où le canal sait les porter.
+tâche et rapporte le résultat, avec ses fichiers.
 
 <Cards cols={3}>
   <Card title="Hermes" brand="hermes" href="#hermes">Tourne sur un serveur Hermes, avec ses profils d’agent.</Card>
@@ -18,7 +17,7 @@ où le canal sait les porter.
 
 ## Réglages communs
 
-Les exécutants se listent sous `executors` dans `nestor.yaml`.
+Sous `executors` dans `nestor.yaml` :
 
 | Clé           | Ce qu’elle fait                                                                     |
 | ------------- | ----------------------------------------------------------------------------------- |
@@ -28,8 +27,7 @@ Les exécutants se listent sous `executors` dans `nestor.yaml`.
 
 ## Arrêt et redémarrage
 
-Demandez à Nestor d’arrêter une tâche : il demande à l’exécutant de s’arrêter. Il ne dit la tâche
-annulée qu’une fois l’arrêt confirmé ; un arrêt resté sans confirmation termine la tâche en échec.
+Une tâche n’est annulée qu’une fois l’arrêt confirmé par l’exécutant ; sinon, elle finit en échec.
 
 | Exécutant   | Où il tourne                               | Quand Nestor redémarre                              |
 | ----------- | ------------------------------------------ | --------------------------------------------------- |
@@ -53,8 +51,8 @@ executors:
 
 ## Codex
 
-Nestor pilote [Codex](https://github.com/openai/codex) par `codex app-server`. Installez la CLI de
-Codex là où il tournera et connectez-vous (`codex login`).
+Installez la CLI de [Codex](https://github.com/openai/codex) là où il tourne et connectez-vous
+(`codex login`).
 
 ```yaml
 executors:
@@ -64,8 +62,7 @@ executors:
     description: Writes and runs code in /srv/codex/work. No access to the house.
 ```
 
-Chaque tâche est un fil Codex dans `working_directory`. Codex n’attend jamais d’approbation : une
-demande d’approbation ou de réponse est refusée.
+Chaque tâche est un fil Codex. Une demande d’approbation ou de réponse est refusée.
 
 | Clé       | Défaut             | Ce qu’elle fait                                                                              |
 | --------- | ------------------ | -------------------------------------------------------------------------------------------- |
@@ -74,8 +71,7 @@ demande d’approbation ou de réponse est refusée.
 | `config`  | aucun              | des réglages de Codex pour chaque tâche, comme dans son `config.toml` (serveurs MCP, réseau dans le bac à sable) |
 | `command` | `codex app-server` | comment joindre Codex                                                                        |
 
-Pour faire tourner Codex sur un serveur, lancez-y son démon (`codex app-server daemon start`) et
-faites-le joindre par `command` :
+Sur un serveur : lancez-y son démon (`codex app-server daemon start`) et joignez-le par `command`.
 
 ```yaml
 executors:
@@ -87,8 +83,8 @@ executors:
 
 ## Claude Code
 
-Nestor lance [Claude Code](https://github.com/anthropics/claude-code) sans interface (`claude -p`) sur
-sa propre machine. Installez-le et connectez-vous, ou donnez une clé d’API.
+[Claude Code](https://github.com/anthropics/claude-code) tourne sans interface (`claude -p`) sur la
+machine de Nestor. Installez-le et connectez-vous, ou donnez une clé d’API.
 
 ```yaml
 executors:
@@ -100,8 +96,7 @@ executors:
     description: Writes and fixes code in /home/nestor/work and commits with git. No access to the house.
 ```
 
-Personne ne répond à une demande de permission sans interface : avec `permission_mode: dontAsk`, le
-défaut, seuls les `allowed_tools` s’exécutent.
+Avec `permission_mode: dontAsk` (le défaut), seuls les `allowed_tools` s’exécutent.
 
 | Clé              | Défaut                                                  | Ce qu’elle fait                     |
 | ---------------- | ------------------------------------------------------- | ----------------------------------- |
@@ -110,18 +105,17 @@ défaut, seuls les `allowed_tools` s’exécutent.
 | `model`          | celui de Claude Code                                    | le modèle                           |
 | `api_key`        | le compte avec lequel Claude Code est connecté          | la clé d’API d’Anthropic            |
 
-L’identifiant de session d’une tâche est sa première étape dans le journal, pour la rouvrir avec
-`claude --resume`.
+La première étape d’une tâche dans le journal est son identifiant de session, pour `claude --resume`.
 
 ## Fichiers
 
-Codex et Claude Code travaillent chaque tâche dans un dossier à elle sous `working_directory`, où les
-fichiers envoyés avec la tâche les attendent. Ils ne rendent que des fichiers de ce dossier, au plus 10
-par tâche et `max_file_bytes` chacun (20 Mo par défaut) ; le résultat dit lesquels sont restés de côté.
+Codex et Claude Code ont un dossier par tâche sous `working_directory`, avec les fichiers envoyés. Ils
+ne rendent que des fichiers de ce dossier : 10 par tâche, `max_file_bytes` chacun (20 Mo) ; le
+résultat nomme ceux laissés de côté.
 
 ## Les outils de Nestor pour les exécutants
 
-Pendant une tâche, un exécutant peut joindre le serveur MCP de Nestor pour cette tâche :
+Pendant une tâche, un exécutant peut appeler le serveur MCP de Nestor :
 
 | Outil                           | Ce qu’il fait                                                                                   |
 | ------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -133,31 +127,26 @@ Pendant une tâche, un exécutant peut joindre le serveur MCP de Nestor pour cet
 | `attach_file`                   | un lien pour déposer un fichier qui part avec le résultat                                       |
 | `home_state`                    | qui est à la maison et les pièces occupées, avec un [`home`](/fr/docs/home/)                    |
 
-Les outils ne lisent et ne gardent que ce qui est à la personne qui a demandé. Les fichiers ne passent
-jamais par le modèle de l’exécutant : un lien de téléchargement vaut dix minutes tant que la tâche
-tourne, un lien de dépôt une seule fois.
+Ils n’atteignent que les données de qui a demandé. Un lien de téléchargement vaut dix minutes tant que
+la tâche tourne, un lien de dépôt une fois.
 
 ### Accès
 
-L’admin sert le serveur sur `/mcp`. Il lui faut la `public_url` de l’admin, joignable depuis l’endroit
-où tourne l’exécutant (un domaine, un VPN, Tailscale), et `NESTOR_SECRET_KEY`.
+Servi sur `/mcp` de l’admin. Il faut `public_url`, joignable depuis l’exécutant (domaine, VPN,
+Tailscale), et `NESTOR_SECRET_KEY`.
 
 | Secret                 | Envoyé dans             | Ce qu’il prouve                                                                                       |
 | ---------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------- |
 | clé de l’exécutant     | `Authorization: Bearer` | quel exécutant appelle                                                                                |
 | capacité de la tâche   | l’argument `task`       | la tâche : créée quand elle est confiée, valable tant qu’elle tourne et seulement avec la clé de cet exécutant |
 
-Tout le reste est refusé dans les mêmes termes, les appels sont limités par clé et chacun est
-journalisé.
+Les appels sont limités par clé et journalisés.
 
 | Exécutant          | Comment il reçoit le serveur                                                                                          |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------- |
 | Codex, Claude Code | avec chaque tâche : Nestor crée leur clé, la garde chiffrée et la passe dans les réglages du fil ou un fichier privé |
 | Hermes             | déclaré dans son profil, avec `nestor_mcp: true`                                                                      |
 
-Pour Hermes, créez sa clé dans **Système** de l’admin, ou avec `nestor executors key hermes`. Elle
-s’affiche une fois, avec ce qu’il faut ajouter au `config.yaml` du profil ; mettez ensuite
-`nestor_mcp: true` sur l’exécutant.
-
-Renouveler une clé met fin à la précédente ; `nestor executors revoke hermes` laisse l’exécutant sans
-clé.
+Pour Hermes, créez sa clé dans **Système** ou avec `nestor executors key hermes` : affichée une fois,
+avec les lignes du `config.yaml` du profil. Renouveler met fin à l’ancienne ;
+`nestor executors revoke hermes` la retire.

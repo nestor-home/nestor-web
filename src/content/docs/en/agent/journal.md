@@ -4,14 +4,10 @@ title: The journal
 description: What Nestor writes down, what a record looks like, the events of one watch from the request to the answer, and how a module declares its own.
 ---
 
-Everything Nestor does is an event in its journal, each decision with its reason. The admin, the
-memory and the tasks that survive a restart all read from it. It is one SQLite file,
-`state/nestor.db`; records are added, never changed. Long tool results, files and voiceprints stay
-out of it.
+Everything Nestor does is an event in its journal, each decision with its reason. It is one SQLite
+file, `state/nestor.db`, append-only. Long tool results, files and voiceprints stay out of it.
 
 ## A record
-
-Every event has the same envelope around its own `payload`:
 
 ```json
 {
@@ -42,7 +38,7 @@ Every event has the same envelope around its own `payload`:
 ## One watch, from the request to the answer
 
 Léa says in the kitchen "tell me as soon as the school writes back". The mail arrives while she is
-in the office. The journal holds, in order:
+in the office:
 
 | Event                            | Written when                                   | Its payload holds                                                                |
 | -------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------- |
@@ -57,12 +53,10 @@ in the office. The journal holds, in order:
 | `conversation.turn.assistant`    | the agent tells her                            | what she heard                                                                   |
 | `initiative.delivered`           | it reached her                                 | where, and what it was about                                                     |
 
-A watch for one item ends once it has matched (`watch.ended`). Every event of a turn carries the
-same `exchange`, a conversation id and a turn id, by which the admin groups them. The turn's
-`speaker` says who spoke: a person, how they are known (`account`, `voice`, `said` or `unknown`)
-and, for a voice, how close it was ([Speakers](/docs/agent/speakers/)).
+A one-item watch then ends (`watch.ended`). Every event of a turn carries the same `exchange` (conversation and turn ids). The turn's `speaker`
+says who spoke and how that is known: `account`, `voice` (with its closeness), `said` or `unknown`.
 
-The decision answers "why did it speak to me here?":
+The courier's decision:
 
 ```json
 {
@@ -82,20 +76,16 @@ The decision answers "why did it speak to me here?":
 }
 ```
 
-The reason is a message id with its values, never a sentence: the admin renders it in the reader's
-language ("Léa is in the office"). The other cases are on [Initiative](/docs/agent/initiative/).
+The reason is a message id with values, rendered in the reader's language ("Léa is in the office").
 
 ## In the admin
 
-The **Journal** shows the events live, as conversation threads. Filter them by person, channel,
-room and kind (conversations, unprompted messages, tools, tasks, watches, reminders, memories,
-connections, presence, satellites, voices, observations, accounts). An entry opens on what it says,
-what it relates to and its raw record.
+**Journal** shows events live, as conversation threads, filtered by person, channel, room and kind.
+An entry opens on what it says, what it relates to and its raw record.
 
 ## Declaring an event
 
-A module, or a [plugin](/docs/plugins/), declares an event in one line and publishes it to the
-journal. This is the server's own:
+A module or a [plugin](/docs/plugins/) declares an event as a class:
 
 ```python
 from nestor.core import Event
@@ -110,10 +100,8 @@ class WatchTriggered(Event, event_type="watch.triggered"):
     urgent: bool = False
 ```
 
-The class becomes a frozen, typed record, registered under its type, which no other class may
-take. A payload holds plain data only (text, numbers, booleans, dates, enumerations, lists, and
-records of these), so the journal reads without the code that wrote it.
+Each type belongs to one class. A payload holds plain data only (text, numbers, booleans, dates,
+enumerations, lists, records of these), so the journal reads without the code.
 
-To change a payload, raise `version` and write the event's `upgrade` from the version before. Old
-records are upgraded as they are read; the file is never rewritten. The admin files an event of
-unknown kind under **Other**.
+To change a payload, raise `version` and write `upgrade` from the version before; old records are
+upgraded on read. The admin files unknown kinds under **Other**.

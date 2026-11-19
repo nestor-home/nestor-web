@@ -6,25 +6,21 @@ description: Les modèles de transcription et de synthèse qui font entendre et 
 import Providers from "@/components/docs/Providers.astro";
 import ProviderSetup from "@/components/docs/ProviderSetup.astro";
 
-Pour parler à voix haute, Nestor a besoin de deux modèles : un modèle `transcription` entend les
-gens, un modèle `speech` donne sa voix à l’assistant. Les satellites s’en servent, les messages
-vocaux aussi.
+Parler à voix haute demande un modèle `transcription` pour entendre et un modèle `speech` pour
+parler, pour les satellites et les messages vocaux.
 
 ## Installer
 
-Parler à voix haute demande l’extra `voice`, `nestor-home[voice]` ([Installer](/fr/docs/install/)).
-L’image Docker le contient.
+Installez `nestor-home[voice]` ([Installer](/fr/docs/install/)) ; l’image Docker le contient.
 
 ## Choisir les fournisseurs
 
-Choisissez un fournisseur pour entendre et un pour parler ; ce peut être deux différents.
+Un fournisseur pour entendre, un pour parler, le même ou non.
 
 <Providers kind="speech" locale="fr">
 <ProviderSetup kind="speech" brand="elevenlabs">
 
-Une seule clé couvre deux modèles : l’un entend les gens (Scribe v2 Realtime), l’autre donne sa voix
-à l’assistant (v4 Turbo). Les deux se nomment dans le bloc
-`voice`.
+Une seule clé pour les deux : Scribe v2 Realtime entend, v4 Turbo parle.
 
 ```ini
 ELEVENLABS_API_KEY=sk_...
@@ -51,14 +47,14 @@ channels:
 ```
 
 `voice_id` est n’importe quelle voix de votre bibliothèque. La transcription attend de l’anglais,
-sauf si le modèle fixe `language` (`fr`, `de`…). Les messages vocaux passent par `file_model`
-(`scribe_v2`) : le modèle temps réel ne lit pas de fichiers.
+sauf si `language` dit autre chose (`fr`, `de`…). Les messages vocaux passent par `file_model`
+(`scribe_v2`).
 
 </ProviderSetup>
 <ProviderSetup kind="speech" brand="openai">
 
-Toute API qui parle `/audio/transcriptions` et `/audio/speech` comme OpenAI : OpenAI, Groq et
-Mistral pour entendre, OpenAI pour parler.
+Toute API `/audio/transcriptions` et `/audio/speech` : OpenAI, Groq ou Mistral pour entendre,
+OpenAI pour parler.
 
 ```yaml
 models:
@@ -77,15 +73,14 @@ models:
     voice: alloy
 ```
 
-La transcription entend la langue du foyer, sauf si `language` en dit une autre. Les satellites
-entendent un tour une fois fini : les premiers mots l’attendent.
+La transcription entend la langue du foyer, sauf si `language` en dit une autre. Elle entend un
+tour une fois fini, ce qui retarde les premiers mots.
 
 </ProviderSetup>
 <ProviderSetup kind="speech" brand="nvidia">
 
-Parakeet TDT v3 entend 25 langues européennes sur la machine de Nestor : pas de clé, rien de ce qui
-est dit ne sort de la maison. Il demande `nestor-home[voice,voice-id]`, télécharge un demi-gigaoctet
-une fois et prend environ 1 Go de mémoire.
+Parakeet TDT v3 entend 25 langues européennes en local, sans clé. Il demande
+`nestor-home[voice,voice-id]`, 0,5 Go à télécharger et environ 1 Go de mémoire.
 
 ```yaml
 models:
@@ -98,9 +93,7 @@ models:
 </ProviderSetup>
 <ProviderSetup kind="speech" brand="kokoro">
 
-Kokoro parle sur votre machine par un serveur qui parle l’API d’OpenAI, comme Kokoro-FastAPI ou
-speaches. Lancez-le à côté de Nestor, puis désignez-le dans un modèle de synthèse ; il ne demande pas
-de clé.
+Kokoro parle en local par un serveur compatible OpenAI (Kokoro-FastAPI, speaches), sans clé.
 
 ```yaml
 models:
@@ -112,13 +105,12 @@ models:
     voice: ff_siwis
 ```
 
-`ff_siwis` est la voix française de Kokoro ; `af_heart` et `bm_george` parlent anglais.
+`ff_siwis` parle français ; `af_heart` et `bm_george` anglais.
 
 </ProviderSetup>
 <ProviderSetup kind="speech" brand="whisper">
 
-Whisper entend sur votre machine par un serveur qui parle l’API d’OpenAI, comme speaches ou le serveur
-de whisper.cpp. Désignez-le dans un modèle de transcription ; il ne demande pas de clé.
+Whisper entend en local par un serveur compatible OpenAI (speaches, whisper.cpp), sans clé.
 
 ```yaml
 models:
@@ -134,8 +126,7 @@ models:
 
 ## Le bloc voice
 
-Un canal `satellites` nomme ses deux modèles dans `voice`. Sans ce bloc, les satellites parlent
-seulement par écrit.
+Sans lui, les satellites ne font que l’écrit.
 
 ```yaml
 channels:
@@ -156,20 +147,12 @@ channels:
 
 ## Messages vocaux
 
-Un message vocal reçu par une messagerie est écouté par `agent.transcription`. Quand un modèle de
-synthèse existe et que le canal sait envoyer des vocaux, la réponse en est un, dit par
-`agent.speech`. Chaque rôle prend par défaut le seul modèle de son type
+`agent.transcription` les écoute. Avec un modèle de synthèse, sur un canal qui en envoie, la réponse
+est aussi un vocal (`agent.speech`). Chaque rôle prend par défaut le seul modèle de son type
 ([Rôles](/fr/docs/models/#rôles)).
 
 ## Un tour à l’oral
 
-- Nestor parle pendant que le modèle écrit encore ; donnez à `agent.spoken` un modèle rapide
-  ([Rôles](/fr/docs/models/#rôles)).
-- « oui », « d’accord » ou « mm » ne l’interrompent pas ; tout autre mot l’arrête, comme 1,2 seconde
-  de parole. Le journal garde ce qui a été entendu. Les acquiescements qu’il connaît sont des mots
-  français, et « ok ».
-- Un satellite qui affiche aussi du texte montre les mots à mesure qu’ils sont dits.
-- Quand un service de voix échoue ou bloque, Nestor le dit et le journal l’enregistre.
-- Après 5 minutes de silence, une nouvelle conversation commence.
-
-Plus sur les tours : [Agent](/fr/docs/agent/). Qui parle : [Locuteurs](/fr/docs/agent/speakers/).
+- Nestor parle pendant que le modèle écrit : donnez à `agent.spoken` un modèle rapide.
+- Un satellite avec écran montre les mots à mesure qu’ils sont dits.
+- Interruptions, pannes et le reste : [Un tour](/fr/docs/agent/#un-tour).

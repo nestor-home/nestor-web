@@ -4,13 +4,11 @@ title: Outils
 description: Donner à l’agent la recherche web, les pages web, la météo, les cartes et tout serveur MCP, et aux veilles des flux, des pages et des webhooks.
 ---
 
-Les outils sont ce que l’agent appelle pendant un tour : une recherche, une page, la météo, un trajet,
-le serveur MCP d’un service. Chacun est facultatif.
+Les outils sont ce que l’agent appelle pendant un tour. Chacun est facultatif.
 
 ## Web, météo et cartes
 
-Chacun de ces outils est une ligne de `tools`. `nestor init` écrit les quatre moteurs gratuits et
-`web-pages`.
+Une ligne chacun dans `tools`. `nestor init` écrit les quatre moteurs gratuits et `web-pages`.
 
 | Outil                         | Plugin                                     | Clé                         | Ce qu’il apporte                                                            |
 | ----------------------------- | ------------------------------------------ | --------------------------- | --------------------------------------------------------------------------- |
@@ -34,35 +32,29 @@ tools:
 
 ### Recherche
 
-Tous les moteurs de `tools` servent l’unique `web_search` de l’agent. Ceux qui ont une clé passent
-d’abord, dans l’ordre de la configuration, puis les offres gratuites à tour de rôle. Une recherche
-passe au moteur suivant quand l’un est saturé ou la refuse.
+Tous les moteurs servent un seul `web_search` : ceux à clé d’abord, dans l’ordre, puis les offres
+gratuites à tour de rôle, en passant au suivant quand l’un est saturé ou refuse.
 
-Les offres gratuites sont parfois lentes, limitées ou fermées. L’agent sait quand il ne cherche que
-par elles, et le dit quand une recherche échoue. Leur `api_key` relève les limites (pas encore essayée
-avec de vraies clés). `searxng` est un moteur que vous hébergez, à son `url`, avec le format JSON
-autorisé dans ses réglages.
+Les offres gratuites peuvent être lentes, limitées ou fermées ; l’agent le dit quand une recherche
+échoue. Leur `api_key` relève les limites (non essayée avec de vraies clés). `searxng` demande le
+format JSON autorisé dans ses réglages.
 
 ### Pages, lieux et trajets
 
-- `web-pages` ne lit que des adresses publiques : l’agent ne lit jamais une adresse de votre réseau,
-  même par un lien.
-- `openstreetmap` donne les horaires d’ouverture, le site et le téléphone d’un lieu quand
-  OpenStreetMap les connaît, et des trajets en voiture, à vélo ou à pied, sans trafic ni transports en
-  commun. Il passe par les serveurs publics de la communauté OpenStreetMap, qui acceptent une
-  recherche par seconde ; `nominatim_url` et `routing_url` désignent les vôtres.
+- `web-pages` ne lit que des adresses publiques, jamais une de votre réseau, même par un lien.
+- `openstreetmap` donne horaires, site et téléphone quand ils sont connus, et des trajets en voiture,
+  à vélo ou à pied, sans trafic ni transports en commun. Ses serveurs publics acceptent une recherche
+  par seconde ; `nominatim_url` et `routing_url` désignent les vôtres.
 
 ## Serveurs MCP
 
-Les services qui publient un serveur [Model Context Protocol](https://modelcontextprotocol.io) distant
-se connectent dans l’admin, sous **Connexions**, avec le connecteur **Serveur MCP**. Choisissez un
-serveur connu (GitHub, Linear, Notion, Todoist, Atlassian, Asana, Sentry, Cloudflare, Stripe, Vercel,
-Canva, Hugging Face) ou tapez l’adresse de n’importe quel serveur, puis approuvez l’accès sur la page
-du service.
+Les serveurs [Model Context Protocol](https://modelcontextprotocol.io) distants se connectent dans
+l’admin, sous **Connexions** › **Serveur MCP** : choisissez-en un connu (GitHub, Linear, Notion,
+Todoist, Atlassian, Asana, Sentry, Cloudflare, Stripe, Vercel, Canva, Hugging Face) ou tapez une
+adresse, puis approuvez l’accès.
 
-Nestor suit le parcours d’autorisation de MCP, par OAuth avec PKCE : il trouve le serveur
-d’autorisation du serveur et s’y enregistre, sans application à créer. Les jetons sont gardés
-chiffrés, comme ceux d’un [compte](/fr/docs/accounts/#services).
+Nestor s’enregistre auprès de l’OAuth du serveur (PKCE) : le plus souvent, aucune application à créer.
+Les jetons sont chiffrés comme ceux d’un [compte](/fr/docs/accounts/#services).
 
 | Le serveur                                                                | Ce qu’il faut faire                                                                                                                                                                      |
 | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -71,15 +63,14 @@ chiffrés, comme ceux d’un [compte](/fr/docs/accounts/#services).
 | ne demande aucune autorisation (Hugging Face, un serveur de votre réseau) | rien : il se connecte aussitôt                                                                                                                                                           |
 
 Une connexion appartient à une personne ou au foyer. Ses outils portent le nom du service
-(`linear_list_issues`). Les annotations du serveur disent s’ils lisent ou écrivent, et une écriture
-demande d’abord l’accord de la personne, sauf si les réglages de la connexion disent autrement. Vous
-coupez les outils un par un sur la page de la connexion. Dans un message, `@linear` désigne ce serveur
-à l’agent ([Mentions](/fr/docs/channels/#mentions)).
+(`linear_list_issues`) ; une écriture (selon les annotations du serveur) demande d’abord l’accord de
+la personne, sauf réglage contraire de la connexion, et chaque outil peut être coupé. `@linear` le
+désigne à l’agent ([Mentions](/fr/docs/channels/#mentions)).
 
 ### Un serveur dans la configuration
 
-Un serveur écrit dans `tools` sert tout le foyer avec un jeton fixe. Utilisez-le pour un serveur de
-votre réseau, ou pour fixer le risque de chaque outil :
+Un serveur dans `tools` sert le foyer avec un jeton fixe : pour un serveur de votre réseau, ou pour
+fixer le risque de chaque outil.
 
 ```yaml
 tools:
@@ -101,10 +92,9 @@ Sans `risks` ni `sensitive`, aucun outil du serveur ne demande de confirmation.
 
 ## Flux, pages et webhooks
 
-Les veilles suivent ce que vous listez sous `inbound`, en plus du [courrier](/fr/docs/accounts/#courrier-et-veilles).
-L’agent connaît chaque source par le nom que vous lui donnez : « préviens-moi quand Linux 7 sort sur
-Kernel », « quand la lampe passe sous 50 € ». Un nouveau flux ou une nouvelle page s’ajoute ici, pas
-par l’agent.
+Les veilles suivent les sources listées sous `inbound` (et le [courrier](/fr/docs/accounts/#courrier-et-veilles)),
+par le nom que vous leur donnez : « préviens-moi quand la lampe passe sous 50 € ». Vous seul ajoutez
+une source, pas l’agent.
 
 ```yaml
 inbound:
@@ -126,9 +116,8 @@ inbound:
 | `web-page` | le contenu d’une page, comme le lit `read_page` | 1 h (`every_s`, au moins 300)   | un changement, avec ce qui a changé ; les versions entre deux lectures ne sont pas vues         |
 | `webhook`  | du JSON envoyé sur `POST /hooks/<nom>`          | à chaque envoi                  | l’envoi, du `kind` donné au webhook                                                             |
 
-Les flux et les pages de votre propre réseau sont refusés. Pour une page, le modèle juge si un
-changement est celui qu’on attend (« sous 50 € »).
+Les flux et pages de votre réseau sont refusés.
 
-Un webhook écoute sur le port 8474 de 127.0.0.1 (`host`, `port`) : mettez un reverse proxy devant. Un
-envoi est signé avec le secret de son webhook (`X-Hub-Signature-256: sha256=…`, comme GitHub signe) ou
-le porte (`Authorization: Bearer <secret>`), jusqu’à 64 Ko (`max_bytes`).
+Les webhooks écoutent sur 127.0.0.1:8474 (`host`, `port`), derrière un reverse proxy. Un envoi (64 Ko
+au plus, `max_bytes`) est signé avec le secret du webhook (`X-Hub-Signature-256: sha256=…`, comme
+GitHub) ou le porte (`Authorization: Bearer <secret>`).

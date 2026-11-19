@@ -5,8 +5,8 @@ description: Write a satellite in Python with nestor-satellite, or run its comma
 
 import Steps from "@/components/docs/Steps.astro";
 
-[`nestor-satellite`](https://pypi.org/project/nestor-satellite/) handles pairing, the token, the
-manifest, the link and text, on Python 3.12 or later. Audio and the camera are extras.
+[`nestor-satellite`](https://pypi.org/project/nestor-satellite/) handles pairing, the link and text,
+on Python 3.12+. Audio and the camera are extras.
 
 ## Install
 
@@ -19,8 +19,8 @@ manifest, the link and text, on Python 3.12 or later. Audio and the camera are e
    pip install nestor-satellite                        # a device that only writes
    ```
 
-2. **Pair it** with the pairing URI of an enrollment code, made under **Satellites** in the
-   admin or with `nestor satellites add --room salon`. Later runs reconnect.
+2. **Pair it** with a pairing URI from the admin or `nestor satellites add --room salon`. Later runs
+   reconnect.
 
    ```bash
    nestor-satellite run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
@@ -38,8 +38,7 @@ manifest, the link and text, on Python 3.12 or later. Audio and the camera are e
 
 ## The command
 
-`nestor-satellite run` turns this machine into a satellite: its microphone and speaker, its
-terminal, or both.
+`nestor-satellite run` makes this machine a satellite: microphone and speaker, terminal, or both.
 
 | Option         | Flag or variable                              | What it does                                                         |
 | -------------- | --------------------------------------------- | -------------------------------------------------------------------- |
@@ -47,8 +46,6 @@ terminal, or both.
 | Pairing URI    | `--pairing-uri`, `NESTOR_PAIRING_URI`         | pairs with an enrollment code made in Nestor                         |
 | Enrollment code | `--pairing-code`, `NESTOR_PAIRING_CODE`      | the same code alone, with `--core`                                   |
 | Room           | `--room`                                      | the room the device is in (required)                                 |
-| Id             | `--id`                                        | this device's id (default: the host name)                            |
-| Token          | `--token-file`                                | where the token is kept (default: `~/.config/nestor-satellite/<id>.json`) |
 | Text           | `--text`                                      | sends the lines typed on stdin, prints the answers                   |
 | No voice       | `--no-voice`                                  | leaves the microphone and speaker out (no extra needed)              |
 | Sound cards    | `--input-device`, `--output-device`           | a PortAudio device, by name or index                                 |
@@ -56,8 +53,8 @@ terminal, or both.
 | Language       | `--lang`                                      | what it speaks: `en` or `fr` (default: the environment's)            |
 | Updates        | `--managed`                                   | a person can update it from Nestor (see [Updates](#updates))         |
 
-Without an enrollment code, it says a device code on its speaker and logs it: type it in the
-admin. `nestor-satellite run --help` lists every flag.
+Without an enrollment code, it says and logs a device code to type in the admin. `--help` lists
+every flag.
 
 ## A driver of your own
 
@@ -94,14 +91,14 @@ satellite = Satellite(
 asyncio.run(satellite.run())  # pairs the first time, then stays connected and reconnects
 ```
 
-`run` reconnects when the link drops and pairs again if its token is refused. It returns when a
-newer link of the same device replaces it, and raises `PairingFailed` when retrying cannot help.
+`run` reconnects, pairs again if its token is refused, returns when a newer link of the same device
+replaces it, and raises `PairingFailed` when retrying cannot help.
 
 ## Capabilities
 
-The manifest lists the body and sensors: `EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`,
-`PERSON_DETECTION`, `SPEECH_ACTIVITY`. The rest follows from the arguments; declaring it in the
-manifest raises `ValueError`.
+The manifest lists body and sensors (`EXPRESSION`, `IDENTIFY`, `HEAD_MOTION`, `PERSON_DETECTION`,
+`SPEECH_ACTIVITY`). The rest comes from the arguments; declaring it in the manifest raises
+`ValueError`.
 
 | Argument                                    | Declares          |
 | ------------------------------------------- | ----------------- |
@@ -113,10 +110,10 @@ manifest raises `ValueError`.
 | `on_media=` a function `(active)`           | `media.indicator` |
 | `updater=` an `Updater`                     | `device.update`   |
 
-- `satellite.send_text("…")` sends 1 to 4,000 typed characters. It returns `False` while the link
-  is down, and raises `CapabilityNotAllowed` if the household did not allow `text.input`.
-- `final` marks the last message of an answer.
-- `ice_servers=` (STUN or TURN URLs) is needed only beyond the local network.
+- `satellite.send_text("…")` sends 1 to 4,000 characters; `False` while the link is down,
+  `CapabilityNotAllowed` if `text.input` was not allowed.
+- `final` marks an answer's last message.
+- `ice_servers=` (STUN or TURN URLs): only beyond the local network.
 
 ## Pairing options
 
@@ -128,17 +125,14 @@ manifest raises `ValueError`.
 | `enrolls_by=[PairingMethod.INPUT]`                                        | `enrollment.input`        |
 | `camera=` a `Camera` (`qr` extra)                                         | `enrollment.qr`           |
 
-- `enrollment=` takes a pairing URI or an enrollment code. The default reads `NESTOR_PAIRING_URI`,
-  then `NESTOR_PAIRING_CODE`.
-- `await satellite.enroll("K7QF-2M9X")` sends a code typed on the device. It returns `ACCEPTED`,
-  `REFUSED`, `NOT_PENDING` or `INVALID`. A refused code is never sent again.
-- `locale="fr"` sets the language it speaks.
+- `enrollment=`: a pairing URI or a code (default: `NESTOR_PAIRING_URI`, then `NESTOR_PAIRING_CODE`).
+- `await satellite.enroll("K7QF-2M9X")` sends a typed code: `ACCEPTED`, `REFUSED`, `NOT_PENDING` or
+  `INVALID`. A refused code is never sent again.
+- `locale="fr"`: the language it speaks.
 
 ## Voice and camera
 
-A microphone and a speaker carry the conversation aloud ([Voice](/docs/voice/)). With a camera,
-the people allowed can watch through the device, and with a microphone and a speaker call through
-it, only in sessions they open in Nestor ([Cameras and calls](/docs/satellites/cameras/)).
+See [Voice](/docs/voice/) and [Cameras and calls](/docs/satellites/cameras/).
 
 | Camera              | Reads                                             |
 | ------------------- | ------------------------------------------------- |
@@ -147,36 +141,31 @@ it, only in sessions they open in Nestor ([Cameras and calls](/docs/satellites/c
 | `AvCamera(…)`       | a camera through FFmpeg                           |
 | `PatternCamera()`   | a test pattern, to try                            |
 
-The SDK keeps the session rules itself: it connects only when its link asks, ends the session when
-told, at its time limit or when the link drops, and never listens on a port. Nestor lets a device
-film only over TLS (`https://`), or on the core's machine.
+The SDK enforces the session rules and never listens on a port. A device films only over TLS
+(`https://`) or on the core's machine.
 
 ## Updates
 
-The manifest names the software the device runs: `nestor-satellite` and its version, unless the
-driver passes `software=Software.of("my-satellite")` (its version is read from the installed
-package).
+The manifest names the software: `nestor-satellite`, or `software=Software.of("my-satellite")`
+(version read from the installed package).
 
-An `Updater` finds a newer version at its source (`newer`), installs one (`install`) and may link
-its release notes (`notes`). `PypiUpdater("my-satellite", module="my_satellite")` does it for
-packages installed from PyPI with uv or pip. Without an updater, the admin only shows the version.
+An `Updater` finds (`newer`), installs (`install`) and may link release notes (`notes`).
+`PypiUpdater("my-satellite", module="my_satellite")` covers PyPI installs with uv or pip. Without one,
+the admin only shows the version.
 
-`nestor-satellite run --managed` updates itself the same way: it installs the version a person
-asks for into its own environment, then starts its command again. If the new version is not
-welcomed within 60 s, it goes back to the previous one. Run it under a service manager all the
-same. The rules: [Updates](/docs/satellites/protocol/#10-updates) in the protocol.
+`nestor-satellite run --managed` installs the version asked for into its environment and restarts;
+not welcomed within 60 s, it rolls back. Still run it under a service manager. Rules:
+[Updates](/docs/satellites/protocol/#10-updates).
 
 ## Conformance
 
-Run the server's suite against your driver's command, without a sound card. With the
-[Python template](/docs/sdks/templates/)'s command:
+With the [Python template](/docs/sdks/templates/)'s command, without a sound card:
 
 ```bash
 uvx --from 'nestor-home[voice]==<version>' nestor satellites conformance -- \
   my-satellite run --core {url} --room salon --token-file {state}/token.json --null-audio
 ```
 
-[Conformance](/docs/satellites/conformance/) explains the placeholders and the report. The source
-and the voice clips' licence are in
-[nestor-satellite-python](https://github.com/nestor-home/nestor-satellite-python); a complete
-driver is [nestor-reachy](https://github.com/nestor-home/nestor-reachy).
+See [Conformance](/docs/satellites/conformance/). Source and voice clips' licence:
+[nestor-satellite-python](https://github.com/nestor-home/nestor-satellite-python); a complete driver:
+[nestor-reachy](https://github.com/nestor-home/nestor-reachy).

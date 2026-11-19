@@ -5,60 +5,56 @@ description: How Nestor learns of a new release, and how to update the server, t
 
 import Steps from "@/components/docs/Steps.astro";
 
-Nestor tells you when a release is out and what it changes. Update the server first, then the
-satellites: a satellite updated before the server would speak a version the server refuses.
+Update the server first, then the satellites: a satellite updated first may speak a version the
+server refuses.
 
 ## New releases
 
-Each release publishes `releases.json`: every release, its changes, the satellite protocol versions
-it speaks. Nestor reads it a minute after it starts, then daily, and sends nothing but the request.
+Nestor reads the `releases.json` feed a minute after start, then daily, sending nothing but the
+request.
 
 | Key     | Default                   | What it does                       |
 | ------- | ------------------------- | ---------------------------------- |
 | `check` | `true`                    | `false` never reads the feed       |
 | `feed`  | the latest GitHub release | the feed’s address, for a mirror   |
 
-The admin then shows **New release** at the bottom of the sidebar, with the notes since your
-version, breaking changes first.
+The admin then shows **New release** in the sidebar, with the notes since your version.
 
 ## Update the server
 
-Installed with `uv tool` or pip:
+With `uv tool` or pip:
 
 <Steps>
 
 1. **Install.** Click **Install**, then confirm.
-2. **Check.** Nestor installs the release from PyPI with your extras and runs `nestor check`.
-3. **Restart.** It restarts on it, cutting a conversation in progress. If a step fails, it puts the
-   previous version back and says so.
+2. **Check.** Nestor installs it from PyPI with your extras and runs `nestor check`.
+3. **Restart.** A conversation in progress is cut. If a step fails, the previous version comes
+   back.
 
 </Steps>
 
-With Docker, the dialog gives the commands. The admin never asks for the Docker socket: it would
-give it root on the host.
+With Docker, the dialog gives the commands (the admin never takes the Docker socket):
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
 
-A development checkout updates with git. Until the first stable release, a breaking release may ask
-you to recreate `state/` and pair the satellites again.
+Until the first stable release, a breaking release may ask you to recreate `state/` and pair the
+satellites again.
 
 ## Update a satellite
 
-A satellite allowed `device.update` looks for a newer version daily, where it was installed from.
+A satellite allowed `device.update` looks daily for a newer version at its source.
 
 <Steps>
 
 1. **Open.** Its page shows **Update available**, with the notes the device found.
-2. **Install.** The device fetches the version itself. Nestor sends only the version it reported,
-   never a file or an address, and never opens the notes’ link.
-3. **Restart.** If the new version does not connect within a minute, the device goes back to the
-   previous one and says so.
+2. **Install.** The device fetches it itself; Nestor sends only the version it reported.
+3. **Restart.** If the new version does not connect within a minute, the device rolls back.
 
 </Steps>
 
-A satellite never installs an older version, or one it did not find
-([protocol](/docs/satellites/protocol/#10-updates)). When a release drops a satellite’s protocol
-version, its notes say so: update that satellite on the device itself, after the server.
+It never installs an older version, or one it did not find
+([protocol](/docs/satellites/protocol/#10-updates)). If a release drops a satellite's protocol
+version, update that satellite on the device, after the server.

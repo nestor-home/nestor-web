@@ -6,13 +6,12 @@ description: Install the server with uv, pip or Docker, keep it running, and upg
 import Tab from "@/components/docs/Tab.astro";
 import Tabs from "@/components/docs/Tabs.astro";
 
-Install Nestor on a machine that stays on: a computer, a mini PC or a Raspberry Pi. The
-[Quickstart](/docs/quickstart/) walks through the uv way step by step.
+Install Nestor on a machine that stays on: a computer, a mini PC or a Raspberry Pi.
 
 ## Choose a way
 
-The server is the Python package [`nestor-home`](https://pypi.org/project/nestor-home/) (Python
-3.12 or later), also built as the image `ghcr.io/nestor-home/nestor` (amd64, arm64).
+Python package [`nestor-home`](https://pypi.org/project/nestor-home/) (3.12+), or image
+`ghcr.io/nestor-home/nestor` (amd64, arm64).
 
 | Install with                 | uv                                     | pip                               | Docker                              |
 | ---------------------------- | -------------------------------------- | --------------------------------- | ----------------------------------- |
@@ -21,8 +20,8 @@ The server is the Python package [`nestor-home`](https://pypi.org/project/nestor
 | Upgrade                      | `uv tool upgrade nestor-home`          | `pip install -U nestor-home`      | `docker pull`, then a new container |
 | Good for                     | trying it out, writing satellites      | an environment you already run    | a server at home that stays on      |
 
-The package runs everything in text. Two extras add the rest, and the image has both. Without an
-extra it needs, Nestor stops at start and names the command to run.
+The package alone runs text only; the image has both extras. A missing extra stops Nestor at start,
+naming the command to run.
 
 | Extra      | Adds                                                     |
 | ---------- | -------------------------------------------------------- |
@@ -40,20 +39,17 @@ mkdir nestor && cd nestor
 nestor init
 ```
 
-Fill the keys left empty in `.env`, then:
+Fill the empty keys in `.env`, then:
 
 ```bash
 nestor check
 nestor run
 ```
 
-`nestor` reads `nestor.yaml` and `.env` in the current folder, or another file with `-c <file>`
-([Configuration](/docs/configuration/)). To upgrade, extras included: `uv tool upgrade nestor-home`.
+`nestor` reads `nestor.yaml` and `.env` in the current folder, or `-c <file>`.
 
 </Tab>
 <Tab set="install" choice="pip">
-
-In a virtual environment you keep:
 
 ```bash
 python3 -m venv ~/.venvs/nestor
@@ -62,14 +58,12 @@ mkdir nestor && cd nestor
 ~/.venvs/nestor/bin/nestor init
 ```
 
-Fill the keys in `.env`, then run `nestor check` and `nestor run` from the environment. Install
-`'nestor-home[voice]'` for the voice; add `-U` to upgrade.
+Fill `.env`, then `nestor check` and `nestor run`. Voice: `'nestor-home[voice]'`.
 
 </Tab>
 <Tab set="install" choice="docker">
 
-The image keeps everything in `/data`. Mount a folder there, write a first configuration, fill the
-keys, then start it:
+Everything lives in a folder mounted on `/data`:
 
 ```bash docker-quickstart
 docker run -it --rm -v ./nestor:/data ghcr.io/nestor-home/nestor init
@@ -77,24 +71,24 @@ $EDITOR nestor/.env
 docker run -d --name nestor --restart unless-stopped -v ./nestor:/data -p 8470:8470 -p 8471:8471 ghcr.io/nestor-home/nestor
 ```
 
-The container runs as uid 1000. Port 8470 is the admin, 8471 the satellites: to change them, set
-`admin.port` and the satellites channel's `port` in `nestor.yaml`, and the `-p` options.
+The container runs as uid 1000. Port 8470 is the admin, 8471 the satellites (`admin.port` and the
+satellites channel's `port`, plus `-p`).
 
-Other `nestor` commands run through the image:
+Other commands run through the image:
 
 ```bash
 docker run --rm -v ./nestor:/data ghcr.io/nestor-home/nestor check
 docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor secrets list
 ```
 
-After editing `nestor/.env`, run `docker restart nestor`. A model server on the same machine
-(Ollama, LM Studio) is at `http://host.docker.internal:<port>/v1`; on Linux, add
-`--add-host host.docker.internal:host-gateway` to `docker run`.
+After editing `nestor/.env`, `docker restart nestor`. A local model server (Ollama, LM Studio) is
+at `http://host.docker.internal:<port>/v1`; on Linux, add
+`--add-host host.docker.internal:host-gateway`.
 
 ### With Compose
 
-The repository's [`compose.yaml`](https://github.com/nestor-home/nestor/blob/main/compose.yaml)
-holds the same settings plus an optional Litestream replica, and keeps everything in `./data`:
+[`compose.yaml`](https://github.com/nestor-home/nestor/blob/main/compose.yaml) adds an optional
+Litestream replica and keeps everything in `./data`:
 
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/nestor-home/nestor/main/compose.yaml
@@ -102,23 +96,21 @@ docker compose run --rm nestor init
 docker compose up -d
 ```
 
-To upgrade, `docker compose pull` then `docker compose up -d`. It follows `latest`; to stay on a
-release line, set its tag: `ghcr.io/nestor-home/nestor:<major>.<minor>`.
+Upgrade: `docker compose pull`, then `docker compose up -d`. It follows `latest`; pin a line with
+`ghcr.io/nestor-home/nestor:<major>.<minor>`.
 
 </Tab>
 </Tabs>
 
-The admin says when a newer release is out: see [Updates](/docs/updates/).
+The admin says when a release is out: [Updates](/docs/updates/).
 
 ## The owner account
 
-`nestor init` creates it. For an installation without one (a hand-written configuration, a `state/`
-from elsewhere):
+`nestor init` creates it. Without one (hand-written configuration, `state/` from elsewhere):
 
 ```bash
 nestor accounts create-owner --login alex
 ```
 
-It asks for the password; `--person` picks the household member, the first by default. Restart
-Nestor if it is running. With Docker, prefix the command with
+`--person` picks the member (the first by default). Restart Nestor. With Docker, prefix with
 `docker run --rm -it -v ./nestor:/data ghcr.io/nestor-home/nestor`.

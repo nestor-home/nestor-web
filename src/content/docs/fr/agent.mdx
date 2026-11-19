@@ -7,37 +7,30 @@ import PromptLayers from "@/components/docs/diagrams/PromptLayers.astro";
 import SystemMap from "@/components/docs/diagrams/SystemMap.astro";
 import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 
-Un seul agent répond à tout le foyer, à l’oral comme à l’écrit, avec une seule mémoire.
-
 ## Les parties
 
 <SystemMap locale="fr" n={1} />
 
-Le **cœur** ne dépend d’aucun fournisseur : modèles, Home Assistant, connecteurs, exécutants et
-canaux sont des **adaptateurs** derrière des contrats. Le [journal](/fr/docs/agent/journal/) note
-chaque effet et chaque décision ; au redémarrage, Nestor y retrouve les conversations ouvertes, les
-tâches, les rappels et les messages non livrés.
+Le **cœur** ne dépend d’aucun fournisseur ; tout le reste est un **adaptateur** derrière un
+contrat. Au redémarrage, Nestor retrouve dans le [journal](/fr/docs/agent/journal/) les
+conversations ouvertes, les tâches, les rappels et les messages non livrés.
 
 ## Un tour
 
 <TurnFlow locale="fr" n={2} />
 
-Une **conversation** regroupe les tours proches dans le temps, comme Assist dans Home Assistant.
-Une fois finie, le modèle ne relit plus ses tours ; les souvenirs, eux, restent. Elle n’a qu’un
-tour à la fois : des messages envoyés ensemble reçoivent leurs réponses dans l’ordre.
+Une **conversation** regroupe les tours proches dans le temps. Finie, le modèle ne la relit plus ; les souvenirs restent. Des messages envoyés ensemble reçoivent
+leurs réponses dans l’ordre.
 
-À l’oral, Nestor parle pendant que le modèle écrit encore. Un acquiescement (« oui », « mm ») ne
-l’arrête pas ; tout autre mot l’arrête, comme 1,2 seconde de parole, et le journal garde ce qui a
-été entendu. Les acquiescements qu’il connaît sont des mots français, et « ok ». Quand le modèle ou
-un service de voix tombe ou tarde, Nestor le dit (`conversation.fallback`).
+À l’oral, Nestor parle pendant que le modèle écrit encore. Tout mot l’arrête, ou 1,2 s de parole,
+sauf un acquiescement (« oui », « mm », « ok »). Quand le modèle ou un service de voix tombe,
+Nestor le dit (`conversation.fallback`).
 
 ## Les outils
 
-Les actions courtes sont des outils directs : une lampe, un souvenir, un rappel. Un outil plus lent
-que l’attente du tour continue en arrière-plan ; son résultat revient plus tard dans la
-conversation et Nestor le dit à la personne. Un long résultat est mis de côté : le modèle en voit
-le début, la fin et la taille, et lit la suite avec `read_result` et `search_result`. Ce qui prend
-des minutes part chez un [exécutant](/fr/docs/executors/).
+Un outil plus lent que l’attente du tour continue en arrière-plan, et Nestor en dit le résultat
+plus tard. Un long résultat est mis de côté, lu avec `read_result` et `search_result`. Ce qui prend des minutes part chez un
+[exécutant](/fr/docs/executors/).
 
 | Réglage                                | Défaut                        | Effet                                   |
 | -------------------------------------- | ----------------------------- | --------------------------------------- |
@@ -50,14 +43,13 @@ des minutes part chez un [exécutant](/fr/docs/executors/).
 
 <PromptLayers locale="fr" n={3} />
 
-La couche du foyer dit aussi comment l’agent fonctionne en ce moment, une recherche web sur des
-offres gratuites par exemple ; l’agent le mentionne quand cela touche à la demande. Un plugin le
-signale par les `notes()` de son composant, en anglais.
+La couche du foyer dit aussi comment l’agent fonctionne en ce moment (une recherche web sur offres
+gratuites, par exemple), d’après les `notes()` de chaque composant. L’agent le mentionne quand cela
+touche à la demande.
 
 ## Les modèles par rôle
 
-Nommez des profils de modèles dans `models` et faites-y pointer les rôles. Un seul modèle ne demande
-rien de plus.
+Faites pointer les rôles vers des profils de `models`. Un seul modèle ne demande rien de plus.
 
 ```yaml
 models:
@@ -87,5 +79,4 @@ agent:
 | `watches.model`        | trier ce qui arrive selon les veilles | `agent.written` |
 | `memory.consolidation` | résumer chaque conversation finie     | `agent.written` |
 
-Les rôles de la voix sont dans [Voix](/fr/docs/voice/), tous les rôles dans
-[Modèles](/fr/docs/models/).
+Tous les rôles : [Modèles](/fr/docs/models/).

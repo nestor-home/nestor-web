@@ -5,17 +5,13 @@ description: The JSON Schema of every protocol message, and how an SDK keeps its
 ---
 
 Every message of [`nestor.satellite/1`](/docs/satellites/protocol/) has a JSON Schema (draft
-2020-12), served at its `$id`:
+2020-12) at its `$id`, from the server release this site pins:
 
 ```text
 https://nestorhome.dev/schemas/satellite/1/<message>.json
 ```
 
-The schemas come from the server release this site pins.
-
 ## Pairing
-
-Over HTTP:
 
 | Schema                                                               | Body of                                                             |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------- |
@@ -52,9 +48,9 @@ On the WebSocket `/satellites/{device_id}/link`:
 
 ## A copy in an SDK
 
-An SDK tests every message it sends against its own copy: `src/nestor_satellite/schemas/` in Python,
-`schemas/` in TypeScript and Rust. Refresh it from the server release the SDK targets, then fix the
-code until its tests pass:
+Each SDK tests what it sends against its copy (`src/nestor_satellite/schemas/` in Python,
+`schemas/` in TypeScript and Rust). Refresh it from the targeted server release, then fix the code
+until tests pass:
 
 ```bash
 uvx --from nestor-home==<version> nestor satellites schemas --out schemas/
