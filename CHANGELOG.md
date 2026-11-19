@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.8.0](https://github.com/nestor-home/nestor-web/compare/v0.7.8...v0.8.0) (2026-11-19)
+
+
+### Features
+
+* a home page in bentos with Reachy in 3D, and the docs reworked for people and language models ([#131](https://github.com/nestor-home/nestor-web/issues/131)) ([2922763](https://github.com/nestor-home/nestor-web/commit/2922763db4ed249d30f5da805a0622893aa74d96))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @lobehub/icons-static-svg to v1.103.0 ([#127](https://github.com/nestor-home/nestor-web/issues/127)) ([e7c2d89](https://github.com/nestor-home/nestor-web/commit/e7c2d897e96aca6adb387bcceedfcbbb0e56751b))
+* **deps:** update dependency lucide-react to v1.74.0 ([#128](https://github.com/nestor-home/nestor-web/issues/128)) ([6dee96a](https://github.com/nestor-home/nestor-web/commit/6dee96a7dbeb2c93d6d5ef89547aed9b4dd01b13))
+* **deps:** update dependency lucide-react to v1.75.0 ([#134](https://github.com/nestor-home/nestor-web/issues/134)) ([c875f1f](https://github.com/nestor-home/nestor-web/commit/c875f1f399f837cce5345ffd254938307aba5532))
+* **deps:** update dependency nestor-home to v0.15.0 ([#124](https://github.com/nestor-home/nestor-web/issues/124)) ([9f76b30](https://github.com/nestor-home/nestor-web/commit/9f76b301850c2bbcd8bf95c100c273cea30b5b70))
+* **deps:** update dependency nestor-home to v0.16.0 ([#132](https://github.com/nestor-home/nestor-web/issues/132)) ([c625cc3](https://github.com/nestor-home/nestor-web/commit/c625cc33f6d35cef18cc29fe607b53b0d7a5594d))
+* sections laid out for real, so a link to one lands on it ([#135](https://github.com/nestor-home/nestor-web/issues/135)) ([a27a8c4](https://github.com/nestor-home/nestor-web/commit/a27a8c4cc83a2e3f0293722e30f5e0090d445957))
+
+
+### Documentation
+
+* camera privacy rules ([#129](https://github.com/nestor-home/nestor-web/issues/129)) ([4bf7b40](https://github.com/nestor-home/nestor-web/commit/4bf7b40f727849411e5e8862f9e25a72649dc087))
+
 ## [0.7.8](https://github.com/nestor-home/nestor-web/compare/v0.7.7...v0.7.8) (2026-11-17)
 
 
