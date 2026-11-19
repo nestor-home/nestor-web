@@ -59,7 +59,7 @@ const edit = `${REPOS.web}/edit/main/${entry.filePath}`;
 
       <header class="flex items-start justify-between gap-6">
         <div class="min-w-0">
-          <p class="docs-path" aria-hidden="true">~/docs/{slug || "index"}.md</p>
+          <p class="docs-path" aria-hidden="true">{`~/docs/${slug || "index"}.md`}</p>
           <h1 class="docs-title text-ink">{entry.data.title}</h1>
           <p class="lede mt-4">{entry.data.description}</p>
         </div>
