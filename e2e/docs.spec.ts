@@ -86,7 +86,7 @@ test("the SDK pages show their code, highlighted, and copy it", async ({ page, c
 });
 
 test("the reader moves to the next page, and to the same page in French", async ({ page }) => {
-  await page.goto("/docs/satellites/");
+  await page.goto("/docs/satellites/cameras/");
   await page.locator('a[rel="next"]').click();
   await expect(page).toHaveURL(/\/docs\/satellites\/protocol\/$/);
   await expect(page.locator('aside.docs-side a[aria-current="page"]')).toHaveText(/nestor\.satellite\/1/);

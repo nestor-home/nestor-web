@@ -40,18 +40,23 @@ if (sheet && opener) {
   sheet.addEventListener("click", (event) => {
     if (event.target === sheet) sheet.close();
   });
-  // a link to a section of this page closes it first (the page scrolls again), then goes to the section
+  // a link to a section of this page closes it first, then, once the page scrolls again, goes to the section
   for (const link of sheet.querySelectorAll("a")) {
     link.addEventListener("click", (event) => {
       const url = new URL(link.href);
       const target = url.pathname === location.pathname && url.hash ? document.querySelector(url.hash) : null;
+      if (target) {
+        event.preventDefault();
+        sheet.addEventListener(
+          "close",
+          () => {
+            history.pushState(null, "", url.hash);
+            requestAnimationFrame(() => target.scrollIntoView());
+          },
+          { once: true },
+        );
+      }
       sheet.close();
-      if (!target) return;
-      event.preventDefault();
-      requestAnimationFrame(() => {
-        target.scrollIntoView();
-        history.pushState(null, "", url.hash);
-      });
     });
   }
   sheet.addEventListener("close", () => opener.focus({ preventScroll: true }));
