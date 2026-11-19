@@ -86,6 +86,10 @@ Before adding a section to the home page, check the docs do not already say it; 
   list inside), "where next" and "the parts of X" are `<Cards>`/`<Card>`, options, defaults, events,
   capabilities and commands are tables, a rare aside is a `<Callout>` (all in
   `src/components/docs/`). Prose only for what a structure cannot say.
+- A screen of the admin is `<AdminShot name locale alt>`: one WebP per theme and language in
+  `public/docs/admin/`, made by `scripts/capture-admin.mjs` from the admin on its mocks (a fictional
+  household: never a real name, address or account in them). Recapture after a change of the admin:
+  `cd ../nestor/web && pnpm dev --port 5180`, then `BROWSER_CHANNEL=chrome node scripts/capture-admin.mjs`.
 - The docs have their own mode (`area="docs"` on `Base`): mono headings with their Markdown marks,
   code on ink with its language, the navigation as paths, a dot grid.
 - For language models (llmstxt.org): `/llms.txt` and `/fr/llms.txt` index the pages, each page is

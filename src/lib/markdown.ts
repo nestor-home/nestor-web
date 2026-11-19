@@ -29,6 +29,8 @@ export function toMarkdown(body: string): string {
         /<(?:ProviderSetup|Tab)\b([^>]*)>/g,
         (_, tag: string) => `\n### ${brandName(attr(tag, "brand") ?? attr(tag, "choice"))}\n`,
       )
+      // a screen of the admin: what it shows, in words
+      .replace(/<AdminShot\b([^>]*?)\/>/g, (_, tag: string) => `*${attr(tag, "alt") ?? ""}*`)
       // a callout: a quote
       .replace(/<Callout\b[^>]*>([\s\S]*?)<\/Callout>/g, (_, text: string) =>
         text

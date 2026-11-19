@@ -1,0 +1,64 @@
+---
+/**
+ * A screen of the admin, as the reader sees it: in their language and their theme (both pictures are in the page,
+ * the theme shows one). Captured from the admin on its fictional household by `scripts/capture-admin.mjs`, into
+ * `public/docs/admin/<name>-<theme>-<locale>.webp`; `alt` says what the screen shows.
+ */
+import type { Locale } from "@/i18n";
+
+interface Props {
+  name: string;
+  locale: Locale;
+  alt: string;
+  /** a short line under the picture */
+  caption?: string;
+}
+const { name, locale, alt, caption } = Astro.props;
+const src = (theme: "light" | "dark") => `/docs/admin/${name}-${theme}-${locale}.webp`;
+---
+
+<figure class="admin-shot">
+  <img class="admin-shot-light" src={src("light")} alt={alt} width="1600" height="1000" loading="lazy" decoding="async" />
+  <img class="admin-shot-dark" src={src("dark")} alt={alt} width="1600" height="1000" loading="lazy" decoding="async" />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .admin-shot {
+    overflow: hidden;
+    border-radius: 0.9rem;
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 24px 50px -32px rgb(20 14 8 / 0.55);
+  }
+  .admin-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .admin-shot figcaption {
+    padding: 0.55rem 0.9rem;
+    border-top: 1px solid var(--rule);
+    background: var(--paper-raised);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  /* the picture of the theme being read: the pinned one, else the system's */
+  .admin-shot-dark {
+    display: none !important;
+  }
+  :global(:root[data-theme="dark"]) .admin-shot-dark {
+    display: block !important;
+  }
+  :global(:root[data-theme="dark"]) .admin-shot-light {
+    display: none !important;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .admin-shot-dark {
+      display: block !important;
+    }
+    :global(:root:not([data-theme="light"])) .admin-shot-light {
+      display: none !important;
+    }
+  }
+</style>
