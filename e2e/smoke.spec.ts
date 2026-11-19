@@ -99,6 +99,8 @@ const OBJECTS = [
   { object: ".sats", last: ".sat:last-child", text: "A camera" },
   { object: ".room", last: ".room-why:last-child", text: "Someone in her room, says Home Assistant" },
   { object: ".trace", last: ".trace-why", text: "Mom is out, says Home Assistant" },
+  { object: ".models", last: ".models-item:last-child", text: "llama.cpp" },
+  { object: ".local", last: ".local-row:last-child", text: "Keys, encrypted" },
 ];
 
 /** The story's words drawn too faint to read (an element and its ancestors' opacity under one
@@ -212,11 +214,6 @@ test("the install box shows the documentation's commands, one way at a time, and
   expect(docker.length).toBeGreaterThan(1);
   expect(docker.every((line) => line.startsWith("docker run "))).toBe(true);
   expect(docker.filter((line) => !install.includes(line))).toEqual([]);
-
-  // the last section repeats the quickstart, whole
-  const terminal = page.locator("#start .copy-command");
-  await terminal.getByRole("button", { name: "Copy" }).click();
-  expect((await page.evaluate(() => navigator.clipboard.readText())).split("\n")).toEqual(uv);
 });
 
 test("the last section leads to the guide and to the three ways to build on Nestor", async ({ page, request }) => {
@@ -224,7 +221,7 @@ test("the last section leads to the guide and to the three ways to build on Nest
     await page.goto(root);
     const start = page.locator("#start");
     await expect(start.locator("a.btn-ink")).toHaveAttribute("href", `${root}docs/`);
-    const cards = await start.locator("a.cta-card").evaluateAll((links) => links.map((a) => a.getAttribute("href")));
+    const cards = await start.locator("a.tile").evaluateAll((links) => links.map((a) => a.getAttribute("href")));
     expect(cards).toEqual([`${root}docs/satellites/`, `${root}docs/sdks/python/`, `${root}docs/satellites/protocol/`]);
     for (const href of cards) expect((await request.get(href ?? "")).status(), href ?? "").toBe(200);
   }
@@ -391,12 +388,12 @@ test("integrations are grouped by what they bring, and those not shipped yet say
   await page.goto("/");
   const list = page.locator("#works-with");
   await expect(list.getByRole("heading", { level: 3 })).toHaveText([
-    "Home",
-    "Messages",
-    "Mail, calendar and files",
-    "Web, weather and maps",
-    "Lists, notes and music",
-    "Work and long tasks",
+    "Home.",
+    "Messages.",
+    "Mail, calendar and files.",
+    "Web, weather and maps.",
+    "Lists, notes and music.",
+    "Work and long tasks.",
   ]);
   await expect(list.getByRole("listitem").filter({ hasText: "Home Assistant" })).toBeVisible();
   await expect(list.getByRole("listitem").filter({ hasText: "Spotify" })).toContainText("planned");

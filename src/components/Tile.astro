@@ -22,10 +22,10 @@ const Frame = href ? "a" : "article";
     <Dither shape="ramp-down" from={0.22} to={0} dot={2} class="tile-grain absolute inset-x-0 top-0 h-2/3" />
     <slot />
   </div>
-  <p class="tile-words">
-    <strong id={id} class="tile-title">{title}</strong>
-    {" "}{text}
-  </p>
+  <div class="tile-words">
+    <h3 id={id} class="tile-title">{title}</h3>
+    {" "}<p class="tile-text">{text}</p>
+  </div>
 </Frame>
 
 <style>
@@ -78,7 +78,13 @@ const Frame = href ? "a" : "article";
     color: var(--ink-muted);
     text-wrap: pretty;
   }
+  /* the name and its sentence read as one line of text */
+  .tile-title,
+  .tile-text {
+    display: inline;
+  }
   .tile-title {
+    font: inherit;
     font-weight: 600;
     color: var(--ink);
   }
