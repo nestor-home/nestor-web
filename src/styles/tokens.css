@@ -42,11 +42,14 @@
   --kind-task: light-dark(#4a5a7c, #9fb0d4);
   --kind-watch: light-dark(#7a4a68, #cf9dbd);
 
-  /* fixed, whatever the scheme: the daylight paper and ink that stay so inside the dark rail and the night sky,
-     and the rail's night */
-  --day-paper: #f5f0e6;
+  /* fixed, whatever the scheme: the daylight ink of a phone's notification */
   --day-ink: #1d1913;
-  --night: #100e0b;
+  /* a device's dark glass and what is written on it (a phone, a speaker, code on ink), whatever the scheme */
+  --device: #15120f;
+  --device-glow: #2a2219;
+  --device-rim: #3a332b;
+  --device-text: #f3ecdf;
+  --device-code: #e9e1d2;
 
   /* type */
   --font-display: "Fraunces Variable", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
@@ -72,10 +75,10 @@
   color-scheme: dark;
 }
 
-/* depth: what sits on the page (cards, drawers) is rounder and lifted; controls keep the small radius */
+/* depth: what sits on the page is lifted, what floats over it more */
 :root {
-  --radius-surface: 14px;
-  --radius-scene: 22px;
   --lift: 0 0 0 1px var(--rule), 0 1px 2px rgb(40 28 12 / 0.05), 0 8px 24px -14px rgb(40 28 12 / 0.28);
+  /* an object floating over the page (a card of the story, a screen of the admin) */
+  --float: 0 0 0 1px var(--rule), 0 24px 50px -30px rgb(40 28 12 / 0.45);
   --lift-hover: 0 0 0 1px var(--rule-strong), 0 2px 4px rgb(40 28 12 / 0.06), 0 14px 30px -14px rgb(40 28 12 / 0.38);
 }

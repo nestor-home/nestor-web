@@ -2,7 +2,7 @@
 /** The language models Nestor runs on: those of a provider, those on the household's own machine (lib/providers.ts). */
 import Brand from "@/components/Brand.astro";
 import type { Translator } from "@/i18n";
-import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
+import { brandOf } from "@/lib/brands";
 import { PROVIDERS } from "@/lib/providers";
 
 interface Props {
@@ -24,9 +24,9 @@ const groups = (["cloud", "here"] as const).map((id) => ({
         <figcaption class="models-label">{t(`story-models-${id}`)}</figcaption>
         <ul class="models-list">
           {items.map(({ brand }, i) => (
-            <li class="models-item" style={`--i:${i}`}>
+            <li class="models-item" style={`--i:${i}`} data-stagger>
               <Brand brand={brand} class="size-4 shrink-0" decorative />
-              {(BRANDS[brand] as BrandInfo).name}
+              {brandOf(brand).name}
             </li>
           ))}
         </ul>
@@ -37,6 +37,7 @@ const groups = (["cloud", "here"] as const).map((id) => ({
 
 <style>
   .models {
+    --rise: 6px;
     display: grid;
     width: min(100%, 34rem);
     gap: 1.1rem;
@@ -63,19 +64,5 @@ const groups = (["cloud", "here"] as const).map((id) => ({
     font-size: var(--text-sm);
     color: var(--ink);
     white-space: nowrap;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    :global(.js) .models .models-item {
-      opacity: 0;
-      transform: translateY(6px);
-      transition:
-        opacity 450ms var(--ease-out),
-        transform 450ms var(--ease-out);
-    }
-    :global(.js) .models[data-shown] .models-item {
-      opacity: 1;
-      transform: none;
-      transition-delay: calc(var(--i) * 60ms);
-    }
   }
 </style>

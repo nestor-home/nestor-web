@@ -48,3 +48,9 @@ describe("a docs page as Markdown", () => {
     expect(markdownHref("fr", "agent/memory")).toBe("/fr/docs/agent/memory.md");
   });
 });
+
+describe("a component the conversion does not know", () => {
+  it("is refused, never dropped", () => {
+    expect(() => toMarkdown("<Mystery>text</Mystery>")).toThrow(/Mystery/);
+  });
+});

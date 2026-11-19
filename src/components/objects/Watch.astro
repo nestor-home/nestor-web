@@ -17,7 +17,7 @@ const mails = [
 
 <figure class="obj watch" data-reveal>
   <figcaption class="watch-head">
-    <span class="watch-mark" aria-hidden="true"><Radar className="size-5" strokeWidth={1.7} /></span>
+    <span class="icon-tile is-ember" style="--tile: 2.6rem" aria-hidden="true"><Radar className="size-5" strokeWidth={1.7} /></span>
     <span class="min-w-0">
       <span class="block font-medium text-ink">{t("story-watch-name")}</span>
       <span class="block text-sm text-ink-muted">{t("story-watch-looks")}</span>
@@ -27,7 +27,7 @@ const mails = [
   <ol class="watch-mails">
     {
       mails.map((m, i) => (
-        <li class:list={["watch-mail", m.kept && "is-kept"]} style={`--i:${i}`}>
+        <li class:list={["watch-mail", m.kept && "is-kept"]} style={`--i:${i}`} data-stagger>
           <Brand brand="gmail" class="size-4 shrink-0" decorative />
           <span class="min-w-0 flex-1">
             <span class:list={["block", m.kept ? "text-ink" : "text-ink-muted"]}>{t(`story-watch-${m.id}`)}</span>
@@ -42,13 +42,13 @@ const mails = [
 
 <style>
   .watch {
+    --at: 400ms;
+    --step: 550ms;
     width: min(100%, 30rem);
     padding: 1.25rem;
     border-radius: 1.4rem;
     background: var(--paper-raised);
-    box-shadow:
-      0 0 0 1px var(--rule),
-      0 30px 60px -32px rgb(40 28 12 / 0.4);
+    box-shadow: var(--float);
   }
   .watch-head {
     display: flex;
@@ -56,16 +56,6 @@ const mails = [
     gap: 0.85rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--rule);
-  }
-  .watch-mark {
-    display: grid;
-    width: 2.6rem;
-    height: 2.6rem;
-    flex: none;
-    place-items: center;
-    border-radius: 0.8rem;
-    background: var(--ember-soft);
-    color: var(--ember);
   }
   .watch-live {
     margin-left: auto;
@@ -110,18 +100,4 @@ const mails = [
   }
 
   /* when it comes into view: the mails arrive one after the other, the last one kept */
-  @media (prefers-reduced-motion: no-preference) {
-    :global(.js) .watch .watch-mail {
-      opacity: 0;
-      transform: translateY(8px);
-      transition:
-        opacity 450ms var(--ease-out),
-        transform 450ms var(--ease-out);
-    }
-    :global(.js) .watch[data-shown] .watch-mail {
-      opacity: 1;
-      transform: none;
-      transition-delay: calc(400ms + var(--i) * 550ms);
-    }
-  }
 </style>

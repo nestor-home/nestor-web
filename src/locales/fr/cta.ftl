@@ -13,3 +13,4 @@ cta-run-text = Installez, lancez, puis écrivez-lui.
 cta-needs-title = Ce qu’il faut.
 cta-needs-text = Une machine qui reste allumée, et un modèle.
 cta-need-voice = Un micro et un haut-parleur, plus tard
+cta-install-label = Installer

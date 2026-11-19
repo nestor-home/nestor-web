@@ -9,7 +9,7 @@ import Brand from "@/components/Brand.astro";
 import CopyCommand from "@/components/CopyCommand.astro";
 import Tile from "@/components/Tile.astro";
 import { href, type Translator } from "@/i18n";
-import { BRANDS } from "@/lib/brands";
+import { brandOf } from "@/lib/brands";
 import { docHref } from "@/lib/docs";
 import { MANIFEST_SNIPPET, QUICK_INSTALL, REPOS, SATELLITE_SNIPPET } from "@/lib/site";
 
@@ -44,7 +44,7 @@ const languages = ["python", "typescript", "rust"] as const;
     <Bento class="mt-12">
       <Tile id="cta-run" title={t("cta-run-title")} text={t("cta-run-text")} span={7}>
         <!-- one tab per way, without a script: a radio, its label, then its commands -->
-        <div class="install" style={`--ways: ${QUICK_INSTALL.length}`} role="group" aria-label={t("hero-install-title")}>
+        <div class="install" style={`--ways: ${QUICK_INSTALL.length}`} role="group" aria-label={t("cta-install-label")}>
           {
             QUICK_INSTALL.map((way, i) => (
               <>
@@ -63,7 +63,7 @@ const languages = ["python", "typescript", "rust"] as const;
           {
             needs.map(({ id, icon: Icon }) => (
               <li class="need">
-                <span class="need-mark">
+                <span class="icon-tile is-ember" style="--tile: 2rem">
                   <Icon className="size-4" strokeWidth={1.7} aria-hidden="true" />
                 </span>
                 {t(`cta-need-${id}`)}
@@ -92,10 +92,10 @@ const languages = ["python", "typescript", "rust"] as const;
           {
             languages.map((brand) => (
               <li class="lang">
-                <span class="lang-mark">
+                <span class="icon-tile is-raised" style="--tile: 4rem">
                   <Brand brand={brand} class="size-7" decorative />
                 </span>
-                <span class="lang-name">{BRANDS[brand].name}</span>
+                <span class="lang-name">{brandOf(brand).name}</span>
               </li>
             ))
           }
@@ -168,24 +168,14 @@ const languages = ["python", "typescript", "rust"] as const;
     font-size: var(--text-sm);
     color: var(--ink);
   }
-  .need-mark {
-    display: grid;
-    width: 2rem;
-    height: 2rem;
-    flex: none;
-    place-items: center;
-    border-radius: 0.6rem;
-    background: var(--ember-soft);
-    color: var(--ink);
-  }
 
   .snippet {
     width: 100%;
     overflow: hidden;
     padding: 1rem 1.1rem;
     border-radius: 0.9rem;
-    background: #15120f;
-    color: #e9e1d2;
+    background: var(--device);
+    color: var(--device-code);
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
     line-height: 1.6;
@@ -200,16 +190,6 @@ const languages = ["python", "typescript", "rust"] as const;
     display: grid;
     justify-items: center;
     gap: 0.5rem;
-  }
-  .lang-mark {
-    display: grid;
-    width: 4rem;
-    height: 4rem;
-    place-items: center;
-    border-radius: 1.1rem;
-    background: var(--paper-raised);
-    box-shadow: var(--lift);
-    color: var(--ink);
   }
   .lang-name {
     font-size: var(--text-xs);

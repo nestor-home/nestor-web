@@ -191,3 +191,6 @@ export const BRANDS = {
 } as const satisfies Record<string, Brand>;
 
 export type BrandKey = keyof typeof BRANDS;
+
+/** A brand as the shared shape, whatever its own entry holds. */
+export const brandOf = (key: BrandKey): Brand => BRANDS[key];

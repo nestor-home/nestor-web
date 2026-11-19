@@ -9,7 +9,7 @@
 import Brand from "@/components/Brand.astro";
 import Planned from "@/components/Planned.astro";
 import { type Locale, translator } from "@/i18n";
-import { BRANDS, type Brand as BrandInfo } from "@/lib/brands";
+import { brandOf } from "@/lib/brands";
 import { choiceId } from "@/lib/docs";
 import { PROVIDERS, type ProviderKind } from "@/lib/providers";
 import ChoicePanel from "./ChoicePanel.astro";
@@ -27,7 +27,7 @@ const providers = PROVIDERS[kind];
   <div role="tablist" aria-label={t(`providers-${kind}`)} class="providers-mosaic" data-tabs-grid data-tabs-hash>
     {
       providers.map(({ brand, status, local, label }, i) => {
-        const b = BRANDS[brand] as BrandInfo;
+        const b = brandOf(brand);
         const name = label ? t(label) : b.name;
         const id = choiceId(kind, brand);
         return (
@@ -61,7 +61,7 @@ const providers = PROVIDERS[kind];
       .filter((p) => p.status === "planned")
       .map(({ brand }) => (
         <ChoicePanel id={choiceId(kind, brand)} shown={false}>
-          <p>{t("providers-planned-note", { name: (BRANDS[brand] as BrandInfo).name })}</p>
+          <p>{t("providers-planned-note", { name: brandOf(brand).name })}</p>
         </ChoicePanel>
       ))
   }

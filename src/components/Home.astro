@@ -6,6 +6,7 @@ import Story from "@/components/sections/Story.astro";
 import Works from "@/components/sections/Works.astro";
 import { type Locale, pageMeta, translator } from "@/i18n";
 import Base from "@/layouts/Base.astro";
+import { homeGraph } from "@/lib/seo";
 
 interface Props {
   locale: Locale;
@@ -13,7 +14,7 @@ interface Props {
 const t = translator(Astro.props.locale);
 ---
 
-<Base locale={t.locale} {...pageMeta(t, "home")}>
+<Base locale={t.locale} {...pageMeta(t, "home")} graph={homeGraph(t.locale, t("meta-description-home"))}>
   <Hero t={t} />
   <Story t={t} />
   <Reachy t={t} />

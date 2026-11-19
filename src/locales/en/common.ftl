@@ -1,5 +1,5 @@
 meta-title-home = Nestor, the agent that lives at home
-meta-description-home = Nestor is an open-source assistant for the whole household. Ask once, aloud or in a message: it keeps watch, then finds the right person wherever they are, and can always tell you why it spoke.
+meta-description-home = Nestor is an open-source assistant for the whole household. It keeps watch for you and finds the right person, aloud or in a message.
 meta-og-alt = Nestor, the agent that lives at home.
 skip = Skip to content
 nav-label = Main
