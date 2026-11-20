@@ -42,7 +42,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       # the build takes the protocol's JSON Schemas and the OAuth relay from the server package with uvx (scripts/server.mjs)
-      - uses: astral-sh/setup-uv@v10.3.3
+      - uses: astral-sh/setup-uv@v10.4.0
       - run: pnpm install --frozen-lockfile
       # Astro keeps the optimised images here, keyed by source and options: an image already
       # made is not made again (most of the build's time)
