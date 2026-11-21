@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.8.2](https://github.com/nestor-home/nestor-web/compare/v0.8.1...v0.8.2) (2026-11-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency lucide-react to v1.76.0 ([#144](https://github.com/nestor-home/nestor-web/issues/144)) ([8f8ca4c](https://github.com/nestor-home/nestor-web/commit/8f8ca4c2164299407c55b734bea25cf1cf013ba3))
+* **deps:** update dependency lucide-react to v1.77.0 ([#147](https://github.com/nestor-home/nestor-web/issues/147)) ([db250c7](https://github.com/nestor-home/nestor-web/commit/db250c770ccfafaff715726af20075b96afa7a1d))
+* **deps:** update dependency nestor-home to v0.17.0 ([#143](https://github.com/nestor-home/nestor-web/issues/143)) ([1e54ea4](https://github.com/nestor-home/nestor-web/commit/1e54ea43c8ff6d8dcef190737802964288625805))
+
 ## [0.8.1](https://github.com/nestor-home/nestor-web/compare/v0.8.0...v0.8.1) (2026-11-19)
 
 
