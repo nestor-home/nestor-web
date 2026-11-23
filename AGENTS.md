@@ -79,7 +79,7 @@ Before adding a section to the home page, check the docs do not already say it; 
 
 - The structure, in `DOC_GROUPS` (`src/lib/docs.ts`, the reading order and the sidebar): **Start**
   (Introduction with cards, Quickstart, Installation), **How it works** (concepts, diagram first),
-  **Configure** (configuration, models, channels, voice, updates), **Connect** (Home Assistant,
+  **Configure** (configuration, models, costs, channels, voice, updates), **Connect** (Home Assistant,
   accounts, tools, executors), **Satellites** (with cameras, the protocol, schemas, conformance),
   **SDKs**, **Project**. One subject per page, short pages; each fact has one page, others link to it.
 - Short and visual, like Raycast's or Linear's docs: procedures are `<Steps>` (a Markdown ordered

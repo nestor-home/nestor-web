@@ -1,0 +1,111 @@
+---
+title: Costs
+description: What each call to a model costs, where its price comes from, and how to read the spending by model, person or use.
+---
+
+import AdminShot from "@/components/docs/AdminShot.astro";
+
+Every call Nestor makes to a model of `models` is written in the journal (`usage.recorded`): what it
+consumed, what it cost, for whom and what for. The admin's **Costs** page and `nestor usage` read
+them.
+
+<AdminShot name="usage" locale="en" alt="Costs: the period’s spending at a glance, then over time by model" />
+
+## Where a cost comes from
+
+| Basis      | In the admin   | When                                                                 |
+| ---------- | -------------- | -------------------------------------------------------------------- |
+| `reported` | billed         | the provider says what it billed (OpenRouter does)                   |
+| `priced`   | estimated      | what was consumed, times the model’s `price` or the public list’s    |
+| `free`     | free           | a model on the household’s own hardware, or a price of zero          |
+| `nothing`  | nothing billed | the call failed before anything was consumed                         |
+| `unknown`  | unknown        | neither said nor priced: counted apart, never as zero                |
+
+A cost is fixed when the call is made, with the source of its price: a new price never rewrites the
+past. A `sherpa-onnx` model is the household’s own, and so is an `openai-compatible` one whose
+`base_url` is not a public address: `localhost`, a private or Tailscale address, a name ending in
+`.local`, `.lan`, `.internal` or `.ts.net`, or a single-label name such as `ollama`.
+
+## Price a model
+
+For a model the public list does not know, or to set the price you pay, give it `price`. What it
+leaves out is not billed.
+
+```yaml
+models:
+  main:
+    type: language
+    provider: openai-compatible
+    base_url: https://api.groq.com/openai/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/gpt-oss-120b
+    price: { input_tokens: 0.15, output_tokens: 0.6 } # as your provider lists them
+```
+
+| Key                                         | In dollars per                                         |
+| ------------------------------------------- | ------------------------------------------------------ |
+| `input_tokens`, `output_tokens`             | million tokens                                         |
+| `cached_input_tokens`, `cache_write_tokens` | million tokens; without them, the cache costs as input |
+| `characters`                                | million characters spoken                              |
+| `audio_minutes`                             | minute heard                                           |
+| `images`                                    | picture                                                |
+| `requests`                                  | call                                                   |
+
+## The public price list
+
+Without a `price`, Nestor looks the model up in [LiteLLM’s list](https://github.com/BerriAI/litellm)
+of hosted models’ prices: by who bills it (Anthropic, OpenAI, Gemini, Mistral, Groq, OpenRouter,
+Vercel AI Gateway, ElevenLabs), under the name of the model that answered, then of the one asked.
+It downloads the list a minute after its first start, then daily, keeps a copy in `state/prices/`, and
+sends nothing else.
+
+| Key under `prices` | Default                  | What it does                      |
+| ------------------ | ------------------------ | --------------------------------- |
+| `catalogue`        | `true`                   | `false` never downloads the list  |
+| `catalogue_url`    | LiteLLM’s list on GitHub | the list’s address, for a mirror  |
+
+## What is counted
+
+Each call says what it was for, and who it was for, on which channel and in which conversation:
+
+| Use                            | The calls                                                     |
+| ------------------------------ | ------------------------------------------------------------- |
+| answers (`turn`)               | a turn, its tools, a voice message heard or answered          |
+| notifications                  | what Nestor tells by itself: reminders, tasks, watches        |
+| titles                         | each chat of the admin titled                                 |
+| watches                        | incoming items sorted                                         |
+| memory (`consolidation`)       | a conversation summarized once it is over                     |
+| memory search (`indexing`)     | memories and conversations made searchable by meaning         |
+| voice recording (`enrollment`) | a voice being recorded                                        |
+| tasks (`task`)                 | what an executor asks Nestor through its tools                |
+| admin search (`search`)        | a search in the admin’s memories                              |
+| unattributed                   | a call nothing said the reason of: a fault, logged once a day |
+
+Not counted yet: the satellites’ live voice, and what an executor spends on its own side.
+
+## Read the spending
+
+In the admin, **Settings → Costs**. Owners and admins see the whole household, a member what they cost.
+
+| Part                            | Shows                                                                                         |
+| ------------------------------- | --------------------------------------------------------------------------------------------- |
+| the period                      | spent, against the period before, the month’s projection, per conversation, the cache’s share |
+| over time                       | the spending split by model, person, use, channel or provider                                 |
+| who, models, what for, channels | the costliest first; a row filters the whole page                                             |
+| when                            | each hour of each weekday                                                                     |
+| where the figures come from     | the calls by basis, and those of unknown cost                                                 |
+| prices                          | each model’s price and its source, the models without one                                     |
+| calls                           | every call, newest first, down to its units and price                                         |
+
+The period and the values kept are in the page’s address, to share or come back to.
+
+From a terminal, whether Nestor runs or not:
+
+```bash
+nestor usage --period 7d --by purpose
+```
+
+| Option     | Values                                                                                                                           | Default    |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `--period` | `today`, `7d`, `30d`, `month`, `90d`                                                                                             | `30d`      |
+| `--by`     | `consumer`, `kind`, `provider`, `served`, `purpose`, `person`, `channel`, `medium`, `basis`, `outcome`, `origin`, `conversation` | `consumer` |

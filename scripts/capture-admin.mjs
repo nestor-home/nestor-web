@@ -88,6 +88,7 @@ export const SHOTS = {
   house: (page) => go(page, "/house"),
   connections: (page) => go(page, "/connections/catalogue"),
   models: (page) => go(page, "/config/models"),
+  usage: (page) => go(page, "/usage"),
   satellites: (page) => go(page, "/satellites"),
   system: (page) => go(page, "/system"),
 };
