@@ -229,8 +229,8 @@ journal. La discussion accepte 10 fichiers de 20 Mo par message.
 | ------------------ | ------------------------------------------------------------------------------------------------------ |
 | message vocal      | le transcrit ; répond par un vocal quand un modèle de synthèse est défini et que le canal en envoie ([Voix](/fr/docs/voice/#messages-vocaux)) |
 | photo              | la montre à un modèle qui voit les images (`vision: true`, `anthropic`, `gemini`) ; sinon, le modèle dit qu’il ne la voit pas |
-| PDF, fichier texte | le modèle en lit le texte par parties ; un scan n’a pas de texte, et le modèle le dit. `anthropic` et `gemini` lisent en entier les deux derniers PDF, scans compris |
-| tout autre fichier | le nomme au modèle, qui dit qu’il ne peut pas l’ouvrir                                                  |
+| PDF, fichier texte | le modèle en lit le texte par parties, un fichier étant reconnu à son contenu et à son nom quel que soit le type annoncé par le canal ; un scan n’a pas de texte, et le modèle le dit. `anthropic` et `gemini` lisent en entier les deux derniers PDF, scans compris |
+| tout autre fichier | le nomme au modèle avec son type et sa taille ; il ne peut pas l’ouvrir, mais un [exécutant](/fr/docs/executors/) le peut |
 
 Toutes les messageries envoient les fichiers avec la réponse : [images](/fr/docs/models/#images),
 documents et audio d’une tâche.

@@ -225,8 +225,8 @@ chat takes 10 files of 20 MB per message.
 | --------------- | ------------------------------------------------------------------------------------------------------ |
 | voice message   | transcribes it; answers with one when a speech model is set and the channel sends them ([Voice](/docs/voice/#voice-messages)) |
 | photo           | shows it to a model that sees images (`vision: true`, `anthropic`, `gemini`); otherwise the model says it cannot see it |
-| PDF, text file  | the model reads its text in parts; a scan has no text, and the model says so. `anthropic` and `gemini` read the last two PDFs whole, scans included |
-| any other file  | names it to the model, which says it cannot open it                                                     |
+| PDF, text file  | the model reads its text in parts, a file being known by its content and name whatever type the channel announces; a scan has no text, and the model says so. `anthropic` and `gemini` read the last two PDFs whole, scans included |
+| any other file  | names it to the model with its type and size; it cannot open it, but an [executor](/docs/executors/) can |
 
 Every messaging channel sends files with the answer: [pictures](/docs/models/#pictures), a task's
 documents and audio.
