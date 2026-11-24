@@ -39,6 +39,7 @@ Only `persona`, `household`, `models` and `channels` are required.
 | `inbound`    | news feeds, web pages and webhooks the watches follow                       | [Tools](/docs/tools/)                              |
 | `admin`      | the admin’s address and port; without it, there is no admin                 | [The admin](#the-admin)                            |
 | `updates`    | whether the admin says when a newer release is out                          | [Updates](/docs/updates/)                          |
+| `prices`     | where a call’s price comes from when the provider does not say              | [Costs](/docs/costs/)                              |
 
 ## The household
 

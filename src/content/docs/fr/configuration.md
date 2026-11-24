@@ -39,6 +39,7 @@ Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 | `inbound`    | les flux d’actualité, pages web et webhooks que suivent les veilles              | [Outils](/fr/docs/tools/)                             |
 | `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration       | [Administration](#administration)                     |
 | `updates`    | si l’administration signale une version plus récente                             | [Mises à jour](/fr/docs/updates/)                     |
+| `prices`     | d’où vient le prix d’un appel quand le fournisseur ne le dit pas                 | [Coûts](/fr/docs/costs/)                              |
 
 ## Le foyer
 

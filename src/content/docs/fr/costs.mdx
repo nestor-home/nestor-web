@@ -1,0 +1,112 @@
+---
+title: Coûts
+description: Ce que coûte chaque appel à un modèle, d’où vient son prix, et comment lire la dépense par modèle, personne ou usage.
+---
+
+import AdminShot from "@/components/docs/AdminShot.astro";
+
+Chaque appel de Nestor à un modèle de `models` est écrit dans le journal (`usage.recorded`) : ce
+qu’il a consommé, ce qu’il a coûté, pour qui et pour quoi. La page **Coûts** de l’admin et
+`nestor usage` les lisent.
+
+<AdminShot name="usage" locale="fr" alt="Coûts : la dépense de la période d’un coup d’œil, puis dans le temps par modèle" />
+
+## D’où vient un coût
+
+| Base       | Dans l’admin  | Quand                                                                              |
+| ---------- | ------------- | ---------------------------------------------------------------------------------- |
+| `reported` | facturé       | le fournisseur dit ce qu’il a facturé (OpenRouter le fait)                         |
+| `priced`   | estimé        | ce qui a été consommé, multiplié par le `price` du modèle ou par la liste publique |
+| `free`     | gratuit       | un modèle sur le matériel du foyer, ou un prix nul                                 |
+| `nothing`  | rien facturé  | l’appel a échoué avant de consommer quoi que ce soit                               |
+| `unknown`  | inconnu       | ni dit ni calculé : compté à part, jamais comme zéro                               |
+
+Un coût est figé au moment de l’appel, avec la source de son prix : un nouveau prix ne réécrit
+jamais le passé. Un modèle `sherpa-onnx` appartient au foyer, comme un modèle `openai-compatible`
+dont la `base_url` n’est pas une adresse publique : `localhost`, une adresse privée ou Tailscale, un
+nom en `.local`, `.lan`, `.internal` ou `.ts.net`, ou un nom d’un seul mot comme `ollama`.
+
+## Donner un prix à un modèle
+
+Pour un modèle que la liste publique ne connaît pas, ou pour fixer le prix que vous payez, donnez-lui
+`price`. Ce qu’il ne mentionne pas n’est pas facturé.
+
+```yaml
+models:
+  main:
+    type: language
+    provider: openai-compatible
+    base_url: https://api.groq.com/openai/v1
+    api_key: ${MODEL_API_KEY}
+    model: openai/gpt-oss-120b
+    price: { input_tokens: 0.15, output_tokens: 0.6 } # tels que votre fournisseur les affiche
+```
+
+| Clé                                         | En dollars par                                              |
+| ------------------------------------------- | ----------------------------------------------------------- |
+| `input_tokens`, `output_tokens`             | million de tokens                                           |
+| `cached_input_tokens`, `cache_write_tokens` | million de tokens ; sans eux, le cache coûte comme l’entrée |
+| `characters`                                | million de caractères prononcés                             |
+| `audio_minutes`                             | minute entendue                                             |
+| `images`                                    | image                                                       |
+| `requests`                                  | appel                                                       |
+
+## La liste publique des prix
+
+Sans `price`, Nestor cherche le modèle dans [la liste de LiteLLM](https://github.com/BerriAI/litellm),
+qui donne les prix des modèles hébergés : selon qui le facture (Anthropic, OpenAI, Gemini, Mistral,
+Groq, OpenRouter, Vercel AI Gateway, ElevenLabs), sous le nom du modèle qui a répondu, puis de celui
+demandé. Il la télécharge une minute après son premier démarrage, puis chaque jour, en garde une
+copie dans `state/prices/` et n’envoie rien d’autre.
+
+| Clé sous `prices` | Défaut                         | Rôle                                     |
+| ----------------- | ------------------------------ | ---------------------------------------- |
+| `catalogue`       | `true`                         | `false` : ne jamais télécharger la liste |
+| `catalogue_url`   | la liste de LiteLLM sur GitHub | l’adresse de la liste, pour un miroir    |
+
+## Ce qui est compté
+
+Chaque appel dit à quoi il sert, pour qui, sur quel canal et dans quelle conversation :
+
+| Usage                                   | Les appels                                                                              |
+| --------------------------------------- | --------------------------------------------------------------------------------------- |
+| réponses (`turn`)                       | un tour, ses outils, un message vocal entendu ou auquel il répond                       |
+| notifications                           | ce que Nestor dit de lui-même : rappels, tâches, veilles                                |
+| titres                                  | le titre de chaque discussion de l’admin                                                |
+| veilles                                 | le tri de ce qui arrive                                                                 |
+| mémoire (`consolidation`)               | le résumé d’une conversation terminée                                                   |
+| recherche en mémoire (`indexing`)       | les souvenirs et conversations rendus cherchables par le sens                           |
+| enregistrement de voix (`enrollment`)   | une voix en cours d’enregistrement                                                      |
+| tâches (`task`)                         | ce qu’un exécutant demande à Nestor par ses outils                                      |
+| recherche de l’admin (`search`)         | une recherche dans les souvenirs depuis l’admin                                         |
+| non attribué                            | un appel dont rien n’a dit la raison : un défaut, signalé dans le log une fois par jour |
+
+Pas encore compté : la voix en direct des satellites, et ce qu’un exécutant dépense de son côté.
+
+## Lire la dépense
+
+Dans l’admin, **Réglages → Coûts**. Propriétaires et administrateurs voient tout le foyer, un
+membre ce qu’il a coûté.
+
+| Partie                           | Montre                                                                                                   |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| la période                       | la dépense, face à la période d’avant, la projection du mois, le coût par conversation, la part du cache |
+| dans le temps                    | la dépense répartie par modèle, personne, usage, canal ou fournisseur                                    |
+| qui, modèles, pour quoi, canaux  | les plus chers d’abord ; une ligne filtre toute la page                                                  |
+| quand                            | chaque heure de chaque jour de la semaine                                                                |
+| d’où viennent les chiffres       | les appels par base, et ceux de coût inconnu                                                             |
+| tarifs                           | le prix de chaque modèle et sa source, les modèles sans prix                                             |
+| appels                           | chaque appel, du plus récent, jusqu’à ses unités et son prix                                             |
+
+La période et les valeurs retenues sont dans l’adresse de la page, pour la partager ou y revenir.
+
+Depuis un terminal, que Nestor tourne ou non :
+
+```bash
+nestor usage --period 7d --by purpose
+```
+
+| Option     | Valeurs                                                                                                                          | Défaut     |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `--period` | `today`, `7d`, `30d`, `month`, `90d`                                                                                             | `30d`      |
+| `--by`     | `consumer`, `kind`, `provider`, `served`, `purpose`, `person`, `channel`, `medium`, `basis`, `outcome`, `origin`, `conversation` | `consumer` |
