@@ -6,8 +6,9 @@ description: Hand longer tasks to Hermes, Codex or Claude Code, and let them rea
 import Card from "@/components/docs/Card.astro";
 import Cards from "@/components/docs/Cards.astro";
 
-Tasks that take minutes go to an **executor**, an agent working in the background. Nestor tracks the
-task and brings back the result, with its files.
+Tasks that take minutes go to an **executor**, an agent working in the background. A task is a
+thread that lasts: Nestor gives it instructions turn after turn, brings back each report with its
+files, and you can come back to it days later.
 
 <Cards cols={3}>
   <Card title="Hermes" brand="hermes" href="#hermes">Runs on a Hermes server, with its agent profiles.</Card>
@@ -24,17 +25,42 @@ Under `executors` in `nestor.yaml`:
 | `kind`        | `hermes`, `codex` or `claude-code`; also the executor's name                                   |
 | `name`        | needed only to tell apart two executors of the same kind                                       |
 | `description` | what the agent may hand over: write what this executor can really do                           |
+| `sensitive`   | `true` for an executor with real power (a server, a network): a task started or redirected from a shared device is confirmed in writing first |
+| `archive_after_days` | `30`: a finished task left alone that long is archived; empty, never                      |
+
+## A task, turn by turn
+
+| You say                                     | What happens                                                                 |
+| ------------------------------------------- | ---------------------------------------------------------------------------- |
+| "Update the website with the new prices"    | a task opens and its first turn starts (`start_task`)                        |
+| "Add the contact page too", while it works  | the instruction reaches the turn that works (`continue_task`)                |
+| "Continue the website update", a week later | a new turn in the same thread: the executor remembers what it did            |
+| the answer to its question                  | the next turn, in the same thread, with the files you send                   |
+
+An executor that needs you ends its turn with its question. The task then waits for your answer:
+nothing runs meanwhile. Nestor asks you where you are, reminds you after 3 h, 24 h and 48 h, then
+the question waits in the admin. Archiving the task closes it.
+
+| Executor    | Same thread across turns                | Redirected while it works       |
+| ----------- | --------------------------------------- | ------------------------------- |
+| Codex       | its thread (`turn/start` on it)         | `turn/steer`                    |
+| Claude Code | its session (`claude --resume`)         | a message while the turn runs   |
+| Hermes      | its session (`session_id`)              | `runs/{id}/steer`               |
+
+A task belongs to whoever asked for it. They and the admins see it, direct it, stop it, rename it
+and archive it, by voice, in writing or from the admin (**Ongoing**); other members do not see it.
 
 ## Stop and restart
 
-A task is cancelled only once the executor confirms the stop; otherwise it ends as failed.
+A stop ends the turn that works, once the executor confirms it; otherwise the turn ends as failed. The
+task stays, ready to go on.
 
 | Executor    | Where it runs                         | Through a restart of Nestor                       |
 | ----------- | ------------------------------------- | ------------------------------------------------- |
-| Hermes      | the Hermes server                     | the task goes on                                  |
-| Codex       | a `codex app-server` started by Nestor | it stops, and its task is reported interrupted    |
-| Codex       | a daemon on a server, through `command` | the task goes on: Nestor finds its thread again |
-| Claude Code | a process of Nestor                   | its task is reported interrupted                  |
+| Hermes      | the Hermes server                     | the turn goes on                                  |
+| Codex       | a `codex app-server` started by Nestor | it stops, and the turn is reported interrupted   |
+| Codex       | a daemon on a server, through `command` | the turn goes on: Nestor finds its thread again |
+| Claude Code | a process of Nestor                   | the turn is reported interrupted                  |
 
 ## Hermes
 
@@ -61,7 +87,7 @@ executors:
     description: Writes and runs code in /srv/codex/work. No access to the house.
 ```
 
-Each task is a Codex thread. A request for approval or input is declined.
+Each task is a Codex thread. A request for approval is declined.
 
 | Key       | Default            | What it does                                                                           |
 | --------- | ------------------ | -------------------------------------------------------------------------------------- |
@@ -100,7 +126,7 @@ With `permission_mode: dontAsk` (the default), only `allowed_tools` run.
 | Key               | Default                                   | What it does                                    |
 | ----------------- | ----------------------------------------- | ----------------------------------------------- |
 | `allowed_tools`   | read and write in its folder, search the web, no shell | the tools it may use               |
-| `max_budget_usd`  | none                                      | what one task may spend                         |
+| `max_budget_usd`  | none                                      | what one turn may spend                         |
 | `model`           | Claude Code's default                     | the model                                       |
 | `api_key`         | the account Claude Code is signed in with | the Anthropic API key                           |
 
@@ -108,25 +134,26 @@ A task's first journal step is its session id, for `claude --resume`.
 
 ## Files
 
-Codex and Claude Code get one folder per task under `working_directory`, holding the files sent.
-They return files from it only: 10 per task, `max_file_bytes` each (20 MB); the result names any left
-out.
+Codex and Claude Code get one folder per task under `working_directory`, the same for every turn,
+holding the files sent with each instruction. They return files from it only: 10 per turn,
+`max_file_bytes` each (20 MB); the report names any left out.
 
 ## Nestor's tools for executors
 
-During a task, an executor can call Nestor's MCP server:
+While a turn works, an executor can call Nestor's MCP server:
 
 | Tool                            | What it does                                                                                 |
 | ------------------------------- | -------------------------------------------------------------------------------------------- |
-| `task_brief`                    | the objective, who asked, when and where, the conversation it came from, the files they sent |
-| `read_file`                     | a link to download a file sent with the task                                                 |
-| `recall`, `remember`            | what Nestor knows of the requester, and a fact learned for them                              |
-| `report_progress`               | a step, shown in the admin and when someone asks how it is going                             |
-| `ask_requester`, `check_answer` | a question to the requester, and their answer once given                                     |
-| `attach_file`                   | a link to upload a file that goes with the result                                            |
-| `home_state`                    | who is home and the occupied rooms, with a [`home`](/docs/home/)                             |
+| `task_brief`      | the instruction, the task's title, who it is for, the conversation it came from, the turns before, its notes, the files sent |
+| `read_file`       | a link to download a file sent with the task                                                 |
+| `recall`          | what Nestor knows of the person the task is for                                              |
+| `note`            | a note kept with the task for its next turns, never in anyone's memory                       |
+| `report_progress` | a step, shown in the admin and when someone asks how it is going                             |
+| `attach_file`     | a link to upload a file that goes with what the turn brings                                  |
+| `home_state`      | who is home and the occupied rooms, with a [`home`](/docs/home/)                             |
 
-They reach only the requester's data. Download links last ten minutes while the task runs, upload links work once.
+They reach only the data of the person the task is for. Download links last ten minutes while the
+turn works, upload links work once. Steps never show a shell command.
 
 ### Access
 
@@ -136,13 +163,13 @@ Tailscale), and `NESTOR_SECRET_KEY`.
 | Secret           | Sent in                 | What it proves                                                                          |
 | ---------------- | ----------------------- | --------------------------------------------------------------------------------------- |
 | executor key     | `Authorization: Bearer` | which executor calls                                                                    |
-| task capability  | the `task` argument     | the task: made when it is handed over, valid while it runs and only with that executor's key |
+| turn capability  | the `task` argument     | the turn: made when it starts, valid while it works and only with that executor's key |
 
 Calls are rate-limited per key and journaled.
 
 | Executor              | How it gets the server                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------ |
-| Codex, Claude Code    | with each task: Nestor makes their key, keeps it encrypted, and passes it in the thread's settings or a private file |
+| Codex, Claude Code    | with each turn: Nestor makes their key, keeps it encrypted, and passes it in the thread's settings or a private file |
 | Hermes                | declared in its profile, with `nestor_mcp: true`                                                       |
 
 For Hermes, make its key under **System** or with `nestor executors key hermes`: shown once, with

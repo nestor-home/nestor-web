@@ -6,8 +6,9 @@ description: Confier les tâches longues à Hermes, Codex ou Claude Code, et leu
 import Card from "@/components/docs/Card.astro";
 import Cards from "@/components/docs/Cards.astro";
 
-Ce qui prend des minutes va à un **exécutant**, un agent qui travaille en arrière-plan. Nestor suit la
-tâche et rapporte le résultat, avec ses fichiers.
+Ce qui prend des minutes va à un **exécutant**, un agent qui travaille en arrière-plan. Une tâche est
+un fil qui dure : Nestor lui donne des consignes tour après tour, rapporte chaque compte rendu avec
+ses fichiers, et vous pouvez y revenir des jours plus tard.
 
 <Cards cols={3}>
   <Card title="Hermes" brand="hermes" href="#hermes">Tourne sur un serveur Hermes, avec ses profils d’agent.</Card>
@@ -24,17 +25,43 @@ Sous `executors` dans `nestor.yaml` :
 | `kind`        | `hermes`, `codex` ou `claude-code` ; c’est aussi le nom de l’exécutant              |
 | `name`        | seulement pour distinguer deux exécutants du même type                              |
 | `description` | ce que l’agent peut lui confier : écrivez ce que cet exécutant sait vraiment faire  |
+| `sensitive`   | `true` pour un exécutant aux vrais pouvoirs (un serveur, un réseau) : une tâche lancée ou réorientée depuis un appareil partagé est d’abord confirmée par écrit |
+| `archive_after_days` | `30` : une tâche finie laissée de côté aussi longtemps est archivée ; vide, jamais |
+
+## Une tâche, tour après tour
+
+| Vous dites | Ce qui se passe |
+| --- | --- |
+| « Mets à jour le site avec les nouveaux prix » | une tâche s’ouvre et son premier tour commence (`start_task`) |
+| « Ajoute aussi la page contact », pendant qu’elle travaille | la consigne entre dans le tour en cours (`continue_task`) |
+| « Continue la mise à jour du site », une semaine après | un nouveau tour dans le même fil : l’exécutant se souvient de ce qu’il a fait |
+| la réponse à sa question | le tour suivant, dans le même fil, avec les fichiers que vous envoyez |
+
+Un exécutant qui a besoin de vous termine son tour par sa question. La tâche attend alors votre
+réponse : rien ne tourne entre-temps. Nestor vous la pose là où vous êtes, vous la rappelle après
+3 h, 24 h et 48 h, puis la question attend dans l’admin. Archiver la tâche la ferme.
+
+| Exécutant | Même fil d’un tour à l’autre | Réorienté pendant qu’il travaille |
+| --- | --- | --- |
+| Codex | son fil (`turn/start` sur ce fil) | `turn/steer` |
+| Claude Code | sa session (`claude --resume`) | un message pendant le tour |
+| Hermes | sa session (`session_id`) | `runs/{id}/steer` |
+
+Une tâche appartient à qui l’a demandée. Cette personne et les admins la voient, la réorientent,
+l’arrêtent, la renomment et l’archivent, à la voix, par écrit ou depuis l’admin (**En cours**) ;
+les autres membres ne la voient pas.
 
 ## Arrêt et redémarrage
 
-Une tâche n’est annulée qu’une fois l’arrêt confirmé par l’exécutant ; sinon, elle finit en échec.
+Un arrêt termine le tour en cours, une fois confirmé par l’exécutant ; sinon, le tour finit en échec. La
+tâche reste, prête à continuer.
 
 | Exécutant   | Où il tourne                               | Quand Nestor redémarre                              |
 | ----------- | ------------------------------------------ | --------------------------------------------------- |
-| Hermes      | le serveur Hermes                          | la tâche continue                                   |
-| Codex       | un `codex app-server` lancé par Nestor     | il s’arrête, et sa tâche est dite interrompue       |
+| Hermes      | le serveur Hermes                          | le tour continue                                    |
+| Codex       | un `codex app-server` lancé par Nestor     | il s’arrête, et le tour est dit interrompu          |
 | Codex       | un démon sur un serveur, joint par `command` | la tâche continue : Nestor retrouve son fil       |
-| Claude Code | un processus de Nestor                     | sa tâche est dite interrompue                       |
+| Claude Code | un processus de Nestor                     | le tour est dit interrompu                          |
 
 ## Hermes
 
@@ -101,7 +128,7 @@ Avec `permission_mode: dontAsk` (le défaut), seuls les `allowed_tools` s’exé
 | Clé              | Défaut                                                  | Ce qu’elle fait                     |
 | ---------------- | ------------------------------------------------------- | ----------------------------------- |
 | `allowed_tools`  | lire et écrire dans son dossier, chercher sur le web, sans shell | les outils qu’il peut utiliser |
-| `max_budget_usd` | aucun                                                   | ce qu’une tâche peut dépenser       |
+| `max_budget_usd` | aucun                                                   | ce qu’un tour peut dépenser         |
 | `model`          | celui de Claude Code                                    | le modèle                           |
 | `api_key`        | le compte avec lequel Claude Code est connecté          | la clé d’API d’Anthropic            |
 
@@ -109,26 +136,27 @@ La première étape d’une tâche dans le journal est son identifiant de sessio
 
 ## Fichiers
 
-Codex et Claude Code ont un dossier par tâche sous `working_directory`, avec les fichiers envoyés. Ils
-ne rendent que des fichiers de ce dossier : 10 par tâche, `max_file_bytes` chacun (20 Mo) ; le
-résultat nomme ceux laissés de côté.
+Codex et Claude Code ont un dossier par tâche sous `working_directory`, le même à chaque tour, avec
+les fichiers envoyés avec chaque consigne. Ils ne rendent que des fichiers de ce dossier : 10 par tour,
+`max_file_bytes` chacun (20 Mo) ; le compte rendu nomme ceux laissés de côté.
 
 ## Les outils de Nestor pour les exécutants
 
-Pendant une tâche, un exécutant peut appeler le serveur MCP de Nestor :
+Pendant un tour, un exécutant peut appeler le serveur MCP de Nestor :
 
-| Outil                           | Ce qu’il fait                                                                                   |
-| ------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `task_brief`                    | l’objectif, qui l’a demandé, quand et où, la conversation d’où elle vient, les fichiers envoyés |
-| `read_file`                     | un lien pour télécharger un fichier envoyé avec la tâche                                        |
-| `recall`, `remember`            | ce que Nestor sait de la personne, et un fait appris pour elle                                  |
-| `report_progress`               | une étape, visible dans l’admin et quand quelqu’un demande où ça en est                         |
-| `ask_requester`, `check_answer` | une question à la personne, puis sa réponse une fois donnée                                     |
-| `attach_file`                   | un lien pour déposer un fichier qui part avec le résultat                                       |
-| `home_state`                    | qui est à la maison et les pièces occupées, avec un [`home`](/fr/docs/home/)                    |
+| Outil | Ce qu’il fait |
+| --- | --- |
+| `task_brief` | la consigne, le titre de la tâche, pour qui, la conversation d’où elle vient, les tours d’avant, ses notes, les fichiers envoyés |
+| `read_file` | un lien pour télécharger un fichier envoyé avec la tâche |
+| `recall` | ce que Nestor sait de la personne pour qui est la tâche |
+| `note` | une note gardée avec la tâche pour ses prochains tours, jamais dans la mémoire de quelqu’un |
+| `report_progress` | une étape, visible dans l’admin et quand quelqu’un demande où ça en est |
+| `attach_file` | un lien pour déposer un fichier qui part avec ce que rapporte le tour |
+| `home_state` | qui est à la maison et les pièces occupées, avec un [`home`](/fr/docs/home/) |
 
-Ils n’atteignent que les données de qui a demandé. Un lien de téléchargement vaut dix minutes tant que
-la tâche tourne, un lien de dépôt une fois.
+Ils n’atteignent que les données de la personne pour qui est la tâche. Un lien de téléchargement vaut
+dix minutes tant que le tour travaille, un lien de dépôt une fois. Les étapes ne montrent jamais une
+commande shell.
 
 ### Accès
 
@@ -144,7 +172,7 @@ Les appels sont limités par clé et journalisés.
 
 | Exécutant          | Comment il reçoit le serveur                                                                                          |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| Codex, Claude Code | avec chaque tâche : Nestor crée leur clé, la garde chiffrée et la passe dans les réglages du fil ou un fichier privé |
+| Codex, Claude Code | avec chaque tour : Nestor crée leur clé, la garde chiffrée et la passe dans les réglages du fil ou un fichier privé |
 | Hermes             | déclaré dans son profil, avec `nestor_mcp: true`                                                                      |
 
 Pour Hermes, créez sa clé dans **Système** ou avec `nestor executors key hermes` : affichée une fois,
