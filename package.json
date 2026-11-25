@@ -29,7 +29,7 @@
     "@lobehub/icons-static-svg": "1.106.0",
     "@nestor-home/character": "0.3.0",
     "astro": "7.4.13",
-    "lucide-react": "1.78.0",
+    "lucide-react": "1.79.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "simple-icons": "16.38.1",
