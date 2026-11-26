@@ -190,7 +190,7 @@ importers:
         version: 8.1.6(@astrojs/markdown-satteri@0.4.10)(astro@7.4.13(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))
       '@astrojs/react':
         specifier: 7.1.9
-        version: 7.1.9(@types/react-dom@19.3.0(@types/react@19.3.1))(@types/react@19.3.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))
+        version: 7.1.9(@types/react-dom@19.3.0(@types/react@19.3.3))(@types/react@19.3.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))
       '@astrojs/sitemap':
         specifier: 3.7.6
         version: 3.7.6
@@ -217,7 +217,7 @@ importers:
         version: 7.4.13(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1)
       lucide-react:
         specifier: 1.79.0
-        version: 1.79.0(@types/react@19.3.1)(react@19.3.1)
+        version: 1.79.0(@types/react@19.3.3)(react@19.3.1)
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -259,11 +259,11 @@ importers:
         specifier: 26.6.10
         version: 26.6.10
       '@types/react':
-        specifier: 19.3.1
-        version: 19.3.1
+        specifier: 19.3.3
+        version: 19.3.3
       '@types/react-dom':
         specifier: 19.3.0
-        version: 19.3.0(@types/react@19.3.1)
+        version: 19.3.0(@types/react@19.3.3)
       '@types/three':
         specifier: ^0.187.0
         version: 0.187.0
@@ -1344,8 +1344,8 @@ packages:
     peerDependencies:
       '@types/react': ^19.3.0
 
-  '@types/react@19.3.1':
-    resolution: {integrity: sha512-HNTkBIm8zmHX8LUXX2vtZ/ONzehrV1J3abl2fUIiZ5qxTYRCj/z+rDeFwOltqCLl9lRdUTKWT41OLtYuFV/Arg==}
+  '@types/react@19.3.3':
+    resolution: {integrity: sha512-K8uWpJc4teiuOPdiP1umjeA9rGMgVPiXuoL66fcS1QlwBT1WMqY8PORmub9FadopIs+RCW6siYEs7Lpq+vDlog==}
 
   '@types/sax@1.2.7':
     resolution: {integrity: sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A==}
@@ -2769,12 +2769,12 @@ snapshots:
     dependencies:
       prismjs: 1.30.0
 
-  '@astrojs/react-renderer@0.1.3(@types/react-dom@19.3.0(@types/react@19.3.1))(@types/react@19.3.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))':
+  '@astrojs/react-renderer@0.1.3(@types/react-dom@19.3.0(@types/react@19.3.3))(@types/react@19.3.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))':
     dependencies:
       '@astrojs/internal-helpers': 0.13.2
       '@astrojs/runtime': 0.1.1
-      '@types/react': 19.3.1
-      '@types/react-dom': 19.3.0(@types/react@19.3.1)
+      '@types/react': 19.3.3
+      '@types/react-dom': 19.3.0(@types/react@19.3.3)
       '@vitejs/plugin-react': 6.3.0(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -2785,12 +2785,12 @@ snapshots:
       - oxc-transform-react
       - vite
 
-  '@astrojs/react@7.1.9(@types/react-dom@19.3.0(@types/react@19.3.1))(@types/react@19.3.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))':
+  '@astrojs/react@7.1.9(@types/react-dom@19.3.0(@types/react@19.3.3))(@types/react@19.3.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))':
     dependencies:
       '@astrojs/internal-helpers': 0.13.2
-      '@astrojs/react-renderer': 0.1.3(@types/react-dom@19.3.0(@types/react@19.3.1))(@types/react@19.3.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))
-      '@types/react': 19.3.1
-      '@types/react-dom': 19.3.0(@types/react@19.3.1)
+      '@astrojs/react-renderer': 0.1.3(@types/react-dom@19.3.0(@types/react@19.3.3))(@types/react@19.3.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))
+      '@types/react': 19.3.3
+      '@types/react-dom': 19.3.0(@types/react@19.3.3)
       '@vitejs/plugin-react': 6.3.0(vite@8.3.8(@types/node@26.6.10)(jiti@2.7.0)(yaml@2.9.1))
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -3499,11 +3499,11 @@ snapshots:
     dependencies:
       undici-types: 8.9.0
 
-  '@types/react-dom@19.3.0(@types/react@19.3.1)':
+  '@types/react-dom@19.3.0(@types/react@19.3.3)':
     dependencies:
-      '@types/react': 19.3.1
+      '@types/react': 19.3.3
 
-  '@types/react@19.3.1':
+  '@types/react@19.3.3':
     dependencies:
       csstype: 3.2.3
 
@@ -4088,11 +4088,11 @@ snapshots:
 
   lru-cache@11.5.3: {}
 
-  lucide-react@1.79.0(@types/react@19.3.1)(react@19.3.1):
+  lucide-react@1.79.0(@types/react@19.3.3)(react@19.3.1):
     dependencies:
       react: 19.3.1
     optionalDependencies:
-      '@types/react': 19.3.1
+      '@types/react': 19.3.3
 
   magic-string@1.4.5:
     dependencies:
