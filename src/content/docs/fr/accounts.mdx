@@ -30,7 +30,7 @@ la déconnexion quand le fournisseur le permet. Ni le modèle ni le journal ne l
 
 | Service  | Ce que Nestor peut faire                                                                                          |
 | -------- | ----------------------------------------------------------------------------------------------------------------- |
-| Gmail    | chercher et lire le courrier, avec la syntaxe de Gmail (`from:`, `newer_than:7d`) ; alimente les [veilles](#courrier-et-veilles) |
+| Gmail    | chercher et lire le courrier, avec la syntaxe de Gmail (`from:`, `newer_than:7d`) ; fait sonner les [alertes](#courrier-et-alertes) |
 | Agenda   | lister les événements de l’agenda principal, en ajouter un                                                        |
 | Drive    | chercher des fichiers, lire un document, une feuille (en CSV) ou une présentation Google, un PDF ou un fichier texte |
 | Contacts | trouver des personnes par nom, adresse, téléphone ou entreprise                                                   |
@@ -61,7 +61,7 @@ Google demande votre propre client OAuth, créé une fois dans la
 
 | Service      | Ce que Nestor peut faire                                                                                          |
 | ------------ | ----------------------------------------------------------------------------------------------------------------- |
-| Mails Outlook | chercher et lire le courrier (`from:`, `subject:`, `received:`) ; alimente les [veilles](#courrier-et-veilles)   |
+| Mails Outlook | chercher et lire le courrier (`from:`, `subject:`, `received:`) ; fait sonner les [alertes](#courrier-et-alertes) |
 | Agenda       | lister les événements de l’agenda Outlook, en ajouter un                                                          |
 | OneDrive     | chercher des fichiers, lire un document Word, Excel ou PowerPoint, un fichier OpenDocument, un PDF ou un fichier texte |
 | To Do        | lister les tâches ouvertes de la liste par défaut, en ajouter une, en cocher une                                  |
@@ -120,12 +120,13 @@ Ajouter un événement ou une tâche, ou en cocher une, demande d’abord l’ac
 **Demander confirmation avant d’écrire** est activé sur la connexion (par défaut ;
 [Locuteurs](/fr/docs/agent/speakers/)). Chaque outil a aussi son interrupteur.
 
-## Courrier et veilles
+## Courrier et alertes
 
-Une **veille** (« préviens-moi quand le plombier répond ») : un modèle (`watches.model`) trie chaque
-nouveau message Gmail, Outlook et IMAP face aux veilles ouvertes et prévient qui l’a demandée
-([Initiative](/fr/docs/agent/initiative/)). Les instructions d’un mail ne sont jamais suivies. Les
-veilles suivent aussi des [flux, des pages et des webhooks](/fr/docs/tools/#flux-pages-et-webhooks).
+Pour une [alerte](/fr/docs/agent/initiative/#alertes) sur le courrier (« préviens-moi quand le
+plombier répond »), un modèle (`alerts.model`) lit chaque nouveau message Gmail, Outlook et IMAP une
+fois face aux alertes qu’il peut concerner. Un mail ne fait sonner que les alertes de la
+personne qui le reçoit, et son contenu lui est écrit, jamais dit à voix haute. Les instructions d’un mail ne
+sont jamais suivies.
 
 ## Réglages
 
@@ -134,9 +135,9 @@ veilles suivent aussi des [flux, des pages et des webhooks](/fr/docs/tools/#flux
 
 | Clé               | Défaut                          | Ce qu’elle fait                                         |
 | ----------------- | ------------------------------- | ------------------------------------------------------- |
-| `poll_interval_s` | `30` (Google), `60` (Microsoft) | tous les combien le nouveau courrier est lu pour les veilles |
+| `poll_interval_s` | `30` (Google), `60` (Microsoft) | tous les combien le nouveau courrier est lu pour les alertes |
 | `body_chars`      | `20000`                         | le plus long mail ou fichier lu, en caractères          |
 | `file_bytes`      | `20000000`                      | le plus gros fichier lu                                 |
-| `excerpt_chars`   | `2000`                          | l’extrait de chaque mail que trient les veilles         |
+| `excerpt_chars`   | `2000`                          | l’extrait de chaque mail lu pour les alertes            |
 
 Une recherche rend au plus 20 mails ou fichiers, 30 contacts, 50 événements ou 100 tâches.

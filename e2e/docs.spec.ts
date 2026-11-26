@@ -108,10 +108,10 @@ test("the documentation shows the journal's records and a plugin, in both langua
   for (const root of ["/docs/", "/fr/docs/"]) {
     await page.goto(`${root}agent/journal/`);
     await expect(page.locator('.doc-prose pre[data-language="json"]').nth(1)).toContainText("delivery-in-room");
-    await expect(page.locator('.doc-prose pre[data-language="python"]')).toContainText("class WatchTriggered(Event");
+    await expect(page.locator('.doc-prose pre[data-language="python"]')).toContainText("class AlertRang(Event");
     await page.goto(`${root}plugins/`);
     await expect(page.locator('.doc-prose pre[data-language="toml"]')).toContainText("nestor.adapters");
-    await expect(page.locator('.doc-prose pre[data-language="python"]').first()).toContainText("Plugin(Family.TOOLS");
+    await expect(page.locator('.doc-prose pre[data-language="python"]').first()).toContainText("card=Card(");
     await expect(page.locator(".doc-prose table").last()).toContainText("claude-code");
   }
 });

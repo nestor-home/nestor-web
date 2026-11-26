@@ -69,10 +69,11 @@ describe("the documentation", () => {
     for (const locale of LOCALES) {
       const journal = read(locale, "agent/journal");
       expect(journal, locale).toContain('"type": "initiative.considered"');
-      expect(journal, locale).toContain('class WatchTriggered(Event, event_type="watch.triggered")');
+      expect(journal, locale).toContain('class AlertRang(Event, event_type="alert.rang")');
       const plugins = read(locale, "plugins");
       expect(plugins, locale).toContain('[project.entry-points."nestor.adapters"]');
-      expect(plugins, locale).toContain("plugin = Plugin(Family.TOOLS,");
+      expect(plugins, locale).toContain("plugin = Plugin(\n       Family.TOOLS,");
+      expect(plugins, locale).toContain("card=Card(summary=");
       expect(read(locale, "sdks/python"), locale).toContain("Satellite(");
       expect(read(locale, "sdks/typescript"), locale).toContain("new Satellite(");
       expect(read(locale, "sdks/rust"), locale).toContain("Satellite::builder(");

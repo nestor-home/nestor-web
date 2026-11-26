@@ -20,11 +20,25 @@ function.
 | `channel`   | `channels`       | a `Channel`                                                                                              | `MessagingChannelContract`                                                                                                   |
 | `home`      | `home`           | a `Home`: presence and the home's actions                                                                |                                                                                                                              |
 | `tools`     | `tools`          | a `ToolProvider`, or a `WebSearch` for a search engine                                                   | `WebSearchContract`                                                                                                          |
-| `inbound`   | `inbound`        | an `InboundEventSource`, which feeds the watches                                                         | `InboundEventSourceContract`                                                                                                 |
+| `inbound`   | `inbound`        | an `InboundEventSource`, whose items ring alerts                                                         | `InboundEventSourceContract`                                                                                                 |
 | `connector` | `connectors`     | a `Connector`: a service people connect accounts to from the admin                                       |                                                                                                                              |
 
 Contracts are in `nestor.modules` (`cognition`, `channels`, `identity`, `home`, `web`, `initiative`,
 `connectors`), suites in `nestor.testing`.
+
+## Cards
+
+Every plugin carries a card (`card=Card(...)`, from `nestor.modules.system.selfmap`). The agent
+reads it through [`about_nestor`](/docs/agent/#what-nestor-knows-of-itself); a plugin without one
+does not load.
+
+| Field     | Holds                                                                                          |
+| --------- | ---------------------------------------------------------------------------------------------- |
+| `summary` | one line in English, for the model: what it lets Nestor do                                     |
+| `docs`    | its page of these docs, by slug, with a section if there is one: `tools#search`               |
+| `needs`   | what the household provides (`Need`): `KEY`, `ACCOUNT`, `SERVER`, `PROGRAM`, `HARDWARE`, `PUBLIC_ADDRESS` |
+
+What the plugin enables comes from its family, and from the type a model plugin serves.
 
 ## Write a tools plugin
 
@@ -59,6 +73,7 @@ A `bin_days` tool:
 
    from nestor.modules.cognition.model import ToolSpec
    from nestor.modules.cognition.tools import Risk, Tool, ToolContext, ToolOutput, ToolProvider
+   from nestor.modules.system.selfmap import Card
    from nestor.runtime import AdapterSettings, Family, Plugin, Services
 
 
@@ -88,7 +103,13 @@ A `bin_days` tool:
        return bins
 
 
-   plugin = Plugin(Family.TOOLS, "bins", BinsSettings, build)
+   plugin = Plugin(
+       Family.TOOLS,
+       "bins",
+       BinsSettings,
+       build,
+       card=Card(summary="Which bin goes out on which day (bin_days).", docs="plugins"),
+   )
    ```
 
 3. **Configure it**
@@ -143,7 +164,14 @@ A model plugin names the type it serves; its entry point is `<provider>-<type>`,
 `type: language`, `provider: my-provider`.
 
 ```python
-plugin = Plugin(Family.MODEL, "my-provider", MySettings, build, serves=LanguageModel)
+plugin = Plugin(
+    Family.MODEL,
+    "my-provider",
+    MySettings,
+    build,
+    serves=LanguageModel,
+    card=Card(summary="Language models from My Provider.", docs="models", needs=(Need.KEY,)),
+)
 ```
 
 ## Test it

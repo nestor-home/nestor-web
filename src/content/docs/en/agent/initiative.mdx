@@ -1,6 +1,6 @@
 ---
 title: Initiative
-description: When Nestor speaks without being asked. Reminders, watches, finished tasks, messages passed on, and the courier that delivers them.
+description: When Nestor speaks without being asked. Alerts, finished tasks, messages passed on, and the courier that delivers them.
 ---
 
 import AdminShot from "@/components/docs/AdminShot.astro";
@@ -8,26 +8,54 @@ import Initiative from "@/components/docs/diagrams/Initiative.astro";
 
 <Initiative locale="en" n={1} />
 
-<AdminShot name="ongoing" locale="en" alt="Ongoing: what waits for an answer, the tasks running, the reminders and watches" />
+<AdminShot name="ongoing" locale="en" alt="Ongoing: what waits for an answer, the tasks running, the alerts" />
 
 ## What calls for it
 
-| Source       | Example                                   | Tool                                       |
-| ------------ | ----------------------------------------- | ------------------------------------------ |
-| **Reminder** | "every weekday at 8, tell me the weather" | `schedule`                                 |
-| **Watch**    | "tell me when the bank writes"            | `create_watch`                             |
-| **Task**     | "read this PDF and sum up the contract"   | `start_task`, to an [executor](/docs/executors/) |
-| **Message**  | "ask Léa if she needs the car"            | `message_person`                           |
+| Source      | Example                                 | Tool                                             |
+| ----------- | --------------------------------------- | ------------------------------------------------ |
+| **Alert**   | "tell me when the bank writes"          | `create_alert`                                   |
+| **Task**    | "read this PDF and sum up the contract" | `start_task`, to an [executor](/docs/executors/) |
+| **Message** | "ask Léa if she needs the car"          | `message_person`                                 |
 
 Each has a title, shown in the admin, and reaches whoever asked.
 
-- **Reminder**: runs once or on chosen days. A recurring one tells only what changed; one missed
-  during a stop runs at the next start.
-- **Watch**: a small model reads each item once: mail from a [connected account](/docs/accounts/),
-  a feed, a page, a webhook ([Tools](/docs/tools/)).
 - **Task**: its result and files are announced once, even after a restart.
 - **Message**: one expecting a reply stays an open question for both people. `may_message` limits
   whom a person may write to (default `"*"`, always themselves).
+
+## Alerts
+
+An alert is something to do later, regularly, or when something happens. The agent sets it with
+`create_alert`, lists it with `list_alerts` and cancels it with `cancel_alert`.
+
+| Part        | Values                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| trigger     | once at a date and time (`at`), at `times` on `days`, or as items of some `kinds` arrive    |
+| instruction | what the agent does when it rings, and for whom                                            |
+| condition   | optional, in the person's words: "the share is under 135 $"                                 |
+| frequency   | `once`, `every_time`, or `until_rung` (until it has told something); `until` ends any of them at a date |
+| urgent      | told at once, even in quiet hours; set at creation                                          |
+
+| Request                                       | Trigger              | Frequency    |
+| --------------------------------------------- | -------------------- | ------------ |
+| "remind me tomorrow at 9 to call the plumber" | `at`                 | `once`       |
+| "every weekday at 8, tell me the weather"     | `times`, `days`      | `every_time` |
+| "tell me when the parcel arrives"             | `kinds: [mail]`      | `once`       |
+| "tell me once the share is under 135 $"       | `times`, condition   | `until_rung` |
+| "tell me when the dishwasher is done"         | `kinds: [dishwasher]` | `once`      |
+
+When it rings, the agent follows the instruction with its tools. A condition on a time is checked
+with them first; when it does not hold, nothing is said. An item (a [mail](/docs/accounts/#mail-and-alerts),
+a feed entry, a page change) is read by a small model (`alerts.model`), once for every alert it may
+concern; a mail, feed or page alert needs a condition saying what to recognise. An event of a
+[webhook](/docs/tools/#feeds-pages-and-webhooks) kind rings an alert without a condition as it
+arrives, with no model.
+
+Each alert keeps its thread: when it rings again, the agent rereads what it told before and says
+only what is new. One due while Nestor was stopped rings once at the next start. The journal and
+the admin keep why each ring happened: its time came, an event arrived, or an item matched, with
+the model's summary.
 
 ## Where it arrives
 
@@ -60,5 +88,5 @@ Only the agent's final answer goes out, never "let me check".
 | nothing to tell | a check found nothing new                           | nothing sent, the reason journaled, never retried |
 | not passed on   | no channel took it, or the model could not write it | tried again at the next start          |
 
-Only a reminder or a watch may end with nothing to tell. A request, a message, a confirmation and
+Only an alert may end with nothing to tell. A request, a message, a confirmation and
 a failure are always told.

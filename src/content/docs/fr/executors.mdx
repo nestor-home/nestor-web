@@ -37,6 +37,10 @@ Sous `executors` dans `nestor.yaml` :
 | « Continue la mise à jour du site », une semaine après | un nouveau tour dans le même fil : l’exécutant se souvient de ce qu’il a fait |
 | la réponse à sa question | le tour suivant, dans le même fil, avec les fichiers que vous envoyez |
 
+`start_task` nomme toujours son exécutant, même s’il n’y en a qu’un, choisi d’après sa
+`description`. Une demande qu’aucun exécutant ne couvre ne lance rien : l’agent dit ce qui pourrait
+être ajouté ([`about_nestor`](/fr/docs/agent/#ce-que-nestor-sait-de-lui-même)).
+
 Un exécutant qui a besoin de vous termine son tour par sa question. La tâche attend alors votre
 réponse : rien ne tourne entre-temps. Nestor vous la pose là où vous êtes, vous la rappelle après
 3 h, 24 h et 48 h, puis la question attend dans l’admin. Archiver la tâche la ferme. Ce qu’un tour rapporte revient

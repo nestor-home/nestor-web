@@ -59,4 +59,4 @@ under **Ongoing** in the admin. It then runs in the room; after five minutes wit
 nothing happens.
 
 By default, locks, the alarm, garages, gates and doors need it; lights, heating, messages and
-reminders do not ([Home Assistant](/docs/home/#sensitive-actions)).
+alerts do not ([Home Assistant](/docs/home/#sensitive-actions)).

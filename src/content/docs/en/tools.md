@@ -1,7 +1,7 @@
 ---
 
 title: Tools
-description: Give the agent web search, web pages, weather, maps and any MCP server, and give the watches feeds, pages and webhooks.
+description: Give the agent web search, web pages, weather, maps and any MCP server, and let feeds, pages and webhooks ring alerts.
 ---
 
 Tools are what the agent calls during a turn. Each is optional.
@@ -90,8 +90,9 @@ Without `risks` or `sensitive`, no tool of the server asks for a confirmation.
 
 ## Feeds, pages and webhooks
 
-Watches follow the sources under `inbound` (and [mail](/docs/accounts/#mail-and-watches)), by the
-name you give them: "tell me when the lamp drops under 50 €". Only you add a source, not the agent.
+[Alerts](/docs/agent/initiative/#alerts) follow the sources under `inbound` (and
+[mail](/docs/accounts/#mail-and-alerts)), by the name you give them: "tell me when the lamp drops
+under 50 €". Only you add a source, not the agent.
 
 ```yaml
 inbound:
@@ -107,7 +108,7 @@ inbound:
       - { name: github, kind: github, secret: "${GITHUB_HOOK_SECRET}" }
 ```
 
-| Source     | Reads                                     | Every                           | What is sorted                                                       |
+| Source     | Reads                                     | Every                           | What arrives                                                         |
 | ---------- | ----------------------------------------- | ------------------------------- | -------------------------------------------------------------------- |
 | `rss`      | RSS and Atom feeds                        | 15 min (`every_s`, at least 60) | each new entry, once; what a feed holds at its first read is not new |
 | `web-page` | a page's content, as `read_page` reads it | 1 h (`every_s`, at least 300)   | a change, with what changed; versions between two reads are not seen |
@@ -118,3 +119,7 @@ Feeds and pages on your network are refused.
 Webhooks listen on 127.0.0.1:8474 (`host`, `port`), behind a reverse proxy. A post (64 KB max,
 `max_bytes`) is signed with the hook's secret (`X-Hub-Signature-256: sha256=…`, like GitHub) or bears
 it (`Authorization: Bearer <secret>`).
+
+A webhook's post says exactly what happened: an alert on its kind without a condition rings as
+it arrives, with no model ("tell me when the dishwasher is done"). With a condition, the model
+reads the post first.

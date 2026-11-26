@@ -1,7 +1,7 @@
 ---
 
 title: Outils
-description: Donner à l’agent la recherche web, les pages web, la météo, les cartes et tout serveur MCP, et aux veilles des flux, des pages et des webhooks.
+description: Donner à l’agent la recherche web, les pages web, la météo, les cartes et tout serveur MCP, et faire sonner des alertes par des flux, des pages et des webhooks.
 ---
 
 Les outils sont ce que l’agent appelle pendant un tour. Chacun est facultatif.
@@ -92,9 +92,9 @@ Sans `risks` ni `sensitive`, aucun outil du serveur ne demande de confirmation.
 
 ## Flux, pages et webhooks
 
-Les veilles suivent les sources listées sous `inbound` (et le [courrier](/fr/docs/accounts/#courrier-et-veilles)),
-par le nom que vous leur donnez : « préviens-moi quand la lampe passe sous 50 € ». Vous seul ajoutez
-une source, pas l’agent.
+Les [alertes](/fr/docs/agent/initiative/#alertes) suivent les sources listées sous `inbound` (et le
+[courrier](/fr/docs/accounts/#courrier-et-alertes)), par le nom que vous leur donnez : « préviens-moi
+quand la lampe passe sous 50 € ». Vous seul ajoutez une source, pas l’agent.
 
 ```yaml
 inbound:
@@ -110,7 +110,7 @@ inbound:
       - { name: github, kind: github, secret: "${GITHUB_HOOK_SECRET}" }
 ```
 
-| Source     | Ce qu’elle lit                                  | Fréquence                       | Ce qui est trié                                                                                 |
+| Source     | Ce qu’elle lit                                  | Fréquence                       | Ce qui arrive                                                                                   |
 | ---------- | ----------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `rss`      | des flux RSS et Atom                            | 15 min (`every_s`, au moins 60) | chaque nouvelle entrée, une fois ; le contenu d’un flux à sa première lecture n’est pas nouveau |
 | `web-page` | le contenu d’une page, comme le lit `read_page` | 1 h (`every_s`, au moins 300)   | un changement, avec ce qui a changé ; les versions entre deux lectures ne sont pas vues         |
@@ -121,3 +121,7 @@ Les flux et pages de votre réseau sont refusés.
 Les webhooks écoutent sur 127.0.0.1:8474 (`host`, `port`), derrière un reverse proxy. Un envoi (64 Ko
 au plus, `max_bytes`) est signé avec le secret du webhook (`X-Hub-Signature-256: sha256=…`, comme
 GitHub) ou le porte (`Authorization: Bearer <secret>`).
+
+L’envoi d’un webhook dit exactement ce qui s’est passé : une alerte sur son type, sans condition,
+sonne dès qu’il arrive, sans modèle (« préviens-moi quand le lave-vaisselle a fini »). Avec une
+condition, le modèle lit d’abord l’envoi.

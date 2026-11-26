@@ -61,4 +61,4 @@ sous **En cours** dans l’administration. L’action s’exécute alors dans la
 cinq minutes, rien ne se passe.
 
 Par défaut, serrures, alarme, garages, portails et portes l’exigent ; lumières, chauffage, messages
-et rappels non ([Home Assistant](/fr/docs/home/#actions-sensibles)).
+et alertes non ([Home Assistant](/fr/docs/home/#actions-sensibles)).
