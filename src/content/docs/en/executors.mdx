@@ -39,7 +39,8 @@ Under `executors` in `nestor.yaml`:
 
 An executor that needs you ends its turn with its question. The task then waits for your answer:
 nothing runs meanwhile. Nestor asks you where you are, reminds you after 3 h, 24 h and 48 h, then
-the question waits in the admin. Archiving the task closes it.
+the question waits in the admin. Archiving the task closes it. What a turn brings back comes to the
+conversation its instruction was given in.
 
 | Executor    | Same thread across turns                | Redirected while it works       |
 | ----------- | --------------------------------------- | ------------------------------- |
@@ -53,7 +54,12 @@ and archive it, by voice, in writing or from the admin (**Ongoing**); other memb
 ## Stop and restart
 
 A stop ends the turn that works, once the executor confirms it; otherwise the turn ends as failed. The
-task stays, ready to go on.
+task stays, ready to go on. An instruction an executor cannot take while it works stops the turn
+first, then starts the next one with it; if the stop is not confirmed, the instruction is not given
+and you are told.
+
+When Codex or Claude Code no longer has the task's thread or session, the turn starts again once in a
+new one, with the turns before. Hermes cannot tell: it starts an empty session under the same id.
 
 | Executor    | Where it runs                         | Through a restart of Nestor                       |
 | ----------- | ------------------------------------- | ------------------------------------------------- |
@@ -135,7 +141,8 @@ A task's first journal step is its session id, for `claude --resume`.
 ## Files
 
 Codex and Claude Code get one folder per task under `working_directory`, the same for every turn,
-holding the files sent with each instruction. They return files from it only: 10 per turn,
+holding the files sent with each instruction; a name already taken in the task gets a number
+(`quote (2).pdf`). They return files from it only: 10 per turn,
 `max_file_bytes` each (20 MB); the report names any left out.
 
 ## Nestor's tools for executors

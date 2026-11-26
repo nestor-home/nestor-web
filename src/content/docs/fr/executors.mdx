@@ -39,7 +39,8 @@ Sous `executors` dans `nestor.yaml` :
 
 Un exécutant qui a besoin de vous termine son tour par sa question. La tâche attend alors votre
 réponse : rien ne tourne entre-temps. Nestor vous la pose là où vous êtes, vous la rappelle après
-3 h, 24 h et 48 h, puis la question attend dans l’admin. Archiver la tâche la ferme.
+3 h, 24 h et 48 h, puis la question attend dans l’admin. Archiver la tâche la ferme. Ce qu’un tour rapporte revient
+dans la conversation où sa consigne a été donnée.
 
 | Exécutant | Même fil d’un tour à l’autre | Réorienté pendant qu’il travaille |
 | --- | --- | --- |
@@ -54,13 +55,19 @@ les autres membres ne la voient pas.
 ## Arrêt et redémarrage
 
 Un arrêt termine le tour en cours, une fois confirmé par l’exécutant ; sinon, le tour finit en échec. La
-tâche reste, prête à continuer.
+tâche reste, prête à continuer. Une consigne qu’un exécutant ne peut pas prendre en cours de travail
+arrête d’abord le tour, puis lance le suivant avec elle ; si l’arrêt n’est pas confirmé, la consigne
+n’est pas donnée et on vous le dit.
+
+Quand Codex ou Claude Code n’a plus le fil ou la session de la tâche, le tour repart une fois dans un
+nouveau, avec les tours d’avant. Hermes ne peut pas le savoir : il ouvre une session vide sous le même
+identifiant.
 
 | Exécutant   | Où il tourne                               | Quand Nestor redémarre                              |
 | ----------- | ------------------------------------------ | --------------------------------------------------- |
 | Hermes      | le serveur Hermes                          | le tour continue                                    |
 | Codex       | un `codex app-server` lancé par Nestor     | il s’arrête, et le tour est dit interrompu          |
-| Codex       | un démon sur un serveur, joint par `command` | la tâche continue : Nestor retrouve son fil       |
+| Codex       | un démon sur un serveur, joint par `command` | le tour continue : Nestor retrouve son fil       |
 | Claude Code | un processus de Nestor                     | le tour est dit interrompu                          |
 
 ## Hermes
@@ -137,7 +144,8 @@ La première étape d’une tâche dans le journal est son identifiant de sessio
 ## Fichiers
 
 Codex et Claude Code ont un dossier par tâche sous `working_directory`, le même à chaque tour, avec
-les fichiers envoyés avec chaque consigne. Ils ne rendent que des fichiers de ce dossier : 10 par tour,
+les fichiers envoyés avec chaque consigne ; un nom déjà pris dans la tâche reçoit un numéro
+(`devis (2).pdf`). Ils ne rendent que des fichiers de ce dossier : 10 par tour,
 `max_file_bytes` chacun (20 Mo) ; le compte rendu nomme ceux laissés de côté.
 
 ## Les outils de Nestor pour les exécutants
