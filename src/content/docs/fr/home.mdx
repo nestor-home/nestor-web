@@ -7,7 +7,8 @@ import AdminShot from "@/components/docs/AdminShot.astro";
 import Steps from "@/components/docs/Steps.astro";
 
 Home Assistant apporte à Nestor **la présence** et **les appareils** qu’il expose aux assistants. Une
-adresse et un jeton suffisent pour les deux.
+adresse et un jeton suffisent pour les deux. Les appareils peuvent aussi venir d’un autre serveur MCP,
+ou de nulle part.
 
 <AdminShot name="house" locale="fr" alt="La maison : le foyer, où est chacun, les pièces et leurs satellites" />
 
@@ -47,7 +48,31 @@ adresse et un jeton suffisent pour les deux.
 | Qui est là                    | l’entité `person.*` de chaque personne                                                 | `people`            |
 | Dans quelle pièce est chacun  | un capteur de pièce par personne (Bermuda, ESPresense)                                 | `rooms`             |
 | Quelles pièces sont occupées  | des capteurs rattachés à une pièce ; par défaut tout capteur d’occupation, de présence ou de mouvement | `occupancy_sensors` |
-| Les appareils qu’il pilote    | les entités exposées aux assistants, par le serveur MCP de Home Assistant (`/api/mcp`) | aucune              |
+| Les appareils qu’il pilote    | les entités exposées aux assistants, par le serveur MCP de Home Assistant (`/api/mcp`) | `mcp`               |
+
+## Le serveur d’actions
+
+Nestor agit sur la maison par un serveur MCP. Par défaut, celui de Home Assistant, sur `/api/mcp`
+avec le même jeton. `mcp` en choisit un autre, ou aucun :
+
+```yaml
+home:
+  kind: home-assistant
+  # …
+  mcp:
+    url: ${HOME_MCP_URL}
+    token: ${HOME_MCP_TOKEN}
+```
+
+`mcp` prend les clés d’[un serveur dans la configuration](/fr/docs/tools/#un-serveur-dans-la-configuration).
+Le serveur de Home Assistant n’est alors jamais sollicité et l’intégration n’est plus nécessaire.
+
+Avec `mcp: false`, Home Assistant ne donne que la présence : Nestor n’ouvre aucune connexion MCP, et
+les appareils peuvent venir d’un serveur dans `tools`.
+
+Les actions sensibles ci-dessous valent pour tout serveur, sur les appels qui donnent un domaine, une
+classe d’appareil ou un nom. Quand ses outils prennent d’autres arguments, ajoutez ses propres appels
+`sensitive`.
 
 ## Actions sensibles
 

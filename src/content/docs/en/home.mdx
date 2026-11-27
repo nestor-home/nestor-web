@@ -7,7 +7,7 @@ import AdminShot from "@/components/docs/AdminShot.astro";
 import Steps from "@/components/docs/Steps.astro";
 
 Home Assistant gives Nestor **presence** and the **devices** it exposes to assistants. One address and
-one token cover both.
+one token cover both. Its devices can also come from another MCP server, or not at all.
 
 <AdminShot name="house" locale="en" alt="The house: the household, where each person is, the rooms and their satellites" />
 
@@ -47,7 +47,30 @@ one token cover both.
 | Who is home                 | each person's `person.*` entity                                                    | `people`            |
 | Which room a person is in   | a room tracker per person (Bermuda, ESPresense)                                    | `rooms`             |
 | Which rooms are occupied    | sensors with an area; by default every occupancy, presence or motion sensor        | `occupancy_sensors` |
-| Devices it controls | the entities exposed to assistants, through Home Assistant's MCP server (`/api/mcp`) | none                |
+| Devices it controls         | the entities exposed to assistants, through Home Assistant's MCP server (`/api/mcp`) | `mcp`               |
+
+## The actions server
+
+Nestor acts on the home through an MCP server. By default it is Home Assistant's own, at `/api/mcp`
+with the same token. `mcp` picks another one, or none:
+
+```yaml
+home:
+  kind: home-assistant
+  # …
+  mcp:
+    url: ${HOME_MCP_URL}
+    token: ${HOME_MCP_TOKEN}
+```
+
+`mcp` takes the keys of [a server in the configuration](/docs/tools/#a-server-in-the-configuration).
+Home Assistant's own server is then never asked, and needs no integration.
+
+With `mcp: false`, Home Assistant gives presence only: Nestor opens no MCP connection, and the
+devices can come from a server in `tools`.
+
+The sensitive actions below apply to any server, on the calls that give a domain, device class or
+name. When its tools take other arguments, add its own `sensitive` calls.
 
 ## Sensitive actions
 
