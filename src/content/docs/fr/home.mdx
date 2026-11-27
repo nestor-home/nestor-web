@@ -70,7 +70,9 @@ Le serveur de Home Assistant n’est alors jamais sollicité et l’intégration
 Avec `mcp: false`, Home Assistant ne donne que la présence : Nestor n’ouvre aucune connexion MCP, et
 les appareils peuvent venir d’un serveur dans `tools`.
 
-Les actions sensibles ci-dessous valent quel que soit le serveur de la maison.
+Les actions sensibles ci-dessous valent pour tout serveur, sur les appels qui donnent un domaine, une
+classe d’appareil ou un nom. Quand ses outils prennent d’autres arguments, ajoutez ses propres appels
+`sensitive`.
 
 ## Actions sensibles
 

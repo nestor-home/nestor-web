@@ -69,7 +69,8 @@ Home Assistant's own server is then never asked, and needs no integration.
 With `mcp: false`, Home Assistant gives presence only: Nestor opens no MCP connection, and the
 devices can come from a server in `tools`.
 
-The sensitive actions below apply to whichever server serves the home.
+The sensitive actions below apply to any server, on the calls that give a domain, device class or
+name. When its tools take other arguments, add its own `sensitive` calls.
 
 ## Sensitive actions
 
