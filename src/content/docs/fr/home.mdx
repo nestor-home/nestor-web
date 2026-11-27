@@ -69,3 +69,20 @@ home:
   sensitive:
     names: [lock, garage, door, porte, portail]
 ```
+
+## La carte de la maison
+
+Nestor garde une carte de la maison dans ses instructions : les pièces et leurs étages, ce que Home
+Assistant expose à Assist dans chacune, avec ses noms et ses alias, et les satellites de Nestor. Les
+entités d’un même appareil tiennent sur une ligne (`Lave-linge : Phase, Temps restant`), et un
+appareil dont les actions demandent un accord le dit. La carte ne contient aucun état : Nestor ne
+lit un état que lorsque la question porte dessus, donc « allume la télé » va droit à la télé.
+
+La carte suit Home Assistant : une pièce renommée, un appareil déplacé, une entité exposée ou
+masquée dans **Paramètres › Assistants vocaux › Exposer** se voient dès le message suivant. Ce qui
+n’est pas exposé reste inconnu de Nestor. Au-delà de 8 000 caractères, la carte laisse de côté le
+détail de chaque appareil, puis les appareils qui ne tiennent plus.
+
+Un message nomme un appareil avec `@`, comme une pièce. Dans l’administration, chaque pièce de **La
+maison** montre ce que Nestor y connaît. Qui est là n’est dit à Nestor que lorsqu’une personne du
+foyer parle, depuis son compte ou reconnue à sa voix.

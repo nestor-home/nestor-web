@@ -69,3 +69,20 @@ home:
   sensitive:
     names: [lock, garage, door, porte, portail]
 ```
+
+## The map of the house
+
+Nestor keeps a map of the house in its instructions: the rooms and their floors, what Home Assistant
+exposes to Assist in each, by its names and aliases, and Nestor's own satellites. The entities of one
+device make one line (`Washing machine: Phase, Time remaining`), and a device whose actions need a
+go-ahead says so. The map holds no state: Nestor reads states only when the question is about them,
+so "turn on the TV" goes straight to the TV.
+
+The map follows Home Assistant: a room renamed, a device moved, or an entity exposed or hidden in
+**Settings › Voice assistants › Expose** shows from the next message. What is not exposed stays
+unknown to Nestor. Past 8,000 characters, the map leaves out the parts of each device, then the
+devices that do not fit.
+
+A message names a device with `@`, like a room. In the admin, each room under **The house** shows
+what Nestor knows there. Who is home is told to Nestor only when someone of the household speaks, on
+their account or by their recognised voice.
