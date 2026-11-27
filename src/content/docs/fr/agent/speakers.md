@@ -57,8 +57,10 @@ personne défait un mauvais tour. Sa page propose
 ## Actions sensibles
 
 Une voix ou un prénom n’autorisent jamais rien : la personne confirme sur son compte, par écrit ou
-sous **En cours** dans l’administration. L’action s’exécute alors dans la pièce ; sans réponse en
-cinq minutes, rien ne se passe.
+sous **En cours** dans l’administration. Demandée dans une conversation sur son compte, Nestor pose
+la question sur place, et seul son message suivant peut la confirmer, jamais le modèle seul.
+L’action s’exécute alors là où elle a été demandée ; sans réponse en cinq minutes, rien ne se
+passe.
 
 Par défaut, serrures, alarme, garages, portails et portes l’exigent ; lumières, chauffage, messages
 et alertes non ([Home Assistant](/fr/docs/home/#actions-sensibles)).
