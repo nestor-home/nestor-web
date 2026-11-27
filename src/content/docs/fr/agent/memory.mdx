@@ -97,7 +97,9 @@ vecteurs se recalculent en arrière-plan après un changement de modèle.
 <Consolidation locale="fr" n={3} />
 
 Quand une conversation se termine, le modèle de consolidation écrit son épisode d’après ce qui a été
-dit et les outils utilisés, et range par lieu les faits durables que l’agent a manqués. Après un
+dit et les outils utilisés, et range par lieu les faits durables que l’agent a manqués. Une
+conversation où personne n’a répondu, seulement Nestor qui prévient (une alerte, le résultat d’une
+tâche), ne fait pas d’épisode : elle reste dans le journal et avec ce dont elle vient. Après un
 arrêt, Nestor rattrape au démarrage suivant.
 
 ## Dans l’administration

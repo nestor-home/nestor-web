@@ -97,8 +97,9 @@ recomputed in the background after a model change.
 <Consolidation locale="en" n={3} />
 
 When a conversation ends, the consolidation model writes its episode from what was said and the
-tools used, and files the lasting facts the agent missed in their places. After a stop, Nestor
-catches up at the next start.
+tools used, and files the lasting facts the agent missed in their places. A conversation where
+nobody answered, only Nestor telling something (an alert, a task's result), makes no episode: it
+stays in the journal and with what it came from. After a stop, Nestor catches up at the next start.
 
 ## In the admin
 
