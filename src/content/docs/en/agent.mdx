@@ -12,7 +12,7 @@ import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 <SystemMap locale="en" n={1} />
 
 The **core** depends on no vendor; everything else is an **adapter** behind a contract. A restart
-rebuilds open conversations, tasks, reminders and undelivered messages from the
+rebuilds open conversations, tasks, alerts and undelivered messages from the
 [journal](/docs/agent/journal/).
 
 ## A turn
@@ -37,6 +37,22 @@ long result is stored aside, read with `read_result` and `search_result`. Work o
 | `agent.written_tool_wait_s`              | 20                          | seconds a written turn waits for a tool |
 | `agent.tool_result_chars`                | 8000                        | longer results are stored aside         |
 | `conversation_ends_after_s`, per channel | 5 min aloud, 4 h in writing | silence that ends a conversation        |
+
+## What Nestor knows of itself
+
+At start, Nestor maps its parts from the installed [plugins](/docs/plugins/#cards) and the
+configuration:
+
+| Standing    | What the map says                                         |
+| ----------- | --------------------------------------------------------- |
+| plugged     | its names in the configuration and its health             |
+| installed   | installed, not configured                                 |
+| missing     | not installed, with the `pip install` that adds it        |
+| elsewhere   | a satellite package, run on its own device                |
+
+Asked what it can do, connect or use, or before saying it cannot, the agent calls `about_nestor`.
+It answers from the map and the matching section of these docs, read online; offline, from the
+map alone.
 
 ## The instructions
 
@@ -74,7 +90,7 @@ agent:
 | `agent.spoken`         | answers aloud                            | `agent.written` |
 | `agent.written`        | answers in writing                       | `agent.spoken`  |
 | `agent.titles`         | titles each chat                         | `agent.written` |
-| `watches.model`        | sorts incoming items against the watches | `agent.written` |
+| `alerts.model`         | sorts incoming items for the alerts      | `agent.written` |
 | `memory.consolidation` | summarises each finished conversation    | `agent.written` |
 
 All roles: [Models](/docs/models/).

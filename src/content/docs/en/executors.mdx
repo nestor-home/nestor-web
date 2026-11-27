@@ -37,6 +37,10 @@ Under `executors` in `nestor.yaml`:
 | "Continue the website update", a week later | a new turn in the same thread: the executor remembers what it did            |
 | the answer to its question                  | the next turn, in the same thread, with the files you send                   |
 
+`start_task` always names its executor, even when there is only one, chosen by its `description`.
+A request no executor covers starts nothing: the agent says what could be added
+([`about_nestor`](/docs/agent/#what-nestor-knows-of-itself)).
+
 An executor that needs you ends its turn with its question. The task then waits for your answer:
 nothing runs meanwhile. Nestor asks you where you are, reminds you after 3 h, 24 h and 48 h, then
 the question waits in the admin. Archiving the task closes it. What a turn brings back comes to the

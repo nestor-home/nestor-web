@@ -1,6 +1,6 @@
 ---
 title: Initiative
-description: Quand Nestor parle sans qu’on le lui demande. Rappels, veilles, tâches terminées, messages transmis, et le coursier qui les livre.
+description: Quand Nestor parle sans qu’on le lui demande. Alertes, tâches terminées, messages transmis, et le coursier qui les livre.
 ---
 
 import AdminShot from "@/components/docs/AdminShot.astro";
@@ -8,26 +8,55 @@ import Initiative from "@/components/docs/diagrams/Initiative.astro";
 
 <Initiative locale="fr" n={1} />
 
-<AdminShot name="ongoing" locale="fr" alt="En cours : ce qui attend une réponse, les tâches qui tournent, les rappels et les veilles" />
+<AdminShot name="ongoing" locale="fr" alt="En cours : ce qui attend une réponse, les tâches qui tournent, les alertes" />
 
 ## Ce qui l’appelle
 
-| Source      | Exemple                                                 | Outil                                          |
-| ----------- | ------------------------------------------------------- | ---------------------------------------------- |
-| **Rappel**  | « chaque jour de la semaine à 8 h, donne-moi la météo » | `schedule`                                     |
-| **Veille**  | « préviens-moi quand la banque écrit »                  | `create_watch`                                 |
-| **Tâche**   | « lis ce PDF et résume le contrat »                     | `start_task`, vers un [exécutant](/fr/docs/executors/) |
-| **Message** | « demande à Léa si elle a besoin de la voiture »        | `message_person`                               |
+| Source      | Exemple                                          | Outil                                                  |
+| ----------- | ------------------------------------------------ | ------------------------------------------------------ |
+| **Alerte**  | « préviens-moi quand la banque écrit »           | `create_alert`                                         |
+| **Tâche**   | « lis ce PDF et résume le contrat »              | `start_task`, vers un [exécutant](/fr/docs/executors/) |
+| **Message** | « demande à Léa si elle a besoin de la voiture » | `message_person`                                       |
 
 Chacun a un titre, affiché dans l’administration, et arrive à qui l’a demandé.
 
-- **Rappel** : une fois ou certains jours. Récurrent, il ne dit que ce qui a changé ; manqué
-  pendant un arrêt, il s’exécute au démarrage suivant.
-- **Veille** : un petit modèle lit chaque élément une fois : mail d’un
-  [compte connecté](/fr/docs/accounts/), flux, page, webhook ([Outils](/fr/docs/tools/)).
 - **Tâche** : son résultat et ses fichiers sont annoncés une fois, même après un redémarrage.
 - **Message** : s’il attend une réponse, il reste une question ouverte pour les deux personnes.
   `may_message` limite à qui une personne peut écrire (`"*"` par défaut, toujours elle-même).
+
+## Alertes
+
+Une alerte, c’est quelque chose à faire plus tard, régulièrement, ou quand un événement arrive.
+L’agent la crée avec `create_alert`, la liste avec `list_alerts` et l’annule avec `cancel_alert`.
+
+| Élément     | Valeurs                                                                                          |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| déclencheur | une fois à une date et une heure (`at`), à des heures (`times`) certains jours (`days`), ou à l’arrivée d’éléments de certains types (`kinds`) |
+| consigne    | ce que fait l’agent quand elle sonne, et pour qui                                                |
+| condition   | facultative, dans les mots de la personne : « l’action est sous 135 $ »                          |
+| fréquence   | `once`, `every_time` ou `until_rung` (jusqu’à ce qu’elle ait dit quelque chose) ; `until` arrête chacune à une date |
+| urgente     | dite tout de suite, même aux heures calmes ; fixé à la création                                  |
+
+| Demande                                                  | Déclencheur            | Fréquence    |
+| -------------------------------------------------------- | ---------------------- | ------------ |
+| « rappelle-moi demain à 9 h d’appeler le plombier »      | `at`                   | `once`       |
+| « chaque jour de la semaine à 8 h, donne-moi la météo »  | `times`, `days`        | `every_time` |
+| « préviens-moi quand le colis arrive »                   | `kinds: [mail]`        | `once`       |
+| « dis-moi dès que l’action passe sous 135 $ »            | `times`, condition     | `until_rung` |
+| « préviens-moi quand le lave-vaisselle a fini »          | `kinds: [dishwasher]`  | `once`       |
+
+Quand elle sonne, l’agent suit la consigne avec ses outils. Une condition sur une heure est
+d’abord vérifiée avec eux ; si elle n’est pas remplie, rien n’est dit. Un élément (un
+[mail](/fr/docs/accounts/#courrier-et-alertes), une entrée de flux, un changement de page) est lu par
+un petit modèle (`alerts.model`), une fois pour toutes les alertes qu’il peut concerner ; une
+alerte sur des mails, des flux ou des pages demande une condition qui dit quoi reconnaître. Un
+événement d’un type de [webhook](/fr/docs/tools/#flux-pages-et-webhooks) fait sonner une alerte
+sans condition dès qu’il arrive, sans modèle.
+
+Chaque alerte garde son fil : quand elle sonne de nouveau, l’agent relit ce qu’il a déjà dit et ne
+dit que ce qui est nouveau. Une alerte due pendant un arrêt sonne une fois au démarrage suivant. Le
+journal et l’administration gardent la raison de chaque sonnerie : son heure est venue, un
+événement est arrivé, ou un élément correspondait, avec le résumé du modèle.
 
 ## Où il arrive
 
@@ -61,5 +90,5 @@ Seule la réponse finale de l’agent part, jamais « je regarde ».
 | rien à dire   | une vérification n’a rien trouvé de nouveau                | rien n’est envoyé, la raison est journalisée, jamais retentée |
 | non transmise | aucun canal ne l’a prise, ou le modèle n’a pas pu l’écrire | retentée au démarrage suivant               |
 
-Seuls un rappel ou une veille peuvent finir en « rien à dire ». Une demande, un message, une
+Seule une alerte peut finir en « rien à dire ». Une demande, un message, une
 confirmation et un échec sont toujours dits.

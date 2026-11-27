@@ -13,7 +13,7 @@ import TurnFlow from "@/components/docs/diagrams/TurnFlow.astro";
 
 Le **cœur** ne dépend d’aucun fournisseur ; tout le reste est un **adaptateur** derrière un
 contrat. Au redémarrage, Nestor retrouve dans le [journal](/fr/docs/agent/journal/) les
-conversations ouvertes, les tâches, les rappels et les messages non livrés.
+conversations ouvertes, les tâches, les alertes et les messages non livrés.
 
 ## Un tour
 
@@ -38,6 +38,22 @@ plus tard. Un long résultat est mis de côté, lu avec `read_result` et `search
 | `agent.written_tool_wait_s`            | 20                            | secondes d’attente d’un outil à l’écrit |
 | `agent.tool_result_chars`              | 8000                          | au-delà, le résultat est mis de côté    |
 | `conversation_ends_after_s`, par canal | 5 min à l’oral, 4 h à l’écrit | silence qui termine une conversation    |
+
+## Ce que Nestor sait de lui-même
+
+Au démarrage, Nestor dresse la carte de ses parties d’après les [plugins](/fr/docs/plugins/#fiches)
+installés et la configuration :
+
+| État        | Ce que dit la carte                                          |
+| ----------- | ------------------------------------------------------------ |
+| branché     | ses noms dans la configuration et sa santé                   |
+| installé    | installé, pas configuré                                      |
+| absent      | pas installé, avec le `pip install` qui l’ajoute             |
+| ailleurs    | un paquet de satellite, qui tourne sur son propre appareil   |
+
+Quand on lui demande ce qu’il sait faire, connecter ou utiliser, ou avant de dire qu’il ne peut pas,
+l’agent appelle `about_nestor`. Il répond d’après la carte et la section de ces docs qui correspond,
+lue en ligne ; hors ligne, d’après la carte seule.
 
 ## Les consignes
 
@@ -76,7 +92,7 @@ agent:
 | `agent.spoken`         | répondre à l’oral                     | `agent.written` |
 | `agent.written`        | répondre à l’écrit                    | `agent.spoken`  |
 | `agent.titles`         | titrer chaque discussion              | `agent.written` |
-| `watches.model`        | trier ce qui arrive selon les veilles | `agent.written` |
+| `alerts.model`         | trier ce qui arrive pour les alertes  | `agent.written` |
 | `memory.consolidation` | résumer chaque conversation finie     | `agent.written` |
 
 Tous les rôles : [Modèles](/fr/docs/models/).

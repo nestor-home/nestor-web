@@ -1,6 +1,6 @@
 ---
 title: Mémoire
-description: Ce dont l’agent se souvient, ce que porte chaque tour, comment il retrouve le reste, et comment une conversation terminée devient un épisode.
+description: Ce dont l’agent se souvient et où il le range, ce que porte un tour, comment il retrouve et range le reste, et comment une conversation devient un épisode.
 ---
 
 import AdminShot from "@/components/docs/AdminShot.astro";
@@ -8,10 +8,23 @@ import Consolidation from "@/components/docs/diagrams/Consolidation.astro";
 import HybridSearch from "@/components/docs/diagrams/HybridSearch.astro";
 import MemoryTurn from "@/components/docs/diagrams/MemoryTurn.astro";
 
-Nestor garde des **souvenirs**, des faits durables (« Léa est végétarienne »), et des **épisodes**,
-le sujet de chaque conversation passée, tous reconstruits depuis le journal.
+Nestor garde des **souvenirs**, des faits durables (« Léa est végétarienne ») rangés par lieu, et
+des **épisodes**, le sujet de chaque conversation passée, tous reconstruits depuis le journal.
 
-<AdminShot name="memories" locale="fr" alt="Les souvenirs, par personne et pour tout le foyer" />
+<AdminShot name="memories" locale="fr" alt="Les souvenirs, rangés par personne et par lieu" />
+
+## Lieux
+
+| Lieu              | Contient                                                           |
+| ----------------- | ------------------------------------------------------------------ |
+| `people/<person>` | ce qui concerne une personne                                       |
+| `home`            | la maison elle-même : pièces, appareils, électroménager, travaux faits |
+| `household`       | la vie commune du foyer : habitudes, animaux, contacts, règles     |
+| `projects/<name>` | ce qui a une fin : des travaux, un voyage, un achat                |
+| `topics/<name>`   | un intérêt durable : le jardin, le vin                             |
+
+L’agent nomme projets et sujets en minuscules, mots reliés par des tirets (`projects/travaux-toit`).
+Un tour liste les souvenirs par lieu, et une recherche trouve aussi le nom d’un projet ou d’un sujet.
 
 ## Ce que porte un tour
 
@@ -22,11 +35,39 @@ participants voient les épisodes. Des outils atteignent le reste :
 
 | Outil               | Effet                                                                     |
 | ------------------- | ------------------------------------------------------------------------- |
-| `recall`            | cherche dans les souvenirs et les conversations passées, entre deux dates au besoin |
+| `recall`            | cherche dans les souvenirs, d’un lieu ou de toute une étagère, et dans les conversations passées entre deux dates |
 | `read_conversation` | relit une conversation mot pour mot                                       |
-| `remember`          | garde un souvenir                                                         |
+| `remember`          | garde un souvenir à sa place, lié à une tâche ou une alerte s’il ne vaut que pendant qu’elle tourne |
+| `move_memory`       | en range un ailleurs                                                      |
 | `correct_memory`    | en corrige un                                                             |
 | `forget`            | en oublie un                                                              |
+| `keep_note`         | garde une note d’une tâche comme souvenir                                 |
+
+Les notes d’un [exécutant](/fr/docs/executors/) restent avec sa tâche (`read_task` les numérote).
+L’agent n’en garde une avec `keep_note` que si elle compte au-delà de la tâche ; le journal dit de
+quelle tâche elle vient.
+
+## Liens
+
+« Léa veut savoir quand la télé passe sous 1 000 € » ne vaut que tant que la tâche ou l’alerte qui
+suit le prix tourne. Lié à elle, le souvenir est retiré quand elle se termine (`memory.retired`,
+raison `ended`), son texte gardé dans le journal.
+
+## Rangement de la nuit
+
+Chaque nuit à `memory.upkeep_at` (3 h 30 par défaut, à l’heure du foyer), le modèle de
+consolidation relit chaque lieu. Il fusionne les souvenirs qui disent la même chose et retire celui
+qui ne tient plus : un souvenir plus récent du même lieu dit autre chose, ou sa date est passée.
+Dans le doute, il garde le souvenir. Chaque changement est journalisé avec sa raison
+(`memory.corrected` avec `merged`, `memory.retired` avec `merged` ou `stale`), et la nuit se termine
+par `memory.upkept`. Une nuit manquée pendant un arrêt est rattrapée au démarrage suivant.
+
+Pour le désactiver :
+
+```yaml
+memory:
+  upkeep_at: null
+```
 
 ## Trouver par les mots et par le sens
 
@@ -55,8 +96,17 @@ vecteurs se recalculent en arrière-plan après un changement de modèle.
 
 <Consolidation locale="fr" n={3} />
 
-Quand une conversation se termine, le modèle de consolidation écrit son épisode et garde les faits
-durables que l’agent a manqués. Après un arrêt, Nestor rattrape au démarrage suivant.
+Quand une conversation se termine, le modèle de consolidation écrit son épisode d’après ce qui a été
+dit et les outils utilisés, et range par lieu les faits durables que l’agent a manqués. Une
+conversation où personne n’a répondu, seulement Nestor qui prévient (une alerte, le résultat d’une
+tâche), ne fait pas d’épisode : elle reste dans le journal et avec ce dont elle vient. Après un
+arrêt, Nestor rattrape au démarrage suivant.
+
+## Dans l’administration
+
+**Souvenirs** (dans **La maison**) les liste par personne et par lieu. La fiche d’un souvenir montre
+son lieu et ce à quoi il est lié ; **Déplacer…** le range ailleurs. **Rangés dernièrement** liste
+ce que le rangement de la nuit a fusionné ou retiré, et ce qui est parti avec sa tâche ou son alerte.
 
 ## Réglages
 
@@ -69,4 +119,5 @@ durables que l’agent a manqués. Après un arrêt, Nestor rattrape au démarra
 | `memory.found_episodes`  | 4               | conversations plus anciennes que ses mots peuvent ajouter       |
 | `memory.embedder`        | aucun           | le modèle d’embedding, pour chercher par le sens                |
 | `memory.query_timeout_s` | 1               | secondes pour transformer une question avant de chercher par les mots seuls |
-| `memory.consolidation`   | `agent.written` | le modèle qui écrit les épisodes                                |
+| `memory.consolidation`   | `agent.written` | le modèle qui écrit les épisodes et range les souvenirs         |
+| `memory.upkeep_at`       | `"03:30"`       | l’heure du rangement de la nuit ; `null` pour le désactiver     |

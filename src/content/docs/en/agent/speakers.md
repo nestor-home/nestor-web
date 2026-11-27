@@ -55,8 +55,9 @@ one. Their page offers
 ## Sensitive actions
 
 A voice or a name never authorises anything: the person confirms on their account, in writing or
-under **Ongoing** in the admin. It then runs in the room; after five minutes without an answer,
-nothing happens.
+under **Ongoing** in the admin. Asked in a conversation on their account, Nestor asks right there,
+and only their next message can confirm it, never the model by itself. It then runs where it was
+asked; after five minutes without an answer, nothing happens.
 
 By default, locks, the alarm, garages, gates and doors need it; lights, heating, messages and
-reminders do not ([Home Assistant](/docs/home/#sensitive-actions)).
+alerts do not ([Home Assistant](/docs/home/#sensitive-actions)).

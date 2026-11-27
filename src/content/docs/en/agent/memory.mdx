@@ -1,6 +1,6 @@
 ---
 title: Memory
-description: What the agent remembers, what each turn carries, how it finds the rest, and how a finished conversation becomes an episode.
+description: What the agent remembers and where it files it, what a turn carries, how it finds the rest and keeps it tidy, and how conversations become episodes.
 ---
 
 import AdminShot from "@/components/docs/AdminShot.astro";
@@ -8,10 +8,23 @@ import Consolidation from "@/components/docs/diagrams/Consolidation.astro";
 import HybridSearch from "@/components/docs/diagrams/HybridSearch.astro";
 import MemoryTurn from "@/components/docs/diagrams/MemoryTurn.astro";
 
-Nestor keeps **memories**, lasting facts ("Léa is vegetarian"), and **episodes**, what each past
-conversation was about, both rebuilt from the journal.
+Nestor keeps **memories**, lasting facts ("Léa is vegetarian") filed in places, and **episodes**,
+what each past conversation was about, both rebuilt from the journal.
 
-<AdminShot name="memories" locale="en" alt="Memories, by person and for the whole household" />
+<AdminShot name="memories" locale="en" alt="Memories, filed by person and by place" />
+
+## Places
+
+| Place             | Holds                                                     |
+| ----------------- | --------------------------------------------------------- |
+| `people/<person>` | what is about one person                                  |
+| `home`            | the house itself: rooms, devices, appliances, works done  |
+| `household`       | the family's shared life: routines, pets, contacts, rules |
+| `projects/<name>` | something with an end: a renovation, a trip, a purchase   |
+| `topics/<name>`   | a lasting interest: the garden, wine                      |
+
+The agent names projects and topics in lowercase words joined by hyphens (`projects/roof-works`).
+A turn lists memories by place, and a search also matches a project's or topic's name.
 
 ## What a turn carries
 
@@ -20,13 +33,41 @@ conversation was about, both rebuilt from the journal.
 Memories are dated: of two that disagree, the model keeps the later. Episodes are seen only by
 their participants. Tools reach the rest:
 
-| Tool                | Does                                                                   |
-| ------------------- | ---------------------------------------------------------------------- |
-| `recall`            | searches memories and past conversations, between two dates if asked   |
-| `read_conversation` | rereads one conversation word for word                                 |
-| `remember`          | keeps a memory                                                         |
-| `correct_memory`    | fixes one                                                              |
-| `forget`            | drops one                                                              |
+| Tool                | Does                                                                            |
+| ------------------- | ------------------------------------------------------------------------------- |
+| `recall`            | searches memories, in one place or a whole shelf, and past conversations between two dates |
+| `read_conversation` | rereads one conversation word for word                                          |
+| `remember`          | keeps a memory in its place, tied to a task or an alert if it only holds while that runs |
+| `move_memory`       | files one in another place                                                      |
+| `correct_memory`    | fixes one                                                                       |
+| `forget`            | drops one                                                                       |
+| `keep_note`         | keeps one of a task's notes as a memory                                         |
+
+An [executor](/docs/executors/)'s notes stay with its task (`read_task` numbers them). The agent
+keeps one with `keep_note` only when it matters beyond the task; the journal says which task it
+came from.
+
+## Ties
+
+"Léa wants to know when the TV drops below 1 000 €" holds only while the task or alert that
+follows the price runs. Tied to it, the memory is retired when it ends (`memory.retired`, reason
+`ended`), its text kept in the journal.
+
+## Nightly upkeep
+
+Every night at `memory.upkeep_at` (03:30 by default, in the household's time zone), the
+consolidation model reads each place. It merges memories that say the same thing and retires one
+that no longer holds: a later memory of the place says otherwise, or its date has passed. In
+doubt, it keeps the memory. Each change is journaled with its reason (`memory.corrected` with
+`merged`, `memory.retired` with `merged` or `stale`), and the night ends with `memory.upkept`. A
+night missed during a stop is caught up at the next start.
+
+To turn it off:
+
+```yaml
+memory:
+  upkeep_at: null
+```
 
 ## Finding by words and by meaning
 
@@ -55,8 +96,16 @@ recomputed in the background after a model change.
 
 <Consolidation locale="en" n={3} />
 
-When a conversation ends, the consolidation model writes its episode and keeps the lasting facts
-the agent missed. After a stop, Nestor catches up at the next start.
+When a conversation ends, the consolidation model writes its episode from what was said and the
+tools used, and files the lasting facts the agent missed in their places. A conversation where
+nobody answered, only Nestor telling something (an alert, a task's result), makes no episode: it
+stays in the journal and with what it came from. After a stop, Nestor catches up at the next start.
+
+## In the admin
+
+**Memories** (under **The house**) lists them by person and by place. A memory's sheet shows its
+place and what it is tied to; **Move…** files it elsewhere. **Tidied lately** lists what the upkeep
+merged or retired and what left with its task or alert.
 
 ## Settings
 
@@ -69,4 +118,5 @@ the agent missed. After a stop, Nestor catches up at the next start.
 | `memory.found_episodes`  | 4               | older conversations their words may add                         |
 | `memory.embedder`        | none            | the embedding model, for search by meaning                      |
 | `memory.query_timeout_s` | 1               | seconds to embed a question before searching by words only      |
-| `memory.consolidation`   | `agent.written` | the model that writes episodes                                  |
+| `memory.consolidation`   | `agent.written` | the model that writes episodes and tidies memories              |
+| `memory.upkeep_at`       | `"03:30"`       | when the nightly upkeep runs; `null` to turn it off             |

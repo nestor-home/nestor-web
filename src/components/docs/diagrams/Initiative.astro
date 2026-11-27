@@ -13,8 +13,7 @@ interface Props {
 const { locale, n } = Astro.props;
 const t = translator(locale);
 const triggers = [
-  { id: "schedule", event: "schedule.fired" },
-  { id: "watch", event: "watch.triggered" },
+  { id: "alert", event: "alert.rang" },
   { id: "task", event: "task.ended" },
   { id: "message", event: "message.requested" },
 ] as const;
@@ -25,7 +24,7 @@ const arrivals = ["spoken", "written", "followup"] as const;
   <div class="init">
     <div class="dg-region">
       <span class="dg-label">{t("dg-initiative-triggers")}</span>
-      <div class="init-stack is-two">
+      <div class="init-stack is-three">
         {
           triggers.map((trigger) => (
             <div class="dg-node">
@@ -83,9 +82,6 @@ const arrivals = ["spoken", "written", "followup"] as const;
     align-content: center;
   }
   @container (min-width: 30rem) {
-    .init-stack.is-two {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
     .init-stack.is-three {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }

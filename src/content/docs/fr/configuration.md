@@ -34,9 +34,9 @@ Seules `persona`, `household`, `models` et `channels` sont obligatoires.
 | `executors`  | des agents qui prennent les tâches longues                                       | [Exécutants](/fr/docs/executors/)                     |
 | `initiative` | les heures calmes, et où parler quand il sait seulement que quelqu’un est là     | [Initiative](/fr/docs/agent/initiative/)              |
 | `voices`     | le modèle de locuteur qui reconnaît qui parle à un satellite                     | [Locuteurs](/fr/docs/agent/speakers/)                 |
-| `watches`    | le modèle qui trie ce qui arrive pour les veilles                                | [Comptes](/fr/docs/accounts/)                         |
+| `alerts`     | le modèle qui trie ce qui arrive pour les alertes                                | [Initiative](/fr/docs/agent/initiative/#alertes)      |
 | `connectors` | les services auxquels l’admin relie des comptes ; tous ceux installés par défaut | [Comptes](/fr/docs/accounts/)                         |
-| `inbound`    | les flux d’actualité, pages web et webhooks que suivent les veilles              | [Outils](/fr/docs/tools/)                             |
+| `inbound`    | les flux d’actualité, pages web et webhooks qui font sonner les alertes          | [Outils](/fr/docs/tools/)                             |
 | `admin`      | l’adresse et le port de l’administration ; sans elle, pas d’administration       | [Administration](#administration)                     |
 | `updates`    | si l’administration signale une version plus récente                             | [Mises à jour](/fr/docs/updates/)                     |
 | `prices`     | d’où vient le prix d’un appel quand le fournisseur ne le dit pas                 | [Coûts](/fr/docs/costs/)                              |
@@ -70,7 +70,7 @@ Anglais et UTC par défaut. En français :
 persona:
   locale: fr # ses phrases fixes, et la langue par défaut de l'administration
   language: French # la langue dans laquelle écrit le modèle
-  timezone: Europe/Paris # heures calmes, rappels, dates des souvenirs
+  timezone: Europe/Paris # heures calmes, alertes, dates des souvenirs
 ```
 
 La voix entend la langue de son [modèle de transcription](/fr/docs/voice/).

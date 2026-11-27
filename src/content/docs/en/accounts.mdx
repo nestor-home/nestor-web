@@ -30,7 +30,7 @@ disconnect where the provider allows. The model and the journal never see them.
 
 | Service  | What Nestor can do                                                                    |
 | -------- | ------------------------------------------------------------------------------------- |
-| Gmail    | search and read mail, with Gmail's syntax (`from:`, `newer_than:7d`); feeds [watches](#mail-and-watches) |
+| Gmail    | search and read mail, with Gmail's syntax (`from:`, `newer_than:7d`); rings [alerts](#mail-and-alerts)    |
 | Calendar | list the events of the main calendar, add one                                         |
 | Drive    | search files, read a Google Doc, Sheet (as CSV) or Slides, a PDF or a text file       |
 | Contacts | find people by name, address, phone or company                                        |
@@ -60,7 +60,7 @@ Google needs your own OAuth client, made once in the
 
 | Service     | What Nestor can do                                                                                     |
 | ----------- | ------------------------------------------------------------------------------------------------------ |
-| Outlook mail | search and read mail (`from:`, `subject:`, `received:`); feeds [watches](#mail-and-watches)           |
+| Outlook mail | search and read mail (`from:`, `subject:`, `received:`); rings [alerts](#mail-and-alerts)              |
 | Calendar    | list the events of the Outlook calendar, add one                                                       |
 | OneDrive    | search files, read a Word, Excel or PowerPoint document, an OpenDocument file, a PDF or a text file    |
 | To Do       | list the open tasks of the default list, add one, tick one off                                         |
@@ -118,12 +118,12 @@ Adding an event or a task, or ticking one off, asks the person first while the c
 for confirmation before writing** is on (the default; [Speakers](/docs/agent/speakers/)). Each tool
 also has its own switch.
 
-## Mail and watches
+## Mail and alerts
 
-A **watch** ("tell me when the plumber replies"): a model (`watches.model`) sorts each new Gmail,
-Outlook and IMAP message against open watches and tells whoever asked
-([Initiative](/docs/agent/initiative/)). Instructions inside a mail are never followed. Watches also
-follow [feeds, pages and webhooks](/docs/tools/#feeds-pages-and-webhooks).
+For an [alert](/docs/agent/initiative/#alerts) on mail ("tell me when the plumber replies"), a model
+(`alerts.model`) reads each new Gmail, Outlook and IMAP message once against the alerts it may
+concern. A mail rings only its owner's alerts, and what it says is written to them, never said
+aloud. Instructions inside a mail are never followed.
 
 ## Settings
 
@@ -132,9 +132,9 @@ follow [feeds, pages and webhooks](/docs/tools/#feeds-pages-and-webhooks).
 
 | Key               | Default                         | What it does                                  |
 | ----------------- | ------------------------------- | --------------------------------------------- |
-| `poll_interval_s` | `30` (Google), `60` (Microsoft) | how often new mail is read for the watches    |
+| `poll_interval_s` | `30` (Google), `60` (Microsoft) | how often new mail is read for the alerts     |
 | `body_chars`      | `20000`                         | the longest mail or file read, in characters  |
 | `file_bytes`      | `20000000`                      | the largest file read                         |
-| `excerpt_chars`   | `2000`                          | the excerpt of each mail the watches sort     |
+| `excerpt_chars`   | `2000`                          | the excerpt of each mail the alerts sort      |
 
 A search returns at most 20 mails or files, 30 contacts, 50 events or 100 tasks.

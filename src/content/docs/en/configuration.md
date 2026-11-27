@@ -34,9 +34,9 @@ Only `persona`, `household`, `models` and `channels` are required.
 | `executors`  | agents that take on longer tasks                                            | [Executors](/docs/executors/)                      |
 | `initiative` | quiet hours, and where to speak when it only knows someone is home          | [Initiative](/docs/agent/initiative/)              |
 | `voices`     | the speaker model that recognises who speaks to a satellite                 | [Speakers](/docs/agent/speakers/)                  |
-| `watches`    | the model that sorts incoming items for the watches                         | [Accounts](/docs/accounts/)                        |
+| `alerts`     | the model that sorts incoming items for the alerts                          | [Initiative](/docs/agent/initiative/#alerts)       |
 | `connectors` | the services the admin connects accounts to; every installed one by default | [Accounts](/docs/accounts/)                        |
-| `inbound`    | news feeds, web pages and webhooks the watches follow                       | [Tools](/docs/tools/)                              |
+| `inbound`    | news feeds, web pages and webhooks that ring alerts                         | [Tools](/docs/tools/)                              |
 | `admin`      | the admin’s address and port; without it, there is no admin                 | [The admin](#the-admin)                            |
 | `updates`    | whether the admin says when a newer release is out                          | [Updates](/docs/updates/)                          |
 | `prices`     | where a call’s price comes from when the provider does not say              | [Costs](/docs/costs/)                              |
@@ -70,7 +70,7 @@ English and UTC by default. In French:
 persona:
   locale: fr # its fixed phrases, and the admin's default language
   language: French # the language the model writes in
-  timezone: Europe/Paris # quiet hours, reminders, dates in memories
+  timezone: Europe/Paris # quiet hours, alerts, dates in memories
 ```
 
 The voice hears the language of its [transcription model](/docs/voice/).
