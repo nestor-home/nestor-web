@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.8.2](https://github.com/nestor-home/nestor-web/compare/v0.8.1...v0.8.2) (2026-11-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @lobehub/icons-static-svg to v1.105.0 ([#149](https://github.com/nestor-home/nestor-web/issues/149)) ([874089c](https://github.com/nestor-home/nestor-web/commit/874089ce6fe3d01b68ef5d0eb5f24f44ecc5b687))
+* **deps:** update dependency @lobehub/icons-static-svg to v1.106.0 ([#152](https://github.com/nestor-home/nestor-web/issues/152)) ([e6ab713](https://github.com/nestor-home/nestor-web/commit/e6ab713c8676ef7d588d9eb43bc773f28b13967d))
+* **deps:** update dependency lucide-react to v1.76.0 ([#144](https://github.com/nestor-home/nestor-web/issues/144)) ([8f8ca4c](https://github.com/nestor-home/nestor-web/commit/8f8ca4c2164299407c55b734bea25cf1cf013ba3))
+* **deps:** update dependency lucide-react to v1.77.0 ([#147](https://github.com/nestor-home/nestor-web/issues/147)) ([db250c7](https://github.com/nestor-home/nestor-web/commit/db250c770ccfafaff715726af20075b96afa7a1d))
+* **deps:** update dependency lucide-react to v1.78.0 ([#153](https://github.com/nestor-home/nestor-web/issues/153)) ([160e71d](https://github.com/nestor-home/nestor-web/commit/160e71d9ffa11832b5882a225e934847d8639af4))
+* **deps:** update dependency lucide-react to v1.79.0 ([#156](https://github.com/nestor-home/nestor-web/issues/156)) ([9812ed2](https://github.com/nestor-home/nestor-web/commit/9812ed289ddba82c891480500ea18327ad89347c))
+* **deps:** update dependency lucide-react to v1.80.0 ([#166](https://github.com/nestor-home/nestor-web/issues/166)) ([615225d](https://github.com/nestor-home/nestor-web/commit/615225d5f82cb4173f14eb9489563a8800ab926c))
+* **deps:** update dependency lucide-react to v1.81.0 ([#169](https://github.com/nestor-home/nestor-web/issues/169)) ([405fb98](https://github.com/nestor-home/nestor-web/commit/405fb98e3e82c2e94e7700617026886c647e4571))
+* **deps:** update dependency nestor-home to v0.17.0 ([#143](https://github.com/nestor-home/nestor-web/issues/143)) ([1e54ea4](https://github.com/nestor-home/nestor-web/commit/1e54ea43c8ff6d8dcef190737802964288625805))
+* **deps:** update dependency simple-icons to v16.38.1 ([#148](https://github.com/nestor-home/nestor-web/issues/148)) ([f1ca884](https://github.com/nestor-home/nestor-web/commit/f1ca884e269dc032943327e78cb03aaed46eb534))
+
+
+### Documentation
+
+* alerts, memory by place and what nestor knows of itself ([#164](https://github.com/nestor-home/nestor-web/issues/164)) ([a835275](https://github.com/nestor-home/nestor-web/commit/a835275ee963c1d1b53c871048771d7551b1839a))
+* choose the home's action server, or none ([#165](https://github.com/nestor-home/nestor-web/issues/165)) ([bb6e1ca](https://github.com/nestor-home/nestor-web/commit/bb6e1ca24c3ce491b4e7c3bf20bc485bff3ffc1c))
+* costs of every call to a model, their prices and how to read them ([#150](https://github.com/nestor-home/nestor-web/issues/150)) ([90bfcb0](https://github.com/nestor-home/nestor-web/commit/90bfcb00180bcf525cdd7cbc2adf0882b7ab4382))
+* durable tasks, turn by turn ([#155](https://github.com/nestor-home/nestor-web/issues/155)) ([5ced976](https://github.com/nestor-home/nestor-web/commit/5ced9760abfa945f3677bfac90cfd21fe0d65b38))
+* files known by content and name, voice answers while the person speaks by voice ([#154](https://github.com/nestor-home/nestor-web/issues/154)) ([b27d976](https://github.com/nestor-home/nestor-web/commit/b27d9769a9709d9d1557230842a469a32db1ed45))
+
 ## [0.8.1](https://github.com/nestor-home/nestor-web/compare/v0.8.0...v0.8.1) (2026-11-19)
 
 
